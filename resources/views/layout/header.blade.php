@@ -100,6 +100,40 @@
                     </a>
                 </li>
 
+                <li class="nav-item {{ request()->routeIs('grads.index') || request()->routeIs('job.index') || request()->routeIs('qualifications.index') || request()->routeIs('government.all') || request()->routeIs('regions.index') || request()->routeIs('sectors.index') || request()->routeIs('points.index') || request()->routeIs('vacationType.index') || request()->routeIs('violations.index') || request()->routeIs('rule.index') || request()->routeIs('permission.index') || request()->routeIs('working_time.index') || request()->routeIs('working_trees.list') || request()->routeIs('absence.index') ? 'active' : '' }}"
+                    onclick="toggleDropdown6(event)">
+                    <a href="#">
+                        <img src="{{ asset('frontend/images/employees.svg') }}" alt="logo">
+                        <h6 class="btn3">بدل حجز <i class="fa-solid fa-angle-down"></i></h6>
+                    </a>
+                    <div id="dropdownMenu6" class="dropdown-menu4">
+                        <ul>
+                            <div class="row col-12">
+                                <div class="col-12">
+                                        <li class="{{ request()->routeIs('settings.index') ? 'active' : '' }}">
+                                            <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
+                                                style="margin-left: 7px;">
+                                            <a href="{{ route('settings.index') }}">اضافة بدل حجز</a>
+                                        </li>
+                                        <li class="{{ request()->routeIs('settings.index') ? 'active' : '' }}">
+                                            <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
+                                                style="margin-left: 7px;">
+                                            <a href="{{ route('settings.index') }}">رصيد بدل حجز</a>
+                                        </li>
+                                        <li class="{{ request()->routeIs('settings.index') ? 'active' : '' }}">
+                                            <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
+                                                style="margin-left: 7px;">
+                                            <a href="{{ route('settings.index') }}">احصائيات بدل حجز</a>
+                                        </li>
+                                </div>
+                            </div>
+                        </ul>
+                    </div>
+                </li>
+
+
+
+
                 @if (Auth::user()->hasPermission('view departements'))
                     <li
                         class="nav-item {{ request()->routeIs('departments.index') ? 'active' : '' }} @isset($search) @if ($search == 'dept') active @endif @endisset">
@@ -304,6 +338,12 @@
 
     function toggleDropdown5(event) {
         var dropdown = document.getElementById('dropdownMenu5');
+        dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+        event.stopPropagation(); // Prevent closing other dropdowns
+    }
+
+    function toggleDropdown6(event) {
+        var dropdown = document.getElementById('dropdownMenu6');
         dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
         event.stopPropagation(); // Prevent closing other dropdowns
     }

@@ -42,6 +42,10 @@ use App\Http\Controllers\ViolationReportController;
 use App\Http\Controllers\ViollationController;
 use App\Models\paperTransaction;
 
+//
+use App\Http\Controllers\ReservationAllowanceController;
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
