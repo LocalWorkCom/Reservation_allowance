@@ -22,7 +22,8 @@ class ReservationAllowanceController extends Controller
 
     public function index()
     {
-        //
+        $Reservation_allowances = ReservationAllowance::get();
+        return view('reservation_allowance.index', compact('Reservation_allowances'));
     }
 
     /**
@@ -47,6 +48,18 @@ class ReservationAllowanceController extends Controller
     public function show($id)
     {
         //
+    }
+
+    public function getAll()
+    {
+        $data = ReservationAllowance::get();
+
+        return DataTables::of($data)
+            ->addColumn('action', function ($row) {
+                return '<button class="btn  btn-sm" style="background-color: #259240;"><i class="fa fa-edit"></i></button>';
+            })
+            ->rawColumns(['action'])
+            ->make(true);
     }
 
     /**
