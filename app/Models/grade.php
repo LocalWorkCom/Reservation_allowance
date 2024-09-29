@@ -9,11 +9,9 @@ class grade extends Model
 {
     use HasFactory;
     protected $table = 'grades';
-    public $timestamps = false;
+    // public $timestamps = false;
 
-    protected $fillable = [
-        'name'
-    ];
+    protected $fillable = ['name', 'type', 'value_all', 'value_part'];
 
     public function grades()
     {

@@ -72,13 +72,37 @@
                     </button>
                 </div>
                 <div class="modal-body  mt-3 mb-5 ">
+
                     <div class="container pt-5 pb-3" style="border: 0.2px solid rgb(166, 165, 165);">
+                        @if ($errors->any())
+                            <div class="alert alert-danger"dir="rtl">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                         <form class="edit-grade-form" id="add-form" action=" {{ route('grads.add') }}" method="POST">
                             @csrf
+                            <input type="hidden" id="modalType" value="add">
+
                             <div class="form-group">
                                 <label for="name">الاسم</label>
                                 <input type="text" id="nameadd" name="nameadd" class="form-control" required>
                                 <span class="text-danger span-error" id="nameadd-error" dir="rtl"></span>
+
+                            </div>
+                            <div class="form-group">
+                                <label for="name">قيمه الدوام الكلى</label>
+                                <input type="text" id="value_all" name="value_all" class="form-control" required>
+                                <span class="text-danger span-error" id="value_all-error" dir="rtl"></span>
+
+                            </div>
+                            <div class="form-group">
+                                <label for="name">قيمه الدوام الجزئى</label>
+                                <input type="text" id="value_part" name="value_part" class="form-control" required>
+                                <span class="text-danger span-error" id="value_part-error" dir="rtl"></span>
 
                             </div>
                             <div class="form-group">
@@ -109,39 +133,56 @@
             <div class="modal-content">
                 <div class="modal-header d-flex justify-content-center">
                     <div class="title d-flex flex-row align-items-center">
-                        <h5 class="modal-title" id="lable"> تعديل اسم الرتبه ؟</h5>
-
+                        <h5 class="modal-title" id="label">تعديل اسم الرتبه ؟</h5>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> &times;
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> &times;</button>
                 </div>
-                <div class="modal-body  mt-3 mb-5">
+                <div class="modal-body mt-3 mb-5">
                     <div class="container pt-5 pb-3" style="border: 0.2px solid rgb(166, 165, 165);">
-                        <form class="edit-grade-form" id="edit-form" action=" {{ route('grads.update') }}" method="POST">
+                        @if ($errors->any())
+                        <div class="alert alert-danger" dir="rtl">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        @endif
+                        <form class="edit-grade-form" id="edit-form" action="{{ route('grads.update') }}" method="POST">
                             @csrf
+
+                            <input type="hidden" id="modalTypeEdit" value="edit">
+
                             <div class="form-group ">
                                 <label for="name">الاسم</label>
-                                <input type="text" id="nameedit" value="" name="name" class="form-control"
-                                    dir="rtl" required>
-                                <input type="text" id="idedit" value="" name="id" hidden
-                                    class="form-control">
-
+                                <input type="text" id="nameedit" name="name" class="form-control"
+                                       dir="rtl" value="{{ session('old_name') }}" required>
+                                <input type="hidden" id="idedit" name="id" value="{{ session('edit_id') }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="value_alledit">قيمه الدوام الكلى</label>
+                                <input type="text" id="value_alledit" name="value_alledit" class="form-control"
+                                       value="{{ session('old_value_alledit') }}" required>
+                                <span class="text-danger span-error" id="value_all-error" dir="rtl"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="value_partedit">قيمه الدوام الجزئى</label>
+                                <input type="text" id="value_partedit" name="value_partedit" class="form-control"
+                                       value="{{ session('old_value_partedit') }}" required>
+                                <span class="text-danger span-error" id="value_partedit-error" dir="rtl"></span>
                             </div>
                             <div class="form-group">
                                 <label for="typeedit">نوع الرتبه</label>
-                                <select name="typeedit" id="typeedit" aria-placeholder="اختر نوع الرتبه"
-                                    class="form-control">
+                                <select name="typeedit" id="typeedit" class="form-control">
                                     <option value="" selected disabled>اختر نوع الرتبه</option>
-                                    <option value="0">ظابط</option>
-                                    <option value="1">صف ظابط</option>
-                                    <option value="2"> فرد</option>
+                                    <option value="0" {{ session('old_typeedit') == '0' ? 'selected' : '' }}>ظابط</option>
+                                    <option value="1" {{ session('old_typeedit') == '1' ? 'selected' : '' }}>صف ظابط</option>
+                                    <option value="2" {{ session('old_typeedit') == '2' ? 'selected' : '' }}> فرد</option>
                                 </select>
                                 <span class="text-danger span-error" id="typeedit-error" dir="rtl"></span>
-
                             </div>
-                            <!-- Save button -->
                             <div class="text-end">
-                                <button type="submit" class="btn-blue" onclick="confirmEdit()">تعديل</button>
+                                <button type="submit" class="btn-blue">تعديل</button>
                             </div>
                         </form>
                     </div>
@@ -149,6 +190,7 @@
             </div>
         </div>
     </div>
+
     {{-- model for delete form --}}
     <div class="modal fade" id="delete" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -212,11 +254,23 @@
             var form = document.getElementById('delete-form');
             form.submit();
         }
-
-        function openedit(id, name , type) {
+        $(document).ready(function() {
+            // Check if there are errors
+            @if ($errors->any())
+                // Check if it's an add or edit operation
+                @if (session('modal_type') === 'add')
+                    $('#add').modal('show');
+                @elseif (session('modal_type') === 'edit')
+                    $('#edit').modal('show');
+                @endif
+            @endif
+        });
+        function openedit(id, name, type, value_all, value_part) {
             document.getElementById('nameedit').value = name;
             document.getElementById('idedit').value = id;
-            document.getElementById('typeedit').value = type;  // Set the value for type
+            document.getElementById('typeedit').value = type; // Set the value for type
+            document.getElementById('value_alledit').value = value_all; // Set value_all
+            document.getElementById('value_partedit').value = value_part; // Set value_part
 
             $('#edit').modal('show');
         }
@@ -231,6 +285,8 @@
         function openadd() {
             $('#add').modal('show');
         }
+
+
 
         function confirmAdd() {
             var name = document.getElementById('nameadd').value;
@@ -305,15 +361,15 @@
                 },
                 "pagingType": "full_numbers",
                 "fnDrawCallback": function(oSettings) {
-                                     console.log('Page '+this.api().page.info().pages)
-                                        var page=this.api().page.info().pages;
-                                        console.log($('#users-table tr').length);
-                                        if (page ==1) {
-                                         //   $('.dataTables_paginate').hide();//css('visiblity','hidden');
-                                            $('.dataTables_paginate').css('visibility', 'hidden');  // to hide
+                    console.log('Page ' + this.api().page.info().pages)
+                    var page = this.api().page.info().pages;
+                    console.log($('#users-table tr').length);
+                    if (page == 1) {
+                        //   $('.dataTables_paginate').hide();//css('visiblity','hidden');
+                        $('.dataTables_paginate').css('visibility', 'hidden'); // to hide
 
-                                        }
-                                    }
+                    }
+                }
             });
 
 
