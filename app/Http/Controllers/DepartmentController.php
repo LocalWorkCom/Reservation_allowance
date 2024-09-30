@@ -13,6 +13,7 @@ use App\DataTables\DepartmentDataTable;
 use Illuminate\Support\Facades\Validator;
 use App\DataTables\subDepartmentsDataTable;
 use App\Http\Requests\StoreDepartmentRequest;
+use App\Models\Sector;
 
 class DepartmentController extends Controller
 {
@@ -31,7 +32,7 @@ class DepartmentController extends Controller
         $users = User::where('flag', 'employee')->where('department_id', NULL)->get();
 
         $parentDepartment = $departments = departements::where('parent_id', Auth::user()->department_id)->first();
-        // Get the children of the parent department 
+        // Get the children of the parent department
 
         // $departments = $parentDepartment ? $parentDepartment->children : collect();
         // if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
@@ -44,6 +45,7 @@ class DepartmentController extends Controller
     }
     public function getDepartment()
     {
+        //department main all
         if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
             $data = departements::withCount('iotelegrams')
                 ->withCount('outgoings')
@@ -67,17 +69,23 @@ class DepartmentController extends Controller
             ->addColumn('action', function ($row) {
                 return '<button class="btn btn-primary btn-sm">Edit</button>';
             })
-            ->addColumn('iotelegrams_count', function ($row) {
-                return $row->iotelegrams_count;  // Display the count of iotelegrams
-            })
-            ->addColumn('outgoings_count', function ($row) {
-                return $row->outgoings_count;
-            })
-            ->addColumn('children_count', function ($row) { // New column for departments count
-                return $row->children_count;
+            // ->addColumn('iotelegrams_count', function ($row) {
+            //     return $row->iotelegrams_count;  // Display the count of iotelegrams
+            // })
+            // ->addColumn('outgoings_count', function ($row) {
+            //     return $row->outgoings_count;
+            // })
+            ->addColumn('reservation_allowance', function ($row) { // New column for departments count
+                if ($row->reservation_allowance_type == 1) {
+                    return 'حجز كلى';
+                } elseif ($row->reservation_allowance_type == 2) {
+                    return 'حجز جزئى';
+                } else {
+                    return 'حجز كلى و حجز جزئى';
+                }
             })
             ->addColumn('manager_name', function ($row) {
-                return $row->manager ? $row->manager->name : 'N/A'; // Display the manager's name
+                return $row->manager ? $row->manager->name : 'لايوجد مدير للأداره'; // Display the manager's name
             })
             ->rawColumns(['action'])
             ->make(true);
@@ -123,10 +131,16 @@ class DepartmentController extends Controller
                 return '<button class="btn  btn-sm" style="background-color: #259240;"><i class="fa fa-edit"></i></button>';
             })
 
-            ->addColumn('children_count', function ($row) { // New column for departments count
-                return $row->children_count;
+            ->addColumn('reservation_allowance', function ($row) { // New column for departments count
+                if ($row->reservation_allowance_type == 1) {
+                    return 'حجز كلى';
+                } elseif ($row->reservation_allowance_type == 2) {
+                    return 'حجز جزئى';
+                } else {
+                    return 'حجز كلى و حجز جزئى';
+                }
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['action', 'reservation_allowance'])
             ->make(true);
     }
     /**
@@ -134,29 +148,11 @@ class DepartmentController extends Controller
      */
     public function create()
     {
-
-        $users = User::where(function ($query) {
-            $query->where('rule_id', '!=', 2)
-                ->orWhereNull('rule_id'); // Include rows where 'rule_id' is null
-        })
-            ->where('id', '<>', Auth::user()->id)
-            ->where('flag', 'user')
-            ->where(function ($query) {
-                $query->whereNull('department_id')
-                    ->orWhere('department_id', auth()->user()->department_id); // Include rows where 'rule_id' is null
-            })
-            ->get();
-
-        $departments = departements::with('children', 'parent')->get();
-
-        $employee = User::WhereNull('rule_id') // Include rows where 'rule_id' is null
-            ->where('flag', 'employee')
-            ->where(function ($query) {
-                $query->whereNull('department_id')
-                    ->orWhere('department_id', auth()->user()->department_id); // Include rows where 'rule_id' is null
-            })
-            ->get();
-        return view('departments.create', compact('users', 'departments', 'employee'));
+        //create Main Administration
+        $sectors = Sector::all();
+        $managers = User::where('flag', 'user')->where('department_id', 1)->get();
+        $employees = User::where('flag', 'employee')->where('department_id', null)->get();
+        return view('departments.create', compact('sectors', 'managers', 'employees'));
     }
 
 
@@ -190,16 +186,57 @@ class DepartmentController extends Controller
     public function store(Request $request)
     {
 
-        $request->validate([
+
+        $messages = [
+            'name.required' => 'اسم الحقل مطلوب.',
+            'manger.required' => 'اسم المدير مطلوب.',
+            'budget.required' => 'مبلغ بدل الحجز مطلوب.',
+            'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
+            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.01.',
+            'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
+
+            'part.required' => 'نوع بدل الحجز مطلوب.',
+            // 'part.numeric' => 'نوع بدل الحجز يجب أن يكون رقمًا.',
+            // 'part.min' => 'نوع بدل الحجز يجب ألا يقل عن 0.01.',
+            // 'part.max' => 'نوع بدل الحجز يجب ألا يزيد عن 1000000.',
+        ];
+
+        // Create a validator instance
+        $validator = Validator::make($request->all(), [
             'name' => 'required',
             'manger' => 'required',
-        ]);
+            'budget' => 'required|numeric|min:0.01|max:1000000',
+            'part' => 'required',
 
+        ], $messages);
 
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+        $part = $request->input('part');
+
+        $reservation_allowance_type = null;
+
+        if (in_array('1', $part) && in_array('2', $part)) {
+            // If both '1' and '2' are present, save 3
+            $reservation_allowance_type = 3;
+        } elseif (in_array('1', $part)) {
+            // If only '1' is present, save 1
+            $reservation_allowance_type = 1;
+        } elseif (in_array('2', $part)) {
+            // If only '2' is present, save 2
+            $reservation_allowance_type = 2;
+        }
         $departements = new Departements();
         $departements->name = $request->name;
         $departements->manger = $request->manger;
-        $departements->parent_id = Auth::user()->department_id;
+        $departements->sector_id  = $request->sector;
+        $departements->description = $request->description;
+
+        $departements->reservation_allowance_amount = $request->budget;
+        $departements->reservation_allowance_type = $reservation_allowance_type;
+
+        // $departements->parent_id = Auth::user()->department_id;
         $departements->created_by = Auth::user()->id;
         $departements->save();
 
@@ -288,10 +325,13 @@ class DepartmentController extends Controller
      */
     public function edit(departements $department)
     {
-        $users = User::all();
-        $employee = User::where('department_id', $department->id)->orwhere('department_id', NULL)->get();
+        // dd($department);
+        $sectors = Sector::all();
+        $managers = User::where('flag', 'user')->where('department_id', 1)->orwhere('id',$department->manger)->get();
+        $employees = User::where('flag', 'employee')->where('department_id', null)->orWhere('department_id',$department->id)->whereNot('id',$department->manger)->get();
+        return view('departments.edit', compact('department','sectors', 'managers', 'employees'));
         // dd($employee);
-        return view('departments.edit', compact('department', 'users', 'employee'));
+        // return view('departments.edit', compact('department', 'users', 'employee'));
     }
 
     public function edit_1(departements $department)
@@ -310,27 +350,75 @@ class DepartmentController extends Controller
     public function update(Request $request, departements $department)
     {
         //dd($request);
-        $request->validate([
+        $messages = [
+            'name.required' => 'اسم الحقل مطلوب.',
+            'manger.required' => 'اسم المدير مطلوب.',
+            'budget.required' => 'مبلغ بدل الحجز مطلوب.',
+            'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
+            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.01.',
+            'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
+
+            'part.required' => 'نوع بدل الحجز مطلوب.',
+            // 'part.numeric' => 'نوع بدل الحجز يجب أن يكون رقمًا.',
+            // 'part.min' => 'نوع بدل الحجز يجب ألا يقل عن 0.01.',
+            // 'part.max' => 'نوع بدل الحجز يجب ألا يزيد عن 1000000.',
+        ];
+
+        // Create a validator instance
+        $validator = Validator::make($request->all(), [
             'name' => 'required',
             'manger' => 'required',
-        ]);
+            'budget' => 'required|numeric|min:0.01|max:1000000',
+            'part' => 'required',
 
-        // Update the department details
-        $department->update($request->only(['name', 'manger', 'description']));
+        ], $messages);
 
-        // Check if employees data is provided
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+        $part = $request->input('part');
+
+        $reservation_allowance_type = null;
+
+        if (in_array('1', $part) && in_array('2', $part)) {
+            // If both '1' and '2' are present, save 3
+            $reservation_allowance_type = 3;
+        } elseif (in_array('1', $part)) {
+            // If only '1' is present, save 1
+            $reservation_allowance_type = 1;
+        } elseif (in_array('2', $part)) {
+            // If only '2' is present, save 2
+            $reservation_allowance_type = 2;
+        }
+        $departements = Departements::findOrFail($department->id);
+        $departements->name = $request->name;
+        $departements->manger = $request->manger;
+        $departements->sector_id  = $request->sector;
+        $departements->description = $request->description;
+
+        $departements->reservation_allowance_amount = $request->budget;
+        $departements->reservation_allowance_type = $reservation_allowance_type;
+
+        // $departements->parent_id = Auth::user()->department_id;
+        $departements->created_by = Auth::user()->id;
+        $departements->save();
+
+        $user = User::find($request->manger);
+        $user->department_id = $departements->id;
+        $user->save();
+
         if ($request->has('employess')) {
             foreach ($request->employess as $item) {
+                // dd($item);
                 $user = User::find($item);
 
                 if ($user) {
-                    $user->department_id = $department->id;
+                    $user->department_id = $departements->id;
                     $user->save();
                     // dd($user);
                 }
             }
         }
-
         return redirect()->route('departments.index')->with('success', 'Department updated successfully.');
         // return response()->json($department);
     }

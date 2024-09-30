@@ -25,14 +25,59 @@
                 <div class="container col-10 mt-5 mb-3 pb-5" style="border:0.5px solid #C7C7CC;">
                     <form action="{{ route('departments.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-
+                        @if ($errors->any())
+                        <div class="alert alert-danger"dir="rtl">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                         <div class="form-row mx-3 mt-4 d-flex justify-content-center">
-
-                            <div class="form-group col-md-5 mx-md-2">
+                            <div class="form-group col-md-10 mx-md-2">
+                                <label for="sector">اختر القطاع </label>
+                                <select name="sector" id="sector" class="form-control " required>
+                                    <option value="">اختر القطاع </option>
+                                    @foreach ($sectors as $sector)
+                                        <option value="{{ $sector->id }}">{{ $sector->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('sector')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="form-group col-md-10 mx-md-2">
+                                <label for="name">أسم الأداره الرئيسية</label>
+                                <input type="text" name="name" class="form-control" value="{{ old('name') }}">
+                                @error('name')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="form-group col-md-10 mx-md-2">
+                                <label for="budget">ميزانية بدل حجز</label>
+                                <input type="text" name="budget" class="form-control" value="{{ old('budget') }}">
+                                @error('budget')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="form-group col-md-10 mx-md-2">
+                                <label for="">صلاحيه الحجز</label>
+                                <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"
+                                    name="part[]">
+                                <label for="part"> حجز كلى</label><input type="checkbox"
+                                    class="toggle-radio-buttons mx-2" value="2" id="part"
+                                    name="part[]">
+                                <label for="part">حجز جزئى</label>
+                                @error('budget')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="form-group col-md-10 mx-md-2">
                                 <label for="mangered">المدير</label>
                                 <select name="manger" id="mangered" class="form-control " required>
                                     <option value="">اختار المدير</option>
-                                    @foreach ($users as $user)
+                                    @foreach ($managers as $user)
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
                                     @endforeach
                                 </select>
@@ -41,14 +86,7 @@
                                 @enderror
 
                             </div>
-                            <div class="form-group col-md-5 mx-md-2">
-                                <label for="name">اسم القطاع </label>
-                                <input type="text" name="name" class="form-control" value="{{ old('name') }}"
-                                    required>
-                                @error('name')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
+
                         </div>
                         <div class="form-row mx-2 d-flex justify-content-center">
 
@@ -65,7 +103,7 @@
                                 <select name="employess[]" id="employess" class="form-group col-md-12 " multiple
                                     dir="rtl"
                                     style=" height: 150px;font-size: 18px;border: 0.2px solid lightgray; overflow-y: auto;">
-                                    @foreach ($employee as $item)
+                                    @foreach ($employees as $item)
                                         <option value="{{ $item->id }}">{{ $item->name }}</option>
                                     @endforeach
                                 </select>
@@ -93,110 +131,4 @@
 
         </div>
     </main>
-
-    <!--
-    <div class="container">
-        <h1>Create Department</h1>
-        <form action="{{ route('departments.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <div class="form-group">
-                <label for="name">Name </label>
-                <input type="text" name="name" class="form-control" value="{{ old('name') }}">
-                @error('name')
-        <div class="alert alert-danger">{{ $message }}</div>
-    @enderror
-            </div>
-
-            <div class="form-group">
-                <label for="manger">Manager</label>
-                <select name="manger" class="form-control">
-                    <option value="">Select Manager</option>
-                    @foreach ($users as $user)
-    <option value="{{ $user->id }}">{{ $user->name }}</option>
-    @endforeach
-                </select>
-                @error('manager')
-        <div class="alert alert-danger">{{ $message }}</div>
-    @enderror
-
-            </div>
-            <div class="form-group">
-                <label for="manger_assistance">Manager Assistant</label>
-                <select name="manger_assistance" class="form-control">
-                    <option value="">Select Manager Assistant</option>
-                    @foreach ($users as $user)
-    <option value="{{ $user->id }}">{{ $user->name }}</option>
-    @endforeach
-                </select>
-                @error('manger_assistance')
-        <div class="alert alert-danger">{{ $message }}</div>
-    @enderror
-            </div>
-            <div class="form-group">
-                <label for="description">Description </label>
-                <input type="text" name="description" class="form-control" value="{{ old('description') }}">
-                @error('description')
-        <div class="alert alert-danger">{{ $message }}</div>
-    @enderror
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-
-        <h1>Departments</h1>
-        <ul>
-            @foreach ($departments as $department)
-    <li>
-                    {{ $department->name }} (Parent: {{ $department->parent ? $department->parent->name : 'None' }})
-                    @if ($department->children->count())
-    <ul>
-                            @foreach ($department->children as $child)
-    <li>{{ $child->name }}</li>
-    @endforeach
-                        </ul>
-    @endif
-                </li>
-    @endforeach
-        </ul>
-    </div> -->
-
-    <script>
-        $(document).ready(function() {
-            // Assuming you have a list of users available in JavaScript
-            var allUsers = @json($employee); // If you pass the users list from Blade to JavaScript
-
-            $('#mangered').on('change', function() {
-                var selectedManager = $(this).val();
-                console.log('Selected Manager:', selectedManager);
-
-                // Clear the employees dropdown
-                $('#employess').empty();
-
-                // Iterate over the users list and add only those who are not the selected manager
-                allUsers.forEach(function(user) {
-                    if (user.id != selectedManager) {
-                        $('#employess').append('<option value="' + user.id + '">' + user.name +
-                            '</option>');
-                    }
-                });
-            });
-
-            // Initial population of employees list excluding the selected manager (if any)
-            $('#mangered').trigger('change');
-        });
-
-
-        // $('#mangered').on('change', function() {
-        //                         var selectedManager = $(this).val();
-        //                         console.log(selectedManager);
-        //                         $('#employees').empty();
-
-        //                         $.each(data, function(key, employee) {
-        //                         if (employee.id != selectedManager) {
-        //                             $('#employees').append('<option value="' + employee.id + '">' + employee.name + '</option>');
-        //                         }
-        //                         // $('#mangered').append('<option value="' + employee.id + '">' + employee.name + '</option>');
-        //                     });
-
-        //                     });
-    </script>
 @endsection

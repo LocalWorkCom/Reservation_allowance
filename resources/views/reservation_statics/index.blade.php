@@ -97,26 +97,24 @@
         $(document).ready(function() {
             $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm';
 
-          $('#users-table').DataTable({
+            $('#users-table').DataTable({
     processing: true,
     serverSide: true,
     ajax: {
         url: '{{ route("Reserv_statistic.getAll") }}',  // Route to fetch data for the table
     },
     columns: [
-        { data: null, name: 'order', orderable: false, searchable: false },  // ترتيب (Auto increment column)
-        { data: 'department_name', name: 'department_name' },  // اسم الادارة
-        { data: 'sub_departments_count', name: 'sub_departments_count' },  // عدد الادارات الفرعية
-        { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' },  // ميزانية بدل الحجز
-        { data: 'registered_by', name: 'registered_by' },  // المسجل
-        { data: 'remaining_amount', name: 'remaining_amount' },  // المبلغ المتبقى
-        { data: 'number_of_employees', name: 'number_of_employees' },  // عدد الموظفين
-        { data: 'received_allowance_count', name: 'received_allowance_count' },  // الحاصلين على بدل حجز
-        { data: 'did_not_receive_allowance_count', name: 'did_not_receive_allowance_count' }  // لم يحصل على بدل حجز
+        { data: null, name: 'order', orderable: false, searchable: false },
+        { data: 'department_name', name: 'department_name' },
+        { data: 'sub_departments_count', name: 'sub_departments_count' },
+        { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' },
+        { data: 'registered_by', name: 'registered_by' },
+        { data: 'remaining_amount', name: 'remaining_amount' },  // "المبلغ المتبقى"
+        { data: 'number_of_employees', name: 'number_of_employees' },
+        { data: 'received_allowance_count', name: 'received_allowance_count' },
+        { data: 'did_not_receive_allowance_count', name: 'did_not_receive_allowance_count' }
     ],
-    order: [
-        [1, 'asc']  // Sorting based on the second column (اسم الادارة)
-    ],
+    order: [[1, 'asc']],
     "oLanguage": {
         "sSearch": "",
         "sSearchPlaceholder": "بحث",
@@ -139,9 +137,8 @@
             $('.dataTables_paginate').css('visibility', 'hidden'); // Hide pagination if only one page
         }
     },
-    // Add this to automatically number the rows
     createdRow: function(row, data, dataIndex) {
-        $('td', row).eq(0).html(dataIndex + 1); // Set the index number in the first column
+        $('td', row).eq(0).html(dataIndex + 1);
     }
 });
         });
