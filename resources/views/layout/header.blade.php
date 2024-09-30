@@ -69,7 +69,7 @@
         </div>
         <div class="first-section d-flex justify-content-between mt-1 ">
             <h2 style="color: #FFFFFF">{{ showUserDepartment() }} -</h2>
-            <h2>الرقابة والتفتيش</h2>
+            <h2> شئون القوة</h2>
             <img class="mt-2" src="{{ asset('frontend/images/logo.svg') }}" alt="">
         </div>
     </div>
