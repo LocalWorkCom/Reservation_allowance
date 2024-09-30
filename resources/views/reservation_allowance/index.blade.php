@@ -42,17 +42,19 @@
                             </div>
 
 
+                            @if(auth()->user()->department->parent_id == null)
                             <div class="col-12 div-info">
                                 <div class="row">
-                                    <div class="col-6 div-info-padding"><b>القطاع : امن عام</b></div>
-                                    <div class="col-6 div-info-padding"><b>الادارة الرئيسية : مديرية امن حولى</b></div>
-                                    <div class="col-6 div-info-padding"><b>الادارة الفرعية : مخفر النقرة</b></div>
-                                    <div class="col-6 div-info-padding"><b>مبلغ بدل الحجز : 1200 دينار</b></div>
+                                    <div class="col-6 div-info-padding"><b>القطاع : {{auth()->user()->department->sectors->name}}</b></div>
+                                    <div class="col-6 div-info-padding"><b>الادارة الرئيسية : {{auth()->user()->department->parent}}</b></div>
+                                    <div class="col-6 div-info-padding"><b>الادارة الفرعية : {{auth()->user()->department->name}}</b></div>
+                                    <div class="col-6 div-info-padding"><b>مبلغ بدل الحجز : {{auth()->user()->department->reservation_allowance_amount}}</b></div>
                                     <div class="col-6 div-info-padding"><b>اليوم : السبت</b></div>
-                                    <div class="col-6 div-info-padding"><b>التاريخ : 27/9/2024</b></div>
+                                    <div class="col-6 div-info-padding"><b>التاريخ : </b></div>
                                     <div class="col-6 div-info-padding"><b>عدد العسكرين المحجوزين : 3</b></div>
                                 </div>
                             </div>
+                            @endif
 
                         </div>
                     </div>
@@ -84,7 +86,7 @@
                                 <th>رقم الملف</th>
                                 <th>بدل الحجز</th>
                                 <th>اليومية</th>
-                                <th style="width:150px;">العمليات</th>
+                                <!-- <th style="width:150px;">العمليات</th>-->
                                 </tr>
                             </thead>
                         </table>
@@ -401,14 +403,14 @@
                     {
                         data: 'value_part',
                         name: 'value_part'
-                    },
-                    {
+                    }
+                    <?php /*{
                         data: 'action',
                         name: 'action',
                         sWidth: '100px',
                         orderable: false,
                         searchable: false
-                    }
+                    }*/?>
                 ],
                 "order": [0, 'asc'],
 

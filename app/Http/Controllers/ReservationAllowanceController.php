@@ -21,8 +21,10 @@ class ReservationAllowanceController extends Controller
 
     public function index()
     {
+        $user = auth()->user();
+        $employees = User::where('department_id', $user->department_id)->where('flag', 'employee')->get();
         $Reservation_allowances = ReservationAllowance::get();
-        return view('reservation_allowance.index', compact('Reservation_allowances'));
+        return view('reservation_allowance.index', compact('Reservation_allowances', 'employees'));
     }
 
     /**
