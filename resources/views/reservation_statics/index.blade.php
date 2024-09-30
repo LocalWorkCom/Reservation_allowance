@@ -105,10 +105,10 @@
     },
     columns: [
         { data: null, name: 'order', orderable: false, searchable: false },
-        { data: 'department_name', name: 'department_name' },  // اسم الادارة
-        { data: 'sub_departments_count', name: 'sub_departments_count' },  // عدد الادارات الفرعية
-        { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' },  // ميزانية بدل الحجز
-        { data: 'registered_by', name: 'registered_by' },
+        { data: 'department_name', name: 'department_name' },
+        { data: 'sub_departments_count', name: 'sub_departments_count' },
+        { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' },
+        { data: 'registered_by', name: 'registered_by' },  // المسجل (Summation of 'amount')
         { data: 'remaining_amount', name: 'remaining_amount' },
         { data: 'number_of_employees', name: 'number_of_employees' },
         { data: 'received_allowance_count', name: 'received_allowance_count' },

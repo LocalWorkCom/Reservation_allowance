@@ -47,6 +47,20 @@ class ReservationStaticsController extends Controller
                     // If no sub-departments, take the main department's own 'reservation_allowance_amount'
                     return $subDepartmentsSum > 0 ? $subDepartmentsSum : $row->reservation_allowance_amount;
                 })
+                ->addColumn('registered_by', function($row) {
+                    // Fetch sub-department IDs for the main department
+                    $subDepartmentIds = departements::where('parent_id', $row->id)->pluck('id');
+                    
+                    // Sum of 'amount' from the reservation_allowances table for those sub-departments
+                    $totalRegisteredAmount = ReservationAllowance::whereIn('departement_id', $subDepartmentIds)->sum('amount');
+    
+                    // If no sub-departments, take the main department's own 'amount'
+                    if ($subDepartmentIds->isEmpty()) {
+                        $totalRegisteredAmount = ReservationAllowance::where('departement_id', $row->id)->sum('amount');
+                    }
+    
+                    return $totalRegisteredAmount;
+                })
                 ->rawColumns(['action'])
                 ->make(true);
     
