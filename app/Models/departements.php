@@ -61,6 +61,16 @@ class departements extends Model
         return $this->belongsTo(departements::class, 'parent_id');
     }
 
+    public function sectors()
+    {
+        return $this->belongsTo(Sector::class, 'sector_id');
+    }
+
+    public function reservation_allowances() 
+    {
+        return $this->belongsTo(ReservationAllowance::class, 'departement_id');
+    }
+
     // Define the relationship to the child departments
     public function children()
     {
