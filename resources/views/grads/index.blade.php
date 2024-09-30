@@ -88,25 +88,13 @@
                             <input type="hidden" id="modalType" value="add">
 
                             <div class="form-group">
-                                <label for="name">الاسم</label>
-                                <input type="text" id="nameadd" name="nameadd" class="form-control" required>
+                                <label for="name">اسم الرتبة</label>
+                                <input type="text" id="nameadd" name="nameadd" class="form-control" placeholder="أدخل أسم الرتبه" required>
                                 <span class="text-danger span-error" id="nameadd-error" dir="rtl"></span>
 
                             </div>
                             <div class="form-group">
-                                <label for="name">قيمه الدوام الكلى</label>
-                                <input type="text" id="value_all" name="value_all" class="form-control" required>
-                                <span class="text-danger span-error" id="value_all-error" dir="rtl"></span>
-
-                            </div>
-                            <div class="form-group">
-                                <label for="name">قيمه الدوام الجزئى</label>
-                                <input type="text" id="value_part" name="value_part" class="form-control" required>
-                                <span class="text-danger span-error" id="value_part-error" dir="rtl"></span>
-
-                            </div>
-                            <div class="form-group">
-                                <label for="typeadd">نوع الرتبه</label>
+                                <label for="typeadd"> الفئة</label>
                                 <select name="typeadd" id="typeadd" aria-placeholder="اختر نوع الرتبه"
                                     class="form-control" required>
                                     <option value="" selected disabled>اختر نوع الرتبه</option>
@@ -117,6 +105,25 @@
                                 <span class="text-danger span-error" id="typeadd-error" dir="rtl"></span>
 
                             </div>
+                            <div class="form-group">
+                                <label for="order">الترتيب</label>
+                                <input type="number" id="order" name="order" class="form-control"  required>
+                                <span class="text-danger span-error" id="order-error" dir="rtl"></span>
+
+                            </div>
+                            <div class="form-group">
+                                <label for="value_all">بدل حجز كلى</label>
+                                <input type="text" id="value_all" name="value_all" class="form-control" placeholder="أدخل بدل الحجز الكلى" required>
+                                <span class="text-danger span-error" id="value_all-error" dir="rtl"></span>
+
+                            </div>
+                            <div class="form-group">
+                                <label for="value_part">بدل حجز جزئى</label>
+                                <input type="text" id="value_part" name="value_part" class="form-control" placeholder="أدخل مبلغ بدل الحجز الجزئى" required>
+                                <span class="text-danger span-error" id="value_part-error" dir="rtl"></span>
+
+                            </div>
+
                             <!-- Save button -->
                             <div class="text-end">
                                 <button type="submit" class="btn-blue" onclick="confirmAdd()">اضافه</button>
@@ -154,25 +161,13 @@
                             <input type="hidden" id="modalTypeEdit" value="edit">
 
                             <div class="form-group ">
-                                <label for="name">الاسم</label>
+                                <label for="name">أسم الرتبة</label>
                                 <input type="text" id="nameedit" name="name" class="form-control"
                                        dir="rtl" value="{{ session('old_name') }}" required>
                                 <input type="hidden" id="idedit" name="id" value="{{ session('edit_id') }}">
                             </div>
                             <div class="form-group">
-                                <label for="value_alledit">قيمه الدوام الكلى</label>
-                                <input type="text" id="value_alledit" name="value_alledit" class="form-control"
-                                       value="{{ session('old_value_alledit') }}" required>
-                                <span class="text-danger span-error" id="value_all-error" dir="rtl"></span>
-                            </div>
-                            <div class="form-group">
-                                <label for="value_partedit">قيمه الدوام الجزئى</label>
-                                <input type="text" id="value_partedit" name="value_partedit" class="form-control"
-                                       value="{{ session('old_value_partedit') }}" required>
-                                <span class="text-danger span-error" id="value_partedit-error" dir="rtl"></span>
-                            </div>
-                            <div class="form-group">
-                                <label for="typeedit">نوع الرتبه</label>
+                                <label for="typeedit">الفئة</label>
                                 <select name="typeedit" id="typeedit" class="form-control">
                                     <option value="" selected disabled>اختر نوع الرتبه</option>
                                     <option value="0" {{ session('old_typeedit') == '0' ? 'selected' : '' }}>ظابط</option>
@@ -181,6 +176,25 @@
                                 </select>
                                 <span class="text-danger span-error" id="typeedit-error" dir="rtl"></span>
                             </div>
+                            <div class="form-group">
+                                <label for="name">الترتيب</label>
+                                <input type="number" id="orderedit" name="orderedit" value="{{ session('old_value_orderedit') }}" class="form-control"  required>
+                                <span class="text-danger span-error" id="orderedit-error" dir="rtl"></span>
+
+                            </div>
+                            <div class="form-group">
+                                <label for="value_alledit">بدل حجز كلى</label>
+                                <input type="text" id="value_alledit" name="value_alledit" class="form-control"
+                                       value="{{ session('old_value_alledit') }}" required>
+                                <span class="text-danger span-error" id="value_all-error" dir="rtl"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="value_partedit">بدل حجز جزئى</label>
+                                <input type="text" id="value_partedit" name="value_partedit" class="form-control"
+                                       value="{{ session('old_value_partedit') }}" required>
+                                <span class="text-danger span-error" id="value_partedit-error" dir="rtl"></span>
+                            </div>
+
                             <div class="text-end">
                                 <button type="submit" class="btn-blue">تعديل</button>
                             </div>
@@ -271,6 +285,7 @@
             document.getElementById('typeedit').value = type; // Set the value for type
             document.getElementById('value_alledit').value = value_all; // Set value_all
             document.getElementById('value_partedit').value = value_part; // Set value_part
+            document.getElementById('orderedit').value = orderedit; // Set value_part
 
             $('#edit').modal('show');
         }
@@ -290,6 +305,10 @@
 
         function confirmAdd() {
             var name = document.getElementById('nameadd').value;
+            var idedit = document.getElementById('idedit').value;
+            var value_part = document.getElementById('value_part').value;
+            var value_all = document.getElementById('value_all').value;
+            var order = document.getElementById('order').value;
 
             var form = document.getElementById('add-form');
             var inputs = form.querySelectorAll('[required]');

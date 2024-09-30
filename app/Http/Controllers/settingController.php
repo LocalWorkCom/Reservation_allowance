@@ -204,6 +204,8 @@ class settingController extends Controller
         $grade = new grade();
         $grade->name = $request->nameadd;
         $grade->type = $request->typeadd;
+        $grade->order = $request->order;
+
         $grade->value_all = $request->value_all;
         $grade->value_part = $request->value_part;
         $grade->save();
