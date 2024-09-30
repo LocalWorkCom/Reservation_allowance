@@ -17,11 +17,11 @@
                 <div class="form-group">
                     <button type="button" class="wide-btn "
                         onclick="window.location.href='{{ route('departments.create') }}'" style="    color: #0D992C;">
-              اضافة جديد
-              <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                        اضافة جديد
+                        <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
                     </button>
                     @if (Auth::user()->hasPermission('create Postman'))
-                  <!--   <button type="button" class="wide-btn mx-md-3 mx-1"
+                        <!--   <button type="button" class="wide-btn mx-md-3 mx-1"
                         onclick="window.location.href='{{ route('postmans.create') }}'">
                         اضافة مندوب
                        <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
@@ -49,9 +49,9 @@
                                     <th>رقم التعريف</th>
                                     <th>الاسم</th>
                                     <th>المدير</th>
-                                    <th>الاقسام</th>
-                                    <th>الوارد</th>
-                                    <th>الصادر</th>
+                                    {{-- <th>الاقسام</th> --}}
+                                    <th>ميزانية البدل</th>
+                                    <th>صلاحيه الحجز</th>
                                     <th>إجراء</th>
                                 </tr>
                             </thead>
@@ -66,20 +66,20 @@
     $(document).ready(function() {
         $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
         @php
-                                        $Dataurl= url('api/department') ;
-                                        if(isset($mode)){
-                                            if($mode=='search')
-                                                 $Dataurl=url('searchDept/departments')."/".$q;
-                                        }
-                                       // dd($Dataurl);
-                                                                        
-                                        @endphp  
-                                        console.log('Rasha',"{{$Dataurl}}")  
+            $Dataurl = url('api/department');
+            if (isset($mode)) {
+                if ($mode == 'search') {
+                    $Dataurl = url('searchDept/departments') . '/' . $q;
+                }
+            }
+            // dd($Dataurl);
+        @endphp
+        console.log('Rasha', "{{ $Dataurl }}")
         $('#users-table').DataTable({
             processing: true,
             serverSide: true,
-             ajax: '{{$Dataurl}}/',
-            
+            ajax: '{{ $Dataurl }}/',
+
             columns: [{
                     data: 'id',
                     sWidth: '50px',
@@ -93,17 +93,17 @@
                     data: 'manager_name',
                     name: 'manager_name'
                 }, // Ensure 'manager' column exists
+                // {
+                //     data: 'children_count',
+                //     name: 'children_count'
+                // },
                 {
-                    data: 'children_count',
-                    name: 'children_count'
+                    data: 'reservation_allowance_amount',
+                    name: 'reservation_allowance_amount'
                 },
                 {
-                    data: 'iotelegrams_count',
-                    name: 'iotelegrams_count'
-                },
-                {
-                    data: 'outgoings_count',
-                    name: 'outgoings_count'
+                    data: 'reservation_allowance',
+                    name: 'reservation_allowance'
                 },
                 {
                     data: 'action',
@@ -118,16 +118,19 @@
                 render: function(data, type, row) {
                     var departmentEdit = '{{ route('departments.edit', ':id') }}';
                     departmentEdit = departmentEdit.replace(':id', row.id);
+                    var subdepartment = '{{ route('sub_departments.index', ':id') }}';
+                    subdepartment = subdepartment.replace(':id', row.id);
                     var departmentShow = '{{ route('departments.show', ':id') }}';
                     departmentShow = departmentShow.replace(':id', row.id);
                     var departmentDelete = '{{ route('departments.destroy', ':id') }}';
                     departmentDelete = departmentDelete.replace(':id', row.id);
 
                     return `
-                    <a href="${departmentShow}"  class="btn btn-sm " style="background-color: #274373;"> <i class="fa fa-eye"></i> عرض</a>
+                         <a href="${subdepartment}"  class="btn btn-sm " style="background-color: #274373;"> <i class="fa fa-plus"></i> ادارات فرعيه</a>
+                         <a href="${departmentShow}"  class="btn btn-sm " style="background-color: #274373;"> <i class="fa fa-eye"></i> عرض</a>
                         <a href="${departmentEdit}" class="btn btn-sm"  style="background-color: #F7AF15;"> <i class="fa fa-edit"></i>تعديل  </a>
-                        
-                        
+
+
                         `;
                 }
             }],
@@ -155,14 +158,14 @@
             },
             "pagingType": "full_numbers",
             "fnDrawCallback": function(oSettings) {
-                console.log('Page '+this.api().page.info().pages)
-                                        var page=this.api().page.info().pages;
-                                        console.log($('#users-table tr').length);
-                                        if (page ==1) {
-                                         //   $('.dataTables_paginate').hide();//css('visiblity','hidden');
-                                            $('.dataTables_paginate').css('visibility', 'hidden');  // to hide
+                console.log('Page ' + this.api().page.info().pages)
+                var page = this.api().page.info().pages;
+                console.log($('#users-table tr').length);
+                if (page == 1) {
+                    //   $('.dataTables_paginate').hide();//css('visiblity','hidden');
+                    $('.dataTables_paginate').css('visibility', 'hidden'); // to hide
 
-                                        }
+                }
             }
         });
 
