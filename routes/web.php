@@ -465,6 +465,7 @@ Route::middleware(['auth'])->group(function () {
     //reservation statics
     Route::get('/statistics', [ReservationStaticsController::class, 'static'])->name('Reserv_statistic.index')->middleware('check.permission:view Inspector');
     Route::get('/statistics/search', [ReservationStaticsController::class, 'getFilteredData'])->name('Reserv_statistic.search')->middleware('check.permission:view Inspector');
+    Route::any('/statistics/getAll', [ReservationStaticsController::class, 'getAll'])->name('Reserv_statistic.getAll')->middleware('check.permission:view Inspector');
 
 });
 

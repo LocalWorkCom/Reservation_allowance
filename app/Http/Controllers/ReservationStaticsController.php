@@ -19,7 +19,7 @@ class ReservationStaticsController extends Controller
     {
         return view("reservation_statics.index");
     }
-    public function index()
+    public function getAll()
     {
         try {
             $userId = Auth::id();

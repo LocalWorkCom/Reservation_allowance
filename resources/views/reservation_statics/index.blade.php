@@ -73,6 +73,7 @@
                         <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
                             <thead>
                                 <tr>
+                                    <th>الترتيب</th>  <!-- Automatic numbering -->
                                     <th>اسم الادارة</th>
                                     <th>عدد الادارات الفرعية</th>
                                     <th>ميزانية بدل الحجز</th>
@@ -100,7 +101,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ route("Reserv_statistic.index") }}',  // Route to fetch data for the table
+                    url: '{{ route("Reserv_statistic.getAll") }}',  // Route to fetch data for the table
                 },
                 columns: [
                     { data: 'department_name', name: 'department_name' }, // اسم الادارة (Department Name)
