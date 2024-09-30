@@ -31,6 +31,7 @@ use App\Http\Controllers\InstantmissionController;
 use App\Http\Controllers\paperTransactionController;
 use App\Http\Controllers\statisticController;
 use App\Http\Controllers\ViolationTypesController;
+use App\Http\Controllers\ReservationStaticsController;
 
 // use App\Http\Controllers\ViolationReportController;
 // use App\Http\Controllers\dashboard\VacationController;
@@ -459,6 +460,11 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/reservation_allowances/update', [ReservationAllowanceController::class, 'update'])->name('reservation_allowances.edit')->middleware('check.permission:edit Inspector');
     Route::any('/reservation_allowances/edit/{id}', [ReservationAllowanceController::class, 'edit'])->name('reservation_allowances.update')->middleware('check.permission:edit Inspector');
     Route::any('/reservation_allowances/getAll', [ReservationAllowanceController::class, 'getAll'])->name('getAll')->middleware('check.permission:view Inspector');
+
+
+    //reservation statics
+    Route::get('/statistics', [ReservationStaticsController::class, 'static'])->name('Reserv_statistic.index')->middleware('check.permission:view Inspector');
+    Route::get('/statistics/search', [ReservationStaticsController::class, 'getFilteredData'])->name('Reserv_statistic.search')->middleware('check.permission:view Inspector');
 
 });
 
