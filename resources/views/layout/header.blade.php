@@ -101,12 +101,12 @@
                 </li>
 
                 <li class="nav-item {{ request()->routeIs('grads.index') || request()->routeIs('job.index') || request()->routeIs('qualifications.index') || request()->routeIs('government.all') || request()->routeIs('regions.index') || request()->routeIs('sectors.index') || request()->routeIs('points.index') || request()->routeIs('vacationType.index') || request()->routeIs('violations.index') || request()->routeIs('rule.index') || request()->routeIs('permission.index') || request()->routeIs('working_time.index') || request()->routeIs('working_trees.list') || request()->routeIs('absence.index') ? 'active' : '' }}"
-                    onclick="toggleDropdown6(event)">
+                    onclick="toggleDropdown9(event)">
                     <a href="#">
                         <img src="{{ asset('frontend/images/employees.svg') }}" alt="logo">
-                        <h6 class="btn3">بدل حجز <i class="fa-solid fa-angle-down"></i></h6>
+                        <h6 class="btn9">بدل حجز <i class="fa-solid fa-angle-down"></i></h6>
                     </a>
-                    <div id="dropdownMenu5" class="dropdown-menu4">
+                    <div id="dropdownMenu9" class="dropdown-menu9">
                         <ul>
                             <div class="row col-12">
                                 <div class="col-12">
