@@ -27,35 +27,59 @@
 
         <br>
         <div class="row">
-            <div class="container  col-11 mt-3 p-0  pt-5 pb-4">
+            <div class="container  col-11 mt-3 pb-4 p-0 ">
+                <div class="row d-flex justify-content-between " dir="rtl">
+                    <div class="form-group moftsh mt-4  mx-4  d-flex">
+                        <p class="filter "> تصفية حسب:</p>
+                        <button class="btn-all px-3 mx-2 btn-filter btn-active" data-filter="all" style="color: #274373;">
+                            الكل ({{ $all }})
+                        </button>
+                        <button class="btn-all px-3 mx-2 btn-filter" data-filter="assigned" style="color: #274373;">
+                            رتب الضباط ({{ $Officer }})
+                        </button>
+                        <button class="btn-all px-3 mx-2 btn-filter" data-filter="unassigned" style="color: #274373;">
+                            رتب صف ضابط و أفراد ({{ $Officer2 + $person }})
+                        </button>
+                    </div>
+                    {{-- <div class="form-group mt-4 mx-4  d-flex justify-content-end ">
+                        <button class="btn-all px-3 " style="color: #FFFFFF; background-color: #274373;"
+                            onclick="window.print()">
+                            <img src="{{ asset('frontend/images/print.svg') }}" alt=""> طباعة
+                        </button>
+                    </div> --}}
+                </div>
+
+                <div class="container  col-11 mt-3 p-0  pt-5 pb-4">
 
 
-                <div class="col-lg-12">
-                    <div class="bg-white ">
-                        @if (session()->has('message'))
-                            <div class="alert alert-info">
-                                {{ session('message') }}
+                    <div class="col-lg-12">
+                        <div class="bg-white ">
+                            @if (session()->has('message'))
+                                <div class="alert alert-info">
+                                    {{ session('message') }}
+                                </div>
+                            @endif
+                            <div>
+                                <table id="users-table"
+                                    class="display table table-responsive-sm  table-bordered table-hover dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th>الترتيب</th>
+                                            <th>الرتبه</th>
+                                            <th>الفئة</th>
+                                            <th>بدل حجز كلى</th>
+                                            <th>بدل حجز جزئى</th>
+                                            <th style="width:150px;">العمليات</th>
+                                        </tr>
+                                    </thead>
+                                </table>
                             </div>
-                        @endif
-                        <div>
-                            <table id="users-table"
-                                class="display table table-responsive-sm  table-bordered table-hover dataTable">
-                                <thead>
-                                    <tr>
-                                        <th>الاسم</th>
-                                        <th>نوع</th>
-
-                                        <th style="width:150px;">العمليات</th>
-                                    </tr>
-                                </thead>
-                            </table>
                         </div>
                     </div>
+
                 </div>
 
             </div>
-
-        </div>
     </section>
 
 
@@ -89,7 +113,8 @@
 
                             <div class="form-group">
                                 <label for="name">اسم الرتبة</label>
-                                <input type="text" id="nameadd" name="nameadd" class="form-control" placeholder="أدخل أسم الرتبه" required>
+                                <input type="text" id="nameadd" name="nameadd" class="form-control"
+                                    placeholder="أدخل أسم الرتبه" required>
                                 <span class="text-danger span-error" id="nameadd-error" dir="rtl"></span>
 
                             </div>
@@ -107,19 +132,21 @@
                             </div>
                             <div class="form-group">
                                 <label for="order">الترتيب</label>
-                                <input type="number" id="order" name="order" class="form-control"  required>
+                                <input type="number" id="order" name="order" class="form-control" required>
                                 <span class="text-danger span-error" id="order-error" dir="rtl"></span>
 
                             </div>
                             <div class="form-group">
                                 <label for="value_all">بدل حجز كلى</label>
-                                <input type="text" id="value_all" name="value_all" class="form-control" placeholder="أدخل بدل الحجز الكلى" required>
+                                <input type="text" id="value_all" name="value_all" class="form-control"
+                                    placeholder="أدخل بدل الحجز الكلى" required>
                                 <span class="text-danger span-error" id="value_all-error" dir="rtl"></span>
 
                             </div>
                             <div class="form-group">
                                 <label for="value_part">بدل حجز جزئى</label>
-                                <input type="text" id="value_part" name="value_part" class="form-control" placeholder="أدخل مبلغ بدل الحجز الجزئى" required>
+                                <input type="text" id="value_part" name="value_part" class="form-control"
+                                    placeholder="أدخل مبلغ بدل الحجز الجزئى" required>
                                 <span class="text-danger span-error" id="value_part-error" dir="rtl"></span>
 
                             </div>
@@ -142,56 +169,62 @@
                     <div class="title d-flex flex-row align-items-center">
                         <h5 class="modal-title" id="label">تعديل اسم الرتبه ؟</h5>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> &times;</button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        &times;</button>
                 </div>
                 <div class="modal-body mt-3 mb-5">
                     <div class="container pt-5 pb-3" style="border: 0.2px solid rgb(166, 165, 165);">
                         @if ($errors->any())
-                        <div class="alert alert-danger" dir="rtl">
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
+                            <div class="alert alert-danger" dir="rtl">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
                         @endif
-                        <form class="edit-grade-form" id="edit-form" action="{{ route('grads.update') }}" method="POST">
+                        <form class="edit-grade-form" id="edit-form" action="{{ route('grads.update') }}"
+                            method="POST">
                             @csrf
 
                             <input type="hidden" id="modalTypeEdit" value="edit">
 
                             <div class="form-group ">
                                 <label for="name">أسم الرتبة</label>
-                                <input type="text" id="nameedit" name="name" class="form-control"
-                                       dir="rtl" value="{{ session('old_name') }}" required>
+                                <input type="text" id="nameedit" name="name" class="form-control" dir="rtl"
+                                    value="{{ session('old_name') }}" required>
                                 <input type="hidden" id="idedit" name="id" value="{{ session('edit_id') }}">
                             </div>
                             <div class="form-group">
                                 <label for="typeedit">الفئة</label>
                                 <select name="typeedit" id="typeedit" class="form-control">
                                     <option value="" selected disabled>اختر نوع الرتبه</option>
-                                    <option value="0" {{ session('old_typeedit') == '0' ? 'selected' : '' }}>ظابط</option>
-                                    <option value="1" {{ session('old_typeedit') == '1' ? 'selected' : '' }}>صف ظابط</option>
-                                    <option value="2" {{ session('old_typeedit') == '2' ? 'selected' : '' }}> فرد</option>
+                                    <option value="0" {{ session('old_typeedit') == '0' ? 'selected' : '' }}>ظابط
+                                    </option>
+                                    <option value="1" {{ session('old_typeedit') == '1' ? 'selected' : '' }}>صف ظابط
+                                    </option>
+                                    <option value="2" {{ session('old_typeedit') == '2' ? 'selected' : '' }}> فرد
+                                    </option>
                                 </select>
                                 <span class="text-danger span-error" id="typeedit-error" dir="rtl"></span>
                             </div>
                             <div class="form-group">
                                 <label for="name">الترتيب</label>
-                                <input type="number" id="orderedit" name="orderedit" value="{{ session('old_value_orderedit') }}" class="form-control"  required>
+                                <input type="number" id="orderedit" name="orderedit"
+                                    value="{{ session('old_orderedit') }}" class="form-control" required>
                                 <span class="text-danger span-error" id="orderedit-error" dir="rtl"></span>
 
                             </div>
                             <div class="form-group">
                                 <label for="value_alledit">بدل حجز كلى</label>
                                 <input type="text" id="value_alledit" name="value_alledit" class="form-control"
-                                       value="{{ session('old_value_alledit') }}" required>
+                                    value="{{ session('old_value_alledit') }}" required>
                                 <span class="text-danger span-error" id="value_all-error" dir="rtl"></span>
                             </div>
                             <div class="form-group">
                                 <label for="value_partedit">بدل حجز جزئى</label>
                                 <input type="text" id="value_partedit" name="value_partedit" class="form-control"
-                                       value="{{ session('old_value_partedit') }}" required>
+                                    value="{{ session('old_value_partedit') }}" required>
                                 <span class="text-danger span-error" id="value_partedit-error" dir="rtl"></span>
                             </div>
 
@@ -279,13 +312,14 @@
                 @endif
             @endif
         });
-        function openedit(id, name, type, value_all, value_part) {
+
+        function openedit(id, name, type, value_all, value_part, order) {
             document.getElementById('nameedit').value = name;
             document.getElementById('idedit').value = id;
             document.getElementById('typeedit').value = type; // Set the value for type
             document.getElementById('value_alledit').value = value_all; // Set value_all
             document.getElementById('value_partedit').value = value_part; // Set value_part
-            document.getElementById('orderedit').value = orderedit; // Set value_part
+            document.getElementById('orderedit').value = order; // Set value_part
 
             $('#edit').modal('show');
         }
@@ -331,17 +365,38 @@
         $(document).ready(function() {
             $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
 
-            $('#users-table').DataTable({
+            var filter = 'all'; // Default filter
+
+            const table = $('#users-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: '{{ route('setting.getAllgrads') }}', // Correct URL concatenation
-                columns: [{
+                ajax: {
+                    url: '{{ route('setting.getAllgrads') }}',
+                    data: function(d) {
+                d.filter = filter; // Use the global filter variable
+            }
+                },
+                // ajax: '{{ route('setting.getAllgrads') }}', // Correct URL concatenation
+                columns: [
+
+                    {
+                        data: 'order',
+                        name: 'order'
+                    }, {
                         data: 'name',
                         name: 'name'
                     },
                     {
                         data: 'type',
                         name: 'type'
+                    },
+                    {
+                        data: 'value_all',
+                        name: 'value_all'
+                    },
+                    {
+                        data: 'value_part',
+                        name: 'value_part'
                     },
                     {
                         data: 'action',
@@ -351,9 +406,8 @@
                         searchable: false
                     }
                 ],
-                order: [
-                    [1, 'desc']
-                ],
+                "order": [0, 'asc'],
+
                 "oLanguage": {
                     "sSearch": "",
                     "sSearchPlaceholder": "بحث",
@@ -368,10 +422,9 @@
                         "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
                         "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
                     }
-
-
                 },
                 layout: {
+
                     bottomEnd: {
                         paging: {
                             firstLast: false
@@ -390,8 +443,18 @@
                     }
                 }
             });
+            $('.btn-filter').on('click', function() {
+        filter = $(this).data('filter'); // Get the filter value from the clicked button
+        table.ajax.reload(); // Reload the DataTable with the new filter
+    });
+           // Filter buttons click event
+           $('.btn-filter').click(function() {
+            filter = $(this).data('filter'); // Update filter
+            $('.btn-filter').removeClass('btn-active'); // Remove active class from all
+            $(this).addClass('btn-active'); // Add active class to clicked button
 
-
+            table.page(0).draw(false); // Reset to first page and redraw the table
         });
+    });
     </script>
 @endpush

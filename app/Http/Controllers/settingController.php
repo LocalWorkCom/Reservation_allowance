@@ -130,32 +130,47 @@ class settingController extends Controller
     //show GRAD
     public function indexgrads()
     {
-        return view("grads.index");
+        $all = grade::count();
+
+        $Officer = grade::where('type', 0)->count();
+        $Officer2 = grade::where('type', 1)->count();
+        $person = grade::where('type', 2)->count();
+        return view("grads.index", compact('all', 'Officer', 'Officer2', 'person'));
     }
     //create GRAD
-    public function creategrads()
-    {
-        return view("grads.add");
-    }
+
 
     //get data for GRAD
-    public function getAllgrads()
+    public function getAllgrads(Request $request)
     {
-        $data = grade::orderBy('updated_at', 'desc')->orderBy('created_at', 'desc')->get();
+        $data = grade::orderBy('order', 'ASC');
+        $filter = $request->get('filter'); // Retrieve filter
+        // dd($filter);
+        // Apply the filter based on the type
+        if ($filter == 'assigned') {
+            $data->where('type', 0);
+        } elseif ($filter == 'unassigned') {
+            // Filter for type 1 and 2
+            $data->whereIn('type', [1, 2]);
+        }
 
-        return DataTables::of($data)->addColumn('action', function ($row) {
-            $name = "'$row->name'";
-            $edit_permission = null;
-            $delete_permission = null;
-            if (Auth::user()->hasPermission('edit grade')) {
-                $edit_permission = '<a class="btn btn-sm"  style="background-color: #F7AF15;"  onclick="openedit(' . $row->id . ',' . $name . ',' . $row->type . ',' . $row->value_all . ',' . $row->value_part . ')">  <i class="fa fa-edit"></i> تعديل </a>';
-            }
-            if (Auth::user()->hasPermission('delete grade')) {
-                $delete_permission = ' <a class="btn  btn-sm" style="background-color: #C91D1D;"   onclick="opendelete(' . $row->id . ')"> <i class="fa-solid fa-trash"></i> حذف</a>';
-            }
-            $uploadButton = $edit_permission . $delete_permission;
-            return $uploadButton;
-        })
+        // Get the filtered data
+        $data = $data->get();
+
+        return DataTables::of($data)
+            ->addColumn('action', function ($row) {
+                $name = "'$row->name'";
+                $edit_permission = null;
+                $delete_permission = null;
+                if (Auth::user()->hasPermission('edit grade')) {
+                    $edit_permission = '<a class="btn btn-sm"  style="background-color: #F7AF15;"  onclick="openedit(' . $row->id . ',' . $name . ',' . $row->type . ',' . $row->value_all . ',' . $row->value_part . ',' . $row->order . ')">  <i class="fa fa-edit"></i> تعديل </a>';
+                }
+                if (Auth::user()->hasPermission('delete grade')) {
+                    $delete_permission = ' <a class="btn  btn-sm" style="background-color: #C91D1D;"   onclick="opendelete(' . $row->id . ')"> <i class="fa-solid fa-trash"></i> حذف</a>';
+                }
+                $uploadButton = $edit_permission . $delete_permission;
+                return $uploadButton;
+            })
             ->addColumn('type', function ($row) {
                 if ($row->type == 0) $mode = 'ظابط';
                 elseif ($row->type == 1) $mode = 'صف ظابط';
@@ -164,6 +179,11 @@ class settingController extends Controller
             })
             ->rawColumns(['action'])
             ->make(true);
+    }
+
+    public function creategrads()
+    {
+        return view("grads.add");
     }
     //add GRAD
     public function addgrads(Request $request)
@@ -181,6 +201,8 @@ class settingController extends Controller
             'value_part.numeric' => 'قيمه الدوام الجزئى يجب أن تكون رقمًا.',
             'value_part.min' => 'قيمه الدوام الجزئى يجب أن تكون أكبر من 0.01.',
             'value_part.max' => 'قيمه الدوام الجزئى يجب ألا تتجاوز 1000000.',
+            'order.required' => 'الترتيب حقل مطلوب.',
+            'order.unique' => 'قيمة الترتيب مستخدمة بالفعل. الرجاء إدخال ترتيب مختلف.'
         ];
 
         // Create a validator instance
@@ -189,6 +211,8 @@ class settingController extends Controller
             'typeadd' => 'required|string',
             'value_all' => 'required|numeric|min:0.01|max:1000000',
             'value_part' => 'required|numeric|min:0.01|max:1000000',
+            'order' => 'required|unique:grades,order',
+
         ], $messages);
 
         // Check if validation fails
@@ -241,33 +265,39 @@ class settingController extends Controller
             'value_partedit.numeric' => 'قيمه الدوام الجزئى يجب أن تكون رقمًا.',
             'value_partedit.min' => 'قيمه الدوام الجزئى يجب أن تكون أكبر من 0.01.',
             'value_partedit.max' => 'قيمه الدوام الجزئى يجب ألا تتجاوز 1000000.',
+            'orderedit.required' => 'الترتيب حقل مطلوب.',
+            'orderedit.unique' => 'قيمة الترتيب مستخدمة بالفعل. الرجاء إدخال ترتيب مختلف.'
         ];
 
-       // Create a validator instance
-    $validator = Validator::make($request->all(), [
-        'name' => 'required|string',
-        'typeedit' => 'required|string',
-        'value_alledit' => 'required|numeric|min:0.01|max:1000000',
-        'value_partedit' => 'required|numeric|min:0.01|max:1000000',
-    ], $messages);
+        // Create a validator instance
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string',
+            'typeedit' => 'required|string',
+            'value_alledit' => 'required|numeric|min:0.01|max:1000000',
+            'value_partedit' => 'required|numeric|min:0.01|max:1000000',
+            'orderedit' => 'required|unique:grades,order',
 
-    // Check if validation fails
-    if ($validator->fails()) {
-        // Set the session variable for the modal type
-        session(['modal_type' => 'edit']);
+        ], $messages);
 
-        // Store the old values in the session
-        session([
-            'old_name' => $request->name,
-            'old_typeedit' => $request->typeedit,
-            'old_value_alledit' => $request->value_alledit,
-            'old_value_partedit' => $request->value_partedit,
-            'edit_id' => $request->id, // Store the ID to retrieve it later if needed
-        ]);
+        // Check if validation fails
+        if ($validator->fails()) {
+            // Set the session variable for the modal type
+            session(['modal_type' => 'edit']);
 
-        // Redirect back with errors and input
-        return redirect()->back()->withErrors($validator)->withInput();
-    }
+            // Store the old values in the session
+            session([
+                'old_name' => $request->name,
+                'old_typeedit' => $request->typeedit,
+                'old_value_alledit' => $request->value_alledit,
+                'old_value_partedit' => $request->value_partedit,
+                'old_orderedit' => $request->orderedit,
+
+                'edit_id' => $request->id, // Store the ID to retrieve it later if needed
+            ]);
+
+            // Redirect back with errors and input
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
 
         $grade = grade::find($request->id);
 
@@ -278,6 +308,8 @@ class settingController extends Controller
         $grade->type = $request->typeedit;
         $grade->value_all = $request->value_alledit;
         $grade->value_part = $request->value_partedit;
+        $grade->order = $request->orderedit;
+
         $grade->save();
         $message = 'تم تعديل الرتبه';
         return redirect()->route('grads.index', compact('message'));
