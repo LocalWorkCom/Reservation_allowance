@@ -42,6 +42,10 @@ use App\Http\Controllers\ViolationReportController;
 use App\Http\Controllers\ViollationController;
 use App\Models\paperTransaction;
 
+//
+use App\Http\Controllers\ReservationAllowanceController;
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -447,6 +451,15 @@ Route::middleware(['auth'])->group(function () {
     //statistics
     Route::get('/statistics', [statisticController::class, 'index'])->name('statistic.show');
     Route::get('/statistics/search', [statisticController::class, 'getFilteredData'])->name('statistic.search');
+
+    //reservation_allowances
+    Route::any('/reservation_allowances', [ReservationAllowanceController::class, 'index'])->name('reservation_allowances.index')->middleware('check.permission:view Inspector');
+    Route::any('/reservation_allowances/create', [ReservationAllowanceController::class, 'create'])->name('reservation_allowances.create')->middleware('check.permission:create Inspector');
+    Route::any('/reservation_allowances/store', [ReservationAllowanceController::class, 'store'])->name('reservation_allowances.store')->middleware('check.permission:create Inspector');
+    Route::any('/reservation_allowances/update', [ReservationAllowanceController::class, 'update'])->name('reservation_allowances.edit')->middleware('check.permission:edit Inspector');
+    Route::any('/reservation_allowances/edit/{id}', [ReservationAllowanceController::class, 'edit'])->name('reservation_allowances.update')->middleware('check.permission:edit Inspector');
+    Route::any('/reservation_allowances/getAll', [ReservationAllowanceController::class, 'getAll'])->name('getAll')->middleware('check.permission:view Inspector');
+
 });
 
 
