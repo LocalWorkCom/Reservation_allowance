@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>هيئة التفتيش - تسجيل الدخول </title>
+    <title>شئون القوة - تسجيل الدخول </title>
     <link rel="stylesheet" href="{{ asset('frontend/styles/bootstrap.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('frontend/styles/login-styles.css') }}" />
     <link rel="stylesheet" href="{{ asset('frontend/styles/login-responsive.css') }}" />
@@ -23,7 +23,7 @@
             </div>
             <div class="col-md-8 col-sm-12 col-12">
                 <h5 class="login-h5">وزارة الداخلــــــــــــــــــية</h5>
-                <p class="login-p">الادارة العامة لشئون التفتيش</p>
+                <p class="login-p">الادارة العامة لشئون القوة</p>
                 <h2 class="login-h2">المطــــور</h2>
             </div>
         </div>
