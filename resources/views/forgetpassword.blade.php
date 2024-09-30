@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>هيئة التفتيش - نسيت كلمة السر </title>
+    <title>شئون القوة - نسيت كلمة السر </title>
     <!-- Cairo Font -->
     <script type="application/javascript" src="{{ asset('frontend/js/bootstrap.min.js')}}"></script>
 
@@ -39,7 +39,7 @@
             </div>
             <div class=" col-md-8 col-sm-12 col-12">
                 <h5 class="login-h5">وزارة الداخلــــــــــــــــــية</h5>
-                <p class="login-p">الادارة العامة لشئون التفتيش</p>
+                <p class="login-p">الادارة العامة لشئون القوة</p>
                 <h2 class="login-h2">المطــــور</h2>
             </div>
         </div>

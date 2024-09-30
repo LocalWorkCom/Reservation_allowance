@@ -459,7 +459,7 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/reservation_allowances/store', [ReservationAllowanceController::class, 'store'])->name('reservation_allowances.store')->middleware('check.permission:create Inspector');
     Route::any('/reservation_allowances/update', [ReservationAllowanceController::class, 'update'])->name('reservation_allowances.edit')->middleware('check.permission:edit Inspector');
     Route::any('/reservation_allowances/edit/{id}', [ReservationAllowanceController::class, 'edit'])->name('reservation_allowances.update')->middleware('check.permission:edit Inspector');
-    Route::any('/reservation_allowances/getAll', [ReservationAllowanceController::class, 'getAll'])->name('getAll')->middleware('check.permission:view Inspector');
+    Route::any('/reservation_allowances/getAll', [ReservationAllowanceController::class, 'getAll'])->name('reservation_allowances.getAll')->middleware('check.permission:view Inspector');
 
 
     //reservation statics
