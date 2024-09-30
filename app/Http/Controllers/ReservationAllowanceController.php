@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Government;
-use App\Models\grade;
+use App\Models\Sector;
 use App\Models\departements;
 use App\Models\ReservationAllowance;
 use Illuminate\Http\Request;
@@ -31,7 +30,7 @@ class ReservationAllowanceController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
