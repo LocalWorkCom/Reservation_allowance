@@ -97,48 +97,53 @@
         $(document).ready(function() {
             $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm';
 
-            $('#users-table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: '{{ route("Reserv_statistic.getAll") }}',  // Route to fetch data for the table
-                },
-                columns: [
-                    { data: 'department_name', name: 'department_name' }, // اسم الادارة (Department Name)
-                    { data: 'sub_departments_count', name: 'sub_departments_count' }, // عدد الادارات الفرعية (Sub-Departments Count)
-                    { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' }, // ميزانية بدل الحجز (Reservation Budget)
-                    { data: 'registered_by', name: 'registered_by' }, // المسجل (Registered By)
-                    { data: 'remaining_amount', name: 'remaining_amount' }, // المبلغ المتبقى (Remaining Amount)
-                    { data: 'number_of_employees', name: 'number_of_employees' }, // عدد الموظفين (Number of Employees)
-                    { data: 'received_allowance_count', name: 'received_allowance_count' }, // الحاصلين على بدل حجز (Received Allowance Count)
-                    { data: 'did_not_receive_allowance_count', name: 'did_not_receive_allowance_count' } // لم يحصل على بدل حجز (Did Not Receive Allowance Count)
-                ],
-                order: [
-                    [0, 'asc']
-                ],
-                "oLanguage": {
-                    "sSearch": "",
-                    "sSearchPlaceholder": "بحث",
-                    "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
-                    "sInfoEmpty": 'لا توجد بيانات متاحه',
-                    "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
-                    "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
-                    "sZeroRecords": 'نأسف لا توجد نتيجة',
-                    "oPaginate": {
-                        "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
-                        "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
-                        "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
-                        "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
-                    }
-                },
-                pagingType: "full_numbers",
-                fnDrawCallback: function(oSettings) {
-                    var page = this.api().page.info().pages;
-                    if (page == 1) {
-                        $('.dataTables_paginate').css('visibility', 'hidden'); // Hide pagination if only one page
-                    }
-                }
-            });
+          $('#users-table').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+        url: '{{ route("Reserv_statistic.getAll") }}',  // Route to fetch data for the table
+    },
+    columns: [
+        { data: null, name: 'order', orderable: false, searchable: false },  // ترتيب (Auto increment column)
+        { data: 'department_name', name: 'department_name' },  // اسم الادارة
+        { data: 'sub_departments_count', name: 'sub_departments_count' },  // عدد الادارات الفرعية
+        { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' },  // ميزانية بدل الحجز
+        { data: 'registered_by', name: 'registered_by' },  // المسجل
+        { data: 'remaining_amount', name: 'remaining_amount' },  // المبلغ المتبقى
+        { data: 'number_of_employees', name: 'number_of_employees' },  // عدد الموظفين
+        { data: 'received_allowance_count', name: 'received_allowance_count' },  // الحاصلين على بدل حجز
+        { data: 'did_not_receive_allowance_count', name: 'did_not_receive_allowance_count' }  // لم يحصل على بدل حجز
+    ],
+    order: [
+        [1, 'asc']  // Sorting based on the second column (اسم الادارة)
+    ],
+    "oLanguage": {
+        "sSearch": "",
+        "sSearchPlaceholder": "بحث",
+        "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
+        "sInfoEmpty": 'لا توجد بيانات متاحه',
+        "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
+        "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
+        "sZeroRecords": 'نأسف لا توجد نتيجة',
+        "oPaginate": {
+            "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
+            "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
+            "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
+            "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
+        }
+    },
+    pagingType: "full_numbers",
+    fnDrawCallback: function(oSettings) {
+        var page = this.api().page.info().pages;
+        if (page == 1) {
+            $('.dataTables_paginate').css('visibility', 'hidden'); // Hide pagination if only one page
+        }
+    },
+    // Add this to automatically number the rows
+    createdRow: function(row, data, dataIndex) {
+        $('td', row).eq(0).html(dataIndex + 1); // Set the index number in the first column
+    }
+});
         });
     </script>
 @endpush

@@ -23,18 +23,21 @@ class ReservationStaticsController extends Controller
     {
         try {
             $userId = Auth::id();
+            
+            // Fetch only main departments (where parent_id is null)
             $data = departements::withCount('children')
-                ->where('created_by', $userId)
+                ->where('created_by', $userId)  // Only fetch departments created by the current user
+                ->whereNull('parent_id')  // Fetch only main departments (no parent)
                 ->orderBy('updated_at', 'desc')
                 ->orderBy('created_at', 'desc')
                 ->get();
     
             return DataTables::of($data)
                 ->addColumn('department_name', function($row) {
-                    return $row->name;
+                    return $row->name;  // Return the department name
                 })
                 ->addColumn('sub_departments_count', function($row) {
-                    return $row->children_count;
+                    return $row->children_count;  // Return the count of sub-departments
                 })
                 ->rawColumns(['action'])
                 ->make(true);
