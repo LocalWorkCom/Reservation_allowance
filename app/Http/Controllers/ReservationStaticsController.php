@@ -61,6 +61,26 @@ class ReservationStaticsController extends Controller
     
                     return $totalRegisteredAmount;
                 })
+                ->addColumn('remaining_amount', function($row) {
+                    // Calculate "المبلغ المتبقى" as "ميزانية بدل الحجز" - "المسجل"
+                    
+                    // First, get the reservation allowance budget
+                    $subDepartmentsSum = departements::where('parent_id', $row->id)
+                        ->sum('reservation_allowance_amount');
+                    $reservationAllowanceBudget = $subDepartmentsSum > 0 ? $subDepartmentsSum : $row->reservation_allowance_amount;
+    
+                    // Fetch sub-department IDs for the main department
+                    $subDepartmentIds = departements::where('parent_id', $row->id)->pluck('id');
+                    
+                    // Then, calculate the total registered amount
+                    $totalRegisteredAmount = ReservationAllowance::whereIn('departement_id', $subDepartmentIds)->sum('amount');
+                    if ($subDepartmentIds->isEmpty()) {
+                        $totalRegisteredAmount = ReservationAllowance::where('departement_id', $row->id)->sum('amount');
+                    }
+    
+                    // Calculate the remaining amount
+                    return $reservationAllowanceBudget - $totalRegisteredAmount;
+                })
                 ->rawColumns(['action'])
                 ->make(true);
     
@@ -76,4 +96,5 @@ class ReservationStaticsController extends Controller
             ]);
         }
     }
+    
 }

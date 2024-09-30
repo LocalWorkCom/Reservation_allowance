@@ -101,15 +101,15 @@
     processing: true,
     serverSide: true,
     ajax: {
-        url: '{{ route("Reserv_statistic.getAll") }}',
+        url: '{{ route("Reserv_statistic.getAll") }}',  // Route to fetch data for the table
     },
     columns: [
         { data: null, name: 'order', orderable: false, searchable: false },
         { data: 'department_name', name: 'department_name' },
         { data: 'sub_departments_count', name: 'sub_departments_count' },
         { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' },
-        { data: 'registered_by', name: 'registered_by' },  // المسجل (Summation of 'amount')
-        { data: 'remaining_amount', name: 'remaining_amount' },
+        { data: 'registered_by', name: 'registered_by' },
+        { data: 'remaining_amount', name: 'remaining_amount' },  // "المبلغ المتبقى"
         { data: 'number_of_employees', name: 'number_of_employees' },
         { data: 'received_allowance_count', name: 'received_allowance_count' },
         { data: 'did_not_receive_allowance_count', name: 'did_not_receive_allowance_count' }
@@ -134,7 +134,7 @@
     fnDrawCallback: function(oSettings) {
         var page = this.api().page.info().pages;
         if (page == 1) {
-            $('.dataTables_paginate').css('visibility', 'hidden');
+            $('.dataTables_paginate').css('visibility', 'hidden'); // Hide pagination if only one page
         }
     },
     createdRow: function(row, data, dataIndex) {
