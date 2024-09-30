@@ -15,13 +15,13 @@
             <div class="d-flex justify-content-between">
                 <p> القطاعـــات</p>
                 {{-- @if (Auth::user()->hasPermission('create Sector')) --}}
-                @if (!$allExist)
+                {{-- @if (!$allExist) --}}
                     <button type="button" class="btn-all  " onclick="window.location.href='{{ route('sectors.create') }}'"
                         style="color: #0D992C;">
 
                         اضافة قطاع جديد  <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
                     </button>
-                @endif
+                {{-- @endif --}}
                 {{-- @endif --}}
             </div>
         </div>
@@ -54,8 +54,8 @@
                             <thead>
                                 <tr>
                                     <th>الاسم</th>
-                                    <th>المحافظه التابعه لها</th>
-                                    <th>ترتيبه</th>
+                                    {{-- <th>المحافظه التابعه لها</th> --}}
+                                    {{-- <th>ترتيبه</th> --}}
                                     <th style="width:150px;">العمليات</th>
                                 </tr>
                             </thead>
@@ -82,14 +82,14 @@
                         data: 'name',
                         name: 'name'
                     },
-                    {
-                        data: 'government_name',
-                        name: 'government_name'
-                    },
-                    {
-                        data: 'order',
-                        name: 'order'
-                    },
+                    // {
+                    //     data: 'government_name',
+                    //     name: 'government_name'
+                    // },
+                    // {
+                    //     data: 'order',
+                    //     name: 'order'
+                    // },
                     {
                         data: 'action',
                         name: 'action',
