@@ -110,37 +110,10 @@
                         <ul>
                             <div class="row col-12">
                                 <div class="col-12">
-                                    <li class="{{ request()->routeIs('reservation_allowances') ? 'active' : '' }}">
-                                        <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
-                                            style="margin-left: 7px;">
-                                        <a href="{{ route('reservation_allowances.index') }}">عرض بدل حجز</a>
-                                    </li>
-                                    <li
-                                        class="{{ request()->routeIs('reservation_allowances.create') ? 'active' : '' }}">
-                                        <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
-                                            style="margin-left: 7px;">
-                                        <a href="{{ route('reservation_allowances.index') }}">اضافة بدل حجز</a>
-                                    </li>
-                                    <li
-                                        class="{{ request()->routeIs('reservation_allowances.index') ? 'active' : '' }}">
-                                        <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
-                                            style="margin-left: 7px;">
-                                        <a href="{{ route('reservation_allowances.index') }}">رصيد بدل حجز</a>
-                                    </li>
-                                    <li class="{{ request()->routeIs('Reserv_statistic.index') ? 'active' : '' }}">
-                                        <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
-                                            style="margin-left: 7px;">
-                                        <a href="{{ route('Reserv_statistic.index') }}">احصائيات بدل حجز</a>
-                                    </li>
-                                        <li class="{{ request()->routeIs('reservation_allowances') ? 'active' : '' }}">
-                                            <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
-                                                style="margin-left: 7px;">
-                                            <a href="{{ route('reservation_allowances.index') }}">عرض بدل حجز</a>
-                                        </li>
                                         <li class="{{ request()->routeIs('reservation_allowances.create') ? 'active' : '' }}">
                                             <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
                                                 style="margin-left: 7px;">
-                                            <a href="{{ route('reservation_allowances.index') }}">اضافة بدل حجز</a>
+                                            <a href="{{ route('reservation_allowances.index') }}">عرض بدل حجز</a>
                                         </li>
                                         <li class="{{ request()->routeIs('reservation_allowances.index') ? 'active' : '' }}">
                                             <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
