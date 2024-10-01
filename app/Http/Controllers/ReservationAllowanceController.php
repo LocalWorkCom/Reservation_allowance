@@ -24,7 +24,7 @@ class ReservationAllowanceController extends Controller
 
         $to_day = Carbon::now()->format('Y-m-d');
         $to_day_name = Carbon::now()->translatedFormat('l');
-        $user = auth()->user();   
+        $user = auth()->user();
         $super_admin = User::where('department_id', 1)->first();
         $employees = User::where('department_id', $user->department_id)->where('flag', 'employee')->get();
 
@@ -38,7 +38,7 @@ class ReservationAllowanceController extends Controller
                 $department_id[] = $user->department_id;
             }
             $reservation_allowances = ReservationAllowance::with('users', 'users.grade', 'departements')->whereIn('departement_id', $department_id)->where('date', $to_day)->get();
-        }         
+        }
         return view('reservation_allowance.index', compact('reservation_allowances', 'employees', 'to_day', 'to_day_name', 'super_admin'));
     }
 
@@ -47,7 +47,7 @@ class ReservationAllowanceController extends Controller
      */
     public function create()
     {
-        $user = auth()->user();        
+        $user = auth()->user();
         $employees = User::where('department_id', $user->department_id)->where('flag', 'employee')->get();
         return view('reservation_allowance.create', compact('employees'));
     }
@@ -61,16 +61,16 @@ class ReservationAllowanceController extends Controller
             $messages = [
                 'Civil_number.required' => 'رقم الهوية مطلوب ولا يمكن تركه فارغاً.'
             ];
-            
+
             $validatedData = Validator::make($request->all(), [
                 'Civil_number' => 'required'
             ], $messages);
-    
+
             if ($validatedData->fails()) {
                 return redirect()->back()->withErrors($validatedData)->withInput();
             }
-            
-            $user = auth()->user();    
+
+            $user = auth()->user();
             $to_day = Carbon::now()->format('Y-m-d');
             $to_day_name = Carbon::now()->translatedFormat('l');
 
@@ -85,7 +85,6 @@ class ReservationAllowanceController extends Controller
             if($check_reservation_allowance){
                 return redirect()->back()->with('error','عفوا تم اضافة بدل لحجز '.$employee->name.' فى هذا اليوم من قبل');
             }
-            
             $add_reservation_allowance = new ReservationAllowance();
             $add_reservation_allowance->user_id = $employee->id;
             $add_reservation_allowance->type = $request->type;
@@ -98,13 +97,13 @@ class ReservationAllowanceController extends Controller
             $add_reservation_allowance->save();
             return redirect()->route('reservation_allowances.index')->with('success', 'تم اضافه بدل حجز بنجاح');
         }catch(\Exception $e){
-            return redirect()->back()->with('message', 'An error occurred while creating the group. Please try agai');   
+            return redirect()->back()->with('message', 'An error occurred while creating the group. Please try agai');
         }
     }
 
     public function create_all()
     {
-        $user = auth()->user();        
+        $user = auth()->user();
         $employees = User::where('department_id', $user->department_id)->where('flag', 'employee')->get();
         return view('reservation_allowance.create_all', compact('employees'));
     }
@@ -118,16 +117,16 @@ class ReservationAllowanceController extends Controller
             $messages = [
                 'Civil_number.required' => 'رقم الهوية مطلوب ولا يمكن تركه فارغاً.'
             ];
-            
+
             $validatedData = Validator::make($request->all(), [
                 'Civil_number' => 'required'
             ], $messages);
-    
+
             if ($validatedData->fails()) {
                 return redirect()->back()->withErrors($validatedData)->withInput();
             }
-            
-            $user = auth()->user();    
+
+            $user = auth()->user();
             $to_day = Carbon::now()->format('Y-m-d');
             $to_day_name = Carbon::now()->translatedFormat('l');
 
@@ -143,7 +142,7 @@ class ReservationAllowanceController extends Controller
                 if($check_reservation_allowance){
                     return redirect()->back()->with('error','عفوا تم اضافة بدل لحجز '.$employee->name.' فى هذا اليوم من قبل');
                 }
-                
+
                 $add_reservation_allowance = new ReservationAllowance();
                 $add_reservation_allowance->user_id = $employee->id;
                 $add_reservation_allowance->type = $request->type;
@@ -158,7 +157,7 @@ class ReservationAllowanceController extends Controller
 
             return redirect()->route('reservation_allowances.index')->with('success', 'تم اضافه بدل حجز بنجاح');
         }catch(\Exception $e){
-            return redirect()->back()->with('message', 'An error occurred while creating the group. Please try agai');   
+            return redirect()->back()->with('message', 'An error occurred while creating the group. Please try agai');
         }
     }
 
@@ -185,7 +184,7 @@ class ReservationAllowanceController extends Controller
                 $department_id[] = $user->department_id;
             }
             $data = ReservationAllowance::with('users', 'users.grade', 'departements')->whereIn('departement_id', $department_id)->where('date', $to_day)->get();
-        }   
+        }
 
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
