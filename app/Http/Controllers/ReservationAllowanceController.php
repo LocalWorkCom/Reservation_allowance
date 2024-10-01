@@ -75,7 +75,7 @@ class ReservationAllowanceController extends Controller
             $to_day_name = Carbon::now()->translatedFormat('l');
 
             $employee = User::findOrFail($request->Civil_number);
-            if($employee->grade->count() > 0){
+            if($employee->grade_id != null){
                 if($request->type == 1){
                     $grade_value = $employee->grade->value_all;
                 }else{
