@@ -63,6 +63,7 @@
                             </div>
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="">صلاحيه الحجز</label>
+                                <div class="d-flex mt-3 " dir="rtl">
                                 <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"
                                     name="part[]">
                                 <label for="part"> حجز كلى</label><input type="checkbox"
@@ -72,6 +73,7 @@
                                 @error('budget')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
+                                </div>
                             </div>
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="mangered">المدير</label>

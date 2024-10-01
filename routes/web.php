@@ -32,6 +32,8 @@ use App\Http\Controllers\paperTransactionController;
 use App\Http\Controllers\statisticController;
 use App\Http\Controllers\ViolationTypesController;
 use App\Http\Controllers\ReservationStaticsController;
+use App\Http\Controllers\ReservationStaticsCreditController;
+
 
 // use App\Http\Controllers\ViolationReportController;
 // use App\Http\Controllers\dashboard\VacationController;
@@ -458,6 +460,9 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/reservation_allowances', [ReservationAllowanceController::class, 'index'])->name('reservation_allowances.index')->middleware('check.permission:view Inspector');
     Route::any('/reservation_allowances/create', [ReservationAllowanceController::class, 'create'])->name('reservation_allowances.create')->middleware('check.permission:create Inspector');
     Route::any('/reservation_allowances/store', [ReservationAllowanceController::class, 'store'])->name('reservation_allowances.store')->middleware('check.permission:create Inspector');
+    Route::any('/reservation_allowances/create_all', [ReservationAllowanceController::class, 'create_all'])->name('reservation_allowances.create.all')->middleware('check.permission:create Inspector');
+    Route::any('/reservation_allowances/store_all', [ReservationAllowanceController::class, 'store_all'])->name('reservation_allowances.store.all')->middleware('check.permission:create Inspector');
+
     Route::any('/reservation_allowances/update', [ReservationAllowanceController::class, 'update'])->name('reservation_allowances.edit')->middleware('check.permission:edit Inspector');
     Route::any('/reservation_allowances/edit/{id}', [ReservationAllowanceController::class, 'edit'])->name('reservation_allowances.update')->middleware('check.permission:edit Inspector');
     Route::any('/reservation_allowances/getAll', [ReservationAllowanceController::class, 'getAll'])->name('reservation_allowances.getAll')->middleware('check.permission:view Inspector');
@@ -467,6 +472,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/statistics', [ReservationStaticsController::class, 'static'])->name('Reserv_statistic.index')->middleware('check.permission:view Inspector');
     Route::get('/statistics/search', [ReservationStaticsController::class, 'getFilteredData'])->name('Reserv_statistic.search')->middleware('check.permission:view Inspector');
     Route::any('/statistics/getAll', [ReservationStaticsController::class, 'getAll'])->name('Reserv_statistic.getAll')->middleware('check.permission:view Inspector');
+
+
+
+    
+    //reservation statics credit
+    Route::get('/statistics_credit', [ReservationStaticsCreditController::class, 'static'])->name('Reserv_statistic_credit.index')->middleware('check.permission:view Inspector');
+    Route::get('/statistics_credit/search', [ReservationStaticsCreditController::class, 'getFilteredData'])->name('Reserv_statistic_credit.search')->middleware('check.permission:view Inspector');
+    Route::any('/statistics_credit/getAll', [ReservationStaticsCreditController::class, 'getAll'])->name('Reserv_statistic_credit.getAll')->middleware('check.permission:view Inspector');
+    Route::get('/reservation_statics_credit/print', [ReservationStaticsCreditController::class, 'printReport'])->name('Reserv_statistic_credit.print')->middleware('check.permission:view Inspector');
 
 });
 

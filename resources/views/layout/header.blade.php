@@ -100,8 +100,8 @@
                     </a>
                 </li>
 
-                <li class="nav-item {{ request()->routeIs('grads.index') || request()->routeIs('job.index') || request()->routeIs('qualifications.index') || request()->routeIs('government.all') || request()->routeIs('regions.index') || request()->routeIs('sectors.index') || request()->routeIs('points.index') || request()->routeIs('vacationType.index') || request()->routeIs('violations.index') || request()->routeIs('rule.index') || request()->routeIs('permission.index') || request()->routeIs('working_time.index') || request()->routeIs('working_trees.list') || request()->routeIs('absence.index') ? 'active' : '' }}"
-                    onclick="toggleDropdown5(event)">
+                <li class="nav-item {{ request()->routeIs('reservation_allowances') || request()->routeIs('reservation_allowances.index') || request()->routeIs('reservation_allowances.create') || request()->routeIs('Reserv_statistic.index') ? 'active' : '' }}"
+                    onclick="toggleDropdown5(event)"> 
                     <a href="#">
                         <img src="{{ asset('frontend/images/employees.svg') }}" alt="logo">
                         <h6 class="btn5">بدل حجز <i class="fa-solid fa-angle-down"></i></h6>
@@ -110,6 +110,28 @@
                         <ul>
                             <div class="row col-12">
                                 <div class="col-12">
+                                    <li class="{{ request()->routeIs('reservation_allowances') ? 'active' : '' }}">
+                                        <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
+                                            style="margin-left: 7px;">
+                                        <a href="{{ route('reservation_allowances.index') }}">عرض بدل حجز</a>
+                                    </li>
+                                    <li
+                                        class="{{ request()->routeIs('reservation_allowances.create') ? 'active' : '' }}">
+                                        <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
+                                            style="margin-left: 7px;">
+                                        <a href="{{ route('reservation_allowances.index') }}">اضافة بدل حجز</a>
+                                    </li>
+                                    <li
+                                        class="{{ request()->routeIs('reservation_allowances.index') ? 'active' : '' }}">
+                                        <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
+                                            style="margin-left: 7px;">
+                                        <a href="{{ route('reservation_allowances.index') }}">رصيد بدل حجز</a>
+                                    </li>
+                                    <li class="{{ request()->routeIs('Reserv_statistic.index') ? 'active' : '' }}">
+                                        <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
+                                            style="margin-left: 7px;">
+                                        <a href="{{ route('Reserv_statistic.index') }}">احصائيات بدل حجز</a>
+                                    </li>
                                         <li class="{{ request()->routeIs('reservation_allowances') ? 'active' : '' }}">
                                             <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
                                                 style="margin-left: 7px;">
@@ -123,7 +145,7 @@
                                         <li class="{{ request()->routeIs('reservation_allowances.index') ? 'active' : '' }}">
                                             <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
                                                 style="margin-left: 7px;">
-                                            <a href="{{ route('reservation_allowances.index') }}">رصيد بدل حجز</a>
+                                            <a href="{{ route('Reserv_statistic_credit.index') }}">رصيد بدل حجز</a>
                                         </li>
                                         <li class="{{ request()->routeIs('reservation_allowances.index') ? 'active' : '' }}">
                                             <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
@@ -200,7 +222,7 @@
                                                 <a href="{{ route('government.all') }}">المحافظات</a>
                                             </li>
                                         @endif
-                                       
+
 
 
                                     </div>
@@ -253,7 +275,7 @@
                 </a>
             </li>
             @endif --}}
-            @if (Auth::user()->hasPermission('view Region'))
+                                        @if (Auth::user()->hasPermission('view Region'))
                                             <li class="{{ request()->routeIs('regions.index') ? 'active' : '' }}">
                                                 <img src="{{ asset('frontend/images/governorates.svg') }}"
                                                     alt="logo" style="margin-left: 7px;">
@@ -293,7 +315,7 @@
                         </a>
                     </li>
                 @endif
-                
+
             </ul>
         </div>
     </div>
