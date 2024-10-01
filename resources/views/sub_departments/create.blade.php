@@ -44,7 +44,9 @@
                                     @endforeach
                                 </select> --}}
                                 <input type="hidden" name="parent" value="{{ $department->id }}">
-                                <input type="text" class="form-control" name="sector" id="sector" value="{{ $department->sectors->name }}" disabled>
+                                <input type="hidden" name="sector" value="{{ $department->sector_id }}">
+
+                                <input type="text" class="form-control" name="sectors" id="sector" value="{{ $department->sectors->name }}" disabled>
                                 @error('sector')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
@@ -79,7 +81,7 @@
                                 <label for="mangered">المدير</label>
                                 <select name="manger" id="mangered" class="form-control" required onchange="updateEmployeeSelect()">
                                     <option value="">اختار المدير</option>
-                                    @foreach ($employees as $user)
+                                    @foreach ($managers as $user)
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
                                     @endforeach
                                 </select>

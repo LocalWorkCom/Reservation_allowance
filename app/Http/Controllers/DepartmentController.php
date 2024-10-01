@@ -153,6 +153,7 @@ class DepartmentController extends Controller
     public function create()
     {
         //create Main Administration
+
         $sectors = Sector::all();
         $managers = User::where('flag', 'user')->where('department_id', 1)->whereNot('id', auth()->user()->id)->get();
         $employees = User::where('flag', 'employee')->where('department_id', null)->get();
@@ -164,8 +165,15 @@ class DepartmentController extends Controller
     {
         $department = departements::findOrFail($id);
         if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
-            $employees = User::where('department_id', $id)->whereNot('id', $department->manager)->get();
-            $managers = User::where('flag', 'user')->where('department_id', 1)->get();
+            $employees = User::where(function($query) use ($id) {
+                $query->where('department_id', $id)
+                      ->orWhere('department_id', null);
+            })
+            ->where('flag', 'employee')
+            ->whereNot('id', $department->manager)
+            ->whereNot('id', auth()->user()->id)
+            ->get();
+            $managers = User::where('flag', 'user')->where('department_id', 1)->where('rule_id',3)->get();
         } else {
             $employees = User::where('department_id', $id)->whereNot('id', $department->manager)->get();
             $managers = User::where('flag', 'user')->where('department_id', 1)->get();
@@ -386,9 +394,24 @@ class DepartmentController extends Controller
 
     public function edit_1(departements $department)
     {
+        if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
+            $employees = User::where(function($query) use ($department) {
+                $query->where('department_id', $department->id)
+                      ->orWhere('department_id', null);
+            })
+            ->where('flag', 'employee')
+            ->whereNot('id', $department->manager)
+            ->whereNot('id', auth()->user()->id)
+            ->get();
+            $managers = User::where('flag', 'user')->where('department_id', 1)->orWhere('id', $department->manger)->where('rule_id',3)->get();
+                    } else {
+            $employees = User::where('department_id', $department->id)->whereNot('id', $department->manager)->get();
+            $managers = User::where('flag', 'user')->where('department_id', 1)->get();
+        }
         // dd(vars: $department);
-        $managers = User::where('flag', 'user')->where('department_id', 1)->orwhere('id', $department->manger)->get();
-        $employees = User::where('flag', 'employee')->where('department_id', null)->orWhere('department_id', $department->id)->whereNot('id', $department->manger)->get();
+        // $managers = User::where('flag', 'user')->where('department_id', 1)->orWhere('id', $department->manger)->get();
+        // $employees = User::where('flag', 'employee')->where('department_id', null)->orWhere('department_id', $department->id)->whereNot('id', $department->manger)->get();
+
         return view('sub_departments.edit', compact('department', 'managers', 'employees'));
     }
 
@@ -576,7 +599,7 @@ class DepartmentController extends Controller
                 }
             }
         }
-        return redirect()->route('sub_departments.index', ['id' => $request->parent])->with('success', 'Department updated successfully.');
+        return redirect()->route('sub_departments.index', ['id' => $departements->parent])->with('success', 'Department updated successfully.');
         // return response()->json($department);
     }
     /**

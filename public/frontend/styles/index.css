@@ -226,7 +226,7 @@ ul {
     padding-inline: 10px;
     font-size: 23px;
     height: 200px;
-    width: 200px !important;
+    width: 240px !important;
 }
 .dropdown-menu6 {
     display: none;
@@ -250,8 +250,8 @@ ul {
     border: 1px solid #ccc;
     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
     z-index: 1;
-    top: 65px;
-    right: 0px;
+    top: 70px;
+    right: -90px;
     height: 219px;
     width: 250px !important;
     text-align: center;
