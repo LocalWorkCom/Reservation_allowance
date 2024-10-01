@@ -99,6 +99,57 @@ class ReservationStaticsController extends Controller
     
                     return $totalEmployees;
                 })
+                ->addColumn('received_allowance_count', function($row) {
+                    // Fetch sub-department IDs for the main department
+                    $subDepartmentIds = departements::where('parent_id', $row->id)->pluck('id');
+                    
+                    // Fetch the unique user_ids from the reservation_allowances table for these sub-departments
+                    $uniqueUsers = ReservationAllowance::whereIn('departement_id', $subDepartmentIds)
+                        ->distinct('user_id')
+                        ->count('user_id');
+    
+                    // If no sub-departments, check the main department's own user_ids
+                    if ($subDepartmentIds->isEmpty()) {
+                        $uniqueUsers = ReservationAllowance::where('departement_id', $row->id)
+                            ->distinct('user_id')
+                            ->count('user_id');
+                    }
+    
+                    return $uniqueUsers;
+                })
+                ->addColumn('did_not_receive_allowance_count', function($row) {
+                    // Calculate "لم يحصل على بدل حجز" as "عدد الموظفين" - "الحاصلين على بدل حجز"
+                    
+                    // Fetch sub-department IDs for the main department
+                    $subDepartmentIds = departements::where('parent_id', $row->id)->pluck('id');
+                    
+                    // Count the users in these departments where 'flag' = 'employee'
+                    $totalEmployees = User::whereIn('department_id', $subDepartmentIds)
+                        ->where('flag', 'employee')
+                        ->count();
+    
+                    // If no sub-departments, count the employees directly in the main department
+                    if ($subDepartmentIds->isEmpty()) {
+                        $totalEmployees = User::where('department_id', $row->id)
+                            ->where('flag', 'employee')
+                            ->count();
+                    }
+    
+                    // Fetch the unique user_ids from the reservation_allowances table for these sub-departments
+                    $uniqueUsers = ReservationAllowance::whereIn('departement_id', $subDepartmentIds)
+                        ->distinct('user_id')
+                        ->count('user_id');
+    
+                    // If no sub-departments, check the main department's own user_ids
+                    if ($subDepartmentIds->isEmpty()) {
+                        $uniqueUsers = ReservationAllowance::where('departement_id', $row->id)
+                            ->distinct('user_id')
+                            ->count('user_id');
+                    }
+    
+                    // "لم يحصل على بدل حجز" = "عدد الموظفين" - "الحاصلين على بدل حجز"
+                    return $totalEmployees - $uniqueUsers;
+                })
                 ->rawColumns(['action'])
                 ->make(true);
     
@@ -114,6 +165,8 @@ class ReservationStaticsController extends Controller
             ]);
         }
     }
+    
+    
     
     
 }
