@@ -75,11 +75,16 @@ class ReservationAllowanceController extends Controller
             $to_day_name = Carbon::now()->translatedFormat('l');
 
             $employee = User::findOrFail($request->Civil_number);
-            if($request->type == 1){
-                $grade_value = $employee->grade->value_all;
+            if($employee->grade->count() > 0){
+                if($request->type == 1){
+                    $grade_value = $employee->grade->value_all;
+                }else{
+                    $grade_value = $employee->grade->value_part;
+                }
             }else{
-                $grade_value = $employee->grade->value_part;
+                return redirect()->back()->with('error','عفوا يجب ان يتم اضافة رتبة  '.$employee->name);
             }
+            
 
             $check_reservation_allowance = ReservationAllowance::where(['user_id' => $employee->id, 'date' => $to_day])->first();
             if($check_reservation_allowance){
