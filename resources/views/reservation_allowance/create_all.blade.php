@@ -65,8 +65,8 @@
                         <div class="form-group col-md-10 mx-2">
                                 <label for="Civil_number"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>
                                     رقم الهوية</label>
-                                <select class="custom-select custom-select-lg mb-3 select2" multiple name="Civil_number[]" id="Civil_number">
-                                    <option selected disabled>اختار من القائمة</option>
+                                <select class="custom-select custom-select-lg mb-3 select2" multiple name="Civil_number[]" id="Civil_number" dir="rtl">
+                                    <option  disabled>اختار من القائمة</option>
                                     @foreach ($employees as $employee)
                                     <option value="{{ $employee->id }}" {{ old('Civil_number') == $employee->id ? 'selected' : '' }}>
                                         {{ $employee->Civil_number }}</option>

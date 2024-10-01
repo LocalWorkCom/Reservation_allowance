@@ -49,7 +49,7 @@
                             <p> بدل الحجز</p>
                         </div>
                         <div class="col-2">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                            <a class="btn-all" href="{{ route('reservation_allowances.create') }}"
+                            <a class="btn-all py-2 px-2" href="{{ route('reservation_allowances.create') }}"
                                 style="color: #0D992C;">
                                 <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
 
@@ -58,7 +58,7 @@
                             {{-- @endif --}}
                         </div>
                         <div class="col-2">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                            <a class="btn-all" href="{{ route('reservation_allowances.create.all') }}"
+                            <a class="btn-all py-2 px-2" href="{{ route('reservation_allowances.create.all') }}"
                                 style="color: #0D992C;">
                                 <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
 
