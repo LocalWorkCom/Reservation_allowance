@@ -15,11 +15,14 @@
             <div class="d-flex justify-content-between">
                 <p> الادارات </p>
                 <div class="form-group">
+                    @if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin")
+
                     <button type="button" class="wide-btn "
                         onclick="window.location.href='{{ route('departments.create') }}'" style="    color: #0D992C;">
                         اضافة جديد
                         <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
                     </button>
+                    @endif
                     @if (Auth::user()->hasPermission('create Postman'))
                         <!--   <button type="button" class="wide-btn mx-md-3 mx-1"
                         onclick="window.location.href='{{ route('postmans.create') }}'">
