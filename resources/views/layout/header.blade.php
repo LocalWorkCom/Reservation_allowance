@@ -100,8 +100,8 @@
                     </a>
                 </li>
 
-                <li class="nav-item {{ request()->routeIs('reservation_allowances') || request()->routeIs('reservation_allowances.index') || request()->routeIs('reservation_allowances.create') || request()->routeIs('Reserv_statistic.index') ? 'active' : '' }}"
-                    onclick="toggleDropdown5(event)"> 
+                <li class="nav-item {{ request()->routeIs('reservation_allowances') || request()->routeIs('reservation_allowances.index') || request()->routeIs('reservation_allowances.create') || request()->routeIs('Reserv_statistic_credit.static') ? 'active' : '' }}"
+                    onclick="toggleDropdown5(event)">
                     <a href="#">
                         <img src="{{ asset('frontend/images/employees.svg') }}" alt="logo">
                         <h6 class="btn5">بدل حجز <i class="fa-solid fa-angle-down"></i></h6>
@@ -110,21 +110,26 @@
                         <ul>
                             <div class="row col-12">
                                 <div class="col-12">
-                                        <li class="{{ request()->routeIs('reservation_allowances.create') ? 'active' : '' }}">
-                                            <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
-                                                style="margin-left: 7px;">
-                                            <a href="{{ route('reservation_allowances.index') }}">عرض بدل حجز</a>
-                                        </li>
-                                        <li class="{{ request()->routeIs('reservation_allowances.index') ? 'active' : '' }}">
-                                            <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
-                                                style="margin-left: 7px;">
-                                            <a href="{{ route('Reserv_statistic_credit.index') }}">رصيد بدل حجز</a>
-                                        </li>
-                                        <li class="{{ request()->routeIs('reservation_allowances.index') ? 'active' : '' }}">
-                                            <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
-                                                style="margin-left: 7px;">
-                                            <a href="{{ route('Reserv_statistic.index') }}">احصائيات بدل حجز</a>
-                                        </li>
+                                    <li
+                                        class="{{ request()->routeIs('reservation_allowances.create') ? 'active' : '' }}">
+                                        <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
+                                            style="margin-left: 7px;">
+                                        <a href="{{ route('reservation_allowances.index') }}">عرض بدل حجز</a>
+                                    </li>
+                                    <li
+                                        class="{{ request()->routeIs('reservation_allowances.index') ? 'active' : '' }}">
+                                        <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
+                                            style="margin-left: 7px;">
+                                        <a href="{{ route('Reserv_statistic_credit.static') }}">رصيد بدل حجز</a>
+                                    </li>
+                                    <li
+                                        class="{{ request()->routeIs('reservation_allowances.index') ? 'active' : '' }}">
+                                        <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
+                                            style="margin-left: 7px;">
+                                        <a href="{{ route('Reserv_statistic.index') }}">احصائيات بدل حجز</a>
+                                    </li>
+
+
                                 </div>
                             </div>
                         </ul>
