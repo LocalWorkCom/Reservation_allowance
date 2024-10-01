@@ -134,4 +134,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(PaperTransaction::class, 'created_by');
     }
+
+    public function reservationAllowances() 
+    {
+        return $this->hasMany(ReservationAllowance::class, 'user_id');
+    }
 }

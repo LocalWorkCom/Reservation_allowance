@@ -5,23 +5,34 @@
     padding: 20px;
     margin-top: 20px;
     width: 200px;
-    height: 150px;
-    background-color: #27437329;
+    height: 200px;
+    background-color: #F6F7FD;
+    border: 1px solid #D9D9D9 !important;
 }
 .div-info-padding{
     padding: 3px 0;
     direction: initial;
+    font-family: Almarai;
+font-size: 24px;
+font-weight: 700;
+line-height: 36px;
+text-align: right;
+
+}
+.div-info-padding b span{
+    color:#032F70;
 }
 
 </style>
+
 
 @extends('layout.main')
 @push('style')
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
     <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
-    </script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer></script>
 @endpush
+
 @section('title')
     القطاعات
 @endsection
@@ -35,23 +46,26 @@
                             <div class="col-6"><p> بدل الحجز</p></div>
                             <div class="col-6">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                 <button type="button" class="btn-all" onclick="addForm()" style="color: #0D992C;">
+                                     <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
 
-                                    اضافة بدل حجز جديد  <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                                    اضافة بدل حجز جديد 
                                 </button>
                                 {{-- @endif --}}
                             </div>
 
 
                             @if(auth()->user()->department->parent_id == null)
-                            <div class="col-12 div-info">
-                                <div class="row">
-                                    <div class="col-6 div-info-padding"><b>القطاع : {{auth()->user()->department->sectors->name}}</b></div>
-                                    <div class="col-6 div-info-padding"><b>الادارة الرئيسية : {{auth()->user()->department->parent}}</b></div>
-                                    <div class="col-6 div-info-padding"><b>الادارة الفرعية : {{auth()->user()->department->name}}</b></div>
-                                    <div class="col-6 div-info-padding"><b>مبلغ بدل الحجز : {{auth()->user()->department->reservation_allowance_amount}}</b></div>
-                                    <div class="col-6 div-info-padding"><b>اليوم : السبت</b></div>
-                                    <div class="col-6 div-info-padding"><b>التاريخ : </b></div>
-                                    <div class="col-6 div-info-padding"><b>عدد العسكرين المحجوزين : 3</b></div>
+                            <div class="col-12 div-info d-flex justify-content-between">
+                                <div class="col-7">
+                                    <div class="col-6 div-info-padding"><b>القطاع : <span style="color:#032F70;">{{auth()->user()->department->sectors->name}}</span></b></div>
+                                    <div class="col-6 div-info-padding"><b>الادارة الفرعية : <span style="color:#032F70;">{{auth()->user()->department->name}}</span></b></div>
+                                    <div class="col-6 div-info-padding"><b>اليوم : <span style="color:#032F70;"> {{$to_day_name}}</span></b></div>
+                                    <div class="col-6 div-info-padding"><b>عدد العسكرين المحجوزين : <span style="color:#032F70;">{{auth()->user()->department->reservationAllowances->count()}}</span></b></div>
+                                </div>
+                                <div class="col-5">
+                                    <div class="col-6 div-info-padding"><b>الادارة الرئيسية : <span style="color:#032F70;">{{auth()->user()->department->parent == null ? $super_admin->name : auth()->user()->department->parent}}</span></b></div>
+                                    <div class="col-6 div-info-padding"><b>مبلغ بدل الحجز : <span style="color:#032F70;">{{auth()->user()->department->reservation_allowance_amount}}</span></b></div>
+                                    <div class="col-6 div-info-padding"><b>التاريخ : <span style="color:#032F70;"> {{$to_day}}</span></b></div>
                                 </div>
                             </div>
                             @endif
@@ -75,6 +89,16 @@
                             {{ session('message') }}
                         </div>
                     @endif
+
+
+                    <select name="cars" id="cars" class="js-example-basic-single">
+  <option value="volvo">Volvo</option>
+  <option value="saab">Saab</option>
+  <option value="mercedes">Mercedes</option>
+  <option value="audi">Audi</option>
+</select> 
+
+
                     <div>
                         <table id="users-table"
                             class="display table table-responsive-sm  table-bordered table-hover dataTable">
@@ -131,30 +155,39 @@
                             @csrf
                             <input type="hidden" id="modalType" value="add">
 
-                            <div class="form-group">
-                                <label for="typeadd"> رقم الهوية</label>
-                                <select name="typeadd" id="typeadd" aria-placeholder="اختر رقم الهوية"
-                                    class="form-control" required>
-                                    <option value="" selected disabled>اختر رقم الهوية</option>
-                                    
-                                </select>
-                                <span class="text-danger span-error" id="typeadd-error" dir="rtl"></span>
-
+                            <div class="form-row mx-md-2 mt-4 d-flex justify-content-center">
+                                <div class="form-group col-md-10 mx-2">
+                                    <label for="nameus"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>
+                                    رقم الهوية</label>
+                                    {{-- <input type="text" id="nameus" name="name" class="form-control" placeholder="الاسم"> --}}
+                                    <select class="custom-select custom-select-lg mb-3 select2" name="name" id="nameus">
+                                        <option selected disabled>اختار من القائمة</option>
+                                        @foreach ($employees as $item)
+                                        <option value="{{ $item->id }}" {{ old('name') == $item->id ? 'selected' : '' }}>
+                                            {{ $item->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="form-group">
                                 <label for="value_all">صلاحية الحجز</label>
-                                حجز كلى
-                                <input type="radio" id="value_all" name="type" class="form-control" checked value="1" required>
-                                حجز جزئى
-                                <input type="radio" id="value_all" name="type" class="form-control" value="2" required>
+                                <div class="d-flex justify-content-end">
+                                <div class="d-flex justify-content-end">
+                                    <label for="">  حجز كلى</label>
+                                    <input type="radio" id="value_all" name="type" class="form-control" checked value="1" required>
+                                    </div>
+                                    <div class="d-flex justify-content-end mx-4">
+                                    <label for="">  حجز جزئى</label>
+                                    <input type="radio" id="value_all" name="type" class="form-control" value="2" required>
+                                    </div>
+                                </div>
                                 <span class="text-danger span-error" id="type-error" dir="rtl"></span>
-
                             </div>
 
                             <!-- Save button -->
                             <div class="text-end">
-                                <button type="submit" class="btn-blue" onclick="confirmAdd()">اضافه</button>
+                                <button type="submit" class="btn-blue mx-1" onclick="confirmAdd()">اضافه <i class="fa-solid fa-plus"></i></button>
                             </div>
                         </form>
                     </div>
@@ -282,6 +315,7 @@
     */?>
 @endsection
 @push('scripts')
+
 <script>
         $(document).ready(function() {
             function closeModal() {
@@ -291,7 +325,18 @@
             $('#closeButton').on('click', function() {
                 closeModal();
             });
+
+
         });
+
+
+        $(function(){
+            $(".select2").select2({
+                dir: "rtl"
+            });
+        }); 
+
+</script>
     </script>
     <script>
         function opendelete(id) {
@@ -385,24 +430,24 @@
                         name: 'id'
                     }, 
                     {
-                        data: 'name',
-                        name: 'name'
+                        data: 'employee_grade',
+                        name: 'employee_grade'
                     },
                     {
-                        data: 'type',
-                        name: 'type'
+                        data: 'employee_name',
+                        name: 'employee_name'
                     },
                     {
-                        data: 'value_all',
-                        name: 'value_all'
+                        data: 'employee_file_num',
+                        name: 'employee_file_num'
                     },
                     {
-                        data: 'value_part',
-                        name: 'value_part'
+                        data: 'employee_allowance_type_btn',
+                        name: 'employee_allowance_type_btn'
                     },
                     {
-                        data: 'value_part',
-                        name: 'value_part'
+                        data: 'employee_allowance_amount',
+                        name: 'employee_allowance_amount'
                     }
                     <?php /*{
                         data: 'action',

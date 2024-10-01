@@ -47,13 +47,13 @@ class DepartmentController extends Controller
     {
         //department main all
         if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
-            $data = departements::withCount('iotelegrams')
+            $data = departements::where('parent_id', null)->withCount('iotelegrams')
                 ->withCount('outgoings')
                 ->withCount('children')
                 ->with(['children'])
                 ->orderBy('id', 'desc')->get();
         } else {
-            $data = departements::withCount('iotelegrams')
+            $data = departements::where('id', auth()->user()->department_id)->withCount('iotelegrams')
                 ->withCount('children')
 
                 ->withCount('outgoings')->where(function ($query) {
@@ -101,48 +101,52 @@ class DepartmentController extends Controller
     //     // return response()->json($departments);
     // }
 
-    public function index_1()
+    public function index_1($id)
     {
-        //
-        // return $dataTable->render('permission.view');
+
         $users = User::where('flag', 'employee')->where('department_id', NULL)->get();
-        $parentDepartment = departements::where('parent_id', Auth::user()->department_id)->first();
+        $departments = departements::where('parent_id', $id)->get();
+        $parentDepartment = departements::findOrFail($id);
 
-        // Get the children of the parent department
-        $departments = $parentDepartment ? $parentDepartment->children : collect();
-        if (Auth::user()->rule_id == 2) {
-            $subdepartments = departements::with('children')->get();
-        } else {
-            $subdepartments = departements::where('id', Auth::user()->department_id)->with('children')->get();
-        }
-
-        return view('sub_departments.index', compact('users', 'subdepartments', 'departments', 'parentDepartment'));
+        return view('sub_departments.index', compact('users', 'departments', 'parentDepartment'));
     }
-    public function getSub_Department()
+    public function getSub_Department(Request $request, $id)
     {
-        $data = departements::withCount('children')
-            ->where('parent_id', Auth::user()->department_id)
-            ->with(['children'])->orderBy('created_at', 'asc')->get();
-
-        // $data = departements::all();
+        if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
+            $data = departements::where('parent_id', $request->id)
+                ->withCount('iotelegrams', 'outgoings', 'children')
+                ->with(['children'])
+                ->orderBy('id', 'desc')->get();
+        } else {
+            $data = departements::where('parent_id', $request->id)
+                ->withCount('iotelegrams', 'outgoings', 'children')
+                ->where(function ($query) {
+                    $query->where('id', Auth::user()->department_id)
+                        ->orWhere('parent_id', Auth::user()->department_id);
+                })
+                ->with(['children'])
+                ->orderBy('id', 'desc')->get();
+        }
 
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
-                return '<button class="btn  btn-sm" style="background-color: #259240;"><i class="fa fa-edit"></i></button>';
+                return '<button class="btn btn-primary btn-sm">Edit</button>';
             })
-
-            ->addColumn('reservation_allowance', function ($row) { // New column for departments count
-                if ($row->reservation_allowance_type == 1) {
-                    return 'حجز كلى';
-                } elseif ($row->reservation_allowance_type == 2) {
-                    return 'حجز جزئى';
-                } else {
-                    return 'حجز كلى و حجز جزئى';
-                }
+            ->addColumn('reservation_allowance', function ($row) {
+                return match ($row->reservation_allowance_type) {
+                    1 => 'حجز كلى',
+                    2 => 'حجز جزئى',
+                    default => 'حجز كلى و حجز جزئى',
+                };
             })
-            ->rawColumns(['action', 'reservation_allowance'])
+            ->addColumn('manager_name', function ($row) {
+                return $row->manager ? $row->manager->name : 'لايوجد مدير للأداره';
+            })
+            ->rawColumns(['action'])
             ->make(true);
     }
+
+
     /**
      * Show the form for creating a new resource.
      */
@@ -156,16 +160,24 @@ class DepartmentController extends Controller
     }
 
 
-    public function create_1()
+    public function create_1($id)
     {
-        // dd(Auth::user());
-        $users = User::where('rule_id', '<>', 2)->where('department_id', NULL)->get();
-        $parentDepartment = departements::where('parent_id', Auth::user()->department_id)->first();
+        $department=departements::findOrFail($id);
+        if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
+            $employees = User::where('department_id', $id)->whereNot('id',$department->manager)->get();
+            $managers = User::where('flag', 'user')->where('department_id', 1)->get();
 
-        // Get the children of the parent department
-        $departments = $parentDepartment ? $parentDepartment->children : collect();
-        $subdepartments = departements::with('children')->get();
-        return view('sub_departments.create', compact('parentDepartment', 'departments', 'subdepartments', 'users'));
+        } else {
+            $employees = User::where('department_id', $id)->whereNot('id',$department->manager)->get();
+            $managers = User::where('flag', 'user')->where('department_id', 1)->get();
+        }
+        // $users = User::where('rule_id', '<>', 2)->where('department_id', NULL)->get();
+        // $parentDepartment = departements::where('parent_id', Auth::user()->department_id)->first();
+
+        // // Get the children of the parent department
+        // $departments = $parentDepartment ? $parentDepartment->children : collect();
+        // $subdepartments = departements::with('children')->get();
+        return view('sub_departments.create', compact('department', 'employees', 'managers'));
     }
 
     public function getEmployeesByDepartment($departmentId)
@@ -327,9 +339,9 @@ class DepartmentController extends Controller
     {
         // dd($department);
         $sectors = Sector::all();
-        $managers = User::where('flag', 'user')->where('department_id', 1)->orwhere('id',$department->manger)->get();
-        $employees = User::where('flag', 'employee')->where('department_id', null)->orWhere('department_id',$department->id)->whereNot('id',$department->manger)->get();
-        return view('departments.edit', compact('department','sectors', 'managers', 'employees'));
+        $managers = User::where('flag', 'user')->where('department_id', 1)->orwhere('id', $department->manger)->get();
+        $employees = User::where('flag', 'employee')->where('department_id', null)->orWhere('department_id', $department->id)->whereNot('id', $department->manger)->get();
+        return view('departments.edit', compact('department', 'sectors', 'managers', 'employees'));
         // dd($employee);
         // return view('departments.edit', compact('department', 'users', 'employee'));
     }
