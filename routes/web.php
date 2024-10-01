@@ -205,9 +205,10 @@ Route::middleware(['auth'])->group(function () {
 
     // getDepartment
     Route::get('api/department', [DepartmentController::class, 'getDepartment'])->name('api.department')->middleware('check.permission:view departements');
-    Route::get('api/sub_department', [DepartmentController::class, 'getSub_Department'])->name('api.sub_department')->middleware('check.permission:view departements');
-    Route::get('/sub_departments', [DepartmentController::class, 'index_1'])->name('sub_departments.index')->middleware('check.permission:view departements');
-    Route::get('/sub_departments/create', [DepartmentController::class, 'create_1'])->name('sub_departments.create')->middleware('check.permission:create departements');
+    Route::get('api/sub_department/{id}', [DepartmentController::class, 'getSub_Department'])
+    ->name('api.sub_department')
+    ->middleware('check.permission:view departements');    Route::get('/sub_departments/{id}', [DepartmentController::class, 'index_1'])->name('sub_departments.index')->middleware('check.permission:view departements');
+    Route::get('/sub_departments/create/{id}', [DepartmentController::class, 'create_1'])->name('sub_departments.create')->middleware('check.permission:create departements');
     Route::post('/sub_departments', [DepartmentController::class, 'store_1'])->name('sub_departments.store')->middleware('check.permission:edit departements');
     Route::get('/sub_departments/{department}/edit', [DepartmentController::class, 'edit_1'])->name('sub_departments.edit')->middleware('check.permission:edit departements');
     Route::put('/sub_departments/{department}', [DepartmentController::class, 'update_1'])->name('sub_departments.update')->middleware('check.permission:edit departements');
