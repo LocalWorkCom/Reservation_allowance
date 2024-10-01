@@ -23,19 +23,12 @@
 
 @section('content')
     <div class="row">
-        <div class="container welcome col-11" style="height: auto !important">
-            <div class="d-flex justify-content-between">
-                <div class="col-12">
-                    <div class="row" style="direction: rtl">
-                        <div class="col-12">
-                            <div class="info-box">
-                                <p>احصائيات بدل حجز</p>
-                            </div>
-                        </div>
-                    </div>
+    <div class="container welcome col-11">
+                <div class="d-flex justify-content-between">
+                    <p>الاحصائيات بدل حجز </p>
+
                 </div>
             </div>
-        </div>
     </div>
 
     <br>
