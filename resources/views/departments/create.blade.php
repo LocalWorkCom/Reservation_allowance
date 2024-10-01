@@ -63,6 +63,7 @@
                             </div>
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="">صلاحيه الحجز</label>
+                                <div class="d-flex mt-3 " dir="rtl">
                                 <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"
                                     name="part[]">
                                 <label for="part"> حجز كلى</label><input type="checkbox"
@@ -72,6 +73,7 @@
                                 @error('budget')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
+                                </div>
                             </div>
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="mangered">المدير</label>
@@ -131,4 +133,29 @@
 
         </div>
     </main>
+    <script>
+        $(document).ready(function() {
+    // Assuming you have a list of users available in JavaScript
+    var allUsers = @json($employees); // If you pass the users list from Blade to JavaScript
+
+    $('#mangered').on('change', function() {
+        var selectedManager = $(this).val();
+        console.log('Selected Manager:', selectedManager);
+
+        // Clear the employees dropdown
+        $('#employess').empty();
+
+        // Iterate over the users list and add only those who are not the selected manager
+        allUsers.forEach(function(user) {
+            if (user.id != selectedManager) {
+                $('#employess').append('<option value="' + user.id + '">' + user.name + '</option>');
+            }
+        });
+    });
+
+    // Initial population of employees list excluding the selected manager (if any)
+    $('#mangered').trigger('change');
+});
+
+        </script>
 @endsection

@@ -125,13 +125,20 @@
                     var departmentDelete = '{{ route('departments.destroy', ':id') }}';
                     departmentDelete = departmentDelete.replace(':id', row.id);
 
-                    return `
-                         <a href="${subdepartment}"  class="btn btn-sm " style="background-color: #274373;"> <i class="fa fa-plus"></i> ادارات فرعيه</a>
-                         <a href="${departmentShow}"  class="btn btn-sm " style="background-color: #274373;"> <i class="fa fa-eye"></i> عرض</a>
-                        <a href="${departmentEdit}" class="btn btn-sm"  style="background-color: #F7AF15;"> <i class="fa fa-edit"></i>تعديل  </a>
+                    // Start building the return string
+                    var buttons = `
+            <a href="${subdepartment}" class="btn btn-sm" style="background-color: #274373;"> <i class="fa fa-plus"></i> ادارات فرعيه</a>
+            <a href="${departmentShow}" class="btn btn-sm" style="background-color: #274373;"> <i class="fa fa-eye"></i> عرض</a>
+        `;
 
+                    // Only add the edit button if the id is not 1
+                    if (row.id !== 1) {
+                        buttons += `
+                <a href="${departmentEdit}" class="btn btn-sm" style="background-color: #F7AF15;"> <i class="fa fa-edit"></i> تعديل</a>
+            `;
+                    }
 
-                        `;
+                    return buttons; // Return the constructed buttons
                 }
             }],
             "oLanguage": {

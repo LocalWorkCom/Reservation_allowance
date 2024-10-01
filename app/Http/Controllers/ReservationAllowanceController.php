@@ -36,7 +36,9 @@ class ReservationAllowanceController extends Controller
      */
     public function create()
     {
-        
+        $user = auth()->user();        
+        $employees = User::where('department_id', $user->department_id)->where('flag', 'employee')->get();
+        return view('reservation_allowance.create', compact('employees'));
     }
 
     /**
@@ -44,7 +46,109 @@ class ReservationAllowanceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try{
+            $messages = [
+                'Civil_number.required' => 'رقم الهوية مطلوب ولا يمكن تركه فارغاً.'
+            ];
+            
+            $validatedData = Validator::make($request->all(), [
+                'Civil_number' => 'required'
+            ], $messages);
+    
+            if ($validatedData->fails()) {
+                return redirect()->back()->withErrors($validatedData)->withInput();
+            }
+            
+            $user = auth()->user();    
+            $to_day = Carbon::now()->format('Y-m-d');
+            $to_day_name = Carbon::now()->translatedFormat('l');
+
+            $employee = User::findOrFail($request->Civil_number);
+            if($request->type == 1){
+                $grade_value = $employee->grade->value_all;
+            }else{
+                $grade_value = $employee->grade->value_part;
+            }
+
+            $check_reservation_allowance = ReservationAllowance::where(['user_id' => $employee->id, 'date' => $to_day])->first();
+            if($check_reservation_allowance){
+                return redirect()->back()->with('error','عفوا تم اضافة بدل لحجز '.$employee->name.' فى هذا اليوم من قبل');
+            }
+            
+            $add_reservation_allowance = new ReservationAllowance();
+            $add_reservation_allowance->user_id = $employee->id;
+            $add_reservation_allowance->type = $request->type;
+            $add_reservation_allowance->amount = $grade_value;
+            $add_reservation_allowance->date = $to_day;
+            $add_reservation_allowance->day = $to_day_name;
+            $add_reservation_allowance->sector_id = $user->department->sector_id;
+            $add_reservation_allowance->departement_id = $user->department->id;
+            $add_reservation_allowance->created_by = $user->id;
+            $add_reservation_allowance->save();
+            return redirect()->route('reservation_allowances.index')->with('success', 'تم اضافه بدل حجز بنجاح');
+        }catch(\Exception $e){
+            return redirect()->back()->with('message', 'An error occurred while creating the group. Please try agai');   
+        }
+    }
+
+    public function create_all()
+    {
+        $user = auth()->user();        
+        $employees = User::where('department_id', $user->department_id)->where('flag', 'employee')->get();
+        return view('reservation_allowance.create_all', compact('employees'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store_all(Request $request)
+    {
+        try{
+            $messages = [
+                'Civil_number.required' => 'رقم الهوية مطلوب ولا يمكن تركه فارغاً.'
+            ];
+            
+            $validatedData = Validator::make($request->all(), [
+                'Civil_number' => 'required'
+            ], $messages);
+    
+            if ($validatedData->fails()) {
+                return redirect()->back()->withErrors($validatedData)->withInput();
+            }
+            
+            $user = auth()->user();    
+            $to_day = Carbon::now()->format('Y-m-d');
+            $to_day_name = Carbon::now()->translatedFormat('l');
+
+            foreach($request->Civil_number as $Civil_number){
+                $employee = User::findOrFail($Civil_number);
+                if($request->type == 1){
+                    $grade_value = $employee->grade->value_all;
+                }else{
+                    $grade_value = $employee->grade->value_part;
+                }
+
+                $check_reservation_allowance = ReservationAllowance::where(['user_id' => $employee->id, 'date' => $to_day])->first();
+                if($check_reservation_allowance){
+                    return redirect()->back()->with('error','عفوا تم اضافة بدل لحجز '.$employee->name.' فى هذا اليوم من قبل');
+                }
+                
+                $add_reservation_allowance = new ReservationAllowance();
+                $add_reservation_allowance->user_id = $employee->id;
+                $add_reservation_allowance->type = $request->type;
+                $add_reservation_allowance->amount = $grade_value;
+                $add_reservation_allowance->date = $to_day;
+                $add_reservation_allowance->day = $to_day_name;
+                $add_reservation_allowance->sector_id = $user->department->sector_id;
+                $add_reservation_allowance->departement_id = $user->department->id;
+                $add_reservation_allowance->created_by = $user->id;
+                $add_reservation_allowance->save();
+            }
+
+            return redirect()->route('reservation_allowances.index')->with('success', 'تم اضافه بدل حجز بنجاح');
+        }catch(\Exception $e){
+            return redirect()->back()->with('message', 'An error occurred while creating the group. Please try agai');   
+        }
     }
 
     /**

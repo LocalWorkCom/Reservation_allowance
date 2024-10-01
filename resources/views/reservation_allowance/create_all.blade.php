@@ -57,7 +57,7 @@
 
                 {{-- {{dd($flag)}} --}}
 
-                <form action="{{ route('reservation_allowances.store') }}" method="post" class="text-right" enctype="multipart/form-data">
+                <form action="{{ route('reservation_allowances.store.all') }}" method="post" class="text-right" enctype="multipart/form-data">
                     @csrf
 
                     <div class="form-row mx-md-2 mt-4 d-flex justify-content-center">
@@ -65,7 +65,7 @@
                         <div class="form-group col-md-10 mx-2">
                                 <label for="Civil_number"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>
                                     رقم الهوية</label>
-                                <select class="custom-select custom-select-lg mb-3 select2" name="Civil_number" id="Civil_number">
+                                <select class="custom-select custom-select-lg mb-3 select2" multiple name="Civil_number[]" id="Civil_number">
                                     <option selected disabled>اختار من القائمة</option>
                                     @foreach ($employees as $employee)
                                     <option value="{{ $employee->id }}" {{ old('Civil_number') == $employee->id ? 'selected' : '' }}>
