@@ -87,17 +87,19 @@
             <div class="bg-white">
                 <h3 class="paragraph">احصائيات بدل حجز شهر {{ $currentMonth }}</h3>
                 <table id="credit-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
-                <tr>
-            <th>الترتيب</th>
-            <th>اليوم</th>
-            <th>عدد المحجوزين</th>
-            <th>حجز جزئي العدد</th>
-            <th>حجز كلي العدد</th>
-            <th>حجز جزئي المبلغ</th>
-            <th>حجز كلي المبلغ</th>
-            <th>اجمالي المبلغ</th>
-            <th>طباعة</th> <!-- Print Column -->
-        </tr>
+                    <thead>
+                        <tr>
+                            <th>الترتيب</th>
+                            <th>اليوم</th>
+                            <th>عدد المحجوزين</th>
+                            <th>حجز جزئي العدد</th>
+                            <th>حجز جزئي المبلغ</th>
+                            <th>حجز كلي العدد</th>
+                            <th>حجز كلي المبلغ</th>
+                            <th>اجمالي المبلغ</th>
+                            <th>طباعة</th>
+                        </tr>
+                    </thead>
                 </table>
             </div>
         </div>
