@@ -179,7 +179,7 @@ function confirmDelete() {
 }
 $(document).ready(function() {
     // Check if there are errors
-    @if($errors - > any())
+    @if($errors->any())
     // Check if it's an add or edit operation
     @if(session('modal_type') === 'add')
     $('#addForm').modal('show');
