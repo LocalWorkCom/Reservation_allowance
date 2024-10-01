@@ -101,7 +101,7 @@
                 </li>
 
                 <li class="nav-item {{ request()->routeIs('reservation_allowances') || request()->routeIs('reservation_allowances.index') || request()->routeIs('reservation_allowances.create') || request()->routeIs('Reserv_statistic.index') ? 'active' : '' }}"
-                    onclick="toggleDropdown5(event)">
+                    onclick="toggleDropdown5(event)"> 
                     <a href="#">
                         <img src="{{ asset('frontend/images/employees.svg') }}" alt="logo">
                         <h6 class="btn5">بدل حجز <i class="fa-solid fa-angle-down"></i></h6>
