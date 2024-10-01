@@ -32,6 +32,8 @@ use App\Http\Controllers\paperTransactionController;
 use App\Http\Controllers\statisticController;
 use App\Http\Controllers\ViolationTypesController;
 use App\Http\Controllers\ReservationStaticsController;
+use App\Http\Controllers\ReservationStaticsCreditController;
+
 
 // use App\Http\Controllers\ViolationReportController;
 // use App\Http\Controllers\dashboard\VacationController;
@@ -466,6 +468,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/statistics', [ReservationStaticsController::class, 'static'])->name('Reserv_statistic.index')->middleware('check.permission:view Inspector');
     Route::get('/statistics/search', [ReservationStaticsController::class, 'getFilteredData'])->name('Reserv_statistic.search')->middleware('check.permission:view Inspector');
     Route::any('/statistics/getAll', [ReservationStaticsController::class, 'getAll'])->name('Reserv_statistic.getAll')->middleware('check.permission:view Inspector');
+
+
+
+    
+    //reservation statics credit
+    Route::get('/statistics_credit', [ReservationStaticsCreditController::class, 'static'])->name('Reserv_statistic_credit.index')->middleware('check.permission:view Inspector');
+    Route::get('/statistics_credit/search', [ReservationStaticsCreditController::class, 'getFilteredData'])->name('Reserv_statistic_credit.search')->middleware('check.permission:view Inspector');
+    Route::any('/statistics_credit/getAll', [ReservationStaticsCreditController::class, 'getAll'])->name('Reserv_statistic_credit.getAll')->middleware('check.permission:view Inspector');
 
 });
 

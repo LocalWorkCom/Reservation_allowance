@@ -123,7 +123,7 @@
                                         <li class="{{ request()->routeIs('reservation_allowances.index') ? 'active' : '' }}">
                                             <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
                                                 style="margin-left: 7px;">
-                                            <a href="{{ route('reservation_allowances.index') }}">رصيد بدل حجز</a>
+                                            <a href="{{ route('Reserv_statistic_credit.index') }}">رصيد بدل حجز</a>
                                         </li>
                                         <li class="{{ request()->routeIs('reservation_allowances.index') ? 'active' : '' }}">
                                             <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
