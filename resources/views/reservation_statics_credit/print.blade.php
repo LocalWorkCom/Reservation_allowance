@@ -9,13 +9,36 @@
             direction: rtl;
             font-family: 'Almarai', sans-serif;
         }
-        h3 {
+        h1, p {
             text-align: center;
+        }
+        .header-box {
+            background-color: #e0e0e0; /* Gray background */
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-box h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+        .header-box img {
+            width: 100px; /* Adjust image size */
+            height: auto;
         }
     </style>
 </head>
 <body>
-<h1>احصائيات بدل حجز يوم {{ $dayOfWeek }} من شهر {{ $currentMonth }}</h1>
+
+    <div class="header-box">
+        <h1>احصائيات بدل حجز يوم {{ $dayOfWeek }} من شهر {{ $currentMonth }}</h1>
+        <img src="{{ asset('img/logo.png') }}" alt="Logo">
+    </div>
+
     <p>التاريخ: {{ $date }}</p>
     <p>حجز جزئي العدد: {{ $partial_reservation_count }}</p>
     <p>حجز جزئي المبلغ: {{ $partial_reservation_amount }}</p>
@@ -23,7 +46,6 @@
     <p>حجز كلي المبلغ: {{ $full_reservation_amount }}</p>
     <p>اجمالي المبلغ: {{ $total_amount }}</p>
     
-
     <script>
         window.onload = function() {
             window.print();
