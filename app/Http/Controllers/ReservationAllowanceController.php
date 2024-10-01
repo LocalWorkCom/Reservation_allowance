@@ -200,20 +200,22 @@ class ReservationAllowanceController extends Controller
             })
             ->addColumn('employee_grade', function ($row) {
                   // Display the count of iotelegrams
-                if($row->users->grade->count() > 0){return $row->users->grade->name;}else{}{return "لا يوجد رقم ملف";}
+                if($row->users->grade_id != null){return $row->users->grade->name;}else{return "لا يوجد رتبة";}
 
             })
             ->addColumn('employee_file_num', function ($row) {
                 if($row->users->file_number == null){return "لا يوجد رقم ملف";}else{return $row->users->file_number;}
             })
+            ->addColumn('type', function ($row) {
+                return $row->type;
+            })
             ->addColumn('employee_allowance_type_btn', function ($row) {
-                if($row->type == 1){
-                    return '<div class="d-flex" style="justify-content: space-around !important"><div style="display: inline-flex; direction: ltr;"><label for="">  حجز كلى</label><input type="radio" id="value_all" name="type" class="form-control" checked value="1" disabled></div><span>|</span>
-                     <div style="display: inline-flex; direction: ltr;"><label for="">  حجز جزئى</label><input type="radio" id="value_all" name="type" class="form-control" value="2" disabled></div></div>';
+                if($row->type == '1'){
+                    $btn = '<div class="d-flex" style="justify-content: space-around !important"><div style="display: inline-flex; direction: ltr;"><label for="">  حجز كلى</label><input type="radio" class="form-control" checked disabled></div><span>|</span><div style="display: inline-flex; direction: ltr;"><label for="">  حجز جزئى</label><input type="radio" class="form-control" disabled></div></div>';
                 }else{
-                    return '<div class="d-flex" style="justify-content: space-around !important"><div style="display: inline-flex; direction: ltr;"><label for="">  حجز كلى</label><input type="radio" id="value_all" name="type" class="form-control" value="1" disabled></div><span>|</span>
-                     <div style="display: inline-flex; direction: ltr;"><label for="">  حجز جزئى</label><input type="radio" id="value_all" name="type" class="form-control" value="2" checked disabled></div></div>';
+                    $btn = '<div class="d-flex" style="justify-content: space-around !important"><div style="display: inline-flex; direction: ltr;"><label for="">  حجز كلى</label><input type="radio" class="form-control" disabled></div><span>|</span><div style="display: inline-flex; direction: ltr;"><label for="">  حجز جزئى</label><input type="radio"class="form-control" checked disabled></div></div>';
                 }
+                return $btn;
             })
             ->addColumn('employee_allowance_amount', function ($row) {
                 return $row->amount;  // Display the count of iotelegrams
