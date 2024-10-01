@@ -43,6 +43,7 @@ text-align: right;
             <div class="d-flex justify-content-between">
                     <div class="col-12">
                         <div class="row" style="direction: rtl">
+                            @if(auth()->user()->department->children->count() <= 0 && auth()->user()->rule_id == 3)
                             <div class="col-8"><p> بدل الحجز</p></div>
                             <div class="col-2">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                 <a class="btn-all" href="{{ route('reservation_allowances.create') }}" style="color: #0D992C;">
@@ -60,18 +61,19 @@ text-align: right;
                                 </a>
                                 {{-- @endif --}}
                             </div>
+                            @endif
 
 
-                            @if(auth()->user()->department->parent_id == null)
+                            @if(auth()->user()->rule_id != 2)
                             <div class="col-12 div-info d-flex justify-content-between">
                                 <div class="col-7">
                                     <div class="col-6 div-info-padding"><b>القطاع : <span style="color:#032F70;">{{auth()->user()->department->sectors->name}}</span></b></div>
                                     <div class="col-6 div-info-padding"><b>الادارة الفرعية : <span style="color:#032F70;">{{auth()->user()->department->name}}</span></b></div>
                                     <div class="col-6 div-info-padding"><b>اليوم : <span style="color:#032F70;"> {{$to_day_name}}</span></b></div>
-                                    <div class="col-6 div-info-padding"><b>عدد العسكرين المحجوزين : <span style="color:#032F70;">{{auth()->user()->department->reservationAllowances->count()}}</span></b></div>
+                                    <div class="col-6 div-info-padding"><b>عدد العسكرين المحجوزين : <span style="color:#032F70;">{{$reservation_allowances->count()}}</span></b></div>
                                 </div>
                                 <div class="col-5">
-                                    <div class="col-6 div-info-padding"><b>الادارة الرئيسية : <span style="color:#032F70;">{{auth()->user()->department->parent == null ? $super_admin->name : auth()->user()->department->parent}}</span></b></div>
+                                    <div class="col-6 div-info-padding"><b>الادارة الرئيسية : <span style="color:#032F70;">{{auth()->user()->department->parent == null ? $super_admin->name : auth()->user()->department->parent->name}}</span></b></div>
                                     <div class="col-6 div-info-padding"><b>مبلغ بدل الحجز : <span style="color:#032F70;">{{auth()->user()->department->reservation_allowance_amount}}</span></b></div>
                                     <div class="col-6 div-info-padding"><b>التاريخ : <span style="color:#032F70;"> {{$to_day}}</span></b></div>
                                 </div>

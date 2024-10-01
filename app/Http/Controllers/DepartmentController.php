@@ -17,31 +17,16 @@ use App\Models\Sector;
 
 class DepartmentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    // public function index(DepartmentDataTable $dataTable)
-    // {
-    //     return $dataTable->render('departments.index');
-    //     // $departments = departements::with(['manager', 'managerAssistant'])->paginate(10);
-    //     // return view('departments.index', compact('departments'));
-    //     // return response()->json($departments);
-    // }
     public function index()
     {
+        // if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
         $users = User::where('flag', 'employee')->where('department_id', NULL)->get();
 
-        $parentDepartment = $departments = departements::where('parent_id', Auth::user()->department_id)->first();
-        // Get the children of the parent department
-
-        // $departments = $parentDepartment ? $parentDepartment->children : collect();
-        // if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
-        //     $subdepartments = departements::with('children')->get();
-        // } else {
-        //     $subdepartments = departements::where('id', Auth::user()->department_id)->with('children')->get();
+        $departments = departements::where('parent_id', Auth::user()->department_id)->first();
+        return view('departments.index', compact('users', 'departments'));
+        // }else{
+        //     return redirect()->route('sub_departments.index',['id' => Auth::user()->department_id]);
         // }
-
-        return view('departments.index', compact('users', 'departments', 'parentDepartment'));
     }
     public function getDepartment()
     {
@@ -153,6 +138,7 @@ class DepartmentController extends Controller
     public function create()
     {
         //create Main Administration
+
         $sectors = Sector::all();
         $managers = User::where('flag', 'user')->where('department_id', 1)->whereNot('id', auth()->user()->id)->get();
         $employees = User::where('flag', 'employee')->where('department_id', null)->get();
@@ -164,11 +150,24 @@ class DepartmentController extends Controller
     {
         $department = departements::findOrFail($id);
         if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
-            $employees = User::where('department_id', $id)->whereNot('id', $department->manager)->get();
-            $managers = User::where('flag', 'user')->where('department_id', 1)->get();
+            $employees = User::where(function ($query) use ($id) {
+                $query->where('department_id', $id)
+                    ->orWhere('department_id', null);
+            })
+                ->where('flag', 'employee')
+                ->whereNot('id', $department->manager)
+                ->whereNot('id', auth()->user()->id)
+                ->get();
+            $managers = User::where('flag', 'user')->where('department_id', 1)->where('rule_id', 3)->get();
         } else {
-            $employees = User::where('department_id', $id)->whereNot('id', $department->manager)->get();
-            $managers = User::where('flag', 'user')->where('department_id', 1)->get();
+            $employees = User::where(function ($query) use ($id) {
+                $query->where('department_id', $id);
+            })
+                ->where('flag', 'employee')
+                ->whereNot('id', $department->manager)
+                ->whereNot('id', auth()->user()->id)
+                ->get();
+            $managers = User::where('flag', 'user')->where('department_id', $id)->whereNot('id', auth()->user()->id)->get();
         }
         // $users = User::where('rule_id', '<>', 2)->where('department_id', NULL)->get();
         // $parentDepartment = departements::where('parent_id', Auth::user()->department_id)->first();
@@ -373,22 +372,38 @@ class DepartmentController extends Controller
             ->get();
         // dd(auth()->user()->id, $managers);
         $employees = User::where('flag', 'employee')
-        ->where(function ($query) use ($department) {
-            $query->where('department_id', null)
-                  ->orWhere('department_id', $department->id);
-        })
-        ->whereNot('id', auth()->user()->id)
-        ->whereNot('id', $department->manger)
-        ->get();        return view('departments.edit', compact('department', 'sectors', 'managers', 'employees'));
+            ->where(function ($query) use ($department) {
+                $query->where('department_id', null)
+                    ->orWhere('department_id', $department->id);
+            })
+            ->whereNot('id', auth()->user()->id)
+            ->whereNot('id', $department->manger)
+            ->get();
+        return view('departments.edit', compact('department', 'sectors', 'managers', 'employees'));
         // dd($employee);
         // return view('departments.edit', compact('department', 'users', 'employee'));
     }
 
     public function edit_1(departements $department)
     {
+        if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
+            $employees = User::where(function ($query) use ($department) {
+                $query->where('department_id', $department->id)
+                    ->orWhere('department_id', null);
+            })
+                ->where('flag', 'employee')
+                ->whereNot('id', $department->manager)
+                ->whereNot('id', auth()->user()->id)
+                ->get();
+            $managers = User::where('flag', 'user')->where('department_id', 1)->orWhere('id', $department->manger)->where('rule_id', 3)->get();
+        } else {
+            $employees = User::where('department_id', $department->id)->whereNot('id', $department->manager)->get();
+            $managers = User::where('flag', 'user')->where('department_id', 1)->get();
+        }
         // dd(vars: $department);
-        $managers = User::where('flag', 'user')->where('department_id', 1)->orwhere('id', $department->manger)->get();
-        $employees = User::where('flag', 'employee')->where('department_id', null)->orWhere('department_id', $department->id)->whereNot('id', $department->manger)->get();
+        // $managers = User::where('flag', 'user')->where('department_id', 1)->orWhere('id', $department->manger)->get();
+        // $employees = User::where('flag', 'employee')->where('department_id', null)->orWhere('department_id', $department->id)->whereNot('id', $department->manger)->get();
+
         return view('sub_departments.edit', compact('department', 'managers', 'employees'));
     }
 
@@ -451,45 +466,45 @@ class DepartmentController extends Controller
         $departements->created_by = Auth::user()->id;
         $departements->save();
 
-         // Get all employees currently assigned to the department
-    $currentEmployees = User::where('department_id', $departements->id)->pluck('id')->toArray();
-    $newEmployees = $request->has('employess') ? $request->employess : [];
+        // Get all employees currently assigned to the department
+        $currentEmployees = User::where('department_id', $departements->id)->where('flag', 'employee')->pluck('id')->toArray();
+        $newEmployees = $request->has('employess') ? $request->employess : [];
 
-    // Find employees that were removed
-    $removedEmployees = array_diff($currentEmployees, $newEmployees);
-    foreach ($removedEmployees as $item) {
-        $user = User::find($item);
-        if ($user) {
-            $user->department_id = null; // Set department_id to null for removed employees
-            $user->save();
-        }
-    }
-
-    // Handle department manager change
-    if ($request->manger != $department->manger) {
-        // Reassign old manager's department_id to 1
-        $oldManager = User::find($department->manger);
-        if ($oldManager) {
-            $oldManager->department_id = 1; // Reset old manager's department_id
-            $oldManager->save();
+        // Find employees that were removed
+        $removedEmployees = array_diff($currentEmployees, $newEmployees);
+        foreach ($removedEmployees as $item) {
+            $user = User::find($item);
+            if ($user) {
+                $user->department_id = null; // Set department_id to null for removed employees
+                $user->save();
+            }
         }
 
-        // Update the new manager's department_id
-        $newManager = User::find($request->manger);
-        if ($newManager) {
-            $newManager->department_id = $departements->id; // Set new manager's department_id
-            $newManager->save();
-        }
-    }
+        // Handle department manager change
+        if ($request->manger != $department->manger) {
+            // Reassign old manager's department_id to 1
+            $oldManager = User::find($department->manger);
+            if ($oldManager) {
+                $oldManager->department_id = 1; // Reset old manager's department_id
+                $oldManager->save();
+            }
 
-    // Update department_id for new employees
-    foreach ($newEmployees as $item) {
-        $user = User::find($item);
-        if ($user) {
-            $user->department_id = $departements->id; // Set department_id for new employees
-            $user->save();
+            // Update the new manager's department_id
+            $newManager = User::find($request->manger);
+            if ($newManager) {
+                $newManager->department_id = $departements->id; // Set new manager's department_id
+                $newManager->save();
+            }
         }
-    }
+
+        // Update department_id for new employees
+        foreach ($newEmployees as $item) {
+            $user = User::find($item);
+            if ($user) {
+                $user->department_id = $departements->id; // Set department_id for new employees
+                $user->save();
+            }
+        }
         return redirect()->route('departments.index')->with('success', 'Department updated successfully.');
         // return response()->json($department);
     }
@@ -549,7 +564,7 @@ class DepartmentController extends Controller
         // $departements->parent_id = Auth::user()->department_id;
         $departements->created_by = Auth::user()->id;
         $departements->save();
-        $allemployee = User::where('department_id', $request->parent)->whereNot('id',$department->manger)->pluck('id')->toArray();
+        $allemployee = User::where('department_id', $request->parent)->whereNot('id', $department->manger)->pluck('id')->toArray();
         foreach ($allemployee as $item) {
             $use = User::find($item);
 
@@ -576,7 +591,7 @@ class DepartmentController extends Controller
                 }
             }
         }
-        return redirect()->route('sub_departments.index', ['id' => $request->parent])->with('success', 'Department updated successfully.');
+        return redirect()->route('sub_departments.index', ['id' => $departements->parent])->with('success', 'Department updated successfully.');
         // return response()->json($department);
     }
     /**

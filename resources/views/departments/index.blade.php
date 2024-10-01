@@ -122,17 +122,18 @@
                     subdepartment = subdepartment.replace(':id', row.id);
                     var departmentShow = '{{ route('departments.show', ':id') }}';
                     departmentShow = departmentShow.replace(':id', row.id);
-                    var departmentDelete = '{{ route('departments.destroy', ':id') }}';
-                    departmentDelete = departmentDelete.replace(':id', row.id);
 
-                    // Start building the return string
+                    // Get the authenticated user's department ID from Blade
+                    var authDepartmentId = {{ Auth::user()->department_id }};
+
+                    // Start building the buttons
                     var buttons = `
             <a href="${subdepartment}" class="btn btn-sm" style="background-color: #274373;"> <i class="fa fa-plus"></i> ادارات فرعيه</a>
             <a href="${departmentShow}" class="btn btn-sm" style="background-color: #274373;"> <i class="fa fa-eye"></i> عرض</a>
         `;
 
-                    // Only add the edit button if the id is not 1
-                    if (row.id !== 1) {
+                    // Only show the Edit button if the row's department ID matches the authenticated user's department ID and is not 1
+                    if (row.id === authDepartmentId) {
                         buttons += `
                 <a href="${departmentEdit}" class="btn btn-sm" style="background-color: #F7AF15;"> <i class="fa fa-edit"></i> تعديل</a>
             `;
