@@ -125,6 +125,8 @@
                                                 style="margin-left: 7px;">
                                             <a href="{{ route('Reserv_statistic.index') }}">احصائيات بدل حجز</a>
                                         </li>
+
+                                        
                                 </div>
                             </div>
                         </ul>
