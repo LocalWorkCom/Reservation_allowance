@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Government;
 use App\Models\grade;
 use App\Models\job;
+use Illuminate\Validation\Rule; // Ensure this is at the top
 use App\Models\Setting;
 use App\Models\VacationType;
 use Illuminate\Support\Facades\Validator;
@@ -159,15 +160,23 @@ class settingController extends Controller
 
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
-                $name = "'$row->name'";
+                // Safely handle null values for JavaScript function parameters
+                $name = $row->name ? "'$row->name'" : "''";
+                $order = $row->order ? "'$row->order'" : "''";
+                $value_all = $row->value_all ? "'$row->value_all'" : "''";
+                $value_part = $row->value_part ? "'$row->value_part'" : "''";
+
                 $edit_permission = null;
                 $delete_permission = null;
+
                 if (Auth::user()->hasPermission('edit grade')) {
-                    $edit_permission = '<a class="btn btn-sm"  style="background-color: #F7AF15;"  onclick="openedit(' . $row->id . ',' . $name . ',' . $row->type . ',' . $row->value_all . ',' . $row->value_part . ',' . $row->order . ')">  <i class="fa fa-edit"></i> تعديل </a>';
+                    // Pass values safely to the JavaScript function
+                    $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;" onclick="openedit(' . $row->id . ',' . $name . ',' . $row->type . ',' . $value_all . ',' . $value_part . ',' . $order . ')">  <i class="fa fa-edit"></i> تعديل </a>';
                 }
                 if (Auth::user()->hasPermission('delete grade')) {
-                    $delete_permission = ' <a class="btn  btn-sm" style="background-color: #C91D1D;"   onclick="opendelete(' . $row->id . ')"> <i class="fa-solid fa-trash"></i> حذف</a>';
+                    $delete_permission = ' <a class="btn btn-sm" style="background-color: #C91D1D;" onclick="opendelete(' . $row->id . ')"> <i class="fa-solid fa-trash"></i> حذف</a>';
                 }
+
                 $uploadButton = $edit_permission . $delete_permission;
                 return $uploadButton;
             })
@@ -252,6 +261,7 @@ class settingController extends Controller
     //update GRAD
     public function updategrads(Request $request)
     {
+
         $messages = [
             'name.required' => 'الاسم مطلوب.',
             'name.string' => 'الاسم يجب أن يكون نصًا.',
@@ -269,41 +279,40 @@ class settingController extends Controller
             'orderedit.unique' => 'قيمة الترتيب مستخدمة بالفعل. الرجاء إدخال ترتيب مختلف.'
         ];
 
+        $gradeId = $request->id; // Retrieve the ID from the route parameter
         // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'typeedit' => 'required|string',
             'value_alledit' => 'required|numeric|min:0.01|max:1000000',
             'value_partedit' => 'required|numeric|min:0.01|max:1000000',
-            'orderedit' => 'required|unique:grades,order',
-
+            'orderedit' => [
+                'required',
+                Rule::unique('grades', 'order')->ignore($gradeId)
+            ],
         ], $messages);
 
-        // Check if validation fails
         if ($validator->fails()) {
-            // Set the session variable for the modal type
             session(['modal_type' => 'edit']);
 
-            // Store the old values in the session
             session([
                 'old_name' => $request->name,
                 'old_typeedit' => $request->typeedit,
                 'old_value_alledit' => $request->value_alledit,
                 'old_value_partedit' => $request->value_partedit,
                 'old_orderedit' => $request->orderedit,
-
-                'edit_id' => $request->id, // Store the ID to retrieve it later if needed
+                'edit_id' => $request->id,
             ]);
 
-            // Redirect back with errors and input
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $grade = grade::find($request->id);
+        $grade = Grade::find($request->id);
 
         if (!$grade) {
             return response()->json(['error' => 'عفوا هذه الرتبه غير موجوده'], 404);
         }
+
         $grade->name = $request->name;
         $grade->type = $request->typeedit;
         $grade->value_all = $request->value_alledit;
@@ -313,8 +322,6 @@ class settingController extends Controller
         $grade->save();
         $message = 'تم تعديل الرتبه';
         return redirect()->route('grads.index', compact('message'));
-        // return redirect()->back()->with(compact('activeTab'));
-
     }
 
     //delete GRAD
