@@ -24,10 +24,21 @@ class ReservationAllowanceController extends Controller
 
         $to_day = Carbon::now()->format('Y-m-d');
         $to_day_name = Carbon::now()->translatedFormat('l');
-        $user = auth()->user();        
+        $user = auth()->user();   
         $super_admin = User::where('department_id', 1)->first();
         $employees = User::where('department_id', $user->department_id)->where('flag', 'employee')->get();
-        $reservation_allowances = ReservationAllowance::with('users', 'departements')->get();
+
+        if($user->rule_id == 2)
+        {
+            $reservation_allowances = ReservationAllowance::with('users', 'users.grade', 'departements')->where('date', $to_day)->get();
+        }else{
+            if($user->department->children->count() > 0){
+                $department_id = $user->department->children->pluck('id');
+            }else{
+                $department_id[] = $user->department_id;
+            }
+            $reservation_allowances = ReservationAllowance::with('users', 'users.grade', 'departements')->whereIn('departement_id', $department_id)->where('date', $to_day)->get();
+        }         
         return view('reservation_allowance.index', compact('reservation_allowances', 'employees', 'to_day', 'to_day_name', 'super_admin'));
     }
 
@@ -163,7 +174,18 @@ class ReservationAllowanceController extends Controller
     {
         $user = auth()->user();
         $to_day = Carbon::now()->format('Y-m-d');
-        $data = ReservationAllowance::with('users', 'users.grade', 'departements')->where('departement_id', $user->department_id)->where('date', $to_day)->get();
+
+        if($user->rule_id == 2)
+        {
+            $data = ReservationAllowance::with('users', 'users.grade', 'departements')->where('date', $to_day)->get();
+        }else{
+            if($user->department->children->count() > 0){
+                $department_id = $user->department->children->pluck('id');
+            }else{
+                $department_id[] = $user->department_id;
+            }
+            $data = ReservationAllowance::with('users', 'users.grade', 'departements')->whereIn('departement_id', $department_id)->where('date', $to_day)->get();
+        }   
 
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
