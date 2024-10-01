@@ -132,13 +132,13 @@
 
 
 
-            </div> 
+            </div>
             <div class="form-group col-md-5 mx-2">
                 <label for="input2"> البريد الالكتروني</label>
                 <input type="text" id="input2" name="email" class="form-control" placeholder=" البريد الالكترونى"
                     value="{{ old('email') }}">
             </div>
-           
+
             <div class="form-group col-md-5 mx-2">
                 <label for="nameus"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>
                     الاسم</label>
@@ -183,11 +183,11 @@
 
         <div class="form-row mx-md-3 d-flex justify-content-center flex-row-reverse">
 
-           
+
 
             {{-- <div class="form-group col-md-5 mx-2">
                         <label for="sector">قطاع </label>
-                   
+
                             <select id="sector" name="sector" class="form-control select2" placeholder="المنطقة">
                                 <option selected >اختار من القائمة</option>
                                 @foreach ($sector as $item)
@@ -198,7 +198,7 @@
         </div> --}}
         {{-- </div>
 
-                
+
                 <div class="form-row mx-md-3 d-flex justify-content-center flex-row-reverse"> --}}
                 <div class="form-group col-md-5 mx-2">
         <label for="input4"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i> رقم الهاتف</label>
@@ -218,8 +218,8 @@
                 @endforeach
             </select>
         </div>
-              
-       
+
+
 
         {{-- <div class="form-group col-md-5 mx-2">
                         <label for="Provinces"> المحافظة</label>
@@ -261,8 +261,8 @@
         <input type="text" id="input11" name="Civil_number" class="form-control" placeholder="رقم المدنى"
             value="{{ old('Civil_number') }}">
     </div>
-  
-   
+
+
 </div>
 
 
@@ -280,7 +280,7 @@
 </div>
 
 <div class="form-row  mx-md-3 d-flex justify-content-center flex-row-reverse">
-   
+
     <div class="form-group col-md-10 mx-2" style="display: none;" id="military_number_id">
         <label for="input6"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;" ></i> رقم العسكرى</label>
         <input type="text" id="input6" name="military_number" class="form-control" placeholder="رقم العسكرى"
@@ -301,8 +301,8 @@
                             placeholder="الاقدامية" value="{{ old('seniority') }}">
                     </div> --}} -->
     <div class="form-group col-md-5 mx-2">
-        <label for="input24"> الرتبة</label>
-        <select id="input24" name="grade_id" class="form-control select2" placeholder="الرتبة">
+        <label for="input24"><i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i> الرتبة</label>
+        <select id="input24" name="grade_id" class="form-control select2" placeholder="الرتبة" required>
             <option selected disabled>اختار من القائمة</option>
             @foreach ($grade as $item)
 
@@ -324,7 +324,7 @@
         </select>
     </div>
 </div>
-{{-- 
+{{--
                 <div class="form-row mx-md-3  d-flex justify-content-center flex-row-reverse">
                     <div class="form-group col-md-5 mx-2">
                         <label for="input16">موقع العمل</label>
@@ -593,7 +593,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (value === "military") {
             militarySection.style.display = "block";
             $('#input12Div').fadeIn('fast');
-           
+
         } else {
             militarySection.style.display = "none";
             $('#input12Div').fadeOut('fast');
@@ -629,7 +629,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('DOMContentLoaded', function() {
         const radios = document.getElementsByName('type_military');
         let selectedValue;
-    
+
         // Function to show/hide the military section based on the selected value
         function toggleMilitarySection(value) {
             const militarySection = document.getElementById('military_number_id');
@@ -639,7 +639,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 militarySection.style.display = "none";
             }
         }
-    
+
         // Check initial selection
         for (let i = 0; i < radios.length; i++) {
             if (radios[i].checked) {
@@ -647,10 +647,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
             }
         }
-    
+
         // Call the function to toggle visibility based on initial selection
         toggleMilitarySection(selectedValue);
-    
+
         // Handle change event
         radios.forEach((radio) => {
             radio.addEventListener('change', function() {

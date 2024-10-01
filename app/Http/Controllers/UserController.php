@@ -548,6 +548,8 @@ class UserController extends Controller
                 'name.required' => 'الاسم  مطلوب ولا يمكن تركه فارغاً.',
                 'rule_id.required' => ' المهام  مطلوب ولا يمكن تركه فارغاً.',
                 'password.required' => ' الباسورد مطلوب ولا يمكن تركه فارغاً.',
+                'grade_id.required' => 'يجب اختيار رتبه',
+
                 // Add more custom messages here
             ];
 
@@ -555,6 +557,8 @@ class UserController extends Controller
                 'name' => 'required|string',
                 'rule_id' => 'required',
                 'password' => 'required',
+                'grade_id' => 'required',
+
             ], $messages);
         } else {
             $messages = [
@@ -685,7 +689,7 @@ class UserController extends Controller
             $newUser->description = $request->description;
             $newUser->file_number = $request->file_number;
             $newUser->type_military = $request->type_military;
-            // 
+            //
             $newUser->employee_type = $request->solderORcivil;
             $newUser->flag = "employee";
             $newUser->grade_id = $request->grade_id;
