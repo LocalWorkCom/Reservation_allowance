@@ -97,11 +97,11 @@
         $(document).ready(function() {
             $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm';
 
-            $('#users-table').DataTable({
+ $('#users-table').DataTable({
     processing: true,
     serverSide: true,
     ajax: {
-        url: '{{ route("Reserv_statistic.getAll") }}',  // Route to fetch data for the table
+        url: '{{ route("Reserv_statistic.getAll") }}',
     },
     columns: [
         { data: null, name: 'order', orderable: false, searchable: false },
@@ -109,8 +109,8 @@
         { data: 'sub_departments_count', name: 'sub_departments_count' },
         { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' },
         { data: 'registered_by', name: 'registered_by' },
-        { data: 'remaining_amount', name: 'remaining_amount' },  // "المبلغ المتبقى"
-        { data: 'number_of_employees', name: 'number_of_employees' },
+        { data: 'remaining_amount', name: 'remaining_amount' },
+        { data: 'number_of_employees', name: 'number_of_employees' },  // "عدد الموظفين"
         { data: 'received_allowance_count', name: 'received_allowance_count' },
         { data: 'did_not_receive_allowance_count', name: 'did_not_receive_allowance_count' }
     ],

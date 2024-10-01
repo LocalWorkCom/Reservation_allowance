@@ -81,6 +81,24 @@ class ReservationStaticsController extends Controller
                     // Calculate the remaining amount
                     return $reservationAllowanceBudget - $totalRegisteredAmount;
                 })
+                ->addColumn('number_of_employees', function($row) {
+                    // Fetch sub-department IDs for the main department
+                    $subDepartmentIds = departements::where('parent_id', $row->id)->pluck('id');
+                    
+                    // Count the users in these departments where 'flag' = 'employee'
+                    $totalEmployees = User::whereIn('department_id', $subDepartmentIds)
+                        ->where('flag', 'employee')
+                        ->count();
+    
+                    // If no sub-departments, count the employees directly in the main department
+                    if ($subDepartmentIds->isEmpty()) {
+                        $totalEmployees = User::where('department_id', $row->id)
+                            ->where('flag', 'employee')
+                            ->count();
+                    }
+    
+                    return $totalEmployees;
+                })
                 ->rawColumns(['action'])
                 ->make(true);
     
@@ -96,5 +114,6 @@ class ReservationStaticsController extends Controller
             ]);
         }
     }
+    
     
 }
