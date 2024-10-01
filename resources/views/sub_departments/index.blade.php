@@ -16,11 +16,15 @@
             <div class="d-flex justify-content-between">
                 <p> الأدارات الفرعيه - {{ $parentDepartment->name }} </p>
                 <div class="form-group">
-                    <button type="button" class="wide-btn "
-                        onclick="window.location.href='{{ route('sub_departments.create',['id'=>$parentDepartment->id]) }}'" style="    color: #0D992C;">
-                        اضافة جديد
-                        <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                    </button>
+                    @if (Auth::user()->rule->name == 'manager' || Auth::user()->department_id == $parentDepartment->id)
+
+                        <button type="button" class="wide-btn "
+                            onclick="window.location.href='{{ route('sub_departments.create', ['id' => $parentDepartment->id]) }}'"
+                            style="    color: #0D992C;">
+                            اضافة جديد
+                            <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                        </button>
+                    @endif
                     @if (Auth::user()->hasPermission('create Postman'))
                         <!--   <button type="button" class="wide-btn mx-md-3 mx-1"
                         onclick="window.location.href='{{ route('postmans.create') }}'">
@@ -66,13 +70,13 @@
     $(document).ready(function() {
         $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
         var pathArray = window.location.pathname.split('/');
-    var departmentId = pathArray[pathArray.length - 1];  // Get the last segment of the URL, which is the ID
+        var departmentId = pathArray[pathArray.length - 1]; // Get the last segment of the URL, which is the ID
 
-    // Update DataTables configuration
-    $('#users-table').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: '/api/sub_department/' + departmentId,
+        // Update DataTables configuration
+        $('#users-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: '/api/sub_department/' + departmentId,
 
             columns: [{
                     data: 'id',
@@ -112,13 +116,20 @@
                 render: function(data, type, row) {
                     var departmentEdit = '{{ route('sub_departments.edit', ':id') }}';
                     departmentEdit = departmentEdit.replace(':id', row.id);
-   
 
-                    return `
-                        <a href="${departmentEdit}" class="btn btn-sm"  style="background-color: #F7AF15;"> <i class="fa fa-edit"></i>تعديل  </a>
+                    // Get the role and department info from Blade
+                    var canEdit = @json(Auth::user()->rule->name == 'manager' || Auth::user()->department_id == $parentDepartment->id);
 
-
-                        `;
+                    // Conditionally render the Edit button based on the user's role and department
+                    if (canEdit) {
+                        return `
+                <a href="${departmentEdit}" class="btn btn-sm"  style="background-color: #F7AF15;">
+                    <i class="fa fa-edit"></i>تعديل
+                </a>
+            `;
+                    } else {
+                        return '';
+                    }
                 }
             }],
             "oLanguage": {
