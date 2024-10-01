@@ -23,7 +23,7 @@
         <div class="row">
             <div class="container  col-11 mt-3 p-0 ">
                 <div class="container col-10 mt-5 mb-3 pb-5" style="border:0.5px solid #C7C7CC;">
-                    <form action="{{ route('departments.store') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('sub_departments.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @if ($errors->any())
                         <div class="alert alert-danger"dir="rtl">
@@ -43,6 +43,7 @@
                                         <option value="{{ $sector->id }}">{{ $sector->name }}</option>
                                     @endforeach
                                 </select> --}}
+                                <input type="hidden" name="parent" value="{{ $department->id }}">
                                 <input type="text" class="form-control" name="sector" id="sector" value="{{ $department->sectors->name }}" disabled>
                                 @error('sector')
                                     <div class="alert alert-danger">{{ $message }}</div>

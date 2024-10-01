@@ -10,6 +10,7 @@
     عرض
 @endsection
 <section>
+
     <div class="row">
         <div class="container welcome col-11">
             <div class="d-flex justify-content-between">
@@ -109,15 +110,11 @@
             columnDefs: [{
                 targets: -1,
                 render: function(data, type, row) {
-                    var departmentEdit = '{{ route('departments.edit', ':id') }}';
+                    var departmentEdit = '{{ route('sub_departments.edit', ':id') }}';
                     departmentEdit = departmentEdit.replace(':id', row.id);
-                    var departmentShow = '{{ route('departments.show', ':id') }}';
-                    departmentShow = departmentShow.replace(':id', row.id);
-                    var departmentDelete = '{{ route('departments.destroy', ':id') }}';
-                    departmentDelete = departmentDelete.replace(':id', row.id);
+   
 
                     return `
-                         <a href="${departmentShow}"  class="btn btn-sm " style="background-color: #274373;"> <i class="fa fa-eye"></i> عرض</a>
                         <a href="${departmentEdit}" class="btn btn-sm"  style="background-color: #F7AF15;"> <i class="fa fa-edit"></i>تعديل  </a>
 
 

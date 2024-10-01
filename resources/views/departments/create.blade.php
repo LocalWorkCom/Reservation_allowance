@@ -131,4 +131,29 @@
 
         </div>
     </main>
+    <script>
+        $(document).ready(function() {
+    // Assuming you have a list of users available in JavaScript
+    var allUsers = @json($employees); // If you pass the users list from Blade to JavaScript
+
+    $('#mangered').on('change', function() {
+        var selectedManager = $(this).val();
+        console.log('Selected Manager:', selectedManager);
+
+        // Clear the employees dropdown
+        $('#employess').empty();
+
+        // Iterate over the users list and add only those who are not the selected manager
+        allUsers.forEach(function(user) {
+            if (user.id != selectedManager) {
+                $('#employess').append('<option value="' + user.id + '">' + user.name + '</option>');
+            }
+        });
+    });
+
+    // Initial population of employees list excluding the selected manager (if any)
+    $('#mangered').trigger('change');
+});
+
+        </script>
 @endsection
