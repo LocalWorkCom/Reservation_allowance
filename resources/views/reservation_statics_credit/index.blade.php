@@ -29,6 +29,13 @@
     font-weight: 700;
     font-size: 25px;
 }
+#credit-table thead {
+    text-align: right !important;
+    font-size: 22px !important;
+    font-weight: 400 !important;
+    color: #3c3c3d !important;
+}
+
 </style>@extends('layout.main')
 
 @push('style')
