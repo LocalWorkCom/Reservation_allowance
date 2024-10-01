@@ -22,7 +22,21 @@ class ReservationStaticsController extends Controller
     public function getAll()
     {
         try {
-            $userId = Auth::id();
+            // Fetch the authenticated user
+        $userId = Auth::id();
+
+        // Verify that the authenticated user has 'rule_id' = 2
+        $authUser = User::where('id', $userId)->where('rule_id', 2)->first();
+        if (!$authUser) {
+            return response()->json([
+                'draw' => 0,
+                'recordsTotal' => 0,
+                'recordsFiltered' => 0,
+                'data' => [],
+                'error' => 'User does not have the required rule.'
+            ]);
+        }
+
     
             // Fetch only main departments (where parent_id is null)
             $data = departements::withCount('children')
