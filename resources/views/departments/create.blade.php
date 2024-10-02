@@ -43,7 +43,6 @@
     أضافة أداره رئيسية
 @endsection
 @push('style')
-
 @endpush
 @section('content')
     <main>
@@ -82,8 +81,9 @@
                         <div class="form-row mx-3 mt-4 d-flex justify-content-center">
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="sector">اختر القطاع </label>
-                                <select name="sector" id="sector"   class=" form-control custom-select custom-select-lg mb-3 select2 "
-                                style="border: 0.2px solid rgb(199, 196, 196); width:100% !important;" required>
+                                <select name="sector" id="sector"
+                                    class=" form-control custom-select custom-select-lg mb-3 select2 "
+                                    style="border: 0.2px solid rgb(199, 196, 196); width:100% !important;" required>
                                     <option value="">اختر القطاع </option>
                                     @foreach ($sectors as $sector)
                                         <option value="{{ $sector->id }}">{{ $sector->name }}</option>
@@ -122,14 +122,22 @@
                             </div>
                             <div class="form-group col-md-10 mx-md-2" id="manager">
                                 <label for="mangered">المدير</label>
-                                <select name="manger" id="mangered" class=" form-control custom-select custom-select-lg mb-3 select2 "
-                                style="border: 0.2px solid rgb(199, 196, 196); width:100% !important;" required>
+                                {{-- <select name="mangered" id="mangered" class="form-control custom-select custom-select-lg mb-3 select2"
+                                style="border: 0.2px solid rgb(199, 196, 196); width:100% !important;" required> --}}
+                                <select name="mangered" id="mangered" class="form-control " required>
                                     <option value="">اختار المدير</option>
                                     @foreach ($managers as $user)
                                         <option value="{{ $user->id }}">{{ $user->Civil_number }}</option>
                                     @endforeach
                                 </select>
-                                @error('manger')
+                                @error('mangered')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="form-group col-md-10 mx-md-2" id="password_field" style="display: none;">
+                                <label for="password">كلمة المرور</label>
+                                <input type="password" name="password" id="password" class="form-control">
+                                @error('password')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -144,8 +152,9 @@
                                     </div>
                                     <div class="col-5">
                                         <div class="col-12 div-info-padding"><b>الأسم: <span></span></b></div>
-
                                         <div class="col-12 div-info-padding"><b>الهاتف: <span></span></b></div>
+                                        <div class="col-12 div-info-padding"><b>الأيميل: <span></span></b></div>
+
                                     </div>
                                 </div>
                             </div>
@@ -195,7 +204,7 @@
         </div>
     </main>
     <script>
-            $('.select2').select2({
+        $('.select2').select2({
             dir: "rtl"
         });
         $(document).ready(function() {
@@ -223,14 +232,8 @@
         });
 
         $(document).ready(function() {
-            // Hide the manager details div initially
-            $('#manager_details').hide();
-
-            // When the manager is selected
-            $('#mangered').change(function() {
-                var managerId = $(this).val();
-
-                // If a manager is selected
+            // Function to fetch and display manager details
+            function fetchManagerDetails(managerId) {
                 if (managerId) {
                     // Make an AJAX request to fetch manager details
                     $.ajax({
@@ -241,13 +244,19 @@
                             // Populate the manager details in the div
                             $('#manager_details').find('span').eq(0).text(data.rank); // رتبه
                             $('#manager_details').find('span').eq(1).text(data.job_title); // مسمى وظيفي
-                            $('#manager_details').find('span').eq(2).text(data
-                            .seniority); // أقدميه
+                            $('#manager_details').find('span').eq(2).text(data.seniority); // أقدميه
                             $('#manager_details').find('span').eq(3).text(data.name); // أسم
                             $('#manager_details').find('span').eq(4).text(data.phone); // هاتف
 
                             // Show the manager details div
                             $('#manager_details').show();
+
+                            // Check if the user is an employee and show password field
+                            if (data.isEmployee) {
+                                $('#password_field').show(); // Show the password field
+                            } else {
+                                $('#password_field').hide(); // Hide the password field
+                            }
                         },
                         error: function() {
                             alert('Error fetching manager details.');
@@ -256,8 +265,25 @@
                 } else {
                     // Hide the manager details if no manager is selected
                     $('#manager_details').hide();
+                    $('#password_field').hide(); // Hide the password field
                 }
+            }
+
+            // Hide the manager details and password field initially
+            $('#manager_details').hide();
+            $('#password_field').hide();
+
+            // When the manager is selected or changed
+            $('#mangered').change(function() {
+                var managerId = $(this).val();
+                fetchManagerDetails(managerId); // Fetch manager details based on the selected value
             });
+
+            // On page load, check if there's already a selected manager
+            var selectedManagerId = $('#mangered').val();
+            if (selectedManagerId) {
+                fetchManagerDetails(selectedManagerId); // Fetch details for the pre-selected manager
+            }
         });
     </script>
 
