@@ -253,21 +253,21 @@
                 </a>
             </li>
             @endif --}}
-                                        @if (Auth::user()->hasPermission('view Region'))
+                                        {{--   @if (Auth::user()->hasPermission('view Region'))
                                             <li class="{{ request()->routeIs('regions.index') ? 'active' : '' }}">
                                                 <img src="{{ asset('frontend/images/governorates.svg') }}"
                                                     alt="logo" style="margin-left: 7px;">
                                                 <a href="{{ route('regions.index', ['id' => 0]) }}">المناطق</a>
                                             </li>
-                                        @endif
+                                        @endif --}}
 
-                                        @if (Auth::user()->hasPermission('view Sector'))
+                                        {{--  @if (Auth::user()->hasPermission('view Sector'))
                                             <li class="{{ request()->routeIs('sectors.index') ? 'active' : '' }}">
                                                 <img src="{{ asset('frontend/images/governorates.svg') }}"
                                                     alt="logo" style="margin-left: 7px;">
                                                 <a href="{{ route('sectors.index') }}">القطاعات</a>
                                             </li>
-                                        @endif
+                                        @endif --}}
 
 
 
