@@ -100,7 +100,7 @@
                     </a>
                 </li>
 
-                <li class="nav-item {{ request()->routeIs('reservation_allowances') || request()->routeIs('reservation_allowances.index') || request()->routeIs('reservation_allowances.create') || request()->routeIs('Reserv_statistic_credit.static') ? 'active' : '' }}"
+                <li class="nav-item {{ request()->routeIs('reservation_allowances') || request()->routeIs('reservation_allowances.index') || request()->routeIs('reservation_allowances.create') || request()->routeIs('ReservationStaticsCredit.index') ? 'active' : '' }}"
                     onclick="toggleDropdown5(event)">
                     <a href="#">
                         <img src="{{ asset('frontend/images/employees.svg') }}" alt="logo">
@@ -120,7 +120,7 @@
                                         class="{{ request()->routeIs('reservation_allowances.index') ? 'active' : '' }}">
                                         <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
                                             style="margin-left: 7px;">
-                                        <a href="{{ route('Reserv_statistic_credit.static') }}">رصيد بدل حجز</a>
+                                        <a href="{{ route('ReservationStaticsCredit.index') }}">رصيد بدل حجز</a>
                                     </li>
                                     <li
                                         class="{{ request()->routeIs('reservation_allowances.index') ? 'active' : '' }}">
