@@ -1644,3 +1644,8 @@ color: #2A2726;
 .mobile-view .h2{
     color: rgb(158, 156, 156);
 }
+.select2-container .select2-selection--multiple .select2-selection__rendered {
+    display: flex !important;
+    list-style: none;
+    padding: 0;
+}

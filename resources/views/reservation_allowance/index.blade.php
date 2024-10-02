@@ -49,7 +49,7 @@
                             <p> بدل الحجز</p>
                         </div>
                         <div class="col-2">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                            <a class="btn-all" href="{{ route('reservation_allowances.create') }}"
+                            <a class="btn-all py-2 px-2" href="{{ route('reservation_allowances.create') }}"
                                 style="color: #0D992C;">
                                 <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
 
@@ -58,7 +58,7 @@
                             {{-- @endif --}}
                         </div>
                         <div class="col-2">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                            <a class="btn-all" href="{{ route('reservation_allowances.create.all') }}"
+                            <a class="btn-all py-2 px-2" href="{{ route('reservation_allowances.create.all') }}"
                                 style="color: #0D992C;">
                                 <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
 
@@ -73,10 +73,10 @@
                         <div class="col-12 div-info d-flex justify-content-between">
                             <div class="col-7">
                                 <div class="col-6 div-info-padding"><b>القطاع : <span
-                                            style="color:#032F70;">{{auth()->user()->department->sectors->name}}</span></b>
+                                            style="color:#032F70;">{{auth()->user()->department->sectors->count() > 0 ? auth()->user()->department->sectors->name : "لا يوجد"}}</span></b>
                                 </div>
                                 <div class="col-6 div-info-padding"><b>الادارة الفرعية : <span
-                                            style="color:#032F70;">{{auth()->user()->department->name}}</span></b></div>
+                                            style="color:#032F70;">{{auth()->user()->department->count() > 0 ? auth()->user()->department->name : "لا يوجد"}}</span></b></div>
                                 <div class="col-6 div-info-padding"><b>اليوم : <span style="color:#032F70;">
                                             {{$to_day_name}}</span></b></div>
                                 <div class="col-6 div-info-padding"><b>عدد العسكرين المحجوزين : <span
@@ -87,7 +87,7 @@
                                             style="color:#032F70;">{{auth()->user()->department->parent == null ? $super_admin->name : auth()->user()->department->parent->name}}</span></b>
                                 </div>
                                 <div class="col-6 div-info-padding"><b>مبلغ بدل الحجز : <span
-                                            style="color:#032F70;">{{auth()->user()->department->reservation_allowance_amount}}</span></b>
+                                            style="color:#032F70;">{{auth()->user()->department->count() > 0 ? auth()->user()->department->reservation_allowance_amount : "لا يوجد"}}</span></b>
                                 </div>
                                 <div class="col-6 div-info-padding"><b>التاريخ : <span style="color:#032F70;">
                                             {{$to_day}}</span></b></div>
