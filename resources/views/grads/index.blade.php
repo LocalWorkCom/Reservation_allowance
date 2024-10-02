@@ -38,7 +38,7 @@
                             رتب الضباط ({{ $Officer }})
                         </button>
                         <button class="btn-all px-3 mx-2 btn-filter" data-filter="unassigned" style="color: #274373;">
-                            رتب صف ضابط و أفراد ({{ $Officer2 + $person }})
+                            رتب الأفراد و المهنيين ({{ $Officer2 + $person }})
                         </button>
                     </div>
                     {{-- <div class="form-group mt-4 mx-4  d-flex justify-content-end ">
@@ -124,8 +124,8 @@
                                     class="form-control" required>
                                     <option value="" selected disabled>اختر نوع الرتبه</option>
                                     <option value="0">ظابط</option>
-                                    <option value="1">صف ظابط</option>
-                                    <option value="2"> فرد</option>
+                                    <option value="1">فرد </option>
+                                    <option value="2"> مهني</option>
                                 </select>
                                 <span class="text-danger span-error" id="typeadd-error" dir="rtl"></span>
 
@@ -201,9 +201,9 @@
                                     <option value="" selected disabled>اختر نوع الرتبه</option>
                                     <option value="0" {{ session('old_typeedit') == '0' ? 'selected' : '' }}>ظابط
                                     </option>
-                                    <option value="1" {{ session('old_typeedit') == '1' ? 'selected' : '' }}>صف ظابط
+                                    <option value="1" {{ session('old_typeedit') == '1' ? 'selected' : '' }}> فرد
                                     </option>
-                                    <option value="2" {{ session('old_typeedit') == '2' ? 'selected' : '' }}> فرد
+                                    <option value="2" {{ session('old_typeedit') == '2' ? 'selected' : '' }}> مهني
                                     </option>
                                 </select>
                                 <span class="text-danger span-error" id="typeedit-error" dir="rtl"></span>
@@ -373,8 +373,8 @@
                 ajax: {
                     url: '{{ route('setting.getAllgrads') }}',
                     data: function(d) {
-                d.filter = filter; // Use the global filter variable
-            }
+                        d.filter = filter; // Use the global filter variable
+                    }
                 },
                 // ajax: '{{ route('setting.getAllgrads') }}', // Correct URL concatenation
                 columns: [
@@ -444,17 +444,17 @@
                 }
             });
             $('.btn-filter').on('click', function() {
-        filter = $(this).data('filter'); // Get the filter value from the clicked button
-        table.ajax.reload(); // Reload the DataTable with the new filter
-    });
-           // Filter buttons click event
-           $('.btn-filter').click(function() {
-            filter = $(this).data('filter'); // Update filter
-            $('.btn-filter').removeClass('btn-active'); // Remove active class from all
-            $(this).addClass('btn-active'); // Add active class to clicked button
+                filter = $(this).data('filter'); // Get the filter value from the clicked button
+                table.ajax.reload(); // Reload the DataTable with the new filter
+            });
+            // Filter buttons click event
+            $('.btn-filter').click(function() {
+                filter = $(this).data('filter'); // Update filter
+                $('.btn-filter').removeClass('btn-active'); // Remove active class from all
+                $(this).addClass('btn-active'); // Add active class to clicked button
 
-            table.page(0).draw(false); // Reset to first page and redraw the table
+                table.page(0).draw(false); // Reset to first page and redraw the table
+            });
         });
-    });
     </script>
 @endpush
