@@ -58,6 +58,10 @@
                         @isset($search) @if ($search == 'dept') selected @endif @endisset>
                         الادارات
                     </option>
+                    <option value="sect"
+                    @isset($search) @if ($search == 'sect') selected @endif @endisset>
+                    القطاعات
+                </option>
                     <option value="emps"
                         @isset($search) @if ($search == 'emps') selected @endif @endisset>
                         الموظفين
@@ -139,12 +143,12 @@
 
 
 
-                @if (Auth::user()->hasPermission('view departements'))
+                @if (Auth::user()->hasPermission('view sectors'))
                     <li
-                        class="nav-item {{ request()->routeIs('departments.index') ? 'active' : '' }} @isset($search) @if ($search == 'dept') active @endif @endisset">
-                        <a href="{{ route('departments.index') }}">
+                        class="nav-item {{ request()->routeIs('sectors.index') ? 'active' : '' }} @isset($search) @if ($search == 'dept') active @endif @endisset">
+                        <a href="{{ route('sectors.index') }}">
                             <img src="{{ asset('frontend/images/managements.svg') }}" alt="logo">
-                            <h6>الادارات</h6>
+                            <h6>القطاعات</h6>
                         </a>
                     </li>
                 @endif
