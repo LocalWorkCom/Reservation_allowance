@@ -456,5 +456,5 @@
             table.page(0).draw(false); // Reset to first page and redraw the table
         });
     });
-    </script>
+    </script> 
 @endpush
