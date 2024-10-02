@@ -55,6 +55,8 @@
                                     {{-- <th>الاقسام</th> --}}
                                     <th>ميزانية البدل</th>
                                     <th>صلاحيه الحجز</th>
+                                    <th>عدد الأدارات الفرعيه</th>
+
                                     <th>إجراء</th>
                                 </tr>
                             </thead>
@@ -95,11 +97,7 @@
                 {
                     data: 'manager_name',
                     name: 'manager_name'
-                }, // Ensure 'manager' column exists
-                // {
-                //     data: 'children_count',
-                //     name: 'children_count'
-                // },
+                },
                 {
                     data: 'reservation_allowance_amount',
                     name: 'reservation_allowance_amount'
@@ -107,6 +105,10 @@
                 {
                     data: 'reservation_allowance',
                     name: 'reservation_allowance'
+                }, // Ensure 'manager' column exists
+                {
+                    data: 'subDepartment',
+                    name: 'subDepartment'
                 },
                 {
                     data: 'action',

@@ -1,5 +1,50 @@
-@extends('layout.main')
+<style>
+    .div-info {
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 20px;
+        width: 200px;
+        height: 200px;
+        background-color: #F6F7FD;
+        border: 1px solid #D9D9D9 !important;
+    }
 
+    .div-info-padding {
+        padding: 3px 0;
+        direction: initial;
+        font-family: Almarai;
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 36px;
+        text-align: right;
+
+    }
+
+    .div-info-padding b span {
+        color: #032F70;
+    }
+
+    .paragraph {
+        display: flex;
+        justify-content: end;
+        font-weight: 700;
+        font-size: 25px;
+    }
+
+    #credit-table thead {
+        text-align: right !important;
+        font-size: 22px !important;
+        font-weight: 400 !important;
+        color: #3c3c3d !important;
+    }
+</style>
+@extends('layout.main')
+@section('title')
+    أضافة أداره رئيسية
+@endsection
+@push('style')
+
+@endpush
 @section('content')
     <main>
         {{-- <div class="row " dir="rtl">
@@ -16,7 +61,7 @@
         </div> --}}
         <div class="row ">
             <div class="container welcome col-11">
-                <p> اضافه أداره </p>
+                <p> أضافة أداره رئيسية</p>
             </div>
         </div>
         <br>
@@ -26,14 +71,14 @@
                     <form action="{{ route('departments.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @if ($errors->any())
-                        <div class="alert alert-danger"dir="rtl">
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
+                            <div class="alert alert-danger"dir="rtl">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                         <div class="form-row mx-3 mt-4 d-flex justify-content-center">
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="sector">اختر القطاع </label>
@@ -64,29 +109,43 @@
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="">صلاحيه الحجز</label>
                                 <div class="d-flex mt-3 " dir="rtl">
-                                <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"
-                                    name="part[]">
-                                <label for="part"> حجز كلى</label><input type="checkbox"
-                                    class="toggle-radio-buttons mx-2" value="2" id="part"
-                                    name="part[]">
-                                <label for="part">حجز جزئى</label>
-                                @error('budget')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
+                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"
+                                        name="part[]">
+                                    <label for="part"> حجز كلى</label><input type="checkbox"
+                                        class="toggle-radio-buttons mx-2" value="2" id="part" name="part[]">
+                                    <label for="part">حجز جزئى</label>
+                                    @error('budget')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
-                            <div class="form-group col-md-10 mx-md-2">
+                            <div class="form-group col-md-10 mx-md-2" id="manager">
                                 <label for="mangered">المدير</label>
                                 <select name="manger" id="mangered" class="form-control " required>
                                     <option value="">اختار المدير</option>
                                     @foreach ($managers as $user)
-                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                        <option value="{{ $user->id }}">{{ $user->Civil_number }}</option>
                                     @endforeach
                                 </select>
                                 @error('manger')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
+                            </div>
 
+                            <div class="form-group col-md-10 mx-md-2" id="manager_details">
+                                <div class="col-12 div-info d-flex justify-content-between" style="direction: rtl">
+                                    <div class="col-7">
+                                        <div class="col-12 div-info-padding"><b>الرتبه : <span></span></b></div>
+                                        <div class="col-12 div-info-padding"><b>الأقدميه : <span></span></b></div>
+
+                                        <div class="col-12 div-info-padding"><b>المسمى الوظيفى: <span></span></b></div>
+                                    </div>
+                                    <div class="col-5">
+                                        <div class="col-12 div-info-padding"><b>الأسم: <span></span></b></div>
+
+                                        <div class="col-12 div-info-padding"><b>الهاتف: <span></span></b></div>
+                                    </div>
+                                </div>
                             </div>
 
                         </div>
@@ -106,7 +165,7 @@
                                     dir="rtl"
                                     style=" height: 150px;font-size: 18px;border: 0.2px solid lightgray; overflow-y: auto;">
                                     @foreach ($employees as $item)
-                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                        <option value="{{ $item->id }}">{{ $item->Civil_number }}</option>
                                     @endforeach
                                 </select>
 
@@ -135,27 +194,66 @@
     </main>
     <script>
         $(document).ready(function() {
-    // Assuming you have a list of users available in JavaScript
-    var allUsers = @json($employees); // If you pass the users list from Blade to JavaScript
+            // Assuming you have a list of users available in JavaScript
+            var allUsers = @json($employees); // If you pass the users list from Blade to JavaScript
 
-    $('#mangered').on('change', function() {
-        var selectedManager = $(this).val();
-        console.log('Selected Manager:', selectedManager);
+            $('#mangered').on('change', function() {
+                var selectedManager = $(this).val();
+                console.log('Selected Manager:', selectedManager);
 
-        // Clear the employees dropdown
-        $('#employess').empty();
+                // Clear the employees dropdown
+                $('#employess').empty();
 
-        // Iterate over the users list and add only those who are not the selected manager
-        allUsers.forEach(function(user) {
-            if (user.id != selectedManager) {
-                $('#employess').append('<option value="' + user.id + '">' + user.name + '</option>');
-            }
+                // Iterate over the users list and add only those who are not the selected manager
+                allUsers.forEach(function(user) {
+                    if (user.id != selectedManager) {
+                        $('#employess').append('<option value="' + user.id + '">' + user
+                            .Civil_number + '</option>');
+                    }
+                });
+            });
+
+            // Initial population of employees list excluding the selected manager (if any)
+            $('#mangered').trigger('change');
         });
-    });
 
-    // Initial population of employees list excluding the selected manager (if any)
-    $('#mangered').trigger('change');
-});
+        $(document).ready(function() {
+            // Hide the manager details div initially
+            $('#manager_details').hide();
 
-        </script>
+            // When the manager is selected
+            $('#mangered').change(function() {
+                var managerId = $(this).val();
+
+                // If a manager is selected
+                if (managerId) {
+                    // Make an AJAX request to fetch manager details
+                    $.ajax({
+                        url: '/get-manager-details/' +
+                        managerId, // Define your route to get manager details
+                        type: 'GET',
+                        success: function(data) {
+                            // Populate the manager details in the div
+                            $('#manager_details').find('span').eq(0).text(data.rank); // رتبه
+                            $('#manager_details').find('span').eq(1).text(data.job_title); // مسمى وظيفي
+                            $('#manager_details').find('span').eq(2).text(data
+                            .seniority); // أقدميه
+                            $('#manager_details').find('span').eq(3).text(data.name); // أسم
+                            $('#manager_details').find('span').eq(4).text(data.phone); // هاتف
+
+                            // Show the manager details div
+                            $('#manager_details').show();
+                        },
+                        error: function() {
+                            alert('Error fetching manager details.');
+                        }
+                    });
+                } else {
+                    // Hide the manager details if no manager is selected
+                    $('#manager_details').hide();
+                }
+            });
+        });
+    </script>
+
 @endsection

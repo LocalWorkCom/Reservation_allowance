@@ -40,8 +40,10 @@
                         <div class="form-row mx-3 mt-4 d-flex justify-content-center">
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="sector">اختر القطاع </label>
-                                <input type="hidden" name="parent" value="{{ $department->id }}">
-                                <input type="text" class="form-control" id="sector" value="{{ $department->sectors->name }}" disabled>
+                                <input type="hidden" name="parent" value="{{$department->sector_id ? $department->sector_id : $sect->sector_id }}">
+                                <input type="text" class="form-control" id="sector" value="{{$department->sector_id ? $department->sectors->name : $sect->sectors->name }}" @if ($department->sector_id != null)
+                                disabled
+                                @endif >
                                 <input type="hidden" class="form-control" name="sector_id"  value="{{ $department->sector_id }}" disabled>
 
                                 @error('sector')
