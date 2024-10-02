@@ -41,9 +41,23 @@
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="sector">اختر القطاع </label>
                                 <input type="hidden" name="parent" value="{{$department->sector_id ? $department->sector_id : $sect->sector_id }}">
-                                <input type="text" class="form-control" id="sector" value="{{$department->sector_id ? $department->sectors->name : $sect->sectors->name }}" @if ($department->sector_id != null)
-                                disabled
-                                @endif >
+                                @if ($department->sector_id == null)
+                                <!-- Show the select dropdown if sector_id is null -->
+                                <select name="sector" id="sector" class="form-control custom-select custom-select-lg mb-3 select2"
+                                        style="border: 0.2px solid rgb(199, 196, 196); width:100% !important;" required>
+                                    <option value="">اختر القطاع </option>
+                                    @foreach ($sectors as $sector)
+                                        <option value="{{ $sector->id }}"
+                                            @if (old('sector', $department->sector_id) == $sector->id) selected @endif>
+                                            {{ $sector->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            @else
+                                <!-- Show the input text field with the sector name if sector_id is not null -->
+                                <input type="text" class="form-control" name="sectors" id="sector" value="{{ $department->sectors->name }}" disabled>
+                            @endif
+
                                 <input type="hidden" class="form-control" name="sector_id"  value="{{ $department->sector_id }}" disabled>
 
                                 @error('sector')
@@ -66,19 +80,21 @@
                             </div>
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="">صلاحيه الحجز</label>
-                                <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part" @if($department->reservation_allowance_type == 1 ||$department->reservation_allowance_type == 3 )checked @endif
-                                    name="part[]">
-                                <label for="part"> حجز كلى</label><input type="checkbox"
-                                    class="toggle-radio-buttons mx-2" value="2" id="part" @if($department->reservation_allowance_type == 2 ||$department->reservation_allowance_type == 3 )checked @endif
-                                    name="part[]">
-                                <label for="part">حجز جزئى</label>
-                                @error('budget')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
+                                <div class="d-flex mt-3 " dir="rtl">
+                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"  @if($department->reservation_allowance_type == 1 ||$department->reservation_allowance_type == 3 )checked @endif
+                                        name="part[]">
+                                    <label for="part"> حجز كلى</label><input type="checkbox"
+                                        class="toggle-radio-buttons mx-2" value="2" id="part" name="part[]" @if($department->reservation_allowance_type == 2 ||$department->reservation_allowance_type == 3 )checked @endif>
+                                    <label for="part">حجز جزئى</label>
+                                    @error('budget')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="mangered">المدير</label>
-                                <select name="manger" id="mangered" class="form-control " required>
+                                <select name="manger" id="mangered" class=" form-control custom-select custom-select-lg mb-3 select2 "
+                                style="border: 0.2px solid rgb(199, 196, 196); width:100% !important;" required>
                                     <option value="">اختار المدير</option>
                                     @foreach ($managers as $user)
                                         <option value="{{ $user->id }}"@if ($department->manger == $user->id)
@@ -138,4 +154,9 @@
 
         </div>
     </main>
+    <script>
+          $('.select2').select2({
+        dir: "rtl"
+    });
+    </script>
 @endsection

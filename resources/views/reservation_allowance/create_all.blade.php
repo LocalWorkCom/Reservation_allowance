@@ -62,7 +62,7 @@
 
                     <div class="form-row mx-md-2 mt-4 d-flex justify-content-center">
 
-                        <div class="form-group col-md-10 mx-2">
+                        <?php /*<div class="form-group col-md-10 mx-2">
                                 <label for="Civil_number"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>
                                     رقم الهوية</label>
                                 <select class="custom-select custom-select-lg mb-3 select2" multiple name="Civil_number[]" id="Civil_number" dir="rtl">
@@ -72,6 +72,12 @@
                                         {{ $employee->Civil_number }}</option>
                                     @endforeach
                                 </select>
+                        </div>*/?>
+
+                        <div class="form-group col-md-10 mx-2">
+                                <label for="Civil_number"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>
+                                    رقم الهوية</label>
+                                <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px"></textarea>
                         </div>
 
                         <div class="form-group col-md-10 mx-2">

@@ -67,21 +67,21 @@
                             </div>
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="">صلاحيه الحجز</label>
-                               <div class="d-flex">
-                               <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"
-                                    name="part[]">
-                                <label for="part"> حجز كلى</label><input type="checkbox"
-                                    class="toggle-radio-buttons mx-2" value="2" id="part"
-                                    name="part[]">
-                                <label for="part">حجز جزئى</label>
-                                @error('budget')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
-                               </div>
+                                <div class="d-flex mt-3 " dir="rtl">
+                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"
+                                        name="part[]">
+                                    <label for="part"> حجز كلى</label><input type="checkbox"
+                                        class="toggle-radio-buttons mx-2" value="2" id="part" name="part[]">
+                                    <label for="part">حجز جزئى</label>
+                                    @error('budget')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="mangered">المدير</label>
-                                <select name="manger" id="mangered" class="form-control" required onchange="updateEmployeeSelect()">
+                                <select name="manger" id="mangered" class=" form-control custom-select custom-select-lg mb-3 select2 "
+                                style="border: 0.2px solid rgb(199, 196, 196); width:100% !important;" required onchange="updateEmployeeSelect()">
                                     <option value="">اختار المدير</option>
                                     @foreach ($managers as $user)
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -135,6 +135,9 @@
         </div>
     </main>
     <script>
+            $('.select2').select2({
+            dir: "rtl"
+        });
         $(document).ready(function() {
     // Assuming you have a list of users available in JavaScript
     var allUsers = @json($employees); // If you pass the users list from Blade to JavaScript

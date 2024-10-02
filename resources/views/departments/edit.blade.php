@@ -39,7 +39,8 @@
                         <div class="form-row mx-3 mt-4 d-flex justify-content-center">
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="sector">اختر القطاع </label>
-                                <select name="sector" id="sector" class="form-control " required>
+                                <select name="sector" id="sector"   class=" form-control custom-select custom-select-lg mb-3 select2 "
+                                style="border: 0.2px solid rgb(199, 196, 196); width:100% !important;" required>
                                     <option value="">اختر القطاع </option>
                                     @foreach ($sectors as $sector)
                                         <option value="{{ $sector->id }}" @if ($department->sector_id == $sector->id)
@@ -67,24 +68,24 @@
                             </div>
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="">صلاحيه الحجز</label>
-                                <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part" @if($department->reservation_allowance_type == 1 ||$department->reservation_allowance_type == 3 )checked @endif
-                                    name="part[]">
-                                <label for="part"> حجز كلى</label><input type="checkbox"
-                                    class="toggle-radio-buttons mx-2" value="2" id="part" @if($department->reservation_allowance_type == 2 ||$department->reservation_allowance_type == 3 )checked @endif
-                                    name="part[]">
-                                <label for="part">حجز جزئى</label>
-                                @error('budget')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
+                                <div class="d-flex mt-3 " dir="rtl">
+                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"  @if($department->reservation_allowance_type == 1 ||$department->reservation_allowance_type == 3 )checked @endif
+                                        name="part[]">
+                                    <label for="part"> حجز كلى</label><input type="checkbox"
+                                        class="toggle-radio-buttons mx-2" value="2" id="part" name="part[]" @if($department->reservation_allowance_type == 2 ||$department->reservation_allowance_type == 3 )checked @endif>
+                                    <label for="part">حجز جزئى</label>
+                                    @error('budget')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="mangered">المدير</label>
-                                <select name="manger" id="mangered" class="form-control " required>
+                                <select name="manger" id="mangered" class=" form-control custom-select custom-select-lg mb-3 select2 "
+                                style="border: 0.2px solid rgb(199, 196, 196); width:100% !important;" required>
                                     <option value="">اختار المدير</option>
                                     @foreach ($managers as $user)
-                                        <option value="{{ $user->id }}"@if ($department->manger == $user->id)
-                                            selected
-                                        @endif>{{ $user->name }}</option>
+                                        <option value="{{ $user->id }}"@if ($department->manger == $user->id) selected @endif>{{ $user->name }}</option>
                                     @endforeach
                                 </select>
                                 @error('manger')
@@ -139,4 +140,9 @@
 
         </div>
     </main>
+    <script>
+        $('.select2').select2({
+        dir: "rtl"
+    });
+    </script>
 @endsection

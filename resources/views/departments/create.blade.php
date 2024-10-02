@@ -82,7 +82,8 @@
                         <div class="form-row mx-3 mt-4 d-flex justify-content-center">
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="sector">اختر القطاع </label>
-                                <select name="sector" id="sector" class="form-control " required>
+                                <select name="sector" id="sector"   class=" form-control custom-select custom-select-lg mb-3 select2 "
+                                style="border: 0.2px solid rgb(199, 196, 196); width:100% !important;" required>
                                     <option value="">اختر القطاع </option>
                                     @foreach ($sectors as $sector)
                                         <option value="{{ $sector->id }}">{{ $sector->name }}</option>
@@ -121,7 +122,8 @@
                             </div>
                             <div class="form-group col-md-10 mx-md-2" id="manager">
                                 <label for="mangered">المدير</label>
-                                <select name="manger" id="mangered" class="form-control " required>
+                                <select name="manger" id="mangered" class=" form-control custom-select custom-select-lg mb-3 select2 "
+                                style="border: 0.2px solid rgb(199, 196, 196); width:100% !important;" required>
                                     <option value="">اختار المدير</option>
                                     @foreach ($managers as $user)
                                         <option value="{{ $user->id }}">{{ $user->Civil_number }}</option>
@@ -193,6 +195,9 @@
         </div>
     </main>
     <script>
+            $('.select2').select2({
+            dir: "rtl"
+        });
         $(document).ready(function() {
             // Assuming you have a list of users available in JavaScript
             var allUsers = @json($employees); // If you pass the users list from Blade to JavaScript
