@@ -74,7 +74,7 @@ class ReservationAllowanceController extends Controller
             $to_day = Carbon::now()->format('Y-m-d');
             $to_day_name = Carbon::now()->translatedFormat('l');
 
-            $employee = User::findOrFail($request->Civil_number);
+            $employee = User::where('Civil_number', $request->Civil_number)->first();
             if($employee->grade_id != null){
                 if($request->type == 1){
                     $grade_value = $employee->grade->value_all;
@@ -135,14 +135,20 @@ class ReservationAllowanceController extends Controller
             $to_day = Carbon::now()->format('Y-m-d');
             $to_day_name = Carbon::now()->translatedFormat('l');
 
-            foreach($request->Civil_number as $Civil_number){
-                $employee = User::findOrFail($Civil_number);
-                if($request->type == 1){
-                    $grade_value = $employee->grade->value_all;
-                }else{
-                    $grade_value = $employee->grade->value_part;
-                }
+            $Civil_numbers = str_replace(array("\r","\r\n","\n"),',',$request->Civil_number);
+            $Civil_numbers = explode(',,',$Civil_numbers);
 
+            foreach($Civil_numbers as $Civil_number){
+
+                $employee = User::where('Civil_number', $Civil_number)->first();
+
+                if($employee->grade_id != null){ // check if employee has grade
+                    if($request->type == 1){
+                        $grade_value = $employee->grade->value_all;
+                    }else{
+                        $grade_value = $employee->grade->value_part;
+                    }
+                
                 $check_reservation_allowance = ReservationAllowance::where(['user_id' => $employee->id, 'date' => $to_day])->first();
                 if($check_reservation_allowance){
                     return redirect()->back()->with('error','عفوا تم اضافة بدل لحجز '.$employee->name.' فى هذا اليوم من قبل');
@@ -158,11 +164,13 @@ class ReservationAllowanceController extends Controller
                 $add_reservation_allowance->departement_id = $user->department->id;
                 $add_reservation_allowance->created_by = $user->id;
                 $add_reservation_allowance->save();
+                
+                }
             }
 
             return redirect()->route('reservation_allowances.index')->with('success', 'تم اضافه بدل حجز بنجاح');
         }catch(\Exception $e){
-            return redirect()->back()->with('message', 'An error occurred while creating the group. Please try agai');
+            return redirect()->back()->with('error', 'An error occurred while creating the group. Please try agai');
         }
     }
 
