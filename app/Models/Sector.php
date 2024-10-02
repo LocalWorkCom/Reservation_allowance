@@ -29,4 +29,11 @@ class Sector extends Model
     {
         return $this->hasMany(Point::class);
     }
+
+    public function departements()
+    {
+        return $this->hasMany(departements::class, 'sector_id');
+    }
+
+
 }

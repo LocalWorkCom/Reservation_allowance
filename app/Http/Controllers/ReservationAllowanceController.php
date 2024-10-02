@@ -28,18 +28,23 @@ class ReservationAllowanceController extends Controller
         $super_admin = User::where('department_id', 1)->first();
         $employees = User::where('department_id', $user->department_id)->where('flag', 'employee')->get();
 
+
+
         if($user->rule_id == 2)
         {
-            $reservation_allowances = ReservationAllowance::with('users', 'users.grade', 'departements')->where('date', $to_day)->get();
+            $sectors = Sector::get();
+            $departements = [];
         }else{
-            if($user->department->children->count() > 0){
-                $department_id = $user->department->children->pluck('id');
+            if($user->department_id == null){
+                $sectors[] = $user->sectors;
+                $departements = departements::where('sector_id', $user->sector);
             }else{
-                $department_id[] = $user->department_id;
+                $sectors[] = $user->sectors;
+                $departements = departements::where('id', $user->department_id);
             }
-            $reservation_allowances = ReservationAllowance::with('users', 'users.grade', 'departements')->whereIn('departement_id', $department_id)->where('date', $to_day)->get();
         }
-        return view('reservation_allowance.index', compact('reservation_allowances', 'employees', 'to_day', 'to_day_name', 'super_admin'));
+
+        return view('reservation_allowance.index', compact('sectors', 'departements', 'employees', 'to_day', 'to_day_name', 'super_admin'));
     }
 
     /**
