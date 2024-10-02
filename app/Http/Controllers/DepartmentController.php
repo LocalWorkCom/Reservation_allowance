@@ -15,6 +15,7 @@ use App\DataTables\subDepartmentsDataTable;
 use App\Http\Requests\StoreDepartmentRequest;
 use App\Models\Sector;
 use Carbon\Carbon;
+use Google\Service\ArtifactRegistry\Hash;
 
 class DepartmentController extends Controller
 {
@@ -228,7 +229,7 @@ class DepartmentController extends Controller
 
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            'manger.required' => 'اسم المدير مطلوب.',
+            'mangered.required' => 'اسم المدير مطلوب.',
             'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.01.',
@@ -243,7 +244,7 @@ class DepartmentController extends Controller
         // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'manger' => 'required',
+            'mangered' => 'required',
             'budget' => 'required|numeric|min:0.01|max:1000000',
             'part' => 'required',
 
@@ -271,33 +272,55 @@ class DepartmentController extends Controller
         $departements->manger = $request->manger;
         $departements->sector_id  = $request->sector;
         $departements->description = $request->description;
-
         $departements->reservation_allowance_amount = $request->budget;
         $departements->reservation_allowance_type = $reservation_allowance_type;
-
-        // $departements->parent_id = Auth::user()->department_id;
         $departements->created_by = Auth::user()->id;
         $departements->save();
 
-        $user = User::find($request->manger);
-        $user->department_id = $departements->id;
-        $user->save();
+        if ($request->password) {
+            // Check if the manager exists
+            $user = User::find($request->manger);
+            if ($user) {
+                $user->department_id = $departements->id;
+                $user->password = Hash::make($request->password);
+                $user->save();
+            } else {
+                return redirect()->back()->with('error', 'Manager not found.');
+            }
+        } else {
+            $user = User::find($request->manger);
+            if ($user) {
+                $user->department_id = $departements->id;
+                $user->save();
+            } else {
+                return redirect()->back()->with('error', 'Manager not found.');
+            }
+        }
 
-        if ($request->has('employess')) {
-            foreach ($request->employess as $item) {
-                // dd($item);
-                $user = User::find($item);
 
-                if ($user) {
-                    $user->department_id = $departements->id;
-                    $user->save();
-                    // dd($user);
+        $Civil_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->Civil_number);
+        $Civil_numbers = explode(',,', $Civil_numbers);
+
+        foreach ($Civil_numbers as $Civil_number) {
+
+            $employee = User::where('Civil_number', $Civil_number)->first();
+            if ($employee) {
+                if ($employee->grade_id != null) {
+
+                    if ($request->has('employess')) {
+                        foreach ($request->employess as $item) {
+                            $user = User::find($item);
+
+                            if ($user) {
+                                $user->department_id = $departements->id;
+                                $user->save();
+                            }
+                        }
+                    }
                 }
             }
         }
-        //   dd($departements);
         return redirect()->route('departments.index')->with('success', 'Department created successfully.');
-        // return response()->json($department, 201);
     }
 
 
@@ -430,9 +453,6 @@ class DepartmentController extends Controller
             $employees = User::where('flag', 'employee')->where('department_id', $department->id)->whereNot('id', $department->manager)->get();
             $managers = User::where('department_id', 1)->get();
         }
-        // dd(vars: $department);
-        // $managers = User::where('flag', 'user')->where('department_id', 1)->orWhere('id', $department->manger)->get();
-        // $employees = User::where('flag', 'employee')->where('department_id', null)->orWhere('department_id', $department->id)->whereNot('id', $department->manger)->get();
 
         return view('sub_departments.edit', compact('department', 'managers', 'employees', 'sect'));
     }

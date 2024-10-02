@@ -109,13 +109,13 @@
                             </div>
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="">صلاحيه الحجز</label>
-                                <div class="d-flex mt-3 " dir="rtl">
+                                <div class="d-flex mt-3" dir="rtl">
                                     <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"
                                         name="part[]">
                                     <label for="part"> حجز كلى</label><input type="checkbox"
                                         class="toggle-radio-buttons mx-2" value="2" id="part" name="part[]">
                                     <label for="part">حجز جزئى</label>
-                                    @error('budget')
+                                    @error('part')
                                         <div class="alert alert-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -170,16 +170,9 @@
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-10 mx-md-2">
-                                <label for="employess">الموظفين </label>
-                                <select name="employess[]" id="employess" class="form-group col-md-12 " multiple
-                                    dir="rtl"
-                                    style=" height: 150px;font-size: 18px;border: 0.2px solid lightgray; overflow-y: auto;">
-                                    @foreach ($employees as $item)
-                                        <option value="{{ $item->id }}">{{ $item->Civil_number }}</option>
-                                    @endforeach
-                                </select>
-
+                            <div class="form-group col-md-10 mx-2">
+                                <label for="Civil_number"> رقم الهوية</label>
+                                <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px"></textarea>
                             </div>
                         </div>
 
@@ -238,7 +231,7 @@
                     // Make an AJAX request to fetch manager details
                     $.ajax({
                         url: '/get-manager-details/' +
-                        managerId, // Define your route to get manager details
+                            managerId, // Define your route to get manager details
                         type: 'GET',
                         success: function(data) {
                             // Populate the manager details in the div
