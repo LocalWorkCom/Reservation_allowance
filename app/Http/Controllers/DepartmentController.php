@@ -169,12 +169,6 @@ class DepartmentController extends Controller
                 ->get();
             $managers = User::where('flag', 'user')->where('department_id', $id)->whereNot('id', auth()->user()->id)->get();
         }
-        // $users = User::where('rule_id', '<>', 2)->where('department_id', NULL)->get();
-        // $parentDepartment = departements::where('parent_id', Auth::user()->department_id)->first();
-
-        // // Get the children of the parent department
-        // $departments = $parentDepartment ? $parentDepartment->children : collect();
-        // $subdepartments = departements::with('children')->get();
         return view('sub_departments.create', compact('department', 'employees', 'managers'));
     }
 
