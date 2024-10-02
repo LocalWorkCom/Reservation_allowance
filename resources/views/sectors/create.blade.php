@@ -51,14 +51,26 @@
 
                     </div>
                 </div>
-                {{-- <div class="form-row mx-2 mb-2">
-                    <div class="input-group moftsh px-md-5 px-3 pt-3">
-                        <label class="pb-3" for="order">حدد ترتيب القطاع</label>
-                        <input type="number" id="order" name="order" class="form-control" required />
-                        <span class="text-danger span-error" id="order-error"></span>
-
+                <div class="input-group moftsh px-md-5 px-3 pt-3">
+                    <label class="pb-3" for="budget">ميزانية بدل حجز</label>
+                    <input type="text" name="budget" class="form-control" value="{{ old('budget') }}">
+                    @error('budget')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="input-group moftsh px-md-5 px-3 pt-3">
+                    <label class="pb-3" for="">صلاحيه الحجز</label>
+                    <div class="d-flex mt-3 " dir="rtl">
+                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"
+                            name="part[]">
+                        <label for="part"> حجز كلى</label><input type="checkbox"
+                            class="toggle-radio-buttons mx-2" value="2" id="part" name="part[]">
+                        <label for="part">حجز جزئى</label>
+                        @error('part')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
                     </div>
-                </div> --}}
+                </div>
                 <div class="container col-11">
                     <div class="form-row d-flex justify-content-end mt-4 mb-3">
                         <button type="submit" class="btn-blue">

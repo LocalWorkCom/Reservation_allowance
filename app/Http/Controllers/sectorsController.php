@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Government;
 use App\Models\Sector;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -74,22 +75,9 @@ class sectorsController extends Controller
 
     public function create()
     {
-        // $associatedGovernmentIds = Sector::query()
-        //     ->pluck('governments_IDs')
-        //     ->flatten()
-        //     ->unique()
-        //     ->toArray();
-        //dd($associatedGovernmentIds);
+       $users=User::where('department_id',null)->orWhere('department_id',1)->get();
 
-        // if(isset($associatedGovernmentIds)){
-        // $unassociatedGovernments = Government::query()
-        //     ->whereNotIn('id', $associatedGovernmentIds)
-        //     ->get();
-        //dd($unassociatedGovernments);
-        // }
-        // return view('sectors.create', ['governments' => $unassociatedGovernments]);
-
-        return view('sectors.create');
+        return view('sectors.create',compact('users'));
     }
 
     /**
