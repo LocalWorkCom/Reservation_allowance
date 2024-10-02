@@ -143,7 +143,7 @@
 
 
 
-                @if (Auth::user()->hasPermission('view sectors'))
+                {{-- @if (Auth::user()->hasPermission('view sectors')) --}}
                     <li
                         class="nav-item {{ request()->routeIs('sectors.index') ? 'active' : '' }} @isset($search) @if ($search == 'dept') active @endif @endisset">
                         <a href="{{ route('sectors.index') }}">
@@ -151,7 +151,7 @@
                             <h6>القطاعات</h6>
                         </a>
                     </li>
-                @endif
+                {{-- @endif --}}
                 @if (Auth::user()->hasPermission('view job') ||
                         Auth::user()->hasPermission('view VacationType') ||
                         Auth::user()->hasPermission('view grade') ||

@@ -90,14 +90,10 @@ class DepartmentController extends Controller
         }
 
         $joiningDate = $manager->joining_date ? Carbon::parse($manager->joining_date) : Carbon::parse($manager->created_at);
-
-        // Get the current date
         $today = Carbon::now();
-
-        // Calculate the difference in years
         $yearsOfService = $joiningDate->diffInYears($today);
 
-        // Check if the user is an employee (assuming you have a column `is_employee`)
+        // Check if the user is an employee (flag 'user' means employee)
         $isEmployee = $manager->flag == 'user' ? true : false;
 
         // Return the manager data in JSON format
@@ -111,6 +107,7 @@ class DepartmentController extends Controller
             'isEmployee' => $isEmployee,  // Include the employee flag
         ]);
     }
+
 
 
 
