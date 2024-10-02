@@ -38,7 +38,7 @@
                             رتب الضباط ({{ $Officer }})
                         </button>
                         <button class="btn-all px-3 mx-2 btn-filter" data-filter="unassigned" style="color: #274373;">
-                            رتب صف ضابط و أفراد ({{ $Officer2 + $person }})
+                            رتب الأفراد  و المهنيين ({{ $Officer2 + $person }})
                         </button>
                     </div>
                     {{-- <div class="form-group mt-4 mx-4  d-flex justify-content-end ">
