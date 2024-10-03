@@ -184,22 +184,21 @@ class DepartmentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create($id)
     {
-        $id = request()->get('id');
+
+
         //create Main Administration
         $sectors = Sector::findOrFail($id);
         $managers = User::where('id', '!=', auth()->user()->id)
             ->whereNot('id', $sectors->manager)
             ->where(function ($query) use ($id) {
                 $query->where('sector', $id)
-                    ->orWhere(function ($subQuery) {
-                        $subQuery->whereNull('sector')
-                            ->whereNull('department_id');
-                    });
+                    ->orWhereNull('sector');
             })
             ->whereNull('department_id') // Ensure all users do not have a department
             ->get();
+
         $rules = Rule::where('id', 3)->get();
         return view('departments.create', compact('sectors', 'managers', 'rules'));
     }
@@ -442,17 +441,17 @@ class DepartmentController extends Controller
     public function edit(departements $department)
     {
         // dd($department);
-        $id =$department->sector_id ;
+        $id = $department->sector_id;
         $managers = User::where('id', '!=', auth()->user()->id)
-        ->whereNot('id', $id)
-        ->where(function ($query) use ($id) {
-            $query->where('sector', $id)
-                ->orWhere(function ($subQuery) {
-                    $subQuery->whereNull('sector');
-                });
-        })
-        ->where('department_id',$department->id) // Ensure all users do not have a department
-        ->get();
+            ->whereNot('id', $id)
+            ->where(function ($query) use ($id) {
+                $query->where('sector', $id)
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->whereNull('sector');
+                    });
+            })
+            ->where('department_id', $department->id) // Ensure all users do not have a department
+            ->get();
         $rules = Rule::where('id', 3)->get();
 
         return view('departments.edit', compact('department', 'managers', 'rules'));

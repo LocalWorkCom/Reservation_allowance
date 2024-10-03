@@ -20,7 +20,7 @@
                     @endphp
                     @if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2 || Auth::user()->rule->id == 4)
                         <button type="button" class="wide-btn "
-                            onclick="window.location.href='{{ route('departments.create', ['id' => $id]) }}'"
+                            onclick="window.location.href='{{ route('department.create', ['id' => $id]) }}'"
                             style="    color: #0D992C;">
                             اضافة جديد
                             <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">

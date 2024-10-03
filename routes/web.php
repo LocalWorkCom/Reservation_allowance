@@ -221,7 +221,7 @@ Route::middleware(['auth'])->group(function () {
     // Route::put('departments_update/{department}', [DepartmentController::class, 'update']);
     // Route::delete('departments_delete/{department}', [DepartmentController::class, 'destroy']);
     Route::get('/departments/{id}', [DepartmentController::class, 'index'])->name('departments.index')->middleware('check.permission:view departements');
-    Route::get('/departments/create/{id}', [DepartmentController::class, 'create'])->name('departments.create')->middleware('check.permission:create departements');
+    Route::get('/department/add/create/{id}', [DepartmentController::class, 'create'])->name('department.create')->middleware('check.permission:create departements');
     Route::get('/departments/show/{department}', [DepartmentController::class, 'show'])->name('departments.show')->middleware('check.permission:view departements');
     Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store')->middleware('check.permission:edit departements');
     Route::get('/departments/{department}/edit', [DepartmentController::class, 'edit'])->name('departments.edit')->middleware('check.permission:edit departements');
