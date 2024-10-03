@@ -93,14 +93,14 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/users/{id}', [UserController::class, 'index'])->name('user.index')->middleware('check.permission:view User');
-    Route::get('api/users/{id}', [UserController::class, 'getUsers'])->name('api.users')->middleware('check.permission:view User');
-    Route::get('/users_create/{id}', [UserController::class, 'create'])->name('user.create')->middleware('check.permission:create User');
+    Route::get('api/users', [UserController::class, 'getUsers'])->name('api.users')->middleware('check.permission:view User');
+    Route::get('/users_create', [UserController::class, 'create'])->name('user.create')->middleware('check.permission:create User');
     Route::post('/store', [UserController::class, 'store'])->name('user.store')->middleware('check.permission:create User');
 
     Route::any('/getGoverment/{id}', [UserController::class, 'getGoverment'])->name('user.getGoverment')->middleware('check.permission:view Government');
     Route::any('/getRegion/{id}', [UserController::class, 'getRegion'])->name('user.getRegion')->middleware('check.permission:view Region');
 
-    Route::get('/employees/{id}', [UserController::class, 'index'])->name('user.employees')->middleware('check.permission:view User');
+    Route::get('/employees', [UserController::class, 'index'])->name('user.employees')->middleware('check.permission:view User');
     Route::get('/edit/{id}', [UserController::class, 'edit'])->name('user.edit')->middleware('check.permission:edit User');
     Route::get('/show/{id}', [UserController::class, 'show'])->name('user.show')->middleware('check.permission:view User');
     Route::post('/update/{id}', [UserController::class, 'update'])->name('user.update')->middleware('check.permission:edit User');
@@ -221,7 +221,7 @@ Route::middleware(['auth'])->group(function () {
     // Route::put('departments_update/{department}', [DepartmentController::class, 'update']);
     // Route::delete('departments_delete/{department}', [DepartmentController::class, 'destroy']);
     Route::get('/departments/{id}', [DepartmentController::class, 'index'])->name('departments.index')->middleware('check.permission:view departements');
-    Route::get('/departments/create/{id}', [DepartmentController::class, 'create'])->name('departments.create')->middleware('check.permission:create departements');
+    Route::get('/department/add/create/{id}', [DepartmentController::class, 'create'])->name('department.create')->middleware('check.permission:create departements');
     Route::get('/departments/show/{department}', [DepartmentController::class, 'show'])->name('departments.show')->middleware('check.permission:view departements');
     Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store')->middleware('check.permission:edit departements');
     Route::get('/departments/{department}/edit', [DepartmentController::class, 'edit'])->name('departments.edit')->middleware('check.permission:edit departements');
@@ -263,7 +263,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/setting/update', [settingController::class, 'UpdateSetting'])->name('setting.update')->middleware('check.permission:edit Setting');
     Route::get('/setting/delete', [settingController::class, 'deleteSetting'])->name('setting.delete')->middleware('check.permission:delete Setting');
 
-    Route::post('/get-grades', [UserController::class, 'getGradesByViolationType'])->name('get.grades');
+    Route::get('/get-grades', [UserController::class, 'getGradesByViolationType'])->name('get.grades');
 
     //start gards
     Route::get('setting/grads', [settingController::class, 'getAllgrads'])->name('setting.getAllgrads')->middleware('check.permission:view grade');
@@ -476,6 +476,7 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/reservation_allowances/get_departement/{id}/{type}', [ReservationAllowanceController::class, 'get_departement'])->name('reservation_allowances.get_departement')->middleware('check.permission:view Inspector');
     Route::any('/reservation_allowances/search_employee', [ReservationAllowanceController::class, 'search_employee'])->name('reservation_allowances.search_employee')->middleware('check.permission:view Inspector');
     Route::any('/reservation_allowances/get_search_employee/{sector_id}/{departement_id}', [ReservationAllowanceController::class, 'get_search_employee'])->name('reservation_allowances.get_search_employee')->middleware('check.permission:view Inspector');
+    Route::any('/reservation_allowances/hi', [ReservationAllowanceController::class, 'index'])->name('reservation_allowances.hi')->middleware('check.permission:view Inspector');
 
 
     //reservation statics
@@ -494,7 +495,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/get-manager-details/{id}', [DepartmentController::class, 'getManagerDetails']);
 
- 
+
     //reservation search
     Route::get('/reservation_fetch', [ReserveFetchController::class, 'static'])->name('reservation_fetch.index')->middleware('check.permission:view Inspector');
     Route::get('/reservation_fetch/search', [ReserveFetchController::class, 'getFilteredData'])->name('reservation_fetch.search')->middleware('check.permission:view Inspector');

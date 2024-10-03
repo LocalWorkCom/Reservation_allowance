@@ -97,7 +97,7 @@
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
-               
+
 
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager">
                     <label class="pb-3" for="mangered">المدير</label>
@@ -169,7 +169,7 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
-                </div>
+                </div> 
                 <div class="container col-11">
                     <div class="form-row d-flex justify-content-end mt-4 mb-3">
                         <button type="submit" class="btn-blue">

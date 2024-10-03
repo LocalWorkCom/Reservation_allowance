@@ -46,7 +46,7 @@ class sectorsController extends Controller
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
                 $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;" href=' . route('sectors.edit', $row->id) . '><i class="fa fa-edit"></i> تعديل</a>';
-                $add_permission = '<a class="btn btn-sm" style="background-color: #274373;" href="' . route('departments.create', ['id' => $row->id]) . '"><i class="fa fa-plus"></i> أضافة أداره</a>';
+                $add_permission = '<a class="btn btn-sm" style="background-color: #274373;" href="' .  route('department.create', ['id' => $row->id]) . '"><i class="fa fa-plus"></i> أضافة أداره</a>';
                 $show_permission = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('sectors.show', $row->id) . '> <i class="fa fa-eye"></i>عرض</a>';
 
                 return $show_permission . ' ' . $edit_permission . '' . $add_permission;
@@ -264,7 +264,7 @@ class sectorsController extends Controller
         $sector->save();
         // Check if manager has changed
         if ($oldManager != $request->mangered) {
-            dd($sector);
+           // dd($sector);
 
             // Update old manager's sector to null
             if ($oldManager) {

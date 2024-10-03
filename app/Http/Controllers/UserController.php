@@ -40,6 +40,7 @@ use App\Exports\UsersImportTemplate;
 /**
  * Send emails
  */
+
 use App\Mail\SendEmail;
 use Illuminate\Support\Facades\Mail;
 
@@ -57,73 +58,41 @@ class UserController extends Controller
 
 
     // }
-    public function index($id)
+    public function index()
     {
         // if()
-        return view('user.view', compact('id'));
+        return view('user.view');
     }
 
-    public function getUsers($id)
+    public function getUsers()
     {
 
 
-        $flagType = $id == 0 ? 'user' : 'employee';
+
         $parentDepartment = Departements::find(Auth()->user()->department_id);
 
         // dd(Auth::user()->rule->name);
         if (Auth::user()->rule->name == "localworkadmin") {
 
-            $data = User::where('flag', $flagType)->get();
+            $data = User::get();
             // dd($data);
         } elseif (Auth::user()->rule->name == "superadmin") {
-            if ($flagType == 'employee') {
-                $data = User::where('flag', $flagType)->get();
-            } else {
-                $data = User::where('flag', $flagType)
-                    ->whereHas('rule', function ($query) {
-                        $query->where('hidden', false);
-                    })->get();
-            }
+            $data = User::get();
         } else {
             if (is_null($parentDepartment->parent_id)) {
                 $subdepart = Departements::where('parent_id', $parentDepartment->id)->pluck('id')->toArray();
 
-                if ($flagType == 'employee') {
-                    $data = User::where('flag', $flagType)
-                        ->where(function ($query) use ($subdepart, $parentDepartment) {
-                            $query->whereIn('department_id', $subdepart)
-                                ->orWhere('department_id', $parentDepartment->id)
-                                ->orwhereNull('department_id');
-                        })
-                        // ->whereIn('department_id', $subdepart)
-                        // ->orWhere('department_id', $parentDepartment->id)
-                        ->get();
-                } else {
-                    $data = User::where('flag', $flagType)
-                        ->where(function ($query) use ($subdepart, $parentDepartment) {
-                            $query->whereIn('department_id', $subdepart)
-                                ->orWhere('department_id', $parentDepartment->id);
-                        })
-                        ->whereHas('rule', function ($query) {
-                            $query->where('hidden', false);
-                        })
-                        // ->whereIn('department_id', $subdepart)
-                        // ->orWhere('department_id', $parentDepartment->id)
-                        ->get();
-                }
+                $data = User::where(function ($query) use ($subdepart, $parentDepartment) {
+                        $query->whereIn('department_id', $subdepart)
+                            ->orWhere('department_id', $parentDepartment->id)
+                            ->orwhereNull('department_id');
+                    })
+                    // ->whereIn('department_id', $subdepart)
+                    // ->orWhere('department_id', $parentDepartment->id)
+                    ->get();
             } else {
-                if ($flagType == 'employee') {
-                    $data = User::where('flag', $flagType)
-                        ->where('department_id', $parentDepartment->id)
-                        ->get();
-                } else {
-                    $data = User::where('flag', $flagType)
-                        ->where('department_id', $parentDepartment->id)
-                        ->whereHas('rule', function ($query) {
-                            $query->where('hidden', false);
-                        })
-                        ->get();
-                }
+                $data = User::where('department_id', $parentDepartment->id)
+                    ->get();
             }
         }
 
@@ -498,12 +467,11 @@ class UserController extends Controller
         return response()->json($grades);
     }
 
-    public function create($id)
+    public function create()
     {
         //
         $user = User::find(Auth::user()->id);
         $rule = Rule::where('hidden', '!=', "1")->get();
-        $flag = $id;
         $grade = grade::all();
         $job = job::all();
         $govermnent = Government::all();
@@ -512,7 +480,7 @@ class UserController extends Controller
         $area = Region::all();
         $sector = Sector::all();
         $qualifications = Qualification::all();
-        $violationTypeName = ViolationTypes::whereJsonContains('type_id', 0)->pluck('name');
+        $violationTypeName = ViolationTypes::whereJsonContains('type_id', 0)->get();
 
         // Get the selected violation type from old input or set a default value
         $selectedViolationType = old('type_military', 'police'); // Default to 'police'
@@ -557,7 +525,7 @@ class UserController extends Controller
         // dd($allPermission);
         // $alldepartment = $user->createdDepartments;
         // return view('role.create',compact('allPermission','alldepartment'));
-        return view('user.create', compact('alldepartment', 'rule', 'flag', 'grade', 'job', 'alluser', 'govermnent', 'area', 'selectedViolationType', 'sector', 'qualifications', 'grades', 'countries', 'violationTypeName'));
+        return view('user.create', compact('alldepartment', 'rule', 'grade', 'job', 'alluser', 'govermnent', 'area', 'selectedViolationType', 'sector', 'qualifications', 'grades', 'countries', 'violationTypeName'));
     }
 
     public function unsigned($id)
@@ -713,10 +681,10 @@ class UserController extends Controller
             $id = $request->type;
 
             $details = [
-               'title'=>'بيانات دخولك على نظام القوة المطور',
+                'title' => 'بيانات دخولك على نظام القوة المطور',
                 'body' => 'هذه بيانات دخولك على نظام القوة المطور',
-                'username'=>$request->Civil_number,
-                'password'=>$request->password
+                'username' => $request->Civil_number,
+                'password' => $request->password
             ];
             Mail::to($request->email)->send(new SendEmail($details));
 
@@ -839,7 +807,7 @@ class UserController extends Controller
         $qualifications = Qualification::all();
 
         // Fetch all violation types regardless of the user's grade
-        $violationTypeName = ViolationTypes::whereJsonContains('type_id', 0)->pluck('name');
+        $violationTypeName = ViolationTypes::whereJsonContains('type_id', 0)->get();
 
         // Get the selected violation type from the user (if it exists)
         $selectedViolationType = old('type_military', $user->type_military); // Default to old input or user's current value
@@ -1015,7 +983,8 @@ class UserController extends Controller
     {
         //
     }
-    public function importView(Request $request){
+    public function importView(Request $request)
+    {
         return view('importFile');
     }
 
@@ -1025,27 +994,28 @@ class UserController extends Controller
         $request->validate([
             'file' => 'required|mimes:xlsx,csv',
         ]);
-    
+
         try {
             // If no errors, proceed to import the data
             Excel::import(new ImportUser, $request->file('file'));
-    
+
             return redirect()->back()->with('success', 'Users imported successfully!');
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
-    
+
             $errorMessages = [];
-    
+
             foreach ($failures as $failure) {
                 $errorMessages[] = 'Error in row ' . $failure->row() . ': ' . implode(', ', $failure->errors());
             }
-    
+
             return redirect()->back()->withErrors(['errors' => $errorMessages]);
         }
     }
-    
 
-    public function exportUsers(Request $request){
+
+    public function exportUsers(Request $request)
+    {
         return Excel::download(new UsersExport, 'users.xlsx');
     }
     public function downloadTemplate()

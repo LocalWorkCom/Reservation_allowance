@@ -80,15 +80,10 @@
                         <div class="form-row mx-3 mt-4 d-flex justify-content-center">
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="sector">اختر القطاع </label>
-                                <select name="sector" id="sector"
-                                    class=" form-control custom-select custom-select-lg mb-3 select2 "
-                                    style="border: 0.2px solid rgb(199, 196, 196); width:100% !important;" required>
-                                    <option value="">اختر القطاع </option>
-                                    @foreach ($sectors as $sector)
-                                        <option value="{{ $sector->id }}"
-                                            @if ($department->sector_id == $sector->id) selected @endif>{{ $sector->name }}</option>
-                                    @endforeach
-                                </select>
+                                <input type="text" name="name" id="name" class="form-control"
+                                    value="{{ $department->sectors->name }}" disabled>
+                                <input type="hidden" name="sector" id="sector" class="form-control"
+                                    value="{{ $department->sectors->id }}">
                                 @error('sector')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
@@ -128,7 +123,7 @@
                                     <option value="">اختار المدير</option>
                                     @foreach ($managers as $user)
                                         <option value="{{ $user->id }}"
-                                            @if ($user->id == $department->manager) selected @endif>{{ $user->Civil_number }}
+                                            @if ($user->id == $department->manager->id) selected @endif>{{ $user->Civil_number }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -176,31 +171,29 @@
                             </div>
 
 
-                            <div class="form-group col-md-10 mx-md-2">
-                                <label for="employess">الموظفين </label>
-                                <select name="employess[]" id="employess" class="form-group col-md-12 " multiple
-                                    dir="rtl"
-                                    style=" height: 150px;font-size: 18px;border: 0.2px solid lightgray; overflow-y: auto;">
-                                    @foreach ($employees as $item)
-                                        <option value="{{ $item->id }}"
-                                            @if ($item->department_id == $department->id) selected @endif>{{ $item->name }}</option>
-                                    @endforeach
-                                </select>
-
+                            <div class="input-group moftsh px-md-4 px-3 pt-3">
+                                <label for="Civil_number" class="col-12"> أرقام الهوية</label>
+                                <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px">
+                                            @foreach ($employees as $employee)
+{{ $employee->Civil_number }}
+@endforeach
+                                        </textarea>
                             </div>
                         </div>
-
                 </div>
-                <div class="container col-10 mt-5 mb-3 ">
-                    <div class="form-row col-10 " dir="ltr">
-                        <button class="btn-blue " type="submit">
-                            اضافة </button>
-                    </div>
-                </div>
-                <br>
-
-                </form>
             </div>
+
+        </div>
+        <div class="container col-10 mt-5 mb-3 ">
+            <div class="form-row col-10 " dir="ltr">
+                <button class="btn-blue " type="submit">
+                    اضافة </button>
+            </div>
+        </div>
+        <br>
+
+        </form>
+        </div>
 
 
 

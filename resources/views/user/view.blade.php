@@ -13,92 +13,40 @@
 
 <section>
     <div class="row">
-        @if (url()->current() == url('/users/0'))
-            <div class="container welcome col-11">
-                <div class="d-flex justify-content-between">
-                    <p>المستخـــــــــــدمين</p>
 
-                    <div class="form-group">
-                        @if (Auth::user()->hasPermission('create User'))
-                            <button type="button" class="wide-btn"
-                                onclick="window.location.href='{{ route('user.create', $id) }}'"
-                                style="color: #0D992C;">
-
-                                اضافة جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                            </button>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        @elseif (url()->current() == url('/employees/1'))
-            <div class="container welcome col-11">
-                <div class="d-flex justify-content-between">
-                    @if (Auth::user()->rule_id == 2)
-                        <p>موظفين الوزارة</p>
+        <div class="container welcome col-11">
+            <div class="d-flex justify-content-between">
+                @if (Auth::user()->rule_id == 2)
+                    <p>موظفين الوزارة</p>
+                @endif
+                @if (Auth::user()->rule_id != 2)
+                    <p>موظفين القوة<< /p>
+                @endif
+                <div class="form-group">
+                    @if (Auth::user()->hasPermission('add_employee User'))
+                        <button type="button" class="wide-btn"
+                            onclick="window.location.href='{{ route('user.create') }}'" style="color: #0D992C;">
+                            اضافة جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                        </button>
+                        {{-- <a href="{{ route('export-users') }}" class="btn btn-primary"
+                            style="border-radius: 5px;">تصدير</a> --}}
+                        <a href="{{ route('download-template') }}" class="btn btn-success"
+                            style="border-radius: 5px;">تحميل القالب</a>
                     @endif
-                    @if (Auth::user()->rule_id != 2)
-                        <p>موظفين القوة<< /p>
-                    @endif
-                    <div class="form-group">
-                        @if (Auth::user()->hasPermission('add_employee User'))
-                            <button type="button" class="wide-btn"
-                                onclick="window.location.href='{{ route('user.create', $id) }}'"
-                                style="color: #0D992C;">
-                                اضافة جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                            </button>
-                            <a href="{{ route('export-users') }}" class="btn btn-primary"
-                                style="border-radius: 5px;">تصدير</a>
-                            <a href="{{ route('download-template') }}" class="btn btn-success"
-                                style="border-radius: 5px;">تحميل القالب</a>
-                        @endif
-
-                    </div>
 
                 </div>
 
             </div>
-            <div class="row mb-4">
-                <div class="col-12">
 
-                </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col-12">
+
             </div>
-        @elseif ($id == 0)
-            <div class="container welcome col-11">
-                <div class="d-flex justify-content-between">
-                    <p>المستخـــــــــــدمين</p>
+        </div>
 
-                    <div class="form-group">
-                        @if (Auth::user()->hasPermission('create User'))
-                            <button type="button" class="wide-btn"
-                                onclick="window.location.href='{{ route('user.create', $id) }}'">
+    
 
-                                اضافة جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                            </button>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        @elseif($id == 1)
-            <div class="container welcome col-11">
-                <div class="d-flex justify-content-between">
-                    @if (Auth::user()->rule_id == 2)
-                        <p>موظفين الوزارة</p>
-                    @endif
-                    @if (Auth::user()->rule_id != 2)
-                        <p>موظفين القوة<< /p>
-                    @endif
-                    <div class="form-group">
-                        @if (Auth::user()->hasPermission('add_employee User'))
-                            <button type="button" class="wide-btn"
-                                onclick="window.location.href='{{ route('user.create', $id) }}'">
-
-                                اضافة جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                            </button>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        @endif
 
 
     </div>
@@ -136,6 +84,7 @@
                                     <th>القسم</th>
                                     <th>الهاتف</th>
                                     <th>الرقم العسكري</th>
+                                    <th>النوع</th>
                                     <th style="width:150px !important;">العمليات</th>
                                 </tr>
                             </thead>
@@ -158,7 +107,6 @@
                             $(document).ready(function() {
                                 $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
 
-                                var id = {{ $id }};
 
                                 @php
                                     $Dataurl = url('api/users');
@@ -181,7 +129,7 @@
                                 var table = $('#users-table').DataTable({
                                     processing: true,
                                     serverSide: true,
-                                    ajax: '{{ $Dataurl }}/' + id + "/" +
+                                    ajax: '{{ $Dataurl }}/' +
                                         '{{ isset($q) ? $q : '' }}', // Correct URL concatenation
                                     bAutoWidth: false,
                                     columns: [{
@@ -204,6 +152,10 @@
                                         {
                                             data: 'military_number',
                                             name: 'military_number'
+                                        },
+                                        {
+                                            data: 'flag',
+                                            name: 'flag'
                                         },
                                         {
                                             data: 'action',

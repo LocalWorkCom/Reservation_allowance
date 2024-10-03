@@ -56,6 +56,8 @@
                                     <th>ميزانية البدل</th>
                                     <th>صلاحيه الحجز</th>
                                     <th>عدد الأدارات الفرعيه</th>
+                                    <th>عدد الموظفين</th>
+                                    <th> عدد الموظفين بالادارات الفرعية</th>
                                     <th>إجراء</th>
                                 </tr>
                             </thead>
@@ -110,6 +112,14 @@
                         return '<button class="btn btn-link" onclick="showSubDepartments(' + row
                             .id + ')">' + data + '</button>';
                     }
+                },
+                {
+                    data: 'num_managers',
+                    name: 'num_managers',
+                },
+                {
+                    data: 'num_subdepartment_managers',
+                    name: 'num_subdepartment_managers'
                 },
                 {
                     data: 'action',
