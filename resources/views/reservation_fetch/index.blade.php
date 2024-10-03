@@ -50,6 +50,11 @@ h3 {
     border-radius: 10px !important;
     background-color: #f5f6fa;
 }
+#search-form label{
+font-size:20px;
+margin-inline:10px;
+font-weight:700;
+}
 </style>
 @endpush
 
@@ -63,19 +68,19 @@ h3 {
         <!-- Search Form -->
         <form id="search-form" class="row col-12">
             <div class=" d-flex">
-                <label for="civil_number ">رقم الهوية</label>
+                <label for="civil_number " class="d-flex w-50">رقم الهوية</label>
                 <input type="text" id="civil_number" name="civil_number" class="form-control" required>
             </div>
             <div class=" d-flex">
-                <label for="start_date">من تاريخ</label>
+                <label for="start_date">من </label>
                 <input type="date" id="start_date" name="start_date" class="form-control">
             </div>
             <div class=" d-flex">
-                <label for="end_date">الى تاريخ</label>
+                <label for="end_date">الى </label>
                 <input type="date" id="end_date" name="end_date" class="form-control">
             </div>
-            <div class=" align-self-end">
-                <button type="submit" class="btn btn-primary">بحث</button>
+            <div class=" ">
+                <button type="submit" class="btn mx-2" style="background-color: #274373; color:white;">بحث</button>
             </div>
         </form>
     </div>
@@ -84,8 +89,8 @@ h3 {
 <div class="container  col-11">
     <div class="">
         <h3>نتائج البحث</h3>
-        <div class="col-md-2 align-self-end">
-            <button type="button" class="btn btn-secondary" onclick="printPDF()">طباعة</button>
+        <div class="col-md-2 mb-2">
+            <button type="button" class="btn " onclick="printPDF()"  style="background-color: #274373; color:white;">طباعة</button>
         </div>
         <table id="reservation-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
             <thead>
