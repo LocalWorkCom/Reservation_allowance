@@ -231,6 +231,15 @@
                                             </li>
                                         @endif
 
+                                        @if (Auth::user()->hasPermission('view VacationType'))
+                                        <li
+                                            class="{{ request()->routeIs('nationality.index') ? 'active' : '' }}">
+                                            <img src="{{ asset('frontend/images/holidays.svg') }}" alt="logo"
+                                                style="margin-left: 7px;">
+                                            <a href="{{ route('nationality.index') }}">الدول والجنسيات</a>
+                                        </li>
+                                    @endif
+
 
                                         @if (Auth::user()->hasPermission('view Rule'))
                                             <li class="{{ request()->routeIs('rule.index') ? 'active' : '' }}">

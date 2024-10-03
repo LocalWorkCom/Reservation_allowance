@@ -12,9 +12,7 @@ class ViolationTypes extends Model
     public $timestamps = false;
 
     protected $fillable = ['name','type_id']; 
-    protected $casts = [
-        'type_id' => 'array',
-    ];
+  
 
     public function createdBy()
     {

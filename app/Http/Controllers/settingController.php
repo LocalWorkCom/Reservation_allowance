@@ -18,6 +18,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\Country;
+
 
 class settingController extends Controller
 {
@@ -126,7 +128,156 @@ class settingController extends Controller
         }
     }
     //END JOB
+// start Nationality
+public function indexbationality(Request $request)
+{
+    return view("nationality.index");
+}
+  //get data for GRAD
+  public function getAllNationality(Request $request)
+  {
+      $data = Country::orderBy('country_name_en', 'ASC')->get();
+    
+      // Get the filtered data
+    //   $data = $data->get();
+    //dd($data[0]);
+      return DataTables::of($data)
+          ->addColumn('action', function ($row) {
+              // Safely handle null values for JavaScript function parameters
+              $name = $row->country_name_ar ? "'$row->country_name_en'" : "''";
+              $order = $row->code ? "'$row->code'" : "''";
+             
 
+              $edit_permission = null;
+              $delete_permission = null;
+
+              if (Auth::user()->hasPermission('edit grade')) {
+                  // Pass values safely to the JavaScript function
+                  $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;" onclick="openedit(' . $row->id . ',' . $name . ',\'' . $row->code .'\')">  <i class="fa fa-edit"></i> تعديل </a>';
+              }
+              if (Auth::user()->hasPermission('delete grade')) {
+                  $delete_permission = ' <a class="btn btn-sm" style="background-color: #C91D1D;" onclick="opendelete(' . $row->id . ')"> <i class="fa-solid fa-trash"></i> حذف</a>';
+              }
+
+              $uploadButton = $edit_permission . $delete_permission;
+              return $uploadButton;
+          })
+         
+          ->rawColumns(['action'])
+          ->make(true);
+  }
+
+  public function createnationality()
+  {
+      return view("nationality.add");
+  }
+  //add nationality
+  public function addNationality(Request $request)
+  {
+      $messages = [
+          'nameadd.required' => 'الاسم مطلوب.',
+          'nameadd.string' => 'الاسم يجب أن يكون نصًا.',
+         
+      ];
+
+      // Create a validator instance
+      $validator = Validator::make($request->all(), [
+          'nameadd' => 'required|string',
+
+      ], $messages);
+
+      // Check if validation fails
+      if ($validator->fails()) {
+          // Set the session variable for the modal type
+          session(['modal_type' => 'add']);
+
+          // Redirect back with errors and input
+          return redirect()->back()->withErrors($validator)->withInput();
+      }
+      session(['modal_type' => 'add']);
+      $requestinput = $request->except('_token');
+      $countries = new Country();
+      $countries->country_name_ar = $request->nameadd;//
+      $countries->country_name_en = $request->nameadd;
+      $countries->country_name_fr = $request->nameadd;
+
+      $countries->code = $request->codeAdd;
+      
+      $countries->save();
+      $message = "تم اضافه الدولة";
+      return redirect()->route('nationality.index', compact('message'));
+  }
+  //show nationality
+  public function shownationality($id)
+  {
+      $data = grade::findOrFail($id);
+      return view("grads.show", compact("data"));
+  }
+  //edit nationality
+  public function editnationality($id)
+  {
+      $data = grade::findOrFail($id);
+      return view("grads.edit", compact("data"));
+  }
+  //update nationality
+  public function updatenationality(Request $request)
+  {
+
+      $messages = [
+          'name.required' => 'الاسم مطلوب.',
+          'name.string' => 'الاسم يجب أن يكون نصًا.',
+      ];
+
+      $countryId = $request->id; // Retrieve the ID from the route parameter
+      // Create a validator instance
+      $validator = Validator::make($request->all(), [
+          'name' => 'required|string',
+        
+      ], $messages);
+
+      if ($validator->fails()) {
+          session(['modal_type' => 'edit']);
+
+          session([
+              'old_name' => $request->name,
+              'old_codeedit' => $request->codeedit,
+              
+              'edit_id' => $request->id,
+          ]);
+
+          return redirect()->back()->withErrors($validator)->withInput();
+      }
+
+      $country = Country::find($request->id);
+
+      if (!$country) {
+          return response()->json(['error' => 'عفوا هذه الدولة غير موجوده'], 404);
+      }
+
+      $country->name = $request->name;
+      $country->code = $request->codeedit;
+     
+
+      $country->save();
+      $message = 'تم تعديل الدولة';
+      return redirect()->route('nationality.index', compact('message'));
+  }
+
+  //delete nationality
+  public function deletenationality(Request $request)
+  {
+
+      $isForeignKeyUsed = DB::table('users')->where('nationality_id', $request->id)->exists();
+      //dd($isForeignKeyUsed);
+      if ($isForeignKeyUsed) {
+          return redirect()->route('nationality.index')->with(['message' => 'لا يمكن حذف هذه الجنسية يوجد موظفين لها']);
+      } else {
+          $type = Country::find($request->id);
+          $type->delete();
+          return redirect()->route('grads.index')->with(['message' => 'تم حذف الجنسية']);
+      }
+  }
+  //END Nationality
     //START GRAD
     //show GRAD
     public function indexgrads()
