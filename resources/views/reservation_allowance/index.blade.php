@@ -23,6 +23,14 @@
 .div-info-padding b span {
     color: #032F70;
 }
+
+.custom-select {
+    width: 100%;
+    color: green !important;
+    border-radius: 10px !important;
+    height: 43px !important;
+    background-color: #fafbfd !important;
+}
 </style>
 
 
@@ -43,67 +51,78 @@
     <div class="container welcome col-11" style="height: auto !important">
         <div class="d-flex justify-content-between">
             <div class="col-12">
-                <div class="row" style="direction: rtl">
-                        <div class="col-2">
-                            <p> بدل الحجز</p>
-                        </div>
+                <div class="row d-flex justify-content-between" style="direction: rtl">
+                    <div class="col-2">
+                        <p> بدل الحجز</p>
+                    </div>
 
-                        <form class="col-6" action="{{ route('reservation_allowances.search_employee') }}" method="post" enctype="multipart/form-data">
-                        @csrf
-                            <div class="row">
+                    <div class="d-flex">
+                        <form class="" action="{{ route('reservation_allowances.search_employee') }}" method="post"
+                            enctype="multipart/form-data">
+                            @csrf
+                            <div class="row d-flex flex-wrap justify-content-between">
                                 <!-- 1 for sector , 2 for department -->
-                                <input name="department_type" id="department_type" type="hidden" value="{{Auth::user()->department_id == null ? 1 : 2}}">
+                                <input name="department_type" id="department_type" type="hidden"
+                                    value="{{Auth::user()->department_id == null ? 1 : 2}}">
 
-                                <div class="col-4">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                                    <label for="Civil_number"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار القطاع</label>
-                                    <select class="custom-select custom-select-lg mb-3 select2" name="sector_id" id="sector_id">
-                                        <option selected disabled>اختار من القائمة</option>
-                                            @foreach ($sectors as $sector)
-                                            <option value="{{ $sector->id }}">
-                                                {{ $sector->name }}</option>
-                                            @endforeach
+                                <div class="d-flex">
+                                    {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
+                                    <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
+                                    <select class="custom-select custom-select-lg select2" name="sector_id"
+                                        id="sector_id">
+                                        <option selected disabled>اختار القطاع</option>
+                                        @foreach ($sectors as $sector)
+                                        <option value="{{ $sector->id }}">
+                                            {{ $sector->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
 
-                                <div class="col-4">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                                    <label for="Civil_number"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label>
-                                    <select class="custom-select custom-select-lg mb-3 select2" name="departement_id" id="departement_id">
-                                        <option selected disabled>اختار من القائمة</option>
+                                <div class="d-flex mx-2">
+                                    {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
+                                    <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
+                                    <select class="custom-select custom-select-lg select2" name="departement_id"
+                                        id="departement_id">
+                                        <option selected disabled>اختار الادارة</option>
                                     </select>
                                 </div>
 
-                                <div class="col-4">
+                                <div class="">
                                     <label for="Civil_number">
-                                    <button class="btn-all py-2 px-2" type="submit">
-                                        <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                        بحث عن موظفين
-                                    </button>
+                                        <button class="btn-all py-2 px-2" type="submit" style="color:green;">
+                                            <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                                            بحث عن موظفين
+                                        </button>
                                 </div>
                             </div>
                         </form>
 
-                        <div class="col-2">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                            <a class="btn-all py-2 px-2" href="{{ route('reservation_allowances.create') }}"
-                                style="color: #0D992C;">
-                                <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                        <div class="d-flex justify-content-between flex-wrap mt-2">
+                            <div class=" mx-2">
+                                {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
+                                <a class="btn-all py-2 px-2 " href="{{ route('reservation_allowances.create') }}"
+                                    style="color: #0D992C;">
+                                    <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
 
-                                اضافة بدل حجز جديد
-                            </a>
-                            {{-- @endif --}}
+                                    اضافة بدل حجز جديد
+                                </a>
+                                {{-- @endif --}}
+                            </div>
+                            <div class="">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
+                                <a class="btn-all py-2 px-2" href="{{ route('reservation_allowances.create.all') }}"
+                                    style="color: #0D992C;">
+                                    <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+
+                                    اضافة بدل حجز كلى جديد
+                                </a>
+                                {{-- @endif --}}
+                            </div>
+
                         </div>
-                        <div class="col-2">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                            <a class="btn-all py-2 px-2" href="{{ route('reservation_allowances.create.all') }}"
-                                style="color: #0D992C;">
-                                <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-
-                                اضافة بدل حجز كلى جديد
-                            </a>
-                            {{-- @endif --}}
-                        </div>
-
                         <!-- show_reservation_allowances_info -->
                         <div id="show_reservation_allowances_info" class="col-12"></div>
                         <!-- end of show_reservation_allowances_info -->
+                    </div>
 
                 </div>
             </div>
@@ -165,14 +184,14 @@ $(document).ready(function() {
         closeModal();
     });
 
-    
-    $(document).on("change", "#sector_id", function () {
+
+    $(document).on("change", "#sector_id", function() {
         var sectorid = this.value;
         var department_type = document.getElementById('department_type').value;
         var map_url = "{{route('reservation_allowances.get_departement',['id','type'])}}";
         map_url = map_url.replace('id', sectorid);
         map_url = map_url.replace('type', department_type);
-        $.get(map_url, function(data){
+        $.get(map_url, function(data) {
             $("#departement_id").html(data);
         });
     });
@@ -203,7 +222,7 @@ function confirmDelete() {
 }
 $(document).ready(function() {
     // Check if there are errors
-    @if($errors->any())
+    @if($errors - > any())
     // Check if it's an add or edit operation
     @if(session('modal_type') === 'add')
     $('#addForm').modal('show');
@@ -266,104 +285,105 @@ $(document).ready(function() {
 
 
 
-        //call datatable
-        $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
-        var filter = 'all'; // Default filter
-        const table = $('#users-table').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: '{{ route('reservation_allowances.getAll') }}',
-                data: function(d) {
-                    d.filter = filter; // Use the global filter variable
-                }
+    //call datatable
+    $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
+    var filter = 'all'; // Default filter
+    const table = $('#users-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route('
+            reservation_allowances.getAll ') }}',
+            data: function(d) {
+                d.filter = filter; // Use the global filter variable
+            }
+        },
+        columns: [{
+                data: 'id',
+                name: 'id'
             },
-            columns: [{
-                    data: 'id',
-                    name: 'id'
-                },
-                {
-                    data: 'employee_grade',
-                    name: 'employee_grade'
-                },
-                {
-                    data: 'employee_name',
-                    name: 'employee_name'
-                },
-                {
-                    data: 'employee_file_num',
-                    name: 'employee_file_num'
-                },
-                {
-                    data: 'employee_allowance_type_btn',
-                    name: 'employee_allowance_type_btn'
-                },
-                {
-                    data: 'employee_allowance_amount',
-                    name: 'employee_allowance_amount'
-                }
-                <?php /*{
+            {
+                data: 'employee_grade',
+                name: 'employee_grade'
+            },
+            {
+                data: 'employee_name',
+                name: 'employee_name'
+            },
+            {
+                data: 'employee_file_num',
+                name: 'employee_file_num'
+            },
+            {
+                data: 'employee_allowance_type_btn',
+                name: 'employee_allowance_type_btn'
+            },
+            {
+                data: 'employee_allowance_amount',
+                name: 'employee_allowance_amount'
+            }
+            <?php /*{
                             data: 'action',
                             name: 'action',
                             sWidth: '100px',
                             orderable: false,
                             searchable: false
                         }*/?>
-            ],
-            "order": [0, 'asc'],
+        ],
+        "order": [0, 'asc'],
 
-            "oLanguage": {
-                "sSearch": "",
-                "sSearchPlaceholder": "بحث",
-                "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
-                "sInfoEmpty": 'لا توجد بيانات متاحه',
-                "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
-                "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
-                "sZeroRecords": 'نأسف لا توجد نتيجة',
-                "oPaginate": {
-                    "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
-                    "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
-                    "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
-                    "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
-                }
-            },
-            layout: {
+        "oLanguage": {
+            "sSearch": "",
+            "sSearchPlaceholder": "بحث",
+            "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
+            "sInfoEmpty": 'لا توجد بيانات متاحه',
+            "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
+            "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
+            "sZeroRecords": 'نأسف لا توجد نتيجة',
+            "oPaginate": {
+                "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
+                "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
+                "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
+                "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
+            }
+        },
+        layout: {
 
-                bottomEnd: {
-                    paging: {
-                        firstLast: false
-                    }
-                }
-            },
-            "pagingType": "full_numbers",
-            "fnDrawCallback": function(oSettings) {
-                console.log('Page ' + this.api().page.info().pages)
-                var page = this.api().page.info().pages;
-                console.log($('#users-table tr').length);
-                if (page <= 1) {
-                    //$('.dataTables_paginate').hide();//css('visiblity','hidden');
-                    $('.dataTables_paginate').css('visibility', 'hidden'); // to hide
+            bottomEnd: {
+                paging: {
+                    firstLast: false
                 }
             }
-        });
-        $('.btn-filter').on('click', function() {
-            filter = $(this).data('filter'); // Get the filter value from the clicked button
-            table.ajax.reload(); // Reload the DataTable with the new filter
-        });
-        // Filter buttons click event
-        $('.btn-filter').click(function() {
-            filter = $(this).data('filter'); // Update filter
-            $('.btn-filter').removeClass('btn-active'); // Remove active class from all
-            $(this).addClass('btn-active'); // Add active class to clicked button
+        },
+        "pagingType": "full_numbers",
+        "fnDrawCallback": function(oSettings) {
+            console.log('Page ' + this.api().page.info().pages)
+            var page = this.api().page.info().pages;
+            console.log($('#users-table tr').length);
+            if (page <= 1) {
+                //$('.dataTables_paginate').hide();//css('visiblity','hidden');
+                $('.dataTables_paginate').css('visibility', 'hidden'); // to hide
+            }
+        }
+    });
+    $('.btn-filter').on('click', function() {
+        filter = $(this).data('filter'); // Get the filter value from the clicked button
+        table.ajax.reload(); // Reload the DataTable with the new filter
+    });
+    // Filter buttons click event
+    $('.btn-filter').click(function() {
+        filter = $(this).data('filter'); // Update filter
+        $('.btn-filter').removeClass('btn-active'); // Remove active class from all
+        $(this).addClass('btn-active'); // Add active class to clicked button
 
-            table.page(0).draw(false); // Reset to first page and redraw the table
-        });
-        //end of call datatable
+        table.page(0).draw(false); // Reset to first page and redraw the table
+    });
+    //end of call datatable
 
 
 
 
-    
+
 });
 </script>
 @endpush
