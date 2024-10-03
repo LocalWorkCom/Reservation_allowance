@@ -21,9 +21,7 @@ class sectorsController extends Controller
     {
         $this->middleware('auth');
     }
-    /**
-     * Display a listing of the resource.
-     */
+   
     public function index()
     {
         // $governmentIds = Government::pluck('id')->toArray(); // Get all government IDs
