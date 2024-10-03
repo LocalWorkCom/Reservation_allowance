@@ -262,4 +262,10 @@ class ReservationAllowanceController extends Controller
     {
         //
     }
+
+    public function get_departement($sector_id)
+    {
+        $get_departements = departements::where('sector_id', $sector_id)->get();
+        return view('reservation_allowance.get_departements', compact('get_departements'));
+    }
 }
