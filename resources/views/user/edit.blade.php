@@ -80,8 +80,22 @@
                                         @if ($user->type == 'female') checked @endif>
                                     <label class="form-check-label mx-md-2" for="female">انثى</label>
                                 </div>
-                               
+
                                 <label for="input44">الفئة</label>
+                            </div>
+                            <div class="form-group d-flex justify-content-center col-md-5 mx-2 pb-2">
+                                @foreach ($violationTypeName as $key => $violation)
+                                    <div class="radio-btns" style="margin-left: 1.5rem; margin-right: 1.5rem;">
+                                        <input type="radio" class="form-check-input" id="police_{{ $key }}"
+                                            name="type_military" value="{{ $violation->id }}"
+                                            style="height:20px; width:20px;"
+                                            @if ($violation->id == $user->grade->type) checked @endif>
+                                        <label class="form-check-label mx-2" for="police_{{ $key }}"
+                                            style="margin-left: 0.5rem;">{{ $violation->name }}</label>
+                                    </div>
+                                @endforeach
+                                <label for="type_military" style="margin-left: 1.5rem; margin-right: 1.5rem;">نوع
+                                    العسكرى</label>
                             </div>
                             {{-- <div class="form-group d-flex  justify-content-center col-md-5 mx-2 pb-2">
 
@@ -102,25 +116,6 @@
                                 <label for="input44"> التصنيف</label>
                             </div> --}}
                         </div>
-
-                        <br>
-                        <div class="form-group col-md-10 mx-2 type_military_id" id="type_military_id">
-                            <div class="d-flex justify-content-end">
-                                <div class="radio-btns mx-md-4">
-                                    @foreach ($violationTypeName as $key => $violation)
-                                        <input type="radio" class="form-check-input" id="police_{{ $key }}"
-                                            name="type_military" value="{{ $violation->id }}"
-                                            style="height:20px; width:20px;"
-                                            @if ($violation->id == $user->grade->type) checked @endif>
-                                        <label class="form-check-label mx-2"
-                                            for="police_{{ $key }}">{{ $violation->name }}</label>
-                                    @endforeach
-                                </div>
-                                <label for="type_military">نوع العسكرى</label>
-                            </div>
-                        </div>
-
-
 
 
                         <div class="form-row mx-3 d-flex justify-content-center flex-row-reverse">
@@ -146,10 +141,36 @@
                         <div class="form-row mx-3 d-flex justify-content-center flex-row-reverse">
                             <div class="form-group col-md-5 mx-2">
                                 <label for="input4"><i class="fa-solid fa-asterisk"
-                                        style="color:red; font-size:10px;"></i> رقم المحمول</label>
+                                        style="color:red; font-size:10px;"></i> الهاتف</label>
                                 <input type="text" id="input4" name="phone" class="form-control"
-                                    placeholder=" رقم المحمول" value="{{ $user->phone }}" dir="rtl">
+                                    placeholder=" رقم الهاتف" value="{{ $user->phone }}" dir="rtl">
                             </div>
+                            <div class="form-group col-md-5 mx-2">
+                                <label for="region"> المنطقة</label>
+
+                                <select id="region" name="region" class="form-control select2" placeholder="المنطقة">
+                                    <option selected disabled>اختار من القائمة</option>
+                                    @foreach ($area as $item)
+                                        <option value="{{ $item->id }}"
+                                            {{ old('region') == $item->id ? 'selected' : '' }}>
+                                            {{ $item->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+
+
+                        </div>
+
+
+                        <div class="form-row mx-md-3 d-flex justify-content-center flex-row-reverse">
+                            <div class="form-group col-md-5 mx-2">
+                                <label for="input44">العنوان</label>
+                                <textarea id="input44" name="address_1" class="form-control" placeholder="  العنوان"
+                                    value="{{ $user->address_1 }}"></textarea>
+                            </div>
+
                             <div class="form-group col-md-5 mx-2">
                                 <label for="input11"> <i class="fa-solid fa-asterisk"
                                         style="color:red; font-size:10px;"></i> رقم المدنى</label>
@@ -158,7 +179,6 @@
                             </div>
 
                         </div>
-
 
                         <div class="form-row  mx-3 d-flex justify-content-center flex-row-reverse">
                             <div class="form-group col-md-5 mx-2">
@@ -183,76 +203,89 @@
 
                         <div class="form-row  mx-3 d-flex justify-content-center flex-row-reverse">
 
-                            <div class="form-group col-md-10 mx-2" id="military_number_id">
+                            <div class="form-group col-md-5 mx-2"id="military_number_id">
                                 <label for="input6"> <i class="fa-solid fa-asterisk"
                                         style="color:red; font-size:10px;"></i> رقم العسكرى</label>
                                 <input type="text" id="input6" name="military_number" class="form-control"
                                     placeholder="رقم العسكرى" value="{{ $user->military_number }}" dir="rtl">
                             </div>
-                            <div class="form-group col-md-10 mx-2" id="input12Div">
+                            <div class="form-group col-md-5 mx-2"id="input12Div">
                                 <label for="input12"> <i class="fa-solid fa-asterisk"
                                         style="color:red; font-size:10px;"></i> رقم الملف</label>
                                 <input type="text" id="input12" name="file_number" class="form-control"
                                     placeholder="رقم الملف" value="{{ $user->file_number }}" dir="rtl">
                             </div>
                         </div>
-                        <div class="form-row mx-2 mx-2 d-flex justify-content-center flex-row-reverse">
+                        <div class="form-row mx-2 d-flex justify-content-center flex-row-reverse">
                             <div class="form-group col-md-10">
-                                <label for="input13">هل يمكن لهذا لموظف ان يكون مستخدم ؟ </label>
-                                {{-- <span>نعم : اختار مستخدم</span>
-                                    <span>/</span>
-                                    <span>لا : اختار موظف</span> --}}
-
+                                <label for="input13">هل يمكن لهذا الموظف أن يكون مستخدم؟</label>
                                 <select id="input13" name="flag" class="form-control select2">
-                                    <option value="user" selected>نعم</option>
-                                    {{-- <option value="employee">موظف</option> --}}
-                                    {{-- <option value="user">مستخدم</option> --}}
-                                    <option value="employee" selected>لا</option>
+                                    <!-- Dynamically set the selected option based on the user's flag value -->
+                                    <option value="user" {{ $user->flag == 'user' ? 'selected' : '' }}>نعم</option>
+                                    <option value="employee" {{ $user->flag == 'employee' ? 'selected' : '' }}>لا
+                                    </option>
                                 </select>
                             </div>
                         </div>
-                        {{-- @if ($user->flag == 'user' || Auth::user()->rule->name == 'inspector') --}}
-                        <div class="form-row  mx-3 d-flex justify-content-center flex-row-reverse">
 
+                        <div class="form-row mx-3 d-flex justify-content-center flex-row-reverse" id="additionalFields"
+                            style="{{ $user->flag == 'user' ? 'display: flex;' : 'display: none;' }}">
+                            <!-- Password field -->
                             <div class="form-group col-md-5 mx-2">
-                                <label for="input3">الباسورد</label>
+                                <label for="input3">
+                                    <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i> الباسورد
+                                </label>
                                 <div class="password-container">
                                     <input type="password" id="input3" name="password" class="form-control"
-                                        placeholder="الباسورد" style="position: absolute" dir="rtl">
+                                        placeholder="الباسورد" dir="rtl" value="{{ $user->password }}">
                                     <label class="toggle-password" onclick="togglePasswordVisibility()">
                                         <i id="toggleIcon" class="fa fa-eye eye-icon"></i>
                                     </label>
                                 </div>
                             </div>
 
+                            <!-- Tasks (roles) field -->
                             <div class="form-group col-md-5 mx-2">
-                                <label for="input7"> المهام</label>
+                                <label for="input7">
+                                    <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i> المهام
+                                </label>
                                 <select id="input7" name="rule_id" class="form-control select2" placeholder="المهام">
                                     <option disabled>اختار من القائمة</option>
-
                                     @foreach ($rule as $item)
-                                        if($item->name != "localworkadmin")
-                                        {
-                                        <option value="{{ $item->id }}"
-                                            {{ $user->rule_id == $item->id ? 'selected' : '' }}>
-                                            {{ $item->name }}
-                                        </option>
-                                        }
+                                        @if ($item->name != 'localworkadmin')
+                                            <option value="{{ $item->id }}"
+                                                {{ $user->rule_id == $item->id ? 'selected' : '' }}>
+                                                {{ $item->name }}
+                                            </option>
+                                        @endif
                                     @endforeach
-
-
                                 </select>
                             </div>
                         </div>
-                        
+
+
+
                         <div class="form-row mx-md-2  d-flex justify-content-center flex-row-reverse">
-                            <div class="form-group col-md-5 mx-md-2">
-                                <label for="input44">العنوان </label>
-                                <!--  <input type="text" id="input44" name="address_1" class="form-control"
-                                                                                placeholder="  العنوان" value="{{ $user->address1 }}"> -->
-                                <textarea id="input44" name="address_1" class="form-control" placeholder="  العنوان"
-                                    value="{{ $user->address1 }}">{{ $user->address1 }}</textarea>
+
+                            <div class="form-group col-md-5 mx-2">
+                                <label for="gradeSelect">
+                                    <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>
+                                    الرتبة
+                                </label>
+                                <select id="gradeSelect" name="grade_id" class="form-control select2" required>
+                                    <option selected disabled>اختار من القائمة</option>
+                                    @foreach ($grades as $item)
+                                        <option value="{{ $item->id }}" 
+                                            {{ $user->grade_id == $item->id ? 'selected' : '' }}>
+                                            {{ $item->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                
                             </div>
+                            
+                            
+
                             <div class="form-group col-md-5 mx-2">
                                 <label for="input15">
                                     <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>
@@ -263,8 +296,6 @@
                                     @if ($user->department_id == null)
                                         <option selected disabled>اختار من القائمة</option>
                                     @endif
-
-
                                     @foreach ($department as $item)
                                         <option value="{{ $item->id }}"
                                             {{ $user->department_id == $item->id ? 'selected' : '' }}>
@@ -274,95 +305,15 @@
 
                                 </select>
                             </div>
-                            {{-- <div class="form-group col-md-5 mx-md-2">
-                                <label for="input44">العنوان 2</label>
-                                <input type="text" id="input44" name="address_2" class="form-control"
-                                    placeholder="  العنوان" value="{{ $user->address2 }}">
-    </div> --}}
                         </div>
-                        <div class="form-row mx-md-2  d-flex justify-content-center flex-row-reverse">
-                            {{-- <div class="form-group col-md-5 mx-2">
-                                <label for="sector">قطاع </label>
-                                <input type="text" id="input66" name="sector" class="form-control"
-                                    placeholder="قطاع " value="{{ old('sector') }}" >
-        <select id="sector" name="sector" class="form-control select2" placeholder="المنطقة">
-            <option selected value="null">اختار من القائمة</option>
-            @foreach ($sector as $item)
-            <option value="{{ $item->id }}" {{ $user->sector == $item->id ? 'selected' : '' }}> {{ $item->name }}</option>
-            @endforeach
-        </select>
-    </div> --}}
-                            {{-- <div class="form-group col-md-5 mx-md-2">
-                                <label for="Provinces"> المحافظة</label>
-                                <input type="text" id="input44" name="Provinces" class="form-control"
-                                    placeholder="  المحافظة" value="{{ $user->Provinces }}">
-
-    <select id="Provinces" name="Provinces" class="form-control select2" placeholder="المحافظة">
-        <option value="null">اختار من القائمة</option>
-        @foreach ($govermnent as $item)
-        <option value="{{ $item->id }}" {{ $user->Provinces == $item->id ? 'selected' : '' }}> {{ $item->name }}</option>
-        @endforeach
-    </select>
-    </div> --}}
-                            <div class="form-group col-md-5 mx-md-2">
-                                <label for="region"> المنطقة</label>
-                                {{-- <input type="text" id="region" name="region" class="form-control"
-                                    placeholder="  المنطقة" value="{{ $user->region }}"> --}}
-                                <select id="region" name="region" class="form-control select2"
-                                    placeholder="المنطقة">
-                                    <option value="null">اختار من القائمة</option>
-                                    @foreach ($area as $item)
-                                        <option value="{{ $item->id }}"
-                                            {{ $user->region == $item->id ? 'selected' : '' }}> {{ $item->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+                        {{-- <div class="form-row mx-md-2  d-flex justify-content-center flex-row-reverse">
 
                             <div class="form-group col-md-5 mx-2">
                                 <label for="input22">مدة الخدمة</label>
                                 <input type="text" id="input22" name="end_of_service" class="form-control"
                                     placeholder="مدة الخدمة " value="{{ $user->length_of_service }}">
                             </div>
-                        </div>
-
-                        <div class="form-row  mx-md-2 d-flex justify-content-center flex-row-reverse">
-                            {{-- <div class="form-group col-md-5 mx-md-2">
-                                <label for="input14">الاقدامية</label>
-                                <input type="text" id="input14" name="seniority" class="form-control"
-                                    placeholder="الاقدامية" value="{{ $user->seniority }}">
-    </div> --}}
-
-                            {{-- {{dd($department)}} --}}
-
-                        </div>
-
-                        <div class="form-row mx-2 mx-3 d-flex justify-content-center flex-row-reverse">
-                            {{-- <div class="form-group col-md-5 mx-2">
-                                <label for="input16">موقع العمل</label>
-                                <input type="text" id="input16" name="work_location" class="form-control"
-                                    placeholder="موقع العمل" value="{{ $user->work_location }}">
-    </div> --}}
-
-                            {{-- <div class="form-group col-md-5 mx-2">
-                                                        <label for="input17">المنصب</label>
-                                                        <input type="text" id="input17" name="position" class="form-control"
-                                                            placeholder="المنصب" value="{{ $user->position  }}">
-    </div> --}}
-                            {{-- <div class="form-group col-md-5 mx-2">
-                                <label for="input18">المؤهل</label>
-                                <input type="text" id="input18" name="qualification" class="form-control"
-                                    placeholder="المؤهل" value="{{ $user->qualification }}">
-
-    <select id="qualification" name="qualification" class="form-control" placeholder="المجموعة">
-        <option selected disabled>اختار من القائمة</option>
-        @foreach ($qualifications as $item)
-        <option value="{{ $item->id }}" {{ $user->qualification == $item->id ? 'selected' : ''}}> {{ $item->name }}
-        </option>
-        @endforeach
-    </select>
-    </div> --}}
-                        </div>
+                        </div> --}}
 
                         <div class="form-row mx-2 mx-3 d-flex justify-content-center flex-row-reverse">
                             <div class="form-group col-md-5 mx-2">
@@ -376,12 +327,8 @@
                                     placeholder="تاريخ الالتحاق" value="{{ $user->joining_date }}">
                             </div>
                         </div>
-                        {{-- <div class="form-group col-md-5 mx-2">
-                                    <label for="input21">العمر</label>
-                                    <input type="text" id="input21" name="age" class="form-control" placeholder="العمر"
-                                        value="{{ $user->age  }}">
-    </div> --}}
-
+                
+{{-- 
                         <div class="form-row mx-2 d-flex justify-content-center flex-row-reverse">
                             <div class="form-group col-md-10 mx-2">
                                 <label for="input24"> الرتبة</label>
@@ -398,7 +345,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="form-row mx-2 mx-2 d-flex justify-content-center flex-row-reverse">
                             <div class="form-group col-md-10">
                                 <label for="input5"> الملاحظات</label>
@@ -435,6 +382,51 @@
         </div>
 
     </section>
+    <script>
+        $(document).ready(function() {
+            // Ensure the page is fully loaded before checking the flag value
+            setTimeout(function() {
+                // Show or hide additional fields based on the initial flag value
+                if ($('#input13').val() == 'user') {
+                    $('#additionalFields').show();
+                } else {
+                    $('#additionalFields').hide();
+                }
+            }, 100); // Adding a small delay to ensure the DOM and data are fully loaded
+
+            // Listen for changes in the select dropdown
+            $('#input13').change(function() {
+                if ($(this).val() == 'user') {
+                    $('#additionalFields').show();
+                } else {
+                    $('#additionalFields').hide();
+                }
+            });
+
+            // Initialize the select2 plugin
+            $('.select2').select2({
+                dir: "rtl"
+            });
+        });
+
+
+
+        // Function to toggle password visibility
+        function togglePasswordVisibility() {
+            var passwordInput = document.getElementById("input3");
+            var toggleIcon = document.getElementById("toggleIcon");
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                toggleIcon.classList.remove("fa-eye");
+                toggleIcon.classList.add("fa-eye-slash");
+            } else {
+                passwordInput.type = "password";
+                toggleIcon.classList.remove("fa-eye-slash");
+                toggleIcon.classList.add("fa-eye");
+            }
+        }
+    </script>
     <script>
         //     $(document).ready(function() {
         //     $('#sector').on('change', function() {
@@ -545,21 +537,6 @@
         });
     </script>
     <script>
-        function togglePasswordVisibility() {
-            var passwordField = document.getElementById('input3');
-            var toggleIcon = document.getElementById('toggleIcon');
-            if (passwordField.type === 'password') {
-                passwordField.type = 'text';
-                toggleIcon.classList.remove('fa-eye');
-                toggleIcon.classList.add('fa-eye-slash');
-            } else {
-                passwordField.type = 'password';
-                toggleIcon.classList.remove('fa-eye-slash');
-                toggleIcon.classList.add('fa-eye');
-            }
-        }
-    </script>
-    <script>
         // $(document).ready(function() {
         // $('.select2').select2({  dir: "rtl"});
         //});
@@ -580,6 +557,54 @@
             });
         });
     </script>
+<script>
+    $(document).ready(function() {
+        // Get the current military type value from the database
+        var currentMilitaryType = $('input[name="type_military"]:checked').val(); // Get the checked radio button value
+        if (currentMilitaryType) {
+            getGrades(currentMilitaryType); // Populate grades based on the current value
+        }
+
+        // Listen for changes in the radio button
+        $('input[name="type_military"]').on('change', function() {
+            getGrades(this.value); // Fetch grades when the type changes
+        });
+    });
+
+    function getGrades(id) {
+        // Create the URL with query parameters
+        var url = '/get-grades?violation_type=' + id;
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(response) {
+                console.log(response); // Log the response for debugging
+
+                // Clear the current grade options
+                var gradeSelect = $('#gradeSelect');
+                gradeSelect.empty(); // Clear the current options
+
+                // Add default option
+                gradeSelect.append('<option selected disabled>اختار من القائمة</option>');
+
+                // Populate the grade select with new options
+                response.forEach(function(grade) {
+                    gradeSelect.append($('<option></option>').val(grade.id).text(grade.name));
+                });
+
+                // Re-initialize select2 to apply it on the new options
+                gradeSelect.select2({
+                    dir: "rtl" // RTL direction
+                });
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('Error fetching grades:', textStatus, errorThrown);
+            }
+        });
+    }
+</script>
+
 
     {{-- <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -624,7 +649,7 @@
         });
     </script> --}}
 
-    <script>
+    {{-- <script>
         document.addEventListener('DOMContentLoaded', function() {
             const radios = document.getElementsByName('type_military');
             let selectedValue;
@@ -659,6 +684,6 @@
                 });
             });
         });
-    </script>
+    </script> --}}
 
 @endsection
