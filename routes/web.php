@@ -494,7 +494,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/get-manager-details/{id}', [DepartmentController::class, 'getManagerDetails']);
 
- 
+
     //reservation search
     Route::get('/reservation_fetch', [ReserveFetchController::class, 'static'])->name('reservation_fetch.index')->middleware('check.permission:view Inspector');
     Route::get('/reservation_fetch/search', [ReserveFetchController::class, 'getFilteredData'])->name('reservation_fetch.search')->middleware('check.permission:view Inspector');
