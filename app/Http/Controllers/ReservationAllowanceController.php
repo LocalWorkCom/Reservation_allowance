@@ -28,18 +28,23 @@ class ReservationAllowanceController extends Controller
         $super_admin = User::where('department_id', 1)->first();
         $employees = User::where('department_id', $user->department_id)->where('flag', 'employee')->get();
 
+
+
         if($user->rule_id == 2)
         {
-            $reservation_allowances = ReservationAllowance::with('users', 'users.grade', 'departements')->where('date', $to_day)->get();
+            $sectors = Sector::get();
+            $departements = [];
         }else{
-            if($user->department->children->count() > 0){
-                $department_id = $user->department->children->pluck('id');
+            if($user->department_id == null){
+                $sectors[] = $user->sectors;
+                $departements = departements::where('sector_id', $user->sector);
             }else{
-                $department_id[] = $user->department_id;
+                $sectors[] = $user->sectors;
+                $departements = departements::where('id', $user->department_id);
             }
-            $reservation_allowances = ReservationAllowance::with('users', 'users.grade', 'departements')->whereIn('departement_id', $department_id)->where('date', $to_day)->get();
         }
-        return view('reservation_allowance.index', compact('reservation_allowances', 'employees', 'to_day', 'to_day_name', 'super_admin'));
+
+        return view('reservation_allowance.index', compact('sectors', 'departements', 'employees', 'to_day', 'to_day_name', 'super_admin'));
     }
 
     /**
@@ -57,7 +62,7 @@ class ReservationAllowanceController extends Controller
      */
     public function store(Request $request)
     {
-        try{
+        //try{
             $messages = [
                 'Civil_number.required' => 'رقم الهوية مطلوب ولا يمكن تركه فارغاً.'
             ];
@@ -74,7 +79,8 @@ class ReservationAllowanceController extends Controller
             $to_day = Carbon::now()->format('Y-m-d');
             $to_day_name = Carbon::now()->translatedFormat('l');
 
-            $employee = User::where('Civil_number', $request->Civil_number)->first();
+            $employee = User::findOrFail($request->Civil_number);
+
             if($employee->grade_id != null){
                 if($request->type == 1){
                     $grade_value = $employee->grade->value_all;
@@ -101,9 +107,9 @@ class ReservationAllowanceController extends Controller
             $add_reservation_allowance->created_by = $user->id;
             $add_reservation_allowance->save();
             return redirect()->route('reservation_allowances.index')->with('success', 'تم اضافه بدل حجز بنجاح');
-        }catch(\Exception $e){
-            return redirect()->back()->with('message', 'An error occurred while creating the group. Please try agai');
-        }
+        /*}catch(\Exception $e){
+            return redirect()->back()->with('error', 'An error occurred while creating the group. Please try agai');
+        }*/
     }
 
     public function create_all()
@@ -141,30 +147,29 @@ class ReservationAllowanceController extends Controller
             foreach($Civil_numbers as $Civil_number){
 
                 $employee = User::where('Civil_number', $Civil_number)->first();
-
-                if($employee->grade_id != null){ // check if employee has grade
-                    if($request->type == 1){
-                        $grade_value = $employee->grade->value_all;
-                    }else{
-                        $grade_value = $employee->grade->value_part;
+                if($employee){// check if employee 
+                    if($employee->grade_id != null){ // check if employee has grade
+                        if($request->type == 1){
+                            $grade_value = $employee->grade->value_all;
+                        }else{
+                            $grade_value = $employee->grade->value_part;
+                        }
+                    
+                        $check_reservation_allowance = ReservationAllowance::where(['user_id' => $employee->id, 'date' => $to_day])->first();
+                        if(!$check_reservation_allowance){
+                            //return redirect()->back()->with('error','عفوا تم اضافة بدل لحجز '.$employee->name.' فى هذا اليوم من قبل');
+                            $add_reservation_allowance = new ReservationAllowance();
+                            $add_reservation_allowance->user_id = $employee->id;
+                            $add_reservation_allowance->type = $request->type;
+                            $add_reservation_allowance->amount = $grade_value;
+                            $add_reservation_allowance->date = $to_day;
+                            $add_reservation_allowance->day = $to_day_name;
+                            $add_reservation_allowance->sector_id = $user->department->sector_id;
+                            $add_reservation_allowance->departement_id = $user->department->id;
+                            $add_reservation_allowance->created_by = $user->id;
+                            $add_reservation_allowance->save();
+                        }
                     }
-                
-                $check_reservation_allowance = ReservationAllowance::where(['user_id' => $employee->id, 'date' => $to_day])->first();
-                if($check_reservation_allowance){
-                    return redirect()->back()->with('error','عفوا تم اضافة بدل لحجز '.$employee->name.' فى هذا اليوم من قبل');
-                }
-
-                $add_reservation_allowance = new ReservationAllowance();
-                $add_reservation_allowance->user_id = $employee->id;
-                $add_reservation_allowance->type = $request->type;
-                $add_reservation_allowance->amount = $grade_value;
-                $add_reservation_allowance->date = $to_day;
-                $add_reservation_allowance->day = $to_day_name;
-                $add_reservation_allowance->sector_id = $user->department->sector_id;
-                $add_reservation_allowance->departement_id = $user->department->id;
-                $add_reservation_allowance->created_by = $user->id;
-                $add_reservation_allowance->save();
-                
                 }
             }
 

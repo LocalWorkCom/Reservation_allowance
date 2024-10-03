@@ -139,4 +139,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(ReservationAllowance::class, 'user_id');
     }
+    public function sectors()
+    {
+        return $this->belongsTo(Sector::class, 'sector');
+    }
 }

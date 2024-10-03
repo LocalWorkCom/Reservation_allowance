@@ -1,3 +1,43 @@
+<style>
+    .div-info {
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 20px;
+        width: 200px;
+        height: 200px;
+        background-color: #F6F7FD;
+        border: 1px solid #D9D9D9 !important;
+    }
+
+    .div-info-padding {
+        padding: 3px 0;
+        direction: initial;
+        font-family: Almarai;
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 36px;
+        text-align: right;
+
+    }
+
+    .div-info-padding b span {
+        color: #032F70;
+    }
+
+    .paragraph {
+        display: flex;
+        justify-content: end;
+        font-weight: 700;
+        font-size: 25px;
+    }
+
+    #credit-table thead {
+        text-align: right !important;
+        font-size: 22px !important;
+        font-weight: 400 !important;
+        color: #3c3c3d !important;
+    }
+</style>
 @extends('layout.main')
 @push('style')
 @endpush
@@ -11,7 +51,7 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item "><a href="/">الرئيسيه</a></li>
                     <li class="breadcrumb-item"><a href="{{ route('sectors.index') }}">القطاعات</a></li>
-                    <li class="breadcrumb-item active" aria-current="page"> <a href=""> تعديل القطاع</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"> <a href=""> اضافة قطاع</a></li>
                 </ol>
             </nav>
         </div>
@@ -21,38 +61,105 @@
             <p> القطــــاعات </p>
         </div>
     </div> --}}
+    {{-- {{ dd($governments) }} --}}
     <br>
-    @if (session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-    <form class="edit-grade-form" action=" {{ route('sectors.update') }}" method="POST">
+    <form class="edit-grade-form" id="Qta3-form" action=" {{ route('sectors.store') }}" method="POST">
         @csrf
         <div class="row" dir="rtl">
-            <div id="first-container" class="container moftsh col-11 mt-1 p-0 pb-3">
-
+            <div id="first-container" class="container moftsh col-11 mt-3 p-0 pb-3">
+                @if (session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="form-row mx-2 mb-2">
-                    <h3 class="pt-3 px-md-4 px-3">اضف قطاع</h3>
-                    <div class="input-group moftsh px-md-4 px-3 pt-3">
-                        <label class="pb-3" for="nameedit">ادخل اسم القطاع</label>
-                        <input type="text" id="nameedit" name="nameedit" class="form-control"
-                            value="{{ $data->name }}" placeholder="قطاع واحد" dir="rtl" required />
-                        <span class="text-danger span-error" id="nameedit-error"></span>
+                    <h3 class="pt-3 px-md-5 px-3">اضف قطاع</h3>
+                    <div class="input-group moftsh px-md-5 px-3 pt-3">
+                        <label class="pb-3" for="name">ادخل اسم القطاع</label>
+                        <input type="text" id="name" name="name" class="form-control" value="{{ $data->name }}" placeholder="قطاع واحد" required />
+                        <span class="text-danger span-error" id="name-error"></span>
+                        <input type="hidden" id="id" name="id" value="{{ $data->id }}" />
 
                     </div>
                 </div>
-                         <input type="hidden" name="id" value="{{ $data->id }}">
+                <div class="input-group moftsh px-md-5 px-3 pt-3">
+                    <label class="pb-3" for="budget">ميزانية بدل حجز</label>
+                    <input type="text" name="budget" class="form-control" value="{{ $data->reservation_allowance_amount }}" value="{{ old('budget') }}">
+                    @error('budget')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="input-group moftsh px-md-5 px-3 pt-3">
+                    <label class="pb-3" for="">صلاحيه الحجز</label>
+                    <div class="d-flex mt-3" dir="rtl">
+                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"  @if($data->reservation_allowance_type == 1 ||$data->reservation_allowance_type == 3 )checked @endif
+                            name="part[]">
+                        <label for="part"> حجز كلى</label><input type="checkbox" class="toggle-radio-buttons mx-2"  @if($data->reservation_allowance_type == 2 ||$data->reservation_allowance_type == 3 )checked @endif
+                            value="2" id="part" name="part[]">
+                        <label for="part">حجز جزئى</label>
+                        @error('part')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
 
+                <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager">
+                    <label class="pb-3" for="mangered">المدير</label>
+                    {{-- <select name="mangered" id="mangered" class="form-control custom-select custom-select-lg mb-3 select2"
+                    style="border: 0.2px solid rgb(199, 196, 196); width:100% !important;" required> --}}
+                    <select name="mangered" id="mangered" class="form-control " required>
+                        <option value="">اختار المدير</option>
+                        @foreach ($users as $user)
+                            <option value="{{ $user->id }}" @if($user->id == $data->manager) selected @endif>{{ $user->Civil_number }}</option>
+                        @endforeach
+                    </select>
+                    @error('mangered')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="input-group moftsh px-md-5 px-3 pt-3" id="password_field" style="display: none;">
+                    <label class="pb-3" for="password">كلمة المرور</label>
+                    <input type="password" name="password" id="password" class="form-control">
+                    @error('password')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager_details">
+                    <div class="col-12 div-info d-flex justify-content-between" style="direction: rtl">
+                        <div class="col-7">
+                            <div class="col-12 div-info-padding"><b>الرتبه : <span></span></b></div>
+                            <div class="col-12 div-info-padding"><b>الأقدميه : <span></span></b></div>
+
+                            <div class="col-12 div-info-padding"><b>المسمى الوظيفى: <span></span></b></div>
+                        </div>
+                        <div class="col-5">
+                            <div class="col-12 div-info-padding"><b>الأسم: <span></span></b></div>
+                            <div class="col-12 div-info-padding"><b>الهاتف: <span></span></b></div>
+                            <div class="col-12 div-info-padding"><b>الأيميل: <span></span></b></div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row mx-2 d-flex justify-content-center">
+
+                    <div class="input-group moftsh px-md-5 px-3 pt-3">
+                        <label for="Civil_number"> رقم الهوية</label>
+                        <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px">
+                            @foreach ($employees as $employee)
+                            {{ $employee->Civil_number }}
+                            @endforeach
+                        </textarea>
+                    </div>
+                </div>
                 <div class="container col-11">
                     <div class="form-row d-flex justify-content-end mt-4 mb-3">
                         <button type="submit" class="btn-blue">
@@ -68,41 +175,36 @@
 
         {{-- <div class="row" dir="rtl">
             <div id="second-container" class="container moftsh col-11 mt-3 p-0 pb-3 hidden">
-                <h3 class="pt-3 px-md-4 px-3">اضف محافظات داخل قطاع</h3>
+                <h3 class="pt-3 px-md-5 px-3">اضف محافظات داخل قطاع</h3>
                 <div class="form-row mx-2">
-                    <div class="form-group moftsh px-md-4 px-3 pt-3">
+                    <div class="form-group moftsh px-md-5 px-3 pt-3">
                         <h4 style="color: #274373; font-size: 24px;">حدد المحافظات المراد اضافتها</h4>
                     </div>
                 </div>
-                <div class="form-row col-11 mb-2 mt-3 mx-md-2">
-                    @foreach ($governments as $government)
-                        <div class="form-group col-3 d-flex mx-md-3">
-                            <input type="checkbox" name="governmentIDS[]" value="{{ $government->id }}"
-                                @if (in_array($government->id, $data->governments_IDs)) checked @endif id="governmentIDS_{{ $government->id }}">
-                            <label for="governmentIDS_{{ $government->id }}">{{ $government->name }}</label>
-                        </div>
-                    @endforeach --}}
-        {{-- @foreach ($governments as $government)
-                    <option value="{{ $government->id }}"
-                        @if (in_array($government->id, $sector->governments_IDs)) selected @endif>
-                        {{ $government->name }}
-                    </option>
-                @endforeach --}}
+                {{-- {{ dd($governments== ''? 't' :'f') }} --}}
+        {{-- <div class="form-row col-11 mb-2 mt-3 mx-md-2">
+                    @if ($governments != '')
+                        @foreach ($governments as $government)
+                            <div class="form-group col-3 d-flex mx-md-4">
+                                <input type="checkbox" name="governmentIDS[]" value="{{ $government->id }}"
+                                    id="governmentIDS">
+                                <label for="governmentIDS">{{ $government->name }}</label>
+                            </div>
+                        @endforeach
+                    @else
+                        <h5 style="color: #274373; font-size: 24px;">
+                            عفوا لا يوجد محافظات متاحه
+                        </h5>
+                    @endif
 
-        {{-- @foreach (getgovernments() as $government)
-                    <div class="form-group col-3 d-flex mx-md-3">
-                        <input type="checkbox" name="governmentIDS[]" value="{{ $government->id }}"
-                            @if (isset($checkedGovernments[$government->id])) checked @endif
-                            id="governmentIDS_{{ $government->id }}">
-                        <label for="governmentIDS_{{ $government->id }}">{{ $government->name }}</label>
-                    </div>
-                @endforeach --}}
-        {{-- <input type="hidden" name="id" value="{{ $data->id }}">
+
+
                 </div>
                 <span class="text-danger span-error" id="governmentIDS-error"></span>
-                <div class="container col-12">
+                <div class="container col-11">
                     <div class="form-row d-flex justify-content-end mt-4 mb-3">
-                        <button type="submit" class="btn-blue">
+                        <button type="submit" class="btn-blue"
+                            @if ($governments == '') style="display:none ;" @endif>
                             <img src="{{ asset('frontend/images/white-add.svg') }}" alt="img" height="20px"
                                 width="20px"> اضافة
                         </button>
@@ -112,7 +214,67 @@
 
                     </div>
                 </div>
-            </div>
-        </div> --}}
+            </div> --}}
+        {{-- </div> --}}
     </form>
+    <script>
+        $('.select2').select2({
+            dir: "rtl"
+        });
+        //
+        $(document).ready(function() {
+            // Function to fetch and display manager details
+            function fetchManagerDetails(managerId) {
+                if (managerId) {
+                    // Make an AJAX request to fetch manager details
+                    $.ajax({
+                        url: '/get-manager-details/' +
+                        managerId, // Define your route to get manager details
+                        type: 'GET',
+                        success: function(data) {
+                            // Populate the manager details in the div
+                            $('#manager_details').find('span').eq(0).text(data.rank); // رتبه
+                            $('#manager_details').find('span').eq(1).text(data.job_title); // مسمى وظيفي
+                            $('#manager_details').find('span').eq(2).text(data.seniority); // أقدميه
+                            $('#manager_details').find('span').eq(3).text(data.name); // أسم
+                            $('#manager_details').find('span').eq(4).text(data.phone); // هاتف
+
+                            // Show the manager details div
+                            $('#manager_details').show();
+
+                            // Check if the user is an employee and show password field
+                            if (data.isEmployee) {
+                                $('#password_field').show(); // Show the password field
+                            } else {
+                                $('#password_field').hide(); // Hide the password field
+                            }
+                        },
+                        error: function() {
+                            alert('Error fetching manager details.');
+                        }
+                    });
+                } else {
+                    // Hide the manager details if no manager is selected
+                    $('#manager_details').hide();
+                    $('#password_field').hide(); // Hide the password field
+                }
+            }
+
+            // Hide the manager details and password field initially
+            $('#manager_details').hide();
+            $('#password_field').hide();
+
+            // When the manager is selected or changed
+            $('#mangered').change(function() {
+                var managerId = $(this).val();
+                fetchManagerDetails(managerId); // Fetch manager details based on the selected value
+            });
+
+            // On page load, check if there's already a selected manager
+            var selectedManagerId = $('#mangered').val();
+            if (selectedManagerId) {
+                fetchManagerDetails(selectedManagerId); // Fetch details for the pre-selected manager
+            }
+        });
+    </script>
 @endsection
