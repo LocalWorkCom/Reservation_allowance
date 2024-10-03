@@ -264,7 +264,7 @@ class sectorsController extends Controller
         $sector->save();
         // Check if manager has changed
         if ($oldManager != $request->mangered) {
-            dd($sector);
+           // dd($sector);
 
             // Update old manager's sector to null
             if ($oldManager) {
