@@ -63,29 +63,30 @@
         <div class="row">
             <div class="container  col-11 mt-3 p-0 ">
                 <div class="container col-10 mt-5 mb-3 pb-5" style="border:0.5px solid #C7C7CC;">
-                    <form action="{{ route('departments.update', $department->id) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('departments.update', $department->id) }}" method="POST"
+                        enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
                         @if ($errors->any())
-                        <div class="alert alert-danger"dir="rtl">
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
+                            <div class="alert alert-danger"dir="rtl">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                         <div class="form-row mx-3 mt-4 d-flex justify-content-center">
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="sector">اختر القطاع </label>
-                                <select name="sector" id="sector"   class=" form-control custom-select custom-select-lg mb-3 select2 "
-                                style="border: 0.2px solid rgb(199, 196, 196); width:100% !important;" required>
+                                <select name="sector" id="sector"
+                                    class=" form-control custom-select custom-select-lg mb-3 select2 "
+                                    style="border: 0.2px solid rgb(199, 196, 196); width:100% !important;" required>
                                     <option value="">اختر القطاع </option>
                                     @foreach ($sectors as $sector)
-                                        <option value="{{ $sector->id }}" @if ($department->sector_id == $sector->id)
-                                            selected
-                                        @endif>{{ $sector->name }}</option>
+                                        <option value="{{ $sector->id }}"
+                                            @if ($department->sector_id == $sector->id) selected @endif>{{ $sector->name }}</option>
                                     @endforeach
                                 </select>
                                 @error('sector')
@@ -94,14 +95,15 @@
                             </div>
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="name">أسم الأداره الرئيسية</label>
-                                <input type="text" name="name" class="form-control" value="{{ $department->name}}">
+                                <input type="text" name="name" class="form-control" value="{{ $department->name }}">
                                 @error('name')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="budget">ميزانية بدل حجز</label>
-                                <input type="text" name="budget" class="form-control" value="{{$department->reservation_allowance_amount }}">
+                                <input type="text" name="budget" class="form-control"
+                                    value="{{ $department->reservation_allowance_amount }}">
                                 @error('budget')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
@@ -109,10 +111,11 @@
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="">صلاحيه الحجز</label>
                                 <div class="d-flex mt-3 " dir="rtl">
-                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"  @if($department->reservation_allowance_type == 1 ||$department->reservation_allowance_type == 3 )checked @endif
-                                        name="part[]">
+                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"
+                                        @if ($department->reservation_allowance_type == 1 || $department->reservation_allowance_type == 3) checked @endif name="part[]">
                                     <label for="part"> حجز كلى</label><input type="checkbox"
-                                        class="toggle-radio-buttons mx-2" value="2" id="part" name="part[]" @if($department->reservation_allowance_type == 2 ||$department->reservation_allowance_type == 3 )checked @endif>
+                                        class="toggle-radio-buttons mx-2" value="2" id="part" name="part[]"
+                                        @if ($department->reservation_allowance_type == 2 || $department->reservation_allowance_type == 3) checked @endif>
                                     <label for="part">حجز جزئى</label>
                                     @error('budget')
                                         <div class="alert alert-danger">{{ $message }}</div>
@@ -121,10 +124,12 @@
                             </div>
                             <div class="form-group col-md-10 mx-md-2" id="manager">
                                 <label for="mangered">المدير</label>
-                                <select name="manger" id="mangered" class=" form-control " required>
+                                <select name="manger" id="mangered" class=" form-control select2" required>
                                     <option value="">اختار المدير</option>
                                     @foreach ($managers as $user)
-                                        <option value="{{ $user->id }}" @if($user->id == $department->manager) selected @endif>{{ $user->Civil_number }}</option>
+                                        <option value="{{ $user->id }}"
+                                            @if ($user->id == $department->manager) selected @endif>{{ $user->Civil_number }}
+                                        </option>
                                     @endforeach
                                 </select>
                                 @error('manger')
@@ -164,7 +169,7 @@
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="description">الوصف </label>
                                 <input type="text" name="description" class="form-control"
-                                    value="{{ $department->description}}">
+                                    value="{{ $department->description }}">
                                 @error('description')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
@@ -177,7 +182,8 @@
                                     dir="rtl"
                                     style=" height: 150px;font-size: 18px;border: 0.2px solid lightgray; overflow-y: auto;">
                                     @foreach ($employees as $item)
-                                        <option value="{{ $item->id }}" @if($item->department_id == $department->id ) selected @endif>{{ $item->name }}</option>
+                                        <option value="{{ $item->id }}"
+                                            @if ($item->department_id == $department->id) selected @endif>{{ $item->name }}</option>
                                     @endforeach
                                 </select>
 
@@ -206,61 +212,66 @@
     </main>
     <script>
         $('.select2').select2({
-        dir: "rtl"
-    });
-    $(document).ready(function() {
-            // Function to fetch and display manager details
-            function fetchManagerDetails(managerId) {
-                if (managerId) {
-                    // Make an AJAX request to fetch manager details
-                    $.ajax({
-                        url: '/get-manager-details/' +
-                        managerId, // Define your route to get manager details
-                        type: 'GET',
-                        success: function(data) {
-                            // Populate the manager details in the div
-                            $('#manager_details').find('span').eq(0).text(data.rank); // رتبه
-                            $('#manager_details').find('span').eq(1).text(data.job_title); // مسمى وظيفي
-                            $('#manager_details').find('span').eq(2).text(data.seniority); // أقدميه
-                            $('#manager_details').find('span').eq(3).text(data.name); // أسم
-                            $('#manager_details').find('span').eq(4).text(data.phone); // هاتف
-
-                            // Show the manager details div
-                            $('#manager_details').show();
-
-                            // Check if the user is an employee and show password field
-                            if (data.isEmployee) {
-                                $('#password_field').show(); // Show the password field
-                            } else {
-                                $('#password_field').hide(); // Hide the password field
-                            }
-                        },
-                        error: function() {
-                            alert('Error fetching manager details.');
-                        }
-                    });
-                } else {
-                    // Hide the manager details if no manager is selected
-                    $('#manager_details').hide();
-                    $('#password_field').hide(); // Hide the password field
-                }
-            }
-
-            // Hide the manager details and password field initially
-            $('#manager_details').hide();
-            $('#password_field').hide();
-
-            // When the manager is selected or changed
-            $('#mangered').change(function() {
-                var managerId = $(this).val();
-                fetchManagerDetails(managerId); // Fetch manager details based on the selected value
-            });
-
-            // On page load, check if there's already a selected manager
-            var selectedManagerId = $('#mangered').val();
-            if (selectedManagerId) {
-                fetchManagerDetails(selectedManagerId); // Fetch details for the pre-selected manager
-            }
+            dir: "rtl"
         });
+        $('#mangered').on('select2:select', function(e) {
+            // alert('select');
+            var managerId = $(this).val();
+            fetchManagerDetails(managerId); // Fetch manager details based on the selected value
+        });
+        //  $(document).ready(function() {
+        // Function to fetch and display manager details
+        function fetchManagerDetails(managerId) {
+            if (managerId) {
+                // Make an AJAX request to fetch manager details
+                $.ajax({
+                    url: '/get-manager-details/' +
+                        managerId, // Define your route to get manager details
+                    type: 'GET',
+                    success: function(data) {
+                        // Populate the manager details in the div
+                        $('#manager_details').find('span').eq(0).text(data.rank); // رتبه
+                        $('#manager_details').find('span').eq(1).text(data.job_title); // مسمى وظيفي
+                        $('#manager_details').find('span').eq(2).text(data.seniority); // أقدميه
+                        $('#manager_details').find('span').eq(3).text(data.name); // أسم
+                        $('#manager_details').find('span').eq(4).text(data.phone); // هاتف
+
+                        // Show the manager details div
+                        $('#manager_details').show();
+
+                        // Check if the user is an employee and show password field
+                        if (data.isEmployee) {
+                            $('#password_field').show(); // Show the password field
+                        } else {
+                            $('#password_field').hide(); // Hide the password field
+                        }
+                    },
+                    error: function() {
+                        alert('Error fetching manager details.');
+                    }
+                });
+            } else {
+                // Hide the manager details if no manager is selected
+                $('#manager_details').hide();
+                $('#password_field').hide(); // Hide the password field
+            }
+        }
+
+        // Hide the manager details and password field initially
+        $('#manager_details').hide();
+        $('#password_field').hide();
+
+        // When the manager is selected or changed
+        $('#mangered').change(function() {
+            var managerId = $(this).val();
+            fetchManagerDetails(managerId); // Fetch manager details based on the selected value
+        });
+
+        // On page load, check if there's already a selected manager
+        var selectedManagerId = $('#mangered').val();
+        if (selectedManagerId) {
+            fetchManagerDetails(selectedManagerId); // Fetch details for the pre-selected manager
+        }
+        // });
     </script>
 @endsection

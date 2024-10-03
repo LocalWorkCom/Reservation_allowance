@@ -19,8 +19,9 @@ use Google\Service\ArtifactRegistry\Hash;
 
 class DepartmentController extends Controller
 {
-    public function index()
+    public function index($id)
     {
+        dd('d');
         // if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
         $users = User::where('flag', 'employee')->where('department_id', NULL)->get();
 
@@ -90,15 +91,11 @@ class DepartmentController extends Controller
         }
 
         $joiningDate = $manager->joining_date ? Carbon::parse($manager->joining_date) : Carbon::parse($manager->created_at);
-
-        // Get the current date
         $today = Carbon::now();
-
-        // Calculate the difference in years
         $yearsOfService = $joiningDate->diffInYears($today);
 
-        // Check if the user is an employee (assuming you have a column `is_employee`)
-        $isEmployee = $manager->flag == 'user' ? true : false;
+        // Check if the user is an employee (flag 'user' means employee)
+        $isEmployee = $manager->flag == 'employee' ? true : false;
 
         // Return the manager data in JSON format
         return response()->json([
@@ -113,14 +110,6 @@ class DepartmentController extends Controller
     }
 
 
-
-    // public function index_1(subDepartmentsDataTable $dataTable)
-    // {
-    //     return $dataTable->render('sub_departments.index');
-    //     // $departments = departements::with(['manager', 'managerAssistant'])->paginate(10);
-    //     // return view('sub_departments.index', compact('departments'));
-    //     // return response()->json($departments);
-    // }
 
     public function index_1($id)
     {
@@ -171,11 +160,12 @@ class DepartmentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create($id)
     {
         //create Main Administration
 
-        $sectors = Sector::all();
+        $sectors = Sector::where('id',$id)->get();
+       // dd($sectors);
         $managers = User::whereNot('id', auth()->user()->id)->get();
         $employees = User::where('flag', 'employee')->where('department_id', null)->get();
         return view('departments.create', compact('sectors', 'managers', 'employees'));

@@ -1,3 +1,43 @@
+<style>
+    .div-info {
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 20px;
+        width: 200px;
+        height: 200px;
+        background-color: #F6F7FD;
+        border: 1px solid #D9D9D9 !important;
+    }
+
+    .div-info-padding {
+        padding: 3px 0;
+        direction: initial;
+        font-family: Almarai;
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 36px;
+        text-align: right;
+
+    }
+
+    .div-info-padding b span {
+        color: #032F70;
+    }
+
+    .paragraph {
+        display: flex;
+        justify-content: end;
+        font-weight: 700;
+        font-size: 25px;
+    }
+
+    #credit-table thead {
+        text-align: right !important;
+        font-size: 22px !important;
+        font-weight: 400 !important;
+        color: #3c3c3d !important;
+    }
+</style>
 @extends('layout.main')
 @push('style')
 @endpush
@@ -58,17 +98,73 @@
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
-                <div class="input-group moftsh px-md-5 px-3 pt-3">
-                    <label class="pb-3" for="">صلاحيه الحجز</label>
-                    <div class="d-flex mt-3 " dir="rtl">
+                <div class="form-group col-md-10 mx-md-2">
+                    <label for="">صلاحيه الحجز</label>
+                    <div class="d-flex mt-3" dir="rtl">
                         <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"
                             name="part[]">
-                        <label for="part"> حجز كلى</label><input type="checkbox"
-                            class="toggle-radio-buttons mx-2" value="2" id="part" name="part[]">
+                        <label for="part"> حجز كلى</label><input type="checkbox" class="toggle-radio-buttons mx-2"
+                            value="2" id="part" name="part[]">
                         <label for="part">حجز جزئى</label>
                         @error('part')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
+                    </div>
+                </div>
+                <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager">
+                    <label class="pb-3" for="mangered">المدير</label>
+                    <select name="mangered" id="mangered" class="form-control" required>
+                        <option value="">اختار المدير</option>
+                        @foreach ($users as $user)
+                            <option value="{{ $user->id }}">{{ $user->Civil_number }}</option>
+                        @endforeach
+                    </select>
+                    @error('mangered')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="input-group moftsh px-md-5 px-3 pt-3" id="password_field" style="display: none;">
+                    <label class="pb-3" for="password">كلمة المرور</label>
+                    <input type="password" name="password" id="password" class="form-control">
+                    @error('password')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="input-group moftsh px-md-5 px-3 pt-3" id="rule_field" style="display: none;">
+                    <label class="pb-3" for="rule">القانون</label>
+                    <select name="rule" id="rule" class="form-control" >
+                        <option value="">اختار القانون</option>
+                        @foreach ($rules as $rule)
+                            <option value="{{ $rule->id }}">{{ $rule->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('rule')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager_details" style="display: none;">
+                    <div class="col-12 div-info d-flex justify-content-between" style="direction: rtl">
+                        <div class="col-7">
+                            <div class="col-12 div-info-padding"><b>الرتبه : <span></span></b></div>
+                            <div class="col-12 div-info-padding"><b>الأقدميه : <span></span></b></div>
+                            <div class="col-12 div-info-padding"><b>المسمى الوظيفى: <span></span></b></div>
+                        </div>
+                        <div class="col-5">
+                            <div class="col-12 div-info-padding"><b>الأسم: <span></span></b></div>
+                            <div class="col-12 div-info-padding"><b>الهاتف: <span></span></b></div>
+                            <div class="col-12 div-info-padding"><b>الأيميل: <span></span></b></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row mx-2 d-flex justify-content-center">
+
+                    <div class="input-group moftsh px-md-5 px-3 pt-3">
+                        <label for="Civil_number"> رقم الهوية</label>
+                        <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px"></textarea>
                     </div>
                 </div>
                 <div class="container col-11">
@@ -128,5 +224,79 @@
             </div> --}}
         {{-- </div> --}}
     </form>
-@endsection
+    <script>
+        $('.select2').select2({
+            dir: "rtl"
+        });
+        //
+        $(document).ready(function() {
+    // Function to fetch and display manager details
+    function fetchManagerDetails(managerId) {
+        if (managerId) {
+            // Make an AJAX request to fetch manager details
+            $.ajax({
+                url: '/get-manager-details/' + managerId,
+                type: 'GET',
+                success: function(data) {
+                    // Populate the manager details in the div
+                    $('#manager_details').find('span').eq(0).text(data.rank); // رتبه
+                    $('#manager_details').find('span').eq(1).text(data.job_title); // مسمى وظيفي
+                    $('#manager_details').find('span').eq(2).text(data.seniority); // أقدميه
+                    $('#manager_details').find('span').eq(3).text(data.name); // أسم
+                    $('#manager_details').find('span').eq(4).text(data.phone); // هاتف
 
+                    // Show the manager details div
+                    $('#manager_details').show();
+
+                    // Show or hide password and rule fields based on employee flag
+                    if (data.isEmployee) {
+                        $('#password_field').show();  // Show password field
+                        $('#rule_field').show();      // Show rule field
+                    } else {
+                        $('#password_field').hide();  // Hide password field
+                        $('#rule_field').hide();      // Hide rule field
+                        // Clear the input fields if the manager is not an employee
+                        $('#password').val('');
+                        $('#rule').val('');
+                    }
+                },
+                error: function() {
+                    alert('Error fetching manager details.');
+                }
+            });
+        } else {
+            // Hide the manager details if no manager is selected
+            $('#manager_details').hide();
+            $('#password_field').hide(); // Hide password field
+            $('#rule_field').hide();     // Hide rule field
+            // Clear the input fields
+            $('#password').val('');
+            $('#rule').val('');
+        }
+    }
+
+    // Hide the manager details, password, and rule fields initially
+    $('#manager_details').hide();
+    $('#password_field').hide();
+    $('#rule_field').hide();
+
+    // When the manager is selected or changed
+    $('#mangered').change(function() {
+        var managerId = $(this).val();
+
+        // If the manager is changed, clear the password and rule fields
+        $('#password').val('');
+        $('#rule').val('');
+
+        fetchManagerDetails(managerId); // Fetch manager details based on the selected value
+    });
+
+    // On page load, check if there's already a selected manager
+    var selectedManagerId = $('#mangered').val();
+    if (selectedManagerId) {
+        fetchManagerDetails(selectedManagerId); // Fetch details for the pre-selected manager
+    }
+});
+
+    </script>
+@endsection
