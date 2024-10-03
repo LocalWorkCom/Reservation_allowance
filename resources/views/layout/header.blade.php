@@ -145,6 +145,12 @@
                                             style="margin-left: 7px;">
                                         <a href="{{ route('Reserv_statistic.index') }}">احصائيات بدل حجز</a>
                                     </li>
+                                    <li
+                                        class="{{ request()->routeIs('reservation_fetch.index') ? 'active' : '' }}">
+                                        <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
+                                            style="margin-left: 7px;">
+                                        <a href="{{ route('reservation_fetch.index') }}">بحث بدل حجز</a>
+                                    </li>
 
 
                                 </div>
@@ -230,6 +236,15 @@
                                                 <a href="{{ route('vacationType.index') }}">أنواع الأجازات</a>
                                             </li>
                                         @endif
+
+                                        @if (Auth::user()->hasPermission('view VacationType'))
+                                        <li
+                                            class="{{ request()->routeIs('nationality.index') ? 'active' : '' }}">
+                                            <img src="{{ asset('frontend/images/holidays.svg') }}" alt="logo"
+                                                style="margin-left: 7px;">
+                                            <a href="{{ route('nationality.index') }}">الدول والجنسيات</a>
+                                        </li>
+                                    @endif
 
 
                                         @if (Auth::user()->hasPermission('view Rule'))
