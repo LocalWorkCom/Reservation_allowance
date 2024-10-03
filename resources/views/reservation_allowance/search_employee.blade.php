@@ -59,7 +59,7 @@
                                     <select class="custom-select custom-select-lg mb-3 select2" name="sector_id" id="sector_id">
                                         <option selected disabled>اختار من القائمة</option>
                                             @foreach ($sectors as $sector)
-                                            <option value="{{ $sector->id }}">
+                                            <option value="{{ $sector->id }}" {{$sector_id == $sector->id ? "selected" : ""}}>
                                                 {{ $sector->name }}</option>
                                             @endforeach
                                     </select>
@@ -69,6 +69,14 @@
                                     <label for="Civil_number"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label>
                                     <select class="custom-select custom-select-lg mb-3 select2" name="departement_id" id="departement_id">
                                         <option selected disabled>اختار من القائمة</option>
+                                        @if($get_departements)
+                                            @foreach($get_departements as $departement)
+                                                <option value="{{ $departement->id }}" {{$departement_id == $departement->id ? "selected" : ""}}>{{ $departement->name }}</option>
+                                                @if(count($departement->children))
+                                                    @include('reservation_allowance.manageChildren',['children' => $departement->children, 'parent_id'=>''])
+                                                @endif
+                                            @endforeach
+                                        @endif
                                     </select>
                                 </div>
 
@@ -135,7 +143,6 @@
                                 <th>الاسم</th>
                                 <th>رقم الملف</th>
                                 <th>بدل الحجز</th>
-                                <th>اليومية</th>
                                 <!-- <th style="width:150px;">العمليات</th>-->
                             </tr>
                         </thead>
@@ -273,7 +280,7 @@ $(document).ready(function() {
             processing: true,
             serverSide: true,
             ajax: {
-                url: '{{ route('reservation_allowances.getAll') }}',
+                url: '{{ route('reservation_allowances.get_search_employee',[$sector_id, $departement_id]) }}',
                 data: function(d) {
                     d.filter = filter; // Use the global filter variable
                 }
@@ -297,10 +304,6 @@ $(document).ready(function() {
                 {
                     data: 'employee_allowance_type_btn',
                     name: 'employee_allowance_type_btn'
-                },
-                {
-                    data: 'employee_allowance_amount',
-                    name: 'employee_allowance_amount'
                 }
                 <?php /*{
                             data: 'action',

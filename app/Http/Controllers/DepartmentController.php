@@ -182,6 +182,8 @@ class DepartmentController extends Controller
             ->get();
             $rules = Rule::whereNotIn('id', [1, 2])->get();
             return view('departments.create', compact('sectors', 'managers', 'rules'));
+
+
     }
 
 
