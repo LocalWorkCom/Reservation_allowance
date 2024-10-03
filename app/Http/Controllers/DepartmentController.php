@@ -41,7 +41,7 @@ class DepartmentController extends Controller
             // For department managers, show only the department they manage and its subdepartments
             $department = departements::where('manager', $user->id)->first();
             if (!$department) {
-                return redirect()->back()->with('error', ' تالا يوجد ادارات');
+                return redirect()->back()->with('error', ' الا يوجد ادارات');
             }
             $subDepartments = departements::where('parent_id', $department->id)->get(); // Get the subdepartments of the department
             return view('departments.index', compact('department', 'subDepartments'));
@@ -96,6 +96,18 @@ class DepartmentController extends Controller
             })
             ->addColumn('manager_name', function ($row) {
                 return $row->manager ? $row->manager->name : 'لايوجد مدير للأداره'; // Display the manager's name
+            })
+            ->addColumn('num_managers', function ($row) {
+                return User::where('department_id', $row->id)
+                    ->where('rule_id', 3)
+                    ->count();
+            })
+
+            ->addColumn('num_subdepartment_managers', function ($row) {
+                $subdepartment_ids = departements::where('parent_id', $row->id)->pluck('id');
+                return User::whereIn('department_id', $subdepartment_ids)
+                    ->where('rule_id', 3)
+                    ->count();
             })
             ->rawColumns(['action'])
             ->make(true);
@@ -174,6 +186,18 @@ class DepartmentController extends Controller
             })
             ->addColumn('manager_name', function ($row) {
                 return $row->manager ? $row->manager->name : 'لايوجد مدير للأداره';
+            })
+            ->addColumn('num_managers', function ($row) {
+                return User::where('department_id', $row->id)
+                    ->where('rule_id', 3)
+                    ->count();
+            })
+
+            ->addColumn('num_subdepartment_managers', function ($row) {
+                $subdepartment_ids = departements::where('parent_id', $row->id)->pluck('id');
+                return User::whereIn('department_id', $subdepartment_ids)
+                    ->where('rule_id', 3)
+                    ->count();
             })
 
             ->rawColumns(['action', 'subDepartment'])
