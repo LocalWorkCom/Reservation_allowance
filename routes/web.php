@@ -271,6 +271,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('setting/grads/show/{id}', [settingController::class, 'showgrads'])->name('grads.show')->middleware('check.permission:view grade');
     Route::post('setting/grads/delete', [settingController::class, 'deletegrads'])->name('grads.delete')->middleware('check.permission:delete grade');
     //end grads
+    //start Nationality
+    Route::get('setting/nationality', [settingController::class, 'getAllNationality'])->name('nationality.getAllNationality')->middleware('check.permission:view job');
+    Route::get('setting/nationality/all', [settingController::class, 'indexbationality'])->name('nationality.index')->middleware('check.permission:view job');
+    Route::get('setting/nationality/create', [settingController::class, 'createnationality'])->name('setting.createnationality')->middleware('check.permission:view job');
+
+    Route::post('setting/nationality/add', [settingController::class, 'addNationality'])->name('nationality.add')->middleware('check.permission:edit job');
+    Route::get('setting/nationality/edit', [settingController::class, 'editnationality'])->name('setting.editnationality')->middleware('check.permission:view job');
+
+    Route::post('setting/nationality/update', [settingController::class, 'updatenationality'])->name('nationality.update')->middleware('check.permission:edit job');
+    Route::get('setting/nationality/show/{id}', [settingController::class, 'shownationality'])->name('nationality.show')->middleware('check.permission:view job');
+    Route::post('setting/nationality/delete', [settingController::class, 'deletenationality'])->name('nationality.delete')->middleware('check.permission:delete job');
+    //end nationality
     //Start qualifications -------- Need middleware for gard
     Route::get('setting/qualifications/all', [qualificationController::class, 'index'])->name('qualifications.index')->middleware('check.permission:view Qualification');
     Route::get('setting/qualifications/ajax', [qualificationController::class, 'getqualification'])->name('getAllqualification')->middleware('check.permission:view Qualification');
@@ -479,6 +491,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reservation_statics_credit/print', [ReservationStaticsCreditController::class, 'printReport'])->name('Reserv_statistic_credit.print')->middleware('check.permission:view Inspector');
 
     Route::get('/get-manager-details/{id}', [DepartmentController::class, 'getManagerDetails']);
+
+
+    Route::get('/file-import', [UserController::class, 'importView'])->name('import-view');
+    Route::post('/import', [UserController::class, 'import'])->name('import');
+    Route::get('/export-users', [UserController::class, 'exportUsers'])->name('export-users');
+    Route::get('download-template', [UserController::class, 'downloadTemplate'])->name('download-template');
+
+
 });
 
 
