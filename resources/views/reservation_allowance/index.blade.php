@@ -65,12 +65,20 @@
                                 <input name="department_type" id="department_type" type="hidden"
                                     value="{{Auth::user()->department_id == null ? 1 : 2}}">
 
-<<<<<<< HEAD
-                                <div class="col-4">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                                    <label for="Civil_number"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار القطاع</label>
-                                    <select class="custom-select custom-select-lg mb-3 select2" name="sector_id" id="sector_id">
-                                        <option value="0" selected>اختار من القائمة</option>
-=======
+<<<<<<<<< Temporary merge branch 1
+                                <div class="d-flex">
+                                    {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
+                                    <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
+                                    <select class="custom-select custom-select-lg select2" name="sector_id"
+                                        id="sector_id">
+                                        <option selected disabled>اختار القطاع</option>
+                                        @foreach ($sectors as $sector)
+                                        <option value="{{ $sector->id }}">
+                                            {{ $sector->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+=========
                                     <div class="d-flex">
                                         {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                         <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
@@ -85,14 +93,6 @@
                                         </select>
                                     </div>
 
-<<<<<<< HEAD
-                                <div class="col-4">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                                    <label for="Civil_number"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label>
-                                    <select class="custom-select custom-select-lg mb-3 select2" name="departement_id" id="departement_id">
-                                        <option value="0" selected>اختار من القائمة</option>
-                                    </select>
-                                </div>
-=======
                                     <div class="d-flex mx-2">
                                         {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                         <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
@@ -101,7 +101,16 @@
                                             <option selected disabled>اختار الادارة</option>
                                         </select>
                                     </div>
->>>>>>> be3a7b6e41e34eab913c02cf834a208fa09b90ee
+>>>>>>>>> Temporary merge branch 2
+
+                                <div class="d-flex mx-2">
+                                    {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
+                                    <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
+                                    <select class="custom-select custom-select-lg select2" name="departement_id"
+                                        id="departement_id">
+                                        <option selected disabled>اختار الادارة</option>
+                                    </select>
+                                </div>
 
                                 <div class="">
                                     <label for="Civil_number">
@@ -301,6 +310,51 @@ $(document).ready(function() {
 
 
 
+    //call datatable
+    $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
+    var filter = 'all'; // Default filter
+    const table = $('#users-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route('reservation_allowances.getAll') }}',
+            data: function(d) {
+                d.filter = filter; // Use the global filter variable
+            }
+<<<<<<<<< Temporary merge branch 1
+        },
+        columns: [{
+                data: 'id',
+                name: 'id'
+            },
+            {
+                data: 'employee_grade',
+                name: 'employee_grade'
+            },
+            {
+                data: 'employee_name',
+                name: 'employee_name'
+            },
+            {
+                data: 'employee_file_num',
+                name: 'employee_file_num'
+            },
+            {
+                data: 'employee_allowance_type_btn',
+                name: 'employee_allowance_type_btn'
+            },
+            {
+                data: 'employee_allowance_amount',
+                name: 'employee_allowance_amount'
+            }
+            <?php /*{
+=========
+        }
+
+        $(document).ready(function() {
+
+
+
             //call datatable
             $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
             var filter = 'all'; // Default filter
@@ -308,8 +362,7 @@ $(document).ready(function() {
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ route('
-                                reservation_allowances.getAll ') }}',
+                    url: '{{ route('reservation_allowances.getAll') }}',
                     data: function(d) {
                         d.filter = filter; // Use the global filter variable
                     }
