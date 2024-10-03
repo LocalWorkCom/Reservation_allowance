@@ -2,16 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Government;
 use Carbon\Carbon;
 use App\Models\job;
 use App\Models\Rule;
 use App\Models\User;
-// use Illuminate\Validation\Rule;
 use App\Models\grade;
+// use Illuminate\Validation\Rule;
+use App\Models\Region;
+use App\Models\Sector;
+use App\Models\Country;
+use App\Models\Government;
 use Illuminate\Support\Str;
 use App\Models\departements;
 use Illuminate\Http\Request;
+use App\Models\Qualification;
+use App\Models\ViolationTypes;
 use Yajra\DataTables\DataTables;
 use App\Rules\UniqueNumberInUser;
 use App\DataTables\UsersDataTable;
@@ -24,9 +29,15 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Console\View\Components\Alert;
 use Illuminate\Validation\Rule as ValidationRule;
 use App\helper; // Adjust this namespace as per your helper file location
+
 use App\Models\Qualification;
 use App\Models\Region;
 use App\Models\Sector;
+/**
+ * Send emails
+ */
+use App\Mail\SendEmail;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -473,9 +484,17 @@ class UserController extends Controller
         $grade = grade::all();
         $job = job::all();
         $govermnent = Government::all();
+        $countries = Country::all();
+
         $area = Region::all();
         $sector = Sector::all();
         $qualifications = Qualification::all();
+        $violationTypeName = ViolationTypes::whereJsonContains('type_id', 0)->pluck('name');
+
+        $selectedViolationType = old('type_military', 'police'); // Default to 'police' or use old input
+
+        $grades = Grade::where('type', $selectedViolationType)->get();
+
         // dd($user->department_id);
         // if ($flag == "0") {
         //     $alldepartment = departements::where('id', $user->department_id)->orwhere('parent_id', $user->department_id)->get();
@@ -514,7 +533,7 @@ class UserController extends Controller
         // dd($allPermission);
         // $alldepartment = $user->createdDepartments;
         // return view('role.create',compact('allPermission','alldepartment'));
-        return view('user.create', compact('alldepartment', 'rule', 'flag', 'grade', 'job', 'alluser', 'govermnent', 'area', 'sector', 'qualifications'));
+        return view('user.create', compact('alldepartment', 'rule', 'flag', 'grade', 'job', 'alluser', 'govermnent', 'area','selectedViolationType', 'sector', 'qualifications','grades','countries','violationTypeName'));
     }
 
     public function unsigned($id)
@@ -546,6 +565,7 @@ class UserController extends Controller
         if ($request->type == "0") {
             $messages = [
                 'name.required' => 'الاسم  مطلوب ولا يمكن تركه فارغاً.',
+                'email.required' => 'البريد الالكتروني  مطلوب ولا يمكن تركه فارغاً.',
                 'rule_id.required' => ' المهام  مطلوب ولا يمكن تركه فارغاً.',
                 'password.required' => ' الباسورد مطلوب ولا يمكن تركه فارغاً.',
                 'grade_id.required' => 'يجب اختيار رتبه',
@@ -555,6 +575,7 @@ class UserController extends Controller
 
             $validatedData = Validator::make($request->all(), [
                 'name' => 'required|string',
+                'email' => 'required',
                 'rule_id' => 'required',
                 'password' => 'required',
                 'grade_id' => 'required',
@@ -571,6 +592,8 @@ class UserController extends Controller
                 'phone.required' => 'رقم الهاتف مطلوب ولا يمكن تركه فارغاً.',
                 'phone.unique' => 'رقم الهاتف الذي أدخلته موجود بالفعل.',
                 'phone.max' => 'رقم الهاتف اقل من 6 اراقام',
+                'email.required' => 'البريد الالكتروني  مطلوب ولا يمكن تركه فارغاً.',
+                'email.unique' => 'البريد الالكتروني  الذي أدخلته موجود بالفعل.',
 
                 // 'file_number.required' => 'رقم الملف مطلوب ولا يمكن تركه فارغاً.',
                 'Civil_number.required' => 'رقم المدنى مطلوب ولا يمكن تركه فارغاً   .',
@@ -583,6 +606,10 @@ class UserController extends Controller
                     'required',
                     'max:8',
                     ValidationRule::unique('users', 'phone'),
+                ],
+                'email' => [
+                    'required',
+                    ValidationRule::unique('users', 'email'),
                 ],
                 'name' => 'required|string',
                 // 'department_id' => 'required',
@@ -660,6 +687,15 @@ class UserController extends Controller
             $newUser->rule_id = $request->rule_id;
             $newUser->save();
             $id = $request->type;
+
+            $details = [
+               'title'=>'بيانات دخولك على نظام القوة المطور',
+                'body' => 'هذه بيانات دخولك على نظام القوة المطور',
+                'username'=>$request->Civil_number,
+                'password'=>$request->password
+            ];
+            Mail::to($request->email)->send(new SendEmail($details));
+
             return redirect()->route('user.index', ['id' => $id]);
         } else {
 
@@ -690,7 +726,7 @@ class UserController extends Controller
             $newUser->file_number = $request->file_number;
             $newUser->type_military = $request->type_military;
             //
-            $newUser->employee_type = $request->solderORcivil;
+            // $newUser->employee_type = $request->solderORcivil;
             $newUser->flag = "employee";
             $newUser->grade_id = $request->grade_id;
             if ($request->has('job')) {
@@ -744,6 +780,8 @@ class UserController extends Controller
         $govermnent = Government::all();
         $area = Region::all();
         $sector = Sector::all();
+        // $countries = Country::all();
+        $countries = Country::all();
         $qualifications = Qualification::all();
         // dd($user);
         // if ($user->flag == "user") {
@@ -754,7 +792,7 @@ class UserController extends Controller
         // $department = departements::all();
         $department = departements::where('id', $user->department_id)->first();
         $hisdepartment = $user->createdDepartments;
-        return view('user.show', compact('user', 'rule', 'grade', 'department', 'hisdepartment', 'end_of_service', 'job', 'sector', 'area', 'govermnent', 'qualifications'));
+        return view('user.show', compact('user', 'rule', 'grade', 'department', 'hisdepartment', 'end_of_service', 'job', 'sector', 'area', 'govermnent', 'qualifications','countries'));
     }
 
     /**
@@ -773,6 +811,7 @@ class UserController extends Controller
         $govermnent = Government::all();
         $area = Region::all();
         $sector = Sector::all();
+        $countries = Country::all();
         $qualifications = Qualification::all();
         // dd($user);
         if ($user->department_id == "NULL") {
@@ -786,7 +825,7 @@ class UserController extends Controller
         }
         // $department = departements::all();
         $hisdepartment = $user->createdDepartments;
-        return view('user.edit', compact('user', 'rule', 'grade', 'department', 'hisdepartment', 'end_of_service', 'job', 'sector', 'area', 'govermnent', 'qualifications'));
+        return view('user.edit', compact('user', 'rule', 'grade', 'department', 'hisdepartment', 'end_of_service', 'job', 'sector', 'area', 'govermnent', 'qualifications','countries'));
     }
 
     /**
@@ -803,6 +842,9 @@ class UserController extends Controller
             'military_number.required_if' => 'رقم العسكري مطلوب ولا يمكن تركه فارغاً.',
             'phone.required' => 'رقم الهاتف مطلوب ولا يمكن تركه فارغاً.',
             // 'file_number.required' => 'رقم الملف مطلوب ولا يمكن تركه فارغاً.',
+            'email.required' => 'البريد الالكتروني  مطلوب ولا يمكن تركه فارغاً.',
+            'email.unique' => 'البريد الالكتروني  الذي أدخلته موجود بالفعل.',
+
             'Civil_number.required' => 'رقم المدنى مطلوب ولا يمكن تركه فارغاً.',
         ];
 
@@ -817,6 +859,10 @@ class UserController extends Controller
                 'required_if:type_military,police',
                 'max:255',
                 new UniqueNumberInUser($user),
+            ],
+            'email' => [
+                'required',
+                ValidationRule::unique('users', 'email'),
             ],
             'phone' => [
                 'required',

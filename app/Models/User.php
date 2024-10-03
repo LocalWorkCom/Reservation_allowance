@@ -135,12 +135,16 @@ class User extends Authenticatable
         return $this->hasMany(PaperTransaction::class, 'created_by');
     }
 
-    public function reservationAllowances() 
+    public function reservationAllowances()
     {
         return $this->hasMany(ReservationAllowance::class, 'user_id');
     }
     public function sectors()
     {
         return $this->belongsTo(Sector::class, 'sector');
+    }
+    public function managedSectors()
+    {
+        return $this->hasMany(Sector::class, 'manager');
     }
 }
