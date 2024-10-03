@@ -13,6 +13,7 @@ use App\DataTables\DepartmentDataTable;
 use Illuminate\Support\Facades\Validator;
 use App\DataTables\subDepartmentsDataTable;
 use App\Http\Requests\StoreDepartmentRequest;
+use App\Models\Rule;
 use App\Models\Sector;
 use Carbon\Carbon;
 use Google\Service\ArtifactRegistry\Hash;
@@ -167,13 +168,22 @@ class DepartmentController extends Controller
     public function create($id)
     {
         //create Main Administration
+        $sectors = Sector::findOrFail($id);
+        $managers = User::where('id', '!=', auth()->user()->id)
+            ->whereNot('id', $sectors->manager)
+            ->where(function ($query) use ($id) {
+                $query->where('sector', $id)
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->whereNull('sector')
+                            ->whereNull('department_id');
+                    });
+            })
+            ->whereNull('department_id') // Ensure all users do not have a department
+            ->get();
+            $rules = Rule::whereNotIn('id', [1, 2])->get();
+            return view('departments.create', compact('sectors', 'managers', 'rules'));
 
 
-        $sectors = Sector::where('id', $id)->get();
-        // dd($sectors);
-        $managers = User::whereNot('id', auth()->user()->id)->get();
-        $employees = User::where('flag', 'employee')->where('department_id', null)->get();
-        return view('departments.create', compact('sectors', 'managers', 'employees'));
     }
 
 
@@ -277,6 +287,8 @@ class DepartmentController extends Controller
             $user = User::find($request->manger);
             if ($user) {
                 $user->department_id = $departements->id;
+                $user->sector = $request->sector;
+                $user->rule_id = $request->rule;
                 $user->password = Hash::make($request->password);
                 $user->save();
             } else {
@@ -286,6 +298,7 @@ class DepartmentController extends Controller
             $user = User::find($request->manger);
             if ($user) {
                 $user->department_id = $departements->id;
+                $user->sector = $request->sector;
                 $user->save();
             } else {
                 return redirect()->back()->with('error', 'Manager not found.');
@@ -308,6 +321,8 @@ class DepartmentController extends Controller
 
                             if ($user) {
                                 $user->department_id = $departements->id;
+                                $user->sector = $request->sector;
+
                                 $user->save();
                             }
                         }

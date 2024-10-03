@@ -25,6 +25,11 @@ class sectorsController extends Controller
 
     public function index()
     {
+         if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
+
+         }else{
+
+         }
         $sectors = Sector::all();
         return view("sectors.index");
     }
@@ -46,7 +51,7 @@ class sectorsController extends Controller
             })
             ->addColumn('departments', function ($row) {
                 $num = departements::where('sector_id', $row->id)->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15px" href=' . route('departments.index', $row->id) . '> ' . $num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15px" href=' . route('departments.create', $row->id) . '> ' . $num . '</a>';
 
                 return $btn;
             })
@@ -75,7 +80,7 @@ class sectorsController extends Controller
     public function create()
     {
         $users = User::where('department_id', null)->where('sector', null)->get();
-        $rules = Rule::whereNotIn('id', [1, 2])->get();
+        $rules = Rule::where('id', 4)->get();
         return view('sectors.create', compact('users', 'rules'));
     }
 
