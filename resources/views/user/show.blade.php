@@ -5,29 +5,40 @@
 @endsection
 {{-- <body> --}}
 <section>
-<div class="row " dir="rtl">
-<div class="container  col-11" style="background-color:transparent;">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item "><a href="/">الرئيسيه</a></li>
+    <div class="row " dir="rtl">
+        <div class="container  col-11" style="background-color:transparent;">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item "><a href="/">الرئيسيه</a></li>
 
-                @if ($user->flag == 'user')
-                    <li class="breadcrumb-item"><a href="{{ route('user.index', 0) }}">المستخدمين</a></li>
-                @elseif ($user->flag == 'employee')
-                    <li class="breadcrumb-item"><a href="{{ route('user.employees', 1) }}">الموظفين</a></li>
-                @endif
-                <li class="breadcrumb-item active" aria-current="page"> <a href=""> عرض </a></li>
-            </ol>
+                    @if ($user->flag == 'user')
+                        <li class="breadcrumb-item"><a href="{{ route('user.index', 0) }}">المستخدمين</a></li>
+                    @elseif ($user->flag == 'employee')
+                        @if (Auth::user()->rule_id == 2)
+                            <li class="breadcrumb-item"><a href="{{ route('user.employees', 1) }}">موظفين الوزارة</a>
+                            </li>
+                        @endif
+                        @if (Auth::user()->rule_id != 2)
+                            <li class="breadcrumb-item"><a href="{{ route('user.employees', 1) }}">موظفين القوة</a></li>
+                        @endif
+                    @endif
+                    <li class="breadcrumb-item active" aria-current="page"> <a href=""> عرض </a></li>
+                </ol>
 
-        </nav>
+            </nav>
+        </div>
     </div>
-</div>
     <div class="row ">
         <div class="container welcome col-11">
             @if ($user->flag == 'user')
                 <p>المستخدمين</p>
             @elseif ($user->flag == 'employee')
-                <p>الموظفين</p>
+                @if (Auth::user()->rule_id == 2)
+                    <p>موظفين الوزارة</p>
+                @endif
+                @if (Auth::user()->rule_id != 2)
+                    <p>موظفين القوة<< /p>
+                @endif
             @endif
         </div>
     </div>
@@ -105,8 +116,16 @@
 
                         <tr>
                             <th scope="row"> الجنسيه </th>
-                            <td> {{ $user->nationality }} </td>
+                            <td>
+                                @foreach ($countries as $item)
+                                    @if ($user->nationality == $item->id)
+                                        {{ $item->country_name_ar }}
+                                    @endif
+                                @endforeach
+                            </td>
                         </tr>
+                        
+                        
                         <tr>
                             <th scope="row"> الرقم المدني </th>
                             <td> {{ $user->Civil_number }} </td>
@@ -299,7 +318,7 @@
                         <tr>
                             <th> المنطقة</th>
                             <td>
-                             
+
                                 @foreach ($area as $item)
                                     @if ($user->region == $item->id)
                                         <label>
@@ -307,7 +326,7 @@
                                         </label>
                                     @endif
                                 @endforeach
-                             
+
                             </td>
                         </tr>
 

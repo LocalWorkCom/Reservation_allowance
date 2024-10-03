@@ -15,13 +15,14 @@
             <div class="d-flex justify-content-between">
                 <p> الادارات </p>
                 <div class="form-group">
-                    @if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin")
+                    @if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2 ||  Auth::user()->rule->id== 4)
+                        <button type="button" class="wide-btn "
+                            onclick="window.location.href='{{ route('departments.create') }}'"
+                            style="    color: #0D992C;">
+                            اضافة جديد
+                            <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                        </button>
 
-                    <button type="button" class="wide-btn "
-                        onclick="window.location.href='{{ route('departments.create') }}'" style="    color: #0D992C;">
-                        اضافة جديد
-                        <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                    </button>
                     @endif
                     @if (Auth::user()->hasPermission('create Postman'))
                         <!--   <button type="button" class="wide-btn mx-md-3 mx-1"
@@ -108,7 +109,11 @@
                 }, // Ensure 'manager' column exists
                 {
                     data: 'subDepartment',
-                    name: 'subDepartment'
+                    name: 'subDepartment',
+                    render: function(data, type, row) {
+                        return '<button class="btn btn-link" onclick="showSubDepartments(' + row
+                            .id + ')">' + data + '</button>';
+                    }
                 },
                 {
                     data: 'action',
@@ -123,7 +128,7 @@
                 render: function(data, type, row) {
                     var departmentEdit = '{{ route('departments.edit', ':id') }}';
                     departmentEdit = departmentEdit.replace(':id', row.id);
-                    var subdepartment = '{{ route('sub_departments.index', ':id') }}';
+                    var subdepartment = '{{ route('sub_departments.create', ':id') }}';
                     subdepartment = subdepartment.replace(':id', row.id);
                     var departmentShow = '{{ route('departments.show', ':id') }}';
                     departmentShow = departmentShow.replace(':id', row.id);
@@ -203,6 +208,11 @@
                 }
             });
         }
+    }
+
+    function showSubDepartments(departmentId) {
+        // Redirect to the sub-department listing for the selected department
+        window.location.href = '/sub_departments/' + departmentId;
     }
 </script>
 

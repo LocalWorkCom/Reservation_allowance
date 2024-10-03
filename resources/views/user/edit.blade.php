@@ -15,7 +15,13 @@
                         @if ($user->flag == 'user')
                             <li class="breadcrumb-item"><a href="{{ route('user.index', 0) }}">المستخدمين</a></li>
                         @elseif ($user->flag == 'employee')
-                            <li class="breadcrumb-item"><a href="{{ route('user.employees', 1) }}">الموظفين</a></li>
+                            @if (Auth::user()->rule_id == 2)
+                                <li class="breadcrumb-item"><a href="{{ route('user.employees', 1) }}">موظفين الوزارة</a>
+                                </li>
+                            @endif
+                            @if (Auth::user()->rule_id != 2)
+                                <li class="breadcrumb-item"><a href="{{ route('user.employees', 1) }}">موظفين القوة</a></li>
+                            @endif
                         @endif
                         <li class="breadcrumb-item active" aria-current="page"> <a href=""> تعديل </a></li>
                     </ol>
@@ -28,7 +34,12 @@
                 @if ($user->flag == 'user')
                     <p>المستخدمين</p>
                 @elseif ($user->flag == 'employee')
-                    <p>الموظفين</p>
+                    @if (Auth::user()->rule_id == 2)
+                        <p>موظفين الوزارة</p>
+                    @endif
+                    @if (Auth::user()->rule_id != 2)
+                        <p>موظفين القوة<< /p>
+                    @endif
                 @endif
             </div>
         </div>
@@ -81,20 +92,20 @@
 @else
     -->
                                 <!-- <div class="radio-btns mx-md-4 ">
-                                                <input type="radio" class="form-check-input" id="male" name="gender"
-                                                    value="man" style="height:20px; width:20px;">
-                                                <label class="form-check-label mx-2" for="male">ذكر</label>
-                                            </div>
-                                            <div class="radio-btns mx-md-4 ">
-                                                <input type="radio" class="form-check-input" id="female" name="gender"
-                                                    value="female" style="height:20px; width:20px;" checked>
-                                                <label class="form-check-label mx-md-2" for="female">انثى</label>
-                                            </div> -->
+                                                                    <input type="radio" class="form-check-input" id="male" name="gender"
+                                                                        value="man" style="height:20px; width:20px;">
+                                                                    <label class="form-check-label mx-2" for="male">ذكر</label>
+                                                                </div>
+                                                                <div class="radio-btns mx-md-4 ">
+                                                                    <input type="radio" class="form-check-input" id="female" name="gender"
+                                                                        value="female" style="height:20px; width:20px;" checked>
+                                                                    <label class="form-check-label mx-md-2" for="female">انثى</label>
+                                                                </div> -->
                                 <!--
     @endif -->
                                 <label for="input44">الفئة</label>
                             </div>
-                            <div class="form-group d-flex  justify-content-center col-md-5 mx-2 pb-2">
+                            {{-- <div class="form-group d-flex  justify-content-center col-md-5 mx-2 pb-2">
 
 
                                 <div class="radio-btns mx-md-4 ">
@@ -111,43 +122,26 @@
                                 </div>
 
                                 <label for="input44"> التصنيف</label>
-                            </div>
+                            </div> --}}
                         </div>
 
                         <br>
-                        <div class="form-group col-md-10 mx-2 type_military_id " style="display: none;"
-                            id="type_military_id">
+                        <div class="form-group col-md-10 mx-2 type_military_id" id="type_military_id">
                             <div class="d-flex justify-content-end">
-                                @if ($user->type_military == 'police')
-                                    <div class="radio-btns mx-md-4 ">
-                                        <input type="radio" class="form-check-input" id="police" name="type_military"
-                                            value="police" style="height:20px; width:20px;" checked>
-                                        <label class="form-check-label mx-2" for="police">ضابط</label>
-                                    </div>
-                                    <div class="radio-btns mx-md-4">
-                                        <input type="radio" class="form-check-input" id="police_"
-                                            name="type_military" value="police_" style="height:20px; width:20px;">
-                                        <label class="form-check-label mx-2" for="police">صف ضابط</label>
-                                    </div>
-                                @else
-                                    <div class="radio-btns mx-md-4 ">
-                                        <input type="radio" class="form-check-input" id="police"
-                                            name="type_military" value="police" style="height:20px; width:20px;">
-                                        <label class="form-check-label mx-2" for="police">ضابط</label>
-                                    </div>
-                                    <div class="radio-btns mx-md-4">
-                                        <input type="radio" class="form-check-input" id="police_"
-                                            name="type_military" value="police_" style="height:20px; width:20px;"
-                                            checked>
-                                        <label class="form-check-label mx-2" for="police">صف ضابط</label>
-                                    </div>
-                                @endif
+                                <div class="radio-btns mx-md-4">
+                                    @foreach ($violationTypeName as $key => $violation)
+                                        <input type="radio" class="form-check-input" id="police_{{ $key }}" name="type_military"
+                                               value="{{ $violation }}" style="height:20px; width:20px;"
+                                               {{ old('type_military', $selectedViolationType) == $violation ? 'checked' : '' }}>
+                                        <label class="form-check-label mx-2" for="police_{{ $key }}">{{ $violation }}</label>
+                                    @endforeach
+                                </div>
                                 <label for="type_military">نوع العسكرى</label>
                             </div>
-
-
-
                         </div>
+                        
+                        
+                        
 
                         <div class="form-row mx-3 d-flex justify-content-center flex-row-reverse">
                             <div class="form-group col-md-5 mx-2">
@@ -157,10 +151,11 @@
                                     placeholder="الاسم" value="{{ $user->name }}" dir="rtl">
                             </div>
                             <div class="form-group col-md-5 mx-2">
-                                <label for="input2">
-                                    @if ($user->flag == 'user')
+                                <label for="input2"><i class="fa-solid fa-asterisk"
+                                        style="color:red; font-size:10px;"></i>
+                                    {{-- @if ($user->flag == 'user')
                                         <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>
-                                    @endif
+                                    @endif --}}
                                     البريد الالكتروني
                                 </label>
                                 <input type="text" id="input2" name="email" class="form-control"
@@ -184,19 +179,6 @@
 
                         </div>
 
-                        {{-- <div class="form-row mx-2 d-flex justify-content-center flex-row-reverse">
-                            <div class="form-group col-md-10 mx-2">
-                                <label for="input8">الوظيفة</label>
-                                <select id="input8" name="job" class="form-control select2" placeholder="المهام">
-                                    <option  disabled>اختار من القائمة</option>
-                                    @foreach ($job as $item)
-                                    <option value="{{ $item->id }}" {{ $user->job_id == $item->id ? 'selected' : ''}}>
-                    {{ $item->name }}
-                    </option>
-                    @endforeach
-                    </select>
-            </div>
-        </div> --}}
 
                         <div class="form-row  mx-3 d-flex justify-content-center flex-row-reverse">
                             <div class="form-group col-md-5 mx-2">
@@ -205,15 +187,22 @@
                                     placeholder="المسمي الوظيفي" value="{{ $user->job_title }}" dir="rtl">
                             </div>
                             <div class="form-group col-md-5 mx-2">
-                                <label for="input10">الجنسية</label>
-                                <input type="text" id="input10" name="nationality" class="form-control"
-                                    placeholder="الجنسية" value="{{ $user->nationality }}" dir="rtl">
+                                <label for="country_select">الجنسية</label>
+                                <select id="country_select" name="nationality" class="form-control">
+                                    <option selected disabled>اختار من القائمة</option>
+                                    @foreach ($countries as $country)
+                                        <option value="{{ $country->id }}" {{ $user->nationality == $country->id ? 'selected' : '' }}>
+                                            {{ $country->country_name_ar }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
+                            
                         </div>
 
                         <div class="form-row  mx-3 d-flex justify-content-center flex-row-reverse">
 
-                            <div class="form-group col-md-10 mx-2" style="display: none;" id="military_number_id">
+                            <div class="form-group col-md-10 mx-2" id="military_number_id">
                                 <label for="input6"> <i class="fa-solid fa-asterisk"
                                         style="color:red; font-size:10px;"></i> رقم العسكرى</label>
                                 <input type="text" id="input6" name="military_number" class="form-control"
@@ -289,11 +278,11 @@
 
                                 <select id="input13" name="flag" class="form-control select2">
                                     @if ($user->flag == 'user')
-                                        <option value="user" selected>مستخدم</option>
+                                        <option value="user" selected>نعم</option>
                                         {{-- <option value="employee">موظف</option> --}}
                                     @else
                                         {{-- <option value="user">مستخدم</option> --}}
-                                        <option value="employee" selected>موظف</option>
+                                        <option value="employee" selected>لا</option>
                                     @endif
                                 </select>
                             </div>
@@ -305,7 +294,7 @@
                             <div class="form-group col-md-5 mx-md-2">
                                 <label for="input44">العنوان </label>
                                 <!--  <input type="text" id="input44" name="address_1" class="form-control"
-                                            placeholder="  العنوان" value="{{ $user->address1 }}"> -->
+                                                                placeholder="  العنوان" value="{{ $user->address1 }}"> -->
                                 <textarea id="input44" name="address_1" class="form-control" placeholder="  العنوان"
                                     value="{{ $user->address1 }}">{{ $user->address1 }}</textarea>
                             </div>
@@ -440,9 +429,7 @@
                                         value="{{ $user->age  }}">
     </div> --}}
 
-                        <div class="form-row mx-2 mx-2 d-flex justify-content-center flex-row-reverse">
-
-
+                        <div class="form-row mx-2 d-flex justify-content-center flex-row-reverse">
                             <div class="form-group col-md-10 mx-2">
                                 <label for="input24"> الرتبة</label>
                                 <select id="input24" name="grade_id" class="form-control select2"
@@ -483,7 +470,7 @@
                 <div class="container col-10 mt-5 mb-5 ">
                     <div class="form-row col-10 " dir="ltr">
                         <button class="btn-blue " type="submit">
-                            اضافة </button>
+                            تعديل </button>
                     </div>
                 </div>
                 <br>
@@ -641,7 +628,7 @@
         });
     </script>
 
-    <script>
+    {{-- <script>
         document.addEventListener('DOMContentLoaded', function() {
             const radios = document.getElementsByName('solderORcivil');
             let selectedValue;
@@ -682,7 +669,7 @@
                 });
             });
         });
-    </script>
+    </script> --}}
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
