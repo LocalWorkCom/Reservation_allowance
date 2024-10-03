@@ -127,7 +127,7 @@
                 render: function(data, type, row) {
                     var departmentEdit = '{{ route('departments.edit', ':id') }}';
                     departmentEdit = departmentEdit.replace(':id', row.id);
-                    var subdepartment = '{{ route('sub_departments.index', ':id') }}';
+                    var subdepartment = '{{ route('sub_departments.create', ':id') }}';
                     subdepartment = subdepartment.replace(':id', row.id);
                     var departmentShow = '{{ route('departments.show', ':id') }}';
                     departmentShow = departmentShow.replace(':id', row.id);
