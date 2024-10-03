@@ -97,19 +97,8 @@
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
-                <div class="form-group col-md-10 mx-md-2">
-                    <label for="">صلاحيه الحجز</label>
-                    <div class="d-flex mt-3" dir="rtl">
-                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part" @if ($data->reservation_allowance_type == 1 || $data->reservation_allowance_type == 3) checked @endif
-                            name="part[]">
-                        <label for="part"> حجز كلى</label><input type="checkbox" class="toggle-radio-buttons mx-2"
-                            value="2" id="part" name="part[]" @if ($data->reservation_allowance_type == 2 || $data->reservation_allowance_type == 3) checked @endif>
-                        <label for="part">حجز جزئى</label>
-                        @error('part')
-                            <div class="alert alert-danger">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
+
+
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager">
                     <label class="pb-3" for="mangered">المدير</label>
                     <select name="mangered" id="mangered" class="form-control"  required>
@@ -167,8 +156,8 @@
                             @endforeach
                         </textarea>
                     </div>
-                </div>
-                {{-- <div class="input-group moftsh px-md-5 px-3 pt-3">
+                <!-- </div> -->
+                <div class="input-group moftsh px-md-5 px-3 pt-3">
                     <label  for="" class="col-12">صلاحيه الحجز</label>
                     <div class="d-flex mt-3" dir="rtl">
                         <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part" style="height:30px;" @if($data->reservation_allowance_type == 1 ||$data->reservation_allowance_type == 3 )checked @endif
@@ -180,7 +169,7 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
-                </div> --}}
+                </div> 
                 <div class="container col-11">
                     <div class="form-row d-flex justify-content-end mt-4 mb-3">
                         <button type="submit" class="btn-blue">

@@ -28,8 +28,8 @@
                             onclick="window.location.href='{{ route('user.create') }}'" style="color: #0D992C;">
                             اضافة جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
                         </button>
-                        <a href="{{ route('export-users') }}" class="btn btn-primary"
-                            style="border-radius: 5px;">تصدير</a>
+                        {{-- <a href="{{ route('export-users') }}" class="btn btn-primary"
+                            style="border-radius: 5px;">تصدير</a> --}}
                         <a href="{{ route('download-template') }}" class="btn btn-success"
                             style="border-radius: 5px;">تحميل القالب</a>
                     @endif

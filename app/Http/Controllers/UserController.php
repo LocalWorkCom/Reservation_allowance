@@ -480,7 +480,7 @@ class UserController extends Controller
         $area = Region::all();
         $sector = Sector::all();
         $qualifications = Qualification::all();
-        $violationTypeName = ViolationTypes::whereJsonContains('type_id', 0)->pluck('name');
+        $violationTypeName = ViolationTypes::whereJsonContains('type_id', 0)->get();
 
         // Get the selected violation type from old input or set a default value
         $selectedViolationType = old('type_military', 'police'); // Default to 'police'
@@ -807,7 +807,7 @@ class UserController extends Controller
         $qualifications = Qualification::all();
 
         // Fetch all violation types regardless of the user's grade
-        $violationTypeName = ViolationTypes::whereJsonContains('type_id', 0)->pluck('name');
+        $violationTypeName = ViolationTypes::whereJsonContains('type_id', 0)->get();
 
         // Get the selected violation type from the user (if it exists)
         $selectedViolationType = old('type_military', $user->type_military); // Default to old input or user's current value
