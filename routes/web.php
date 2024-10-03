@@ -476,6 +476,7 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/reservation_allowances/get_departement/{id}/{type}', [ReservationAllowanceController::class, 'get_departement'])->name('reservation_allowances.get_departement')->middleware('check.permission:view Inspector');
     Route::any('/reservation_allowances/search_employee', [ReservationAllowanceController::class, 'search_employee'])->name('reservation_allowances.search_employee')->middleware('check.permission:view Inspector');
     Route::any('/reservation_allowances/get_search_employee/{sector_id}/{departement_id}', [ReservationAllowanceController::class, 'get_search_employee'])->name('reservation_allowances.get_search_employee')->middleware('check.permission:view Inspector');
+    Route::any('/reservation_allowances/hi', [ReservationAllowanceController::class, 'index'])->name('reservation_allowances.hi')->middleware('check.permission:view Inspector');
 
 
     //reservation statics

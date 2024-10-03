@@ -291,8 +291,14 @@ class ReservationAllowanceController extends Controller
         }
 
         $department_type = $request->department_type;
-        $sector_id = $request->sector_id;
-        $departement_id = $request->departement_id;
+        $sector_id = 0;
+        $departement_id = 0;
+        if($request->sector_id){
+            $sector_id = $request->sector_id;
+        }
+        if($request->departement_id){
+            $departement_id = $request->departement_id;
+        }
 
         if($user->department_id == null){
             $get_departements = departements::where('sector_id', $sector_id)->where('parent_id', null)->get();
@@ -309,10 +315,13 @@ class ReservationAllowanceController extends Controller
         $user = auth()->user();
         $to_day = Carbon::now()->format('Y-m-d');
 
-        $data = User::query()->where('sector', $sector_id)->where('flag', 'employee');
-        if($departement_id){
-            $data = $data->where('department_id', $departement_id);
+        if($sector_id != 0){
+            $data = User::query()->where('sector', $sector_id)->where('flag', 'employee');
+            if($departement_id != 0){
+                $data = $data->where('department_id', $departement_id);
+            }
         }
+        
         $data = $data->get();
 
 
@@ -345,7 +354,7 @@ class ReservationAllowanceController extends Controller
             })
 
             ->addColumn('employee_allowance_type_btn', function ($row) {
-                return $btn = '<div class="d-flex" style="justify-content: space-around !important"><div style="display: inline-flex; direction: ltr;"><label for="">  حجز كلى</label><input type="radio" name="allowance[]['.$row->id.']" value="0" class="form-control"></div><span>|</span><div style="display: inline-flex; direction: ltr;"><label for="">  حجز جزئى</label><input type="radio" name="allowance[]['.$row->id.']" value="0" class="form-control"></div><span>|</span><div style="display: inline-flex; direction: ltr;"><label for="">  لا يوجد</label><input type="radio" name="allowance[]['.$row->id.']" value="0" class="form-control"></div></div>';
+                return $btn = '<div class="d-flex" style="justify-content: space-around !important"><div style="display: inline-flex; direction: ltr;"><label for="">  حجز كلى</label><input type="radio" name="allowance[]['.$row->id.']" id="allowance[]['.$row->id.']" value="1" class="form-control"></div><span>|</span><div style="display: inline-flex; direction: ltr;"><label for="">  حجز جزئى</label><input type="radio" name="allowance[]['.$row->id.']" id="allowance[]['.$row->id.']" value="2" class="form-control"></div><span>|</span><div style="display: inline-flex; direction: ltr;"><label for="">  لا يوجد</label><input type="radio" name="allowance[]['.$row->id.']" id="allowance[]['.$row->id.']" value="0" checked class="form-control"></div></div>';
             })
             ->addColumn('employee_allowance_amount', function ($row) {
                 return $row->amount;  // Display the count of iotelegrams

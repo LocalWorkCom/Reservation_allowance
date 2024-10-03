@@ -108,11 +108,12 @@
                                 <div class="radio-btns mx-md-4">
                                     @foreach ($violationTypeName as $key => $violation)
                                         <input type="radio" class="form-check-input" id="police_{{ $key }}"
-                                            name="type_military" value="{{ $violation }}"
+                                            name="type_military" value="{{ $violation->id }}"
                                             style="height:20px; width:20px;"
-                                            {{ old('type_military', 'police') == $violation ? 'checked' : '' }}>
+                                            {{ old('type_military', 'police') == $violation->id ? 'checked' : '' }}
+                                            >
                                         <label class="form-check-label mx-2"
-                                            for="police_{{ $key }}">{{ $violation }}</label>
+                                            for="police_{{ $key }}">{{ $violation->name }}</label>
                                     @endforeach
                                         <input type="radio" class="form-check-input" id="police_{{ $key }}"
                                             name="type_military" value="{{ $violation }}"
