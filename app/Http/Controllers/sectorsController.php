@@ -176,7 +176,7 @@ class sectorsController extends Controller
     public function show(string $id)
     {
         $data = Sector::find($id);
-        $users = User::where('department_id', null)->Where('sector', $id)->get();
+        $users = User::where('department_id', null)->whereNot('id',$data->manager)->Where('sector', $id)->get();
         $departments = departements::where('sector_id', $id)->get();
         return view('sectors.showdetails', compact('data', 'users', 'departments'));
     }

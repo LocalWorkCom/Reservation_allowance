@@ -98,7 +98,7 @@
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
-               
+
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager">
                     <label class="pb-3" for="mangered">المدير</label>
                     <select name="mangered" id="mangered" class="form-control select2" required>
@@ -181,50 +181,6 @@
 
             </div>
         </div>
-
-        {{-- <div class="row" dir="rtl">
-            <div id="second-container" class="container moftsh col-11 mt-3 p-0 pb-3 hidden">
-                <h3 class="pt-3 px-md-5 px-3">اضف محافظات داخل قطاع</h3>
-                <div class="form-row mx-2">
-                    <div class="form-group moftsh px-md-5 px-3 pt-3">
-                        <h4 style="color: #274373; font-size: 24px;">حدد المحافظات المراد اضافتها</h4>
-                    </div>
-                </div>
-                {{-- {{ dd($governments== ''? 't' :'f') }} --}}
-        {{-- <div class="form-row col-11 mb-2 mt-3 mx-md-2">
-                    @if ($governments != '')
-                        @foreach ($governments as $government)
-                            <div class="form-group col-3 d-flex mx-md-4">
-                                <input type="checkbox" name="governmentIDS[]" value="{{ $government->id }}"
-                                    id="governmentIDS">
-                                <label for="governmentIDS">{{ $government->name }}</label>
-                            </div>
-                        @endforeach
-                    @else
-                        <h5 style="color: #274373; font-size: 24px;">
-                            عفوا لا يوجد محافظات متاحه
-                        </h5>
-                    @endif
-
-
-
-                </div>
-                <span class="text-danger span-error" id="governmentIDS-error"></span>
-                <div class="container col-11">
-                    <div class="form-row d-flex justify-content-end mt-4 mb-3">
-                        <button type="submit" class="btn-blue"
-                            @if ($governments == '') style="display:none ;" @endif>
-                            <img src="{{ asset('frontend/images/white-add.svg') }}" alt="img" height="20px"
-                                width="20px"> اضافة
-                        </button>
-                        <button type="button" id="back-button" class="btn-back mx-2">
-                            <img src="{{ asset('frontend/images/previous.svg') }}" alt="img" height="20px"
-                                width="20px"> السابق</button>
-
-                    </div>
-                </div>
-            </div> --}}
-        {{-- </div> --}}
     </form>
     <script>
         $('.select2').select2({
