@@ -47,16 +47,13 @@
 @endsection
 @section('content')
 <div class="row">
-
     <div class="container welcome col-11" style="height: auto !important">
         <div class="d-flex justify-content-between">
             <div class="col-12">
-                <div class="row d-flex justify-content-between" style="direction: rtl">
+                <div class="row d-flex " style="direction: rtl">
                     <div class="col-2">
                         <p> بدل الحجز</p>
                     </div>
-
-                    <div class="d-flex">
                         <form class="" action="{{ route('reservation_allowances.search_employee_new') }}" method="post"
                             enctype="multipart/form-data">
                             @csrf
@@ -64,29 +61,26 @@
                                 <!-- 1 for sector , 2 for department -->
                                 <input name="department_type" id="department_type" type="hidden"
                                     value="{{Auth::user()->department_id == null ? 1 : 2}}">
-
-                                    <div class="d-flex">
-                                        {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                                        <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
-                                        <select class="custom-select custom-select-lg select2" name="sector_id"
-                                            id="sector_id">
-                                            <option selected disabled>اختار القطاع</option>
-                                            @foreach ($sectors as $sector)
-                                                <option value="{{ $sector->id }}">
-                                                    {{ $sector->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-                                    <div class="d-flex mx-2">
-                                        {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                                        <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
-                                        <select class="custom-select custom-select-lg select2" name="departement_id"
-                                            id="departement_id">
-                                            <option selected disabled>اختار الادارة</option>
-                                        </select>
-                                    </div>
-
+                                <div class="d-flex">
+                                    {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
+                                    <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
+                                    <select class="custom-select custom-select-lg select2" name="sector_id"
+                                        id="sector_id">
+                                        <option selected disabled>اختار القطاع</option>
+                                        @foreach ($sectors as $sector)
+                                        <option value="{{ $sector->id }}">
+                                            {{ $sector->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="d-flex mx-2">
+                                    {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
+                                    <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
+                                    <select class="custom-select custom-select-lg select2" name="departement_id"
+                                        id="departement_id">
+                                        <option selected disabled>اختار الادارة</option>
+                                    </select>
+                                </div>
                                 <div class="">
                                     <label for="Civil_number">
                                         <button class="btn-all py-2 px-2" type="submit" style="color:green;">
@@ -96,14 +90,12 @@
                                 </div>
                             </div>
                         </form>
-
-                        <div class="d-flex justify-content-between flex-wrap mt-2">
+                        <div class="d-flex justify-content-between mt-2">
                             <div class=" mx-2">
                                 {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                 <a class="btn-all py-2 px-2 " href="{{ route('reservation_allowances.create') }}"
                                     style="color: #0D992C;">
                                     <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-
                                     اضافة بدل حجز جديد
                                 </a>
                                 {{-- @endif --}}
@@ -112,22 +104,16 @@
                                 <a class="btn-all py-2 px-2" href="{{ route('reservation_allowances.create.all') }}"
                                     style="color: #0D992C;">
                                     <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-
                                     اضافة بدل حجز كلى جديد
                                 </a>
                                 {{-- @endif --}}
                             </div>
-
                         </div>
                         <!-- show_reservation_allowances_info -->
                         <div id="show_reservation_allowances_info" class="col-12"></div>
                         <!-- end of show_reservation_allowances_info -->
                     </div>
-
-                </div>
             </div>
-
-
         </div>
     </div>
 </div>

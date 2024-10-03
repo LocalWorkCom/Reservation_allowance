@@ -48,7 +48,7 @@
                             <p> بدل الحجز</p>
                         </div>
 
-                        <form class="col-6" action="{{ route('reservation_allowances.search_employee') }}" method="post" enctype="multipart/form-data">
+                        <form class="col-6" action="{{ route('reservation_allowances.search_employee_new') }}" method="post" enctype="multipart/form-data">
                         @csrf
                             <div class="row">
                                 <!-- 1 for sector , 2 for department -->
@@ -134,8 +134,7 @@
                 @endif
 
                 <div>
-                    <table id="users-table"
-                        class="display table table-responsive-sm  table-bordered table-hover dataTable">
+                    <table id="users-table" class="display table table-responsive-sm  table-bordered table-hover dataTable" style="direction:rtl">
                         <thead>
                             <tr>
                                 <th>الرتيب</th>
@@ -157,17 +156,17 @@
                                         <div class="d-flex" style="justify-content: space-around !important">
                                             <div style="display: inline-flex; direction: ltr;">
                                                 <label for="">  حجز كلى</label>
-                                                <input type="radio" name="allowance[]['.$employee->id.']" id="allowance[]['.$employee->id.']" value="1" class="form-control">
+                                                <input type="radio" name="allowance[][{{$employee->id}}]" id="allowance_{{$employee->id}}" onclick="add_to_cache(1, {{$employee->id}})" value="1" class="form-control">
                                             </div>
                                             <span>|</span>
                                             <div style="display: inline-flex; direction: ltr;">
                                                 <label for="">  حجز جزئى</label>
-                                                <input type="radio" name="allowance[]['.$employee->id.']" id="allowance[]['.$employee->id.']" value="2" class="form-control">
+                                                <input type="radio" name="allowance[][{{$employee->id}}]" id="allowance_{{$employee->id}}" onclick="add_to_cache(2, {{$employee->id}})" value="2" class="form-control">
                                             </div>
                                             <span>|</span>
                                             <div style="display: inline-flex; direction: ltr;">
                                                 <label for="">  لا يوجد</label>
-                                                <input type="radio" name="allowance[]['.$employee->id.']" id="allowance[]['.$employee->id.']" value="0" checked class="form-control">
+                                                <input type="radio" name="allowance[][{{$employee->id}}]" id="allowance_{{$employee->id}}" onclick="add_to_cache(0, {{$employee->id}})" value="0" checked class="form-control">
                                             </div>
                                         </div>
                                     </th>
@@ -214,9 +213,31 @@ $(document).ready(function() {
     });
 
 
+    $(document).on("click", "#sector_id00", function () {
+        var sectorid = this.value;
+        var department_type = document.getElementById('department_type').value;
+        var map_url = "{{route('reservation_allowances.get_departement',['id','type'])}}";
+        map_url = map_url.replace('id', sectorid);
+        map_url = map_url.replace('type', department_type);
+        $.get(map_url, function(data){
+            $("#departement_id").html(data);
+        });
+    });
 
 
 });
+
+function add_to_cache($type, $id)
+{
+    var department_type = document.getElementById('department_type').value;
+    var map_url = "{{route('reservation_allowances.add_reservation_allowances_employess',['type','id'])}}";
+    map_url = map_url.replace('id', $id);
+    map_url = map_url.replace('type', $type);
+    $.get(map_url, function(data){
+        //$("#departement_id").html(data);
+    });
+}
+
 
 
 $(function() {

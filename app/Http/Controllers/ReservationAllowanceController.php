@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Cache;
 
 class ReservationAllowanceController extends Controller
 {
@@ -316,7 +317,6 @@ class ReservationAllowanceController extends Controller
         
         $employees = $data->get();
 
-
         return view('reservation_allowance.search_employee_new', compact('department_type', 'sector_id', 'departement_id', 'sectors', 'get_departements', 'employees'));
     }
 
@@ -409,5 +409,19 @@ class ReservationAllowanceController extends Controller
             ->rawColumns(['employee_allowance_type_btn'])
             //->rawColumns(['action'])
             ->make(true);
+    }
+
+    public function add_reservation_allowances_employess($type, $id)
+    {
+        $arr = Cache::get('allowances_employee4');
+        $arr[] = ['id'=>$id, 'type'=>$type];
+        Cache::put('allowances_employee4', $arr);
+
+        return Cache::get('allowances_employee4');
+    }
+
+    public function view_reservation_allowances_employess()
+    {
+        return Cache::get('allowances_employee4');
     }
 }
