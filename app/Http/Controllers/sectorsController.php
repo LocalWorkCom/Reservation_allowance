@@ -25,14 +25,24 @@ class sectorsController extends Controller
 
     public function index()
     {
-        $sectors = Sector::all();
+         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
+            $sectors = Sector::all();
+
+         }elseif(Auth::user()->rule->id == 4){
+            $sectors = Sector::where('id',auth()->user()->sector);
+
+         }
         return view("sectors.index");
     }
 
     public function getsectors()
     {
-        $data = Sector::all();
-
+        // $data = Sector::all();
+        if (Auth::user()->rule->id == 1 || Auth::user()->rule->id== 2) {
+            $data = Sector::all();
+         }elseif(Auth::user()->rule->id == 4){
+            $data = Sector::where('id',auth()->user()->sector);
+         }
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
                 $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;" href=' . route('sectors.edit', $row->id) . '><i class="fa fa-edit"></i> تعديل</a>';
@@ -46,7 +56,7 @@ class sectorsController extends Controller
             })
             ->addColumn('departments', function ($row) {
                 $num = departements::where('sector_id', $row->id)->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15px" href=' . route('departments.index', $row->id) . '> ' . $num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15px" href=' . route('departments.create', $row->id) . '> ' . $num . '</a>';
 
                 return $btn;
             })
@@ -66,6 +76,10 @@ class sectorsController extends Controller
                 $emp_num = User::where('sector', $row->id)->where('department_id', null)->count();
                 return $emp_num;
             })
+            ->addColumn( 'employeesdep', function ($row) {
+                $emp_num = User::where('sector', $row->id)->whereNotNull('department_id')->count();
+                return $emp_num;
+            })
             ->rawColumns(['action', 'departments']) // Add 'departments' to rawColumns
             ->make(true);
     }
@@ -75,7 +89,7 @@ class sectorsController extends Controller
     public function create()
     {
         $users = User::where('department_id', null)->where('sector', null)->get();
-        $rules = Rule::whereNotIn('id', [1, 2])->get();
+        $rules = Rule::where('name', 'sector manager')->get();
         return view('sectors.create', compact('users', 'rules'));
     }
 

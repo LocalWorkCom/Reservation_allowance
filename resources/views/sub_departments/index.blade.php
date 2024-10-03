@@ -124,20 +124,29 @@
                 render: function(data, type, row) {
                     var departmentEdit = '{{ route('sub_departments.edit', ':id') }}';
                     departmentEdit = departmentEdit.replace(':id', row.id);
+                    departmentEdit = departmentEdit.replace(':id', row.id);
+                    var subdepartment = '{{ route('sub_departments.create', ':id') }}';
+                    subdepartment = subdepartment.replace(':id', row.id);
+                    var departmentShow = '{{ route('departments.show', ':id') }}';
+                    departmentShow = departmentShow.replace(':id', row.id);
 
+                    // Start building the buttons
+                    var buttons = `
+            <a href="${subdepartment}" class="btn btn-sm" style="background-color: #274373;"> <i class="fa fa-plus"></i> ادارات فرعيه</a>
+            <a href="${departmentShow}" class="btn btn-sm" style="background-color: #274373;"> <i class="fa fa-eye"></i> عرض</a>
+        `;
                     // Get the role and department info from Blade
                     var canEdit = @json(Auth::user()->rule->name == 'manager' || Auth::user()->department_id == $parentDepartment->id);
 
                     // Conditionally render the Edit button based on the user's role and department
                     if (canEdit) {
-                        return `
+                        buttons += `
                 <a href="${departmentEdit}" class="btn btn-sm"  style="background-color: #F7AF15;">
                     <i class="fa fa-edit"></i>تعديل
                 </a>
             `;
-                    } else {
-                        return '';
                     }
+                    return buttons;
                 }
             }],
             "oLanguage": {
