@@ -479,6 +479,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reservation_statics_credit/print', [ReservationStaticsCreditController::class, 'printReport'])->name('Reserv_statistic_credit.print')->middleware('check.permission:view Inspector');
 
     Route::get('/get-manager-details/{id}', [DepartmentController::class, 'getManagerDetails']);
+
+
+    Route::get('/file-import', [UserController::class, 'importView'])->name('import-view');
+    Route::post('/import', [UserController::class, 'import'])->name('import');
+    Route::get('/export-users', [UserController::class, 'exportUsers'])->name('export-users');
+    Route::get('download-template', [UserController::class, 'downloadTemplate'])->name('download-template');
+
+
 });
 
 
