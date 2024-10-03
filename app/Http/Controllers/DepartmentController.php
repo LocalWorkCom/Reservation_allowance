@@ -16,47 +16,29 @@ use App\Http\Requests\StoreDepartmentRequest;
 use App\Models\Rule;
 use App\Models\Sector;
 use Carbon\Carbon;
+
 use Illuminate\Support\Facades\Hash;
 
 class DepartmentController extends Controller
 {
-    public function index()
+    public function index(string $id)
     {
-        $user = Auth::user();
-        if ($user->rule->name == 'localworkadmin' || $user->rule->name == 'superadmin') {
-            // For localworkadmin or superadmin, show all sectors and departments
-
-            $sectors = Sector::all();
+        if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
             $departments = departements::all();
-            return view('departments.index', compact('sectors', 'departments'));
-        } elseif ($user->rule->name == 'sector manager') {
-
-            // For sector managers, show only the sector they belong to with its departments
-            $sector = Sector::where('manager', $user->id)->first();
-            if (!$sector) {
-                return redirect()->back()->with('error', 'لا يوجد قطاعات');
-            }
-            $departments = departements::where('sector_id', $sector->id)->get();
-            return view('departments.index', compact('sector', 'departments'));
-        } elseif ($user->rule->name == 'manager') {
-
-            // For department managers, show only the department they manage and its subdepartments
-            $department = departements::where('manger', $user->id)->first();
-            if (!$department) {
-                return redirect()->back()->with('error', ' الا يوجد ادارات');
-            }
-            $subDepartments = departements::where('parent_id', $department->id)->get(); // Get the subdepartments of the department
-            return view('departments.index', compact('department', 'subDepartments'));
-        } else {
-            // If the user doesn't have a matching role, deny access
-            return redirect()->back()->with('error', 'You do not have access to this page.');
+        } elseif (Auth::user()->rule->id == 4) {
+            $departments = departements::where('sector_id', auth()->user()->sector);
+        } elseif (Auth::user()->rule->id == 3) {
+            $departments = departements::where('id', auth()->user()->department_id);
         }
+        return view("departments.index");
     }
-    public function getDepartment()
+    public function getDepartment($sector_id)
     {
-        //department main all
-        if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
-            $data = departements::where('parent_id', null)->withCount('iotelegrams')
+
+        if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
+            $data = departements::where('parent_id', null)
+                ->where('sector_id', $sector_id)
+                ->withCount('iotelegrams')
                 ->withCount('outgoings')
                 ->withCount('children')
                 ->with(['children'])
@@ -155,7 +137,7 @@ class DepartmentController extends Controller
     }
     public function getSub_Department(Request $request, $id)
     {
-        if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
+        if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
             $data = departements::where('parent_id', $request->id)
                 ->withCount('iotelegrams', 'outgoings', 'children')
                 ->with(['children'])
@@ -233,7 +215,7 @@ class DepartmentController extends Controller
     public function create_1($id)
     {
         $department = departements::findOrFail($id);
-        if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
+        if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
             $employees = User::where(function ($query) use ($id) {
                 $query->where('department_id', $id)
                     ->orWhere('department_id', null);
@@ -461,13 +443,13 @@ class DepartmentController extends Controller
                         $subQuery->whereNull('sector');
                     });
             })
-           // Ensure all users do not have a department
+            // Ensure all users do not have a department
             ->get();
-            $employees =  User::Where('department_id',$department->id)->whereNot('id', $department->manager)->get();
+        $employees =  User::Where('department_id', $department->id)->whereNot('id', $department->manager)->get();
 
         $rules = Rule::where('id', 3)->get();
 
-        return view('departments.edit', compact('department', 'managers', 'rules','employees'));
+        return view('departments.edit', compact('department', 'managers', 'rules', 'employees'));
         // dd($employee);
         // return view('departments.edit', compact('department', 'users', 'employee'));
     }
@@ -558,68 +540,68 @@ class DepartmentController extends Controller
         if ($oldManager->id != $request->manger) {
             // dd($request->manger ,$oldManager);
 
-             // Update old manager's sector to null
-             if ($oldManager) {
-                 $oldManagerUser = User::find($oldManager);
-                 if ($oldManagerUser) {
-                     $oldManagerUser->sector = null;
-                     $oldManagerUser->flag = 'employee';
-                     $oldManagerUser->department_id = null;
-                     $oldManagerUser->password = null;
-                     $oldManagerUser->save();
-                 }
-             }
-             // Update new manager's sector
-             if ($request->password) {
-                 $newManager = User::find($request->manger);
-                 if ($newManager) {
-                     $newManager->sector = $request->sector;
-                     $newManager->flag = 'user';
-                     $newManager->department_id = $departements->id;
-                     $newManager->rule_id = $request->rule;
-                     $newManager->password = Hash::make($request->password);
-                     $newManager->save();
-                 } else {
-                     return redirect()->back()->with('خطأ', 'هذا المستخدم غير موجود');
-                 }
-             } else {
+            // Update old manager's sector to null
+            if ($oldManager) {
+                $oldManagerUser = User::find($oldManager);
+                if ($oldManagerUser) {
+                    $oldManagerUser->sector = null;
+                    $oldManagerUser->flag = 'employee';
+                    $oldManagerUser->department_id = null;
+                    $oldManagerUser->password = null;
+                    $oldManagerUser->save();
+                }
+            }
+            // Update new manager's sector
+            if ($request->password) {
+                $newManager = User::find($request->manger);
+                if ($newManager) {
+                    $newManager->sector = $request->sector;
+                    $newManager->flag = 'user';
+                    $newManager->department_id = $departements->id;
+                    $newManager->rule_id = $request->rule;
+                    $newManager->password = Hash::make($request->password);
+                    $newManager->save();
+                } else {
+                    return redirect()->back()->with('خطأ', 'هذا المستخدم غير موجود');
+                }
+            } else {
 
-                 $user = User::find($request->manger);
-                 if ($user) {
-                     $user->sector = $request->sector;
-                     $user->department_id = $departements->id;
-                     $user->save();
-                 } else {
-                     return redirect()->back()->with('خطأ', 'هذا المستخدم غير موجود');
-                 }
-             }
-         }
+                $user = User::find($request->manger);
+                if ($user) {
+                    $user->sector = $request->sector;
+                    $user->department_id = $departements->id;
+                    $user->save();
+                } else {
+                    return redirect()->back()->with('خطأ', 'هذا المستخدم غير موجود');
+                }
+            }
+        }
 
-         // Handle employee Civil_number updates
-         $currentEmployees = User::where('sector', $request->sector)
-             ->where('department_id', null)
-             ->pluck('Civil_number')
-             ->toArray();
+        // Handle employee Civil_number updates
+        $currentEmployees = User::where('sector', $request->sector)
+            ->where('department_id', null)
+            ->pluck('Civil_number')
+            ->toArray();
 
-         $Civil_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->Civil_number);
-         $Civil_numbers = array_filter(explode(',,', $Civil_numbers));
+        $Civil_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->Civil_number);
+        $Civil_numbers = array_filter(explode(',,', $Civil_numbers));
 
-         $employeesToRemove = array_diff($currentEmployees, $Civil_numbers);
+        $employeesToRemove = array_diff($currentEmployees, $Civil_numbers);
 
-         $employeesToAdd = array_diff($Civil_numbers, $currentEmployees);
+        $employeesToAdd = array_diff($Civil_numbers, $currentEmployees);
 
-         if (!empty($employeesToRemove)) {
-             User::whereIn('Civil_number', $employeesToRemove)->update(['sector' => null, 'department_id' => null]);
-         }
+        if (!empty($employeesToRemove)) {
+            User::whereIn('Civil_number', $employeesToRemove)->update(['sector' => null, 'department_id' => null]);
+        }
 
-         foreach ($employeesToAdd as $Civil_number) {
-             $employee = User::where('Civil_number', $Civil_number)->first();
-             if ($employee && $employee->grade_id != null) {
-                 $employee->sector = $request->sector;
-                 $employee->department_id = $departements->id;
-                 $employee->save();
-             }
-         }
+        foreach ($employeesToAdd as $Civil_number) {
+            $employee = User::where('Civil_number', $Civil_number)->first();
+            if ($employee && $employee->grade_id != null) {
+                $employee->sector = $request->sector;
+                $employee->department_id = $departements->id;
+                $employee->save();
+            }
+        }
         return redirect()->route('departments.index', ['id' => $request->sector])->with('success', 'Department updated successfully.');
         // return response()->json($department);
     }

@@ -16,7 +16,7 @@
             <div class="d-flex justify-content-between">
                 <p> الأدارات الفرعيه - {{ $parentDepartment->name }} </p>
                 <div class="form-group">
-                    @if (Auth::user()->rule->name == 'manager' || Auth::user()->department_id == $parentDepartment->id)
+                    @if (Auth::user()->rule->id == 3 || Auth::user()->department_id == $parentDepartment->id)
                         <button type="button" class="wide-btn "
                             onclick="window.location.href='{{ route('sub_departments.create', ['id' => $parentDepartment->id]) }}'"
                             style="    color: #0D992C;">
