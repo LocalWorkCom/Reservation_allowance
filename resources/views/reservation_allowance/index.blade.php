@@ -276,8 +276,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ route('
-                                reservation_allowances.getAll ') }}',
+                    url: '{{ route('reservation_allowances.getAll') }}',
                     data: function(d) {
                         d.filter = filter; // Use the global filter variable
                     }
