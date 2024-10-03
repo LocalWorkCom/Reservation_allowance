@@ -17,7 +17,15 @@ class ReservationStaticsController extends Controller
 {
     public function static()
     {
-        return view("reservation_statics.index");
+        $user = Auth::user();
+    
+        if ($user && ( $user->rule_id == 2)) {
+           
+                return view('reservation_statics.index' );
+            
+        } else {
+            return abort(403, 'Unauthorized action.');
+        }
     }
     public function getAll()
     {
