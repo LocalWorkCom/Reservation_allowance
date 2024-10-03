@@ -57,7 +57,7 @@
                                 <div class="col-4">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                     <label for="Civil_number"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار القطاع</label>
                                     <select class="custom-select custom-select-lg mb-3 select2" name="sector_id" id="sector_id">
-                                        <option selected disabled>اختار من القائمة</option>
+                                        <option value="0" selected>اختار من القائمة</option>
                                             @foreach ($sectors as $sector)
                                             <option value="{{ $sector->id }}">
                                                 {{ $sector->name }}</option>
@@ -68,7 +68,7 @@
                                 <div class="col-4">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                     <label for="Civil_number"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label>
                                     <select class="custom-select custom-select-lg mb-3 select2" name="departement_id" id="departement_id">
-                                        <option selected disabled>اختار من القائمة</option>
+                                        <option value="0" selected>اختار من القائمة</option>
                                     </select>
                                 </div>
 
