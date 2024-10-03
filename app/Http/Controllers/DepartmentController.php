@@ -19,8 +19,9 @@ use Google\Service\ArtifactRegistry\Hash;
 
 class DepartmentController extends Controller
 {
-    public function index()
+    public function index($id)
     {
+        dd('d');
         // if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
         $users = User::where('flag', 'employee')->where('department_id', NULL)->get();
 
@@ -94,7 +95,7 @@ class DepartmentController extends Controller
         $yearsOfService = $joiningDate->diffInYears($today);
 
         // Check if the user is an employee (flag 'user' means employee)
-        $isEmployee = $manager->flag == 'user' ? true : false;
+        $isEmployee = $manager->flag == 'employee' ? true : false;
 
         // Return the manager data in JSON format
         return response()->json([
@@ -107,6 +108,7 @@ class DepartmentController extends Controller
             'isEmployee' => $isEmployee,  // Include the employee flag
         ]);
     }
+
 
 
     public function index_1($id)
@@ -162,7 +164,7 @@ class DepartmentController extends Controller
     {
         //create Main Administration
 
-        $sectors = Sector::where('id',$id)->pluck('id','name');
+        $sectors = Sector::where('id', $id)->pluck('id', 'name');
         $managers = User::whereNot('id', auth()->user()->id)->get();
         $employees = User::where('flag', 'employee')->where('department_id', null)->get();
         return view('departments.create', compact('sectors', 'managers', 'employees'));

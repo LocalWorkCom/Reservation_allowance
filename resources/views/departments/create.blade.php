@@ -70,30 +70,30 @@
                     <form action="{{ route('departments.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @if (session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
-                @endif
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+                            <div class="alert alert-success">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                         <div class="form-row mx-3 mt-4 d-flex justify-content-center">
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="sector">اختر القطاع </label>
-                                <select name="sector" id="sector"
+                                {{-- <select name="sector" id="sector"
                                     class=" form-control custom-select custom-select-lg mb-3 select2 "
                                     style="border: 0.2px solid rgb(199, 196, 196); width:100% !important;" required>
                                     <option value="">اختر القطاع </option>
                                     @foreach ($sectors as $sector)
                                         <option value="{{ $sector->id }}">{{ $sector->name }}</option>
                                     @endforeach
-                                </select>
+                                </select> --}}
                                 @error('sector')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
