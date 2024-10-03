@@ -176,7 +176,7 @@ class sectorsController extends Controller
     public function show(string $id)
     {
         $data = Sector::find($id);
-        $users = User::where('department_id', null)->Where('sector', $id)->get();
+        $users = User::where('department_id', null)->whereNot('id',$data->manager)->Where('sector', $id)->get();
         $departments = departements::where('sector_id', $id)->get();
         return view('sectors.showdetails', compact('data', 'users', 'departments'));
     }
@@ -188,14 +188,14 @@ class sectorsController extends Controller
     {
         // Find the sector being edited
         $data = Sector::findOrFail($id);
-        $users = User::where('department_id', null)->orWhere('id', $data->manager)->get();
-        $employees = User::where('sector', $id)->where('department_id', null)->whereNot('id', $data->manager)->get();
-
-
+        $users = User::where('department_id', null)->where('sector', null)->orWhere('sector', $id)->get();
+        $employees =  User::where('department_id', null)->Where('sector', $id)->whereNot('id', $data->manager)->get();
+        $rules = Rule::whereNotIn('id', [1, 2])->get();
         return view('sectors.edit', [
             'data' => $data,
             'users' => $users,
-            'employees' => $employees
+            'employees' => $employees,
+            'rules' => $rules
         ]);
     }
 
@@ -248,9 +248,10 @@ class sectorsController extends Controller
         $sector->manager = $request->mangered;
         $sector->updated_by = Auth::id();
         $sector->save();
-
         // Check if manager has changed
         if ($oldManager != $request->mangered) {
+            dd($sector);
+
             // Update old manager's sector to null
             if ($oldManager) {
                 $oldManagerUser = User::find($oldManager);
@@ -288,24 +289,23 @@ class sectorsController extends Controller
         }
 
         // Handle employee Civil_number updates
+        $currentEmployees = User::where('sector', $sector->id)
+            ->where('department_id', null)
+            ->pluck('Civil_number')
+            ->toArray();
 
-        // Get the current employees associated with this sector
-        $currentEmployees = User::where('sector', $sector->id)->where('department_id', null)->pluck('Civil_number')->toArray();
-
-        // Get the new employees from the request
         $Civil_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->Civil_number);
-        $Civil_numbers = array_filter(explode(',,', $Civil_numbers)); // Filter out any empty values
+        $Civil_numbers = array_filter(explode(',,', $Civil_numbers));
 
-        // Employees to be removed (who are in the current sector but not in the new request)
         $employeesToRemove = array_diff($currentEmployees, $Civil_numbers);
 
-        // Set the sector to null for removed employees
+        $employeesToAdd = array_diff($Civil_numbers, $currentEmployees);
+
         if (!empty($employeesToRemove)) {
             User::whereIn('Civil_number', $employeesToRemove)->update(['sector' => null, 'department_id' => null]);
         }
 
-        // Update or assign the new employees to this sector
-        foreach ($Civil_numbers as $Civil_number) {
+        foreach ($employeesToAdd as $Civil_number) {
             $employee = User::where('Civil_number', $Civil_number)->first();
             if ($employee && $employee->grade_id != null) {
                 $employee->sector = $sector->id;
@@ -313,7 +313,7 @@ class sectorsController extends Controller
             }
         }
 
-        return redirect()->route('sectors.index')->with('message', 'تم تعديل القطاع');
+        return redirect()->route('sectors.index')->with('message', 'تم تحديث القطاع والموظفين بنجاح.');
     }
 
 
