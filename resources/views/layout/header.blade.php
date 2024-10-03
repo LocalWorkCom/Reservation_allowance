@@ -90,18 +90,31 @@
                         <h6>الرئيسية</h6>
                     </a>
                 </li>
-                <li class="nav-item {{ request()->routeIs('user.index') ? 'active' : '' }} ">
+                {{-- <li class="nav-item {{ request()->routeIs('user.index') ? 'active' : '' }} ">
                     <a href="{{ route('user.index', 0) }}">
                         <img src="{{ asset('frontend/images/users.svg') }}" alt="logo">
                         <h6>المستخدمين </h6>
                     </a>
-                </li>
+                </li> --}}
                 <li class="nav-item {{ request()->routeIs('user.employees') ? 'active' : '' }} btn3  @isset($search) @if ($search == 'emps') active @endif @endisset"
                     onclick="toggleDropdown3(event)">
+
+                    @if (Auth::user()->rule_id == 2)
+
                     <a href="{{ route('user.employees', 1) }}">
                         <img src="{{ asset('frontend/images/employees.svg') }}" alt="logo">
-                        <h6 class="btn3">الموظفين</h6>
+                        <h6 class="btn3">موظفين الوزارة</h6>
                     </a>
+
+                    @endif
+                    @if (Auth::user()->rule_id != 2)
+                    <a href="{{ route('user.employees', 1) }}">
+                        <img src="{{ asset('frontend/images/employees.svg') }}" alt="logo">
+                        <h6 class="btn3">موظفين القوة</h6>
+                    </a>
+                    @endif
+
+                    
                 </li>
 
                 <li class="nav-item {{ request()->routeIs('reservation_allowances') || request()->routeIs('reservation_allowances.index') || request()->routeIs('reservation_allowances.create') || request()->routeIs('ReservationStaticsCredit.index') ? 'active' : '' }}"

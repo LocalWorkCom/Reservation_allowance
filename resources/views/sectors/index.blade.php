@@ -14,15 +14,13 @@
         <div class="container welcome col-11">
             <div class="d-flex justify-content-between">
                 <p> القطاعـــات</p>
-                {{-- @if (Auth::user()->hasPermission('create Sector')) --}}
-                {{-- @if (!$allExist) --}}
+                @if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2)
                     <button type="button" class="btn-all  " onclick="window.location.href='{{ route('sectors.create') }}'"
                         style="color: #0D992C;">
 
-                        اضافة قطاع جديد  <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                        اضافة قطاع جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
                     </button>
-                {{-- @endif --}}
-                {{-- @endif --}}
+                @endif
             </div>
         </div>
     </div>
@@ -31,15 +29,7 @@
     <div class="row">
         <div class="container  col-11 mt-3 p-0  pt-5 pb-4">
             <div class="row " dir="rtl">
-                <!-- <div class="form-group mt-4  mx-md-2 col-12 d-flex ">
-                            {{-- @if (Auth::user()->hasPermission('create Sector')) --}}
-                            <button type="button" class="btn-all  "
-                            onclick="window.location.href='{{ route('sectors.create') }}'" style="color: #0D992C;">
-                                 <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                اضافة قطاع جديد
-                            </button>
-                            {{-- @endif --}}
-                        </div> -->
+
             </div>
             <div class="col-lg-12">
                 <div class="bg-white">
@@ -54,8 +44,13 @@
                             <thead>
                                 <tr>
                                     <th>الاسم</th>
-                                    {{-- <th>المحافظه التابعه لها</th> --}}
-                                    {{-- <th>ترتيبه</th> --}}
+                                    <th>مدير القطاع</th>
+                                    <th>عدد الأدارات التابعه </th>
+                                    <th>ميزانية البدل</th>
+                                    <th>صلاحيه الحجز</th>
+                                    <th>عدد الموظفين</th>
+                                    <th>عدد موظفين الأدارات</th>
+
                                     <th style="width:150px;">العمليات</th>
                                 </tr>
                             </thead>
@@ -82,14 +77,30 @@
                         data: 'name',
                         name: 'name'
                     },
-                    // {
-                    //     data: 'government_name',
-                    //     name: 'government_name'
-                    // },
-                    // {
-                    //     data: 'order',
-                    //     name: 'order'
-                    // },
+                    {
+                        data: 'manager_name',
+                        name: 'manager_name'
+                    },
+                    {
+                        data: 'departments',
+                        name: 'departments'
+                    },
+                    {
+                        data: 'reservation_allowance',
+                        name: 'reservation_allowance'
+                    },
+                    {
+                        data: 'reservation_allowance_amount',
+                        name: 'reservation_allowance_amount'
+                    },
+                    {
+                        data: 'employees',
+                        name: 'employees'
+                    },
+                    {
+                        data: 'employeesdep',
+                        name: 'employeesdep'
+                    },
                     {
                         data: 'action',
                         name: 'action',
@@ -127,15 +138,15 @@
                 },
                 "pagingType": "full_numbers",
                 "fnDrawCallback": function(oSettings) {
-                                     console.log('Page '+this.api().page.info().pages)
-                                        var page=this.api().page.info().pages;
-                                        console.log($('#users-table tr').length);
-                                        if (page ==1) {
-                                         //   $('.dataTables_paginate').hide();//css('visiblity','hidden');
-                                            $('.dataTables_paginate').css('visibility', 'hidden');  // to hide
+                    console.log('Page ' + this.api().page.info().pages)
+                    var page = this.api().page.info().pages;
+                    console.log($('#users-table tr').length);
+                    if (page == 1) {
+                        //   $('.dataTables_paginate').hide();//css('visiblity','hidden');
+                        $('.dataTables_paginate').css('visibility', 'hidden'); // to hide
 
-                                        }
-                                    }
+                    }
+                }
             });
 
 

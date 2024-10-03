@@ -17,7 +17,6 @@
                 <p> الأدارات الفرعيه - {{ $parentDepartment->name }} </p>
                 <div class="form-group">
                     @if (Auth::user()->rule->name == 'manager' || Auth::user()->department_id == $parentDepartment->id)
-
                         <button type="button" class="wide-btn "
                             onclick="window.location.href='{{ route('sub_departments.create', ['id' => $parentDepartment->id]) }}'"
                             style="    color: #0D992C;">
@@ -56,6 +55,7 @@
                                     {{-- <th>الاقسام</th> --}}
                                     <th>ميزانية البدل</th>
                                     <th>صلاحيه الحجز</th>
+                                    <th>عدد الأدارات الفرعيه</th>
                                     <th>إجراء</th>
                                 </tr>
                             </thead>
@@ -104,6 +104,14 @@
                     name: 'reservation_allowance'
                 },
                 {
+                    data: 'subDepartment',
+                    name: 'subDepartment',
+                    render: function(data, type, row) {
+                        return '<button class="btn btn-link" onclick="showSubDepartments(' + row
+                            .id + ')">' + data + '</button>';
+                    }
+                },
+                {
                     data: 'action',
                     name: 'action',
                     sWidth: '100px',
@@ -116,20 +124,29 @@
                 render: function(data, type, row) {
                     var departmentEdit = '{{ route('sub_departments.edit', ':id') }}';
                     departmentEdit = departmentEdit.replace(':id', row.id);
+                    departmentEdit = departmentEdit.replace(':id', row.id);
+                    var subdepartment = '{{ route('sub_departments.create', ':id') }}';
+                    subdepartment = subdepartment.replace(':id', row.id);
+                    var departmentShow = '{{ route('departments.show', ':id') }}';
+                    departmentShow = departmentShow.replace(':id', row.id);
 
+                    // Start building the buttons
+                    var buttons = `
+            <a href="${subdepartment}" class="btn btn-sm" style="background-color: #274373;"> <i class="fa fa-plus"></i> ادارات فرعيه</a>
+            <a href="${departmentShow}" class="btn btn-sm" style="background-color: #274373;"> <i class="fa fa-eye"></i> عرض</a>
+        `;
                     // Get the role and department info from Blade
                     var canEdit = @json(Auth::user()->rule->name == 'manager' || Auth::user()->department_id == $parentDepartment->id);
 
                     // Conditionally render the Edit button based on the user's role and department
                     if (canEdit) {
-                        return `
+                        buttons += `
                 <a href="${departmentEdit}" class="btn btn-sm"  style="background-color: #F7AF15;">
                     <i class="fa fa-edit"></i>تعديل
                 </a>
             `;
-                    } else {
-                        return '';
                     }
+                    return buttons;
                 }
             }],
             "oLanguage": {
@@ -188,6 +205,11 @@
                 }
             });
         }
+    }
+
+    function showSubDepartments(departmentId) {
+        // Redirect to the sub-department listing for the selected department
+        window.location.href = '/sub_departments/' + departmentId;
     }
 </script>
 

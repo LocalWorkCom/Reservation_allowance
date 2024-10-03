@@ -33,7 +33,12 @@
         @elseif (url()->current() == url('/employees/1'))
             <div class="container welcome col-11">
                 <div class="d-flex justify-content-between">
-                    <p>المـــــــــــوظفين</p>
+                    @if (Auth::user()->rule_id == 2)
+                        <p>موظفين الوزارة</p>
+                    @endif
+                    @if (Auth::user()->rule_id != 2)
+                        <p>موظفين القوة<< /p>
+                    @endif
                     <div class="form-group">
                         @if (Auth::user()->hasPermission('add_employee User'))
                             <button type="button" class="wide-btn"
@@ -76,7 +81,12 @@
         @elseif($id == 1)
             <div class="container welcome col-11">
                 <div class="d-flex justify-content-between">
-                    <p>المـــــــــــوظفين</p>
+                    @if (Auth::user()->rule_id == 2)
+                        <p>موظفين الوزارة</p>
+                    @endif
+                    @if (Auth::user()->rule_id != 2)
+                        <p>موظفين القوة<< /p>
+                    @endif
                     <div class="form-group">
                         @if (Auth::user()->hasPermission('add_employee User'))
                             <button type="button" class="wide-btn"

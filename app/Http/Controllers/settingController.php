@@ -181,7 +181,7 @@ class settingController extends Controller
                 return $uploadButton;
             })
             ->addColumn('type', function ($row) {
-                if ($row->type == 0) $mode = 'ظابط';
+                if ($row->type == 2) $mode = 'ظابط';
                 elseif ($row->type == 1) $mode = ' فرد';
                 else $mode = 'مهني';
                 return $mode;
