@@ -29,9 +29,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Console\View\Components\Alert;
 use Illuminate\Validation\Rule as ValidationRule;
 use App\helper; // Adjust this namespace as per your helper file location
-use App\Models\Qualification;
-use App\Models\Region;
-use App\Models\Sector;
+
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ImportUser;
 use App\Exports\ExportUser;
