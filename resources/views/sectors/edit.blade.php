@@ -97,6 +97,10 @@
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
+<<<<<<< HEAD
+               
+
+=======
                 <div class="form-group col-md-10 mx-md-2">
                     <label for="">صلاحيه الحجز</label>
                     <div class="d-flex mt-3" dir="rtl">
@@ -110,6 +114,7 @@
                         @enderror
                     </div>
                 </div>
+>>>>>>> 77502fae9c619156119ed82d72c7f80c87a03d54
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager">
                     <label class="pb-3" for="mangered">المدير</label>
                     <select name="mangered" id="mangered" class="form-control"  required>
@@ -159,14 +164,32 @@
                     </div>
                 </div>
 
+<<<<<<< HEAD
+                <div class="input-group moftsh px-md-4 px-3 pt-3">
+                <label for="Civil_number" class="col-12"> أرقام الهوية</label>
+=======
                 <div class="form-row mx-2 d-flex justify-content-center">
                     <div class="input-group moftsh px-md-5 px-3 pt-3">
                         <label for="Civil_number"> رقم الهوية</label>
+>>>>>>> 77502fae9c619156119ed82d72c7f80c87a03d54
                         <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px">
                             @foreach ($employees as $employee)
                                 {{ $employee->Civil_number }}
                             @endforeach
                         </textarea>
+                    </div>
+                </div>
+                <div class="input-group moftsh px-md-5 px-3 pt-3">
+                    <label  for="" class="col-12">صلاحيه الحجز</label>
+                    <div class="d-flex mt-3" dir="rtl">
+                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part" style="height:30px;" @if($data->reservation_allowance_type == 1 ||$data->reservation_allowance_type == 3 )checked @endif
+                            name="part[]">
+                        <label for="part" class="col-12"> حجز كلى</label><input type="checkbox" class="toggle-radio-buttons mx-2" style="height:30px;" @if($data->reservation_allowance_type == 2 ||$data->reservation_allowance_type == 3 )checked @endif
+                            value="2" id="part" name="part[]">
+                        <label for="part" class="col-12">حجز جزئى</label>
+                        @error('part')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
                 <div class="container col-11">

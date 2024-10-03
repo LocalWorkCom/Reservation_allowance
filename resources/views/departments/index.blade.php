@@ -15,14 +15,16 @@
             <div class="d-flex justify-content-between">
                 <p> الادارات </p>
                 <div class="form-group">
-                    @if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2 ||  Auth::user()->rule->id== 4)
+                    @php
+                        $id = Request::segment(2);
+                    @endphp
+                    @if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2 || Auth::user()->rule->id == 4)
                         <button type="button" class="wide-btn "
-                            onclick="window.location.href='{{ route('departments.create') }}'"
+                            onclick="window.location.href='{{ route('department.create', ['id' => $id]) }}'"
                             style="    color: #0D992C;">
                             اضافة جديد
                             <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
                         </button>
-
                     @endif
                     @if (Auth::user()->hasPermission('create Postman'))
                         <!--   <button type="button" class="wide-btn mx-md-3 mx-1"
