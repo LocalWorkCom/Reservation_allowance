@@ -44,28 +44,10 @@
         <div class="d-flex justify-content-between">
             <div class="col-12">
                 <div class="row" style="direction: rtl">
-                        <div class="col-6">
+                    @if(auth()->user()->department->children->count() <= 0 && auth()->user()->rule_id == 3)
+                        <div class="col-8">
                             <p> بدل الحجز</p>
                         </div>
-
-                        <div class="col-2">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                            <label for="Civil_number"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار القطاع</label>
-                            <select class="custom-select custom-select-lg mb-3 select2" name="sector_id" id="sector_id">
-                                <option selected disabled>اختار من القائمة</option>
-                                    @foreach ($sectors as $sector)
-                                    <option value="{{ $sector->id }}" @if(Auth::user()->rule_is != 2 && $sector->id == Auth::user()->sector) selected @endif {{ old('sector_id') == $sector->id ? 'selected' : '' }}>
-                                        {{ $sector->name }}</option>
-                                    @endforeach
-                            </select>
-                        </div>
-
-                        <div class="col-2">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                            <label for="Civil_number"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label>
-                            <select class="custom-select custom-select-lg mb-3 select2" name="departement_id" id="departement_id">
-                                <option selected disabled>اختار من القائمة</option>
-                            </select>
-                        </div>
-
                         <div class="col-2">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                             <a class="btn-all py-2 px-2" href="{{ route('reservation_allowances.create') }}"
                                 style="color: #0D992C;">
@@ -84,10 +66,34 @@
                             </a>
                             {{-- @endif --}}
                         </div>
+                        @endif
 
-                        <!-- show_reservation_allowances_info -->
-                        <div id="show_reservation_allowances_info" class="col-12"></div>
-                        <!-- end of show_reservation_allowances_info -->
+
+                        @if(auth()->user()->rule_id != 2)
+                        <div class="col-12 div-info d-flex justify-content-between">
+                            <div class="col-7">
+                                <div class="col-6 div-info-padding"><b>القطاع : <span
+                                            style="color:#032F70;">{{auth()->user()->department->sectors->count() > 0 ? auth()->user()->department->sectors->name : "لا يوجد"}}</span></b>
+                                </div>
+                                <div class="col-6 div-info-padding"><b>الادارة الفرعية : <span
+                                            style="color:#032F70;">{{auth()->user()->department->count() > 0 ? auth()->user()->department->name : "لا يوجد"}}</span></b></div>
+                                <div class="col-6 div-info-padding"><b>اليوم : <span style="color:#032F70;">
+                                            {{$to_day_name}}</span></b></div>
+                                <div class="col-6 div-info-padding"><b>عدد العسكرين المحجوزين : <span
+                                            style="color:#032F70;">{{$reservation_allowances->count()}}</span></b></div>
+                            </div>
+                            <div class="col-5">
+                                <div class="col-6 div-info-padding"><b>الادارة الرئيسية : <span
+                                            style="color:#032F70;">{{auth()->user()->department->parent == null ? $super_admin->name : auth()->user()->department->parent->name}}</span></b>
+                                </div>
+                                <div class="col-6 div-info-padding"><b>مبلغ بدل الحجز : <span
+                                            style="color:#032F70;">{{auth()->user()->department->count() > 0 ? auth()->user()->department->reservation_allowance_amount : "لا يوجد"}}</span></b>
+                                </div>
+                                <div class="col-6 div-info-padding"><b>التاريخ : <span style="color:#032F70;">
+                                            {{$to_day}}</span></b></div>
+                            </div>
+                        </div>
+                        @endif
 
                 </div>
             </div>
@@ -148,8 +154,6 @@ $(document).ready(function() {
     $('#closeButton').on('click', function() {
         closeModal();
     });
-
-    
 
 
 });
@@ -235,111 +239,99 @@ function confirmAdd() {
 }
 
 $(document).ready(function() {
+    $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
 
+    var filter = 'all'; // Default filter
 
-    $('#sector_id').on('change', function() {
-        var sector_id =  $(this).val();
-
-
-        //call datatable
-        $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
-        var filter = 'all'; // Default filter
-        const table = $('#users-table').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: '{{ route('reservation_allowances.getAll') }}',
-                data: function(d) {
-                    d.filter = filter; // Use the global filter variable
-                }
+    const table = $('#users-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route('reservation_allowances.getAll') }}',
+            data: function(d) {
+                d.filter = filter; // Use the global filter variable
+            }
+        },
+        columns: [{
+                data: 'id',
+                name: 'id'
             },
-            columns: [{
-                    data: 'id',
-                    name: 'id'
-                },
-                {
-                    data: 'employee_grade',
-                    name: 'employee_grade'
-                },
-                {
-                    data: 'employee_name',
-                    name: 'employee_name'
-                },
-                {
-                    data: 'employee_file_num',
-                    name: 'employee_file_num'
-                },
-                {
-                    data: 'employee_allowance_type_btn',
-                    name: 'employee_allowance_type_btn'
-                },
-                {
-                    data: 'employee_allowance_amount',
-                    name: 'employee_allowance_amount'
-                }
-                <?php /*{
-                            data: 'action',
-                            name: 'action',
-                            sWidth: '100px',
-                            orderable: false,
-                            searchable: false
-                        }*/?>
-            ],
-            "order": [0, 'asc'],
-
-            "oLanguage": {
-                "sSearch": "",
-                "sSearchPlaceholder": "بحث",
-                "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
-                "sInfoEmpty": 'لا توجد بيانات متاحه',
-                "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
-                "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
-                "sZeroRecords": 'نأسف لا توجد نتيجة',
-                "oPaginate": {
-                    "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
-                    "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
-                    "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
-                    "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
-                }
+            {
+                data: 'employee_grade',
+                name: 'employee_grade'
             },
-            layout: {
-
-                bottomEnd: {
-                    paging: {
-                        firstLast: false
-                    }
-                }
+            {
+                data: 'employee_name',
+                name: 'employee_name'
             },
-            "pagingType": "full_numbers",
-            "fnDrawCallback": function(oSettings) {
-                console.log('Page ' + this.api().page.info().pages)
-                var page = this.api().page.info().pages;
-                console.log($('#users-table tr').length);
-                if (page <= 1) {
-                    //$('.dataTables_paginate').hide();//css('visiblity','hidden');
-                    $('.dataTables_paginate').css('visibility', 'hidden'); // to hide
+            {
+                data: 'employee_file_num',
+                name: 'employee_file_num'
+            },
+            {
+                data: 'employee_allowance_type_btn',
+                name: 'employee_allowance_type_btn'
+            },
+            {
+                data: 'employee_allowance_amount',
+                name: 'employee_allowance_amount'
+            }
+            <?php /*{
+                        data: 'action',
+                        name: 'action',
+                        sWidth: '100px',
+                        orderable: false,
+                        searchable: false
+                    }*/?>
+        ],
+        "order": [0, 'asc'],
+
+        "oLanguage": {
+            "sSearch": "",
+            "sSearchPlaceholder": "بحث",
+            "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
+            "sInfoEmpty": 'لا توجد بيانات متاحه',
+            "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
+            "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
+            "sZeroRecords": 'نأسف لا توجد نتيجة',
+            "oPaginate": {
+                "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
+                "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
+                "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
+                "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
+            }
+        },
+        layout: {
+
+            bottomEnd: {
+                paging: {
+                    firstLast: false
                 }
             }
-        });
-        $('.btn-filter').on('click', function() {
-            filter = $(this).data('filter'); // Get the filter value from the clicked button
-            table.ajax.reload(); // Reload the DataTable with the new filter
-        });
-        // Filter buttons click event
-        $('.btn-filter').click(function() {
-            filter = $(this).data('filter'); // Update filter
-            $('.btn-filter').removeClass('btn-active'); // Remove active class from all
-            $(this).addClass('btn-active'); // Add active class to clicked button
-
-            table.page(0).draw(false); // Reset to first page and redraw the table
-        });
-        //end of call datatable
-
+        },
+        "pagingType": "full_numbers",
+        "fnDrawCallback": function(oSettings) {
+            console.log('Page ' + this.api().page.info().pages)
+            var page = this.api().page.info().pages;
+            console.log($('#users-table tr').length);
+            if (page <= 1) {
+                //$('.dataTables_paginate').hide();//css('visiblity','hidden');
+                $('.dataTables_paginate').css('visibility', 'hidden'); // to hide
+            }
+        }
     });
+    $('.btn-filter').on('click', function() {
+        filter = $(this).data('filter'); // Get the filter value from the clicked button
+        table.ajax.reload(); // Reload the DataTable with the new filter
+    });
+    // Filter buttons click event
+    $('.btn-filter').click(function() {
+        filter = $(this).data('filter'); // Update filter
+        $('.btn-filter').removeClass('btn-active'); // Remove active class from all
+        $(this).addClass('btn-active'); // Add active class to clicked button
 
-
-
-    
+        table.page(0).draw(false); // Reset to first page and redraw the table
+    });
 });
 </script>
 @endpush
