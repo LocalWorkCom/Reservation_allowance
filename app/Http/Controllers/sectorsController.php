@@ -46,7 +46,7 @@ class sectorsController extends Controller
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
                 $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;" href=' . route('sectors.edit', $row->id) . '><i class="fa fa-edit"></i> تعديل</a>';
-                $add_permission = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('departments.create', $row->id) . '><i class="fa fa-plus"></i> أضافة أداره</a>';
+                $add_permission = '<a class="btn btn-sm" style="background-color: #274373;" href="' . route('departments.create', ['id' => $row->id]) . '"><i class="fa fa-plus"></i> أضافة أداره</a>';
                 $show_permission = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('sectors.show', $row->id) . '> <i class="fa fa-eye"></i>عرض</a>';
 
                 return $show_permission . ' ' . $edit_permission . '' . $add_permission;
@@ -56,7 +56,7 @@ class sectorsController extends Controller
             })
             ->addColumn('departments', function ($row) {
                 $num = departements::where('sector_id', $row->id)->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15px" href=' . route('departments.create', $row->id) . '> ' . $num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15px" href=' . route('departments.index', ['id'=>$row->id]) . '> ' . $num . '</a>';
 
                 return $btn;
             })

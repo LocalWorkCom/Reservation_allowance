@@ -20,7 +20,7 @@ use Google\Service\ArtifactRegistry\Hash;
 
 class DepartmentController extends Controller
 {
-    public function index($id)
+    public function index()
     {
         // if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
         $users = User::where('flag', 'employee')->where('department_id', NULL)->get();
@@ -165,8 +165,9 @@ class DepartmentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create($id)
+    public function create()
     {
+        $id = request()->get('id');
         //create Main Administration
         $sectors = Sector::findOrFail($id);
         $managers = User::where('id', '!=', auth()->user()->id)
@@ -180,7 +181,7 @@ class DepartmentController extends Controller
             })
             ->whereNull('department_id') // Ensure all users do not have a department
             ->get();
-            $rules = Rule::whereNotIn('id', [1, 2])->get();
+            $rules = Rule::where('id', 3)->get();
             return view('departments.create', compact('sectors', 'managers', 'rules'));
 
 
