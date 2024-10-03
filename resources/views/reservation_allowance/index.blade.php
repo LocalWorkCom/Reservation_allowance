@@ -51,12 +51,12 @@
     <div class="container welcome col-11" style="height: auto !important">
         <div class="d-flex justify-content-between">
             <div class="col-12">
-                <div class="row d-flex justify-content-between" style="direction: rtl">
+                <div class="row d-flex " style="direction: rtl">
                     <div class="col-2">
                         <p> بدل الحجز</p>
                     </div>
 
-                    <div class="d-flex">
+                    
                         <form class="" action="{{ route('reservation_allowances.search_employee') }}" method="post"
                             enctype="multipart/form-data">
                             @csrf
@@ -97,7 +97,7 @@
                             </div>
                         </form>
 
-                        <div class="d-flex justify-content-between flex-wrap mt-2">
+                        <div class="d-flex justify-content-between mt-2">
                             <div class=" mx-2">
                                 {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                 <a class="btn-all py-2 px-2 " href="{{ route('reservation_allowances.create') }}"
@@ -124,7 +124,7 @@
                         <!-- end of show_reservation_allowances_info -->
                     </div>
 
-                </div>
+              
             </div>
 
 
@@ -222,7 +222,7 @@ function confirmDelete() {
 }
 $(document).ready(function() {
     // Check if there are errors
-    @if($errors - > any())
+    @if($errors -> any())
     // Check if it's an add or edit operation
     @if(session('modal_type') === 'add')
     $('#addForm').modal('show');
@@ -292,8 +292,7 @@ $(document).ready(function() {
         processing: true,
         serverSide: true,
         ajax: {
-            url: '{{ route('
-            reservation_allowances.getAll ') }}',
+            url: '{{ route('reservation_allowances.getAll') }}',
             data: function(d) {
                 d.filter = filter; // Use the global filter variable
             }
