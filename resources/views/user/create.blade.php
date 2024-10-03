@@ -9,16 +9,12 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item "><a href="/">الرئيسيه</a></li>
 
-                    @if (url()->current() == url('/users_create/0'))
-                        <li class="breadcrumb-item"><a href="{{ route('user.index', 0) }}">المستخدمين</a></li>
-                    @elseif (url()->current() == url('/users_create/1'))
                         @if (Auth::user()->rule_id == 2)
                             <li class="breadcrumb-item"><a href="{{ route('user.employees', 1) }}">موظفين الوزارة</a></li>
                         @endif
                         @if (Auth::user()->rule_id != 2)
                             <li class="breadcrumb-item"><a href="{{ route('user.employees', 1) }}">موظفين القوة</a></li>
                         @endif
-                    @endif
                     <li class="breadcrumb-item active" aria-current="page"> <a href=""> اضافة </a></li>
                 </ol>
             </nav>
@@ -26,17 +22,12 @@
     </div>
     <div class="row ">
         <div class="container welcome col-11">
-            @if (url()->current() == url('/users_create/0'))
-                <p>المستخدمين</p>
-            @elseif (url()->current() == url('/users_create/1'))
                 @if (Auth::user()->rule_id == 2)
                     <p>موظفين الوزارة</p>
                 @endif
                 @if (Auth::user()->rule_id != 2)
                     <p>موظفين القوة<< /p>
                 @endif
-            @endif
-            <!-- <p> المستخدمين </p> -->
         </div>
     </div>
     <div class="row">
@@ -78,6 +69,28 @@
                                 <label for="input44 " class="input44-none mx-3">الفئة </label>
 
                             </div>
+                            
+                            <div class="form-group d-flex justify-content-center col-md-5 mx-2 pb-2">
+                                <!-- Violation type radio buttons -->
+                                @foreach ($violationTypeName as $key => $violation)
+                                    <div class="radio-btns" style="margin-left: 1.5rem; margin-right: 1.5rem;">
+                                        <input type="radio" class="form-check-input" id="police_{{ $key }}" name="type_military"
+                                            value="{{ $violation->id }}" 
+                                            style="height: 20px; width: 20px;" 
+                                            {{ old('type_military', 'police') == $violation->id ? 'checked' : '' }}>
+                                        <label class="form-check-label mx-2" for="police_{{ $key }}" style="margin-left: 0.5rem;">
+                                            {{ $violation->name }}
+                                        </label>
+                                    </div>
+                                @endforeach
+                            
+                                <!-- Label for the radio group -->
+                                <label for="type_military" style="margin-left: 1.5rem; margin-right: 1.5rem;">
+                                    نوع العسكرى
+                                </label>
+                            </div>
+                            
+                            
                             {{-- <div class="form-group d-flex  justify-content-end col-md-5 mx-2">
                             <div class="radio-btns mx-md-4 ">
                                 <input type="radio" class="form-check-input" id="solder" name="solderORcivil"
@@ -90,7 +103,7 @@
                                 <label class="form-check-label mx-md-2" for="civil">مدنى</label>
                             </div>
                             <label for="input44" class="mx-3">التصنيف</label>
-                        </div> --}}
+                            </div> --}}
                         </div>
 
                         {{-- <div class="form-group col-md-10 mx-2 type_military_id " id="type_military_id">
@@ -103,22 +116,6 @@
                                 <label for="type_military">نوع العسكرى</label>
                             </div>
                         </div> --}}
-                        <div class="form-group col-md-10 mx-2 type_military_id" id="type_military_id">
-                            <div class="d-flex justify-content-end">
-                                <div class="radio-btns mx-md-4">
-                                    @foreach ($violationTypeName as $key => $violation)
-                                        <input type="radio" class="form-check-input" id="police_{{ $key }}"
-                                            name="type_military" value="{{ $violation->id }}"
-                                            style="height:20px; width:20px;"
-                                            {{ old('type_military', 'police') == $violation->id ? 'checked' : '' }}>
-                                        <label class="form-check-label mx-2"
-                                            for="police_{{ $key }}">{{ $violation->name }}</label>
-                                    @endforeach
-
-                                </div>
-                                <label for="type_military">نوع العسكرى</label>
-                            </div>
-                        </div>
 
 
 
@@ -205,14 +202,16 @@
 
                         <div class="form-row  mx-md-3 d-flex justify-content-center flex-row-reverse">
 
-                            <div class="form-group col-md-10 mx-2" style="display: none;" id="military_number_id">
+                                <div class="form-group col-md-5 mx-2" id="military_number_id">
+
                                 <label for="input6"> <i class="fa-solid fa-asterisk"
                                         style="color:red; font-size:10px;"></i>
                                     رقم العسكرى</label>
                                 <input type="text" id="input6" name="military_number" class="form-control"
                                     placeholder="رقم العسكرى" value="{{ old('military_number') }}">
                             </div>
-                            <div class="form-group col-md-10 mx-2" id="input12Div">
+                                <div class="form-group col-md-5 mx-2" id="input12Div">
+
                                 <label for="input12"><i class="fa-solid fa-asterisk"
                                         style="color:red; font-size:10px;"></i>
                                     رقم الملف
