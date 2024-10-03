@@ -115,7 +115,7 @@
                     @else
                         {{-- <div class="form-group col-md-10 mx-2 type_military_id " id="type_military_id">
                             <div class="d-flex justify-content-end">
-                                <div class="radio-btns mx-md-4 ">
+                                <div class="d-flex radio-btns mx-md-4 ">
                                     <input type="radio" class="form-check-input" id="police" name="type_military"
                                         value="police" style="height:20px; width:20px;">
                                     <label class="form-check-label mx-2" for="police">فرد</label>
@@ -127,7 +127,7 @@
                             <div class="d-flex justify-content-end">
                                 <div class="radio-btns mx-md-4">
                                     @foreach ($violationTypeName as $key => $violation)
-                                    <input type="radio" class="form-check-input" id="police_{{ $key }}" name="type_military"
+                                    <input type="radio" class=" form-check-input" id="police_{{ $key }}" name="type_military"
                                            value="{{ $violation }}" style="height:20px; width:20px;"
                                            {{ old('type_military', 'police') == $violation ? 'checked' : '' }}>
                                     <label class="form-check-label mx-2" for="police_{{ $key }}">{{ $violation }}</label>
