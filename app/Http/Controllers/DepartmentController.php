@@ -200,15 +200,8 @@ class DepartmentController extends Controller
             })
             ->whereNull('department_id') // Ensure all users do not have a department
             ->get();
-<<<<<<< HEAD
-        $rules = Rule::whereNotIn('id', [1, 2])->get();
+        $rules = Rule::where('id', 3)->get();
         return view('departments.create', compact('sectors', 'managers', 'rules'));
-=======
-            $rules = Rule::where('id', 3)->get();
-            return view('departments.create', compact('sectors', 'managers', 'rules'));
-
-
->>>>>>> 357d900aed230a5e7b950137bb80b41fdc0cadb8
     }
 
 
