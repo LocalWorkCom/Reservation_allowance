@@ -34,6 +34,10 @@ class Sector extends Model
     {
         return $this->hasMany(departements::class, 'sector_id');
     }
+    public function manager_name()
+    {
+        return $this->belongsTo(User::class, 'manager');
+    }
 
 
 }

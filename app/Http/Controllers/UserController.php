@@ -30,6 +30,15 @@ use Illuminate\Console\View\Components\Alert;
 use Illuminate\Validation\Rule as ValidationRule;
 use App\helper; // Adjust this namespace as per your helper file location
 
+use App\Models\Qualification;
+use App\Models\Region;
+use App\Models\Sector;
+/**
+ * Send emails
+ */
+use App\Mail\SendEmail;
+use Illuminate\Support\Facades\Mail;
+
 class UserController extends Controller
 {
     /**
@@ -678,6 +687,15 @@ class UserController extends Controller
             $newUser->rule_id = $request->rule_id;
             $newUser->save();
             $id = $request->type;
+
+            $details = [
+               'title'=>'بيانات دخولك على نظام القوة المطور',
+                'body' => 'هذه بيانات دخولك على نظام القوة المطور',
+                'username'=>$request->Civil_number,
+                'password'=>$request->password
+            ];
+            Mail::to($request->email)->send(new SendEmail($details));
+
             return redirect()->route('user.index', ['id' => $id]);
         } else {
 

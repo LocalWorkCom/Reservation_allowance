@@ -150,6 +150,14 @@ $(document).ready(function() {
     });
 
     
+    $(document).on("change", "#sector_id", function () {
+        var sectorid = this.value;
+        var map_url = "{{route('city.show',[app()->getLocale(),'id'])}}";
+        map_url = map_url.replace('id', sectorid);
+        $.get(map_url, function(data){
+            $("#departement_id").html(data);
+        });
+    });
 
 
 });
@@ -236,9 +244,6 @@ function confirmAdd() {
 
 $(document).ready(function() {
 
-
-    $('#sector_id').on('change', function() {
-        var sector_id =  $(this).val();
 
 
         //call datatable
@@ -335,7 +340,6 @@ $(document).ready(function() {
         });
         //end of call datatable
 
-    });
 
 
 
