@@ -345,7 +345,7 @@ class ReservationAllowanceController extends Controller
             })
 
             ->addColumn('employee_allowance_type_btn', function ($row) {
-                return $btn = '<div class="d-flex" style="justify-content: space-around !important"><div style="display: inline-flex; direction: ltr;"><label for="">  حجز كلى</label><input type="radio" name="allowance[][$row->name]" value="0" class="form-control"></div><span>|</span><div style="display: inline-flex; direction: ltr;"><label for="">  حجز جزئى</label><input type="radio" name="allowance[][$row->name]" value="0" class="form-control"></div><span>|</span><div style="display: inline-flex; direction: ltr;"><label for="">  لا يوجد</label><input type="radio" name="allowance[][$row->name]" value="0" class="form-control"></div></div>';
+                return $btn = '<div class="d-flex" style="justify-content: space-around !important"><div style="display: inline-flex; direction: ltr;"><label for="">  حجز كلى</label><input type="radio" name="allowance[]['.$row->id.']" value="0" class="form-control"></div><span>|</span><div style="display: inline-flex; direction: ltr;"><label for="">  حجز جزئى</label><input type="radio" name="allowance[]['.$row->id.']" value="0" class="form-control"></div><span>|</span><div style="display: inline-flex; direction: ltr;"><label for="">  لا يوجد</label><input type="radio" name="allowance[]['.$row->id.']" value="0" class="form-control"></div></div>';
             })
             ->addColumn('employee_allowance_amount', function ($row) {
                 return $row->amount;  // Display the count of iotelegrams
