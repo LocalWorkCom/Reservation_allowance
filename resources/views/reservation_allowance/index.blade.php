@@ -369,6 +369,28 @@ $(document).ready(function() {
 
 
 
+<<<<<<< HEAD
 });
 </script>
 @endpush
+=======
+        });
+    </script>
+    <script>
+        $('.c-radio').on('change', function() {
+            // Get the selected value
+            var selectedValue = $(this).val();
+            console.log("Selected option: " + selectedValue);
+
+            // Perform actions based on the selected value
+            if (selectedValue === '0') {
+                alert("You selected 0");
+            } else if (selectedValue === '1') {
+                alert("You selected Option 1");
+            } else if (selectedValue === '2') {
+                alert("You selected Option 2");
+            }
+        });
+    </script>
+@endpush
+>>>>>>> d82db18fdf625384cd87f2db606f26499b5be064
