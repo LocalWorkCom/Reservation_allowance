@@ -925,7 +925,7 @@ class UserController extends Controller
         $user->qualification = $request->qualification;
         $user->date_of_birth = $request->date_of_birth;
         $user->joining_date = $request->joining_date;
-        $user->employee_type = $request->solderORcivil;
+        // $user->employee_type = $request->solderORcivil;
         // $user->type_military = $request->type_military;
         $user->type = $request->gender;
 
