@@ -33,6 +33,8 @@ use App\Http\Controllers\statisticController;
 use App\Http\Controllers\ViolationTypesController;
 use App\Http\Controllers\ReservationStaticsController;
 use App\Http\Controllers\ReservationStaticsCreditController;
+use App\Http\Controllers\ReserveFetchController;
+
 
 
 // use App\Http\Controllers\ViolationReportController;
@@ -271,6 +273,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('setting/grads/show/{id}', [settingController::class, 'showgrads'])->name('grads.show')->middleware('check.permission:view grade');
     Route::post('setting/grads/delete', [settingController::class, 'deletegrads'])->name('grads.delete')->middleware('check.permission:delete grade');
     //end grads
+    //start Nationality
+    Route::get('setting/nationality', [settingController::class, 'getAllNationality'])->name('nationality.getAllNationality')->middleware('check.permission:view job');
+    Route::get('setting/nationality/all', [settingController::class, 'indexbationality'])->name('nationality.index')->middleware('check.permission:view job');
+    Route::get('setting/nationality/create', [settingController::class, 'createnationality'])->name('setting.createnationality')->middleware('check.permission:view job');
+
+    Route::post('setting/nationality/add', [settingController::class, 'addNationality'])->name('nationality.add')->middleware('check.permission:edit job');
+    Route::get('setting/nationality/edit', [settingController::class, 'editnationality'])->name('setting.editnationality')->middleware('check.permission:view job');
+
+    Route::post('setting/nationality/update', [settingController::class, 'updatenationality'])->name('nationality.update')->middleware('check.permission:edit job');
+    Route::get('setting/nationality/show/{id}', [settingController::class, 'shownationality'])->name('nationality.show')->middleware('check.permission:view job');
+    Route::post('setting/nationality/delete', [settingController::class, 'deletenationality'])->name('nationality.delete')->middleware('check.permission:delete job');
+    //end nationality
     //Start qualifications -------- Need middleware for gard
     Route::get('setting/qualifications/all', [qualificationController::class, 'index'])->name('qualifications.index')->middleware('check.permission:view Qualification');
     Route::get('setting/qualifications/ajax', [qualificationController::class, 'getqualification'])->name('getAllqualification')->middleware('check.permission:view Qualification');
@@ -479,6 +493,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reservation_statics_credit/print', [ReservationStaticsCreditController::class, 'printReport'])->name('Reserv_statistic_credit.print')->middleware('check.permission:view Inspector');
 
     Route::get('/get-manager-details/{id}', [DepartmentController::class, 'getManagerDetails']);
+
+
+    //reservation search
+    Route::get('/reservation_fetch', [ReserveFetchController::class, 'static'])->name('reservation_fetch.index')->middleware('check.permission:view Inspector');
+    Route::get('/reservation_fetch/search', [ReserveFetchController::class, 'getFilteredData'])->name('reservation_fetch.search')->middleware('check.permission:view Inspector');
+    Route::any('/reservation_fetch/getAll', [ReserveFetchController::class, 'getAll'])->name('reservation_fetch.getAll')->middleware('check.permission:view Inspector');
+    Route::get('/reservation_fetch/print', [ReserveFetchController::class, 'printReport'])->name('reservation_fetch.print')->middleware('check.permission:view Inspector');
 
 
     Route::get('/file-import', [UserController::class, 'importView'])->name('import-view');
