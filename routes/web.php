@@ -208,8 +208,9 @@ Route::middleware(['auth'])->group(function () {
     // getDepartment
     Route::get('api/department', [DepartmentController::class, 'getDepartment'])->name('api.department')->middleware('check.permission:view departements');
     Route::get('api/sub_department/{id}', [DepartmentController::class, 'getSub_Department'])
-    ->name('api.sub_department')
-    ->middleware('check.permission:view departements');    Route::get('/sub_departments/{id}', [DepartmentController::class, 'index_1'])->name('sub_departments.index')->middleware('check.permission:view departements');
+        ->name('api.sub_department')
+        ->middleware('check.permission:view departements');
+    Route::get('/sub_departments/{id}', [DepartmentController::class, 'index_1'])->name('sub_departments.index')->middleware('check.permission:view departements');
     Route::get('/sub_departments/create/{id}', [DepartmentController::class, 'create_1'])->name('sub_departments.create')->middleware('check.permission:create departements');
     Route::post('/sub_departments', [DepartmentController::class, 'store_1'])->name('sub_departments.store')->middleware('check.permission:edit departements');
     Route::get('/sub_departments/{department}/edit', [DepartmentController::class, 'edit_1'])->name('sub_departments.edit')->middleware('check.permission:edit departements');
@@ -325,14 +326,14 @@ Route::middleware(['auth'])->group(function () {
     // Route::post('points/edit', [pointsController::class, 'update'])->name('points.update')->middleware('check.permission:edit Point');
     //End points
     //End sectors
-        Route::get('sectors/all', [sectorsController::class, 'index'])->name('sectors.index')->middleware('check.permission:view Sector');
-        Route::get('sectors/ajax', [sectorsController::class, 'getsectors'])->name('getAllsectors')->middleware('check.permission:view Sector');
-        Route::get('sectors/show/{id}', [sectorsController::class, 'show'])->name('sectors.show')->middleware('check.permission:view Sector');
-        Route::get('sectors/create', [sectorsController::class, 'create'])->name('sectors.create')->middleware('check.permission:create Sector');
-        Route::post('sectors/add', [sectorsController::class, 'store'])->name('sectors.store')->middleware('check.permission:create Sector');
-        Route::get('sectors/edit/{id}', [sectorsController::class, 'edit'])->name('sectors.edit')->middleware('check.permission:edit Sector');
+    Route::get('sectors/all', [sectorsController::class, 'index'])->name('sectors.index')->middleware('check.permission:view Sector');
+    Route::get('sectors/ajax', [sectorsController::class, 'getsectors'])->name('getAllsectors')->middleware('check.permission:view Sector');
+    Route::get('sectors/show/{id}', [sectorsController::class, 'show'])->name('sectors.show')->middleware('check.permission:view Sector');
+    Route::get('sectors/create', [sectorsController::class, 'create'])->name('sectors.create')->middleware('check.permission:create Sector');
+    Route::post('sectors/add', [sectorsController::class, 'store'])->name('sectors.store')->middleware('check.permission:create Sector');
+    Route::get('sectors/edit/{id}', [sectorsController::class, 'edit'])->name('sectors.edit')->middleware('check.permission:edit Sector');
 
-        Route::post('sectors/update', [sectorsController::class, 'update'])->name('sectors.update')->middleware('check.permission:edit Sector');
+    Route::post('sectors/update', [sectorsController::class, 'update'])->name('sectors.update')->middleware('check.permission:edit Sector');
     // //End sectors
     //Start points
 
@@ -483,6 +484,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reservation_statics_credit/print', [ReservationStaticsCreditController::class, 'printReport'])->name('Reserv_statistic_credit.print')->middleware('check.permission:view Inspector');
 
     Route::get('/get-manager-details/{id}', [DepartmentController::class, 'getManagerDetails']);
+
+
+    Route::get('/file-import', [UserController::class, 'importView'])->name('import-view');
+    Route::post('/import', [UserController::class, 'import'])->name('import');
+    Route::get('/export-users', [UserController::class, 'exportUsers'])->name('export-users');
+    Route::get('download-template', [UserController::class, 'downloadTemplate'])->name('download-template');
 
 });
 

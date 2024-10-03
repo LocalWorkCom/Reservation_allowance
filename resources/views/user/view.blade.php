@@ -1,6 +1,8 @@
 @extends('layout.main')
 
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
+<link rel="stylesheet" href=
+"https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" />
 <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
 </script>
@@ -19,7 +21,8 @@
                     <div class="form-group">
                         @if (Auth::user()->hasPermission('create User'))
                             <button type="button" class="wide-btn"
-                                onclick="window.location.href='{{ route('user.create', $id) }}'" style="color: #0D992C;">
+                                onclick="window.location.href='{{ route('user.create', $id) }}'"
+                                style="color: #0D992C;">
 
                                 اضافة جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
                             </button>
@@ -36,11 +39,22 @@
                             <button type="button" class="wide-btn"
                                 onclick="window.location.href='{{ route('user.create', $id) }}'"
                                 style="color: #0D992C;">
-
                                 اضافة جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
                             </button>
+                            <a href="{{ route('export-users') }}" class="btn btn-primary"
+                                style="border-radius: 5px;">تصدير</a>
+                            <a href="{{ route('download-template') }}" class="btn btn-success"
+                                style="border-radius: 5px;">تحميل القالب</a>
                         @endif
+
                     </div>
+
+                </div>
+
+            </div>
+            <div class="row mb-4">
+                <div class="col-12">
+
                 </div>
             </div>
         @elseif ($id == 0)
@@ -84,7 +98,20 @@
 
 
     <div class="row">
+
         <div class="container  col-11 mt-3 p-0 ">
+            <form action="{{ route('import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="form-group">
+                    <label for="file" style="color: #555;">اختر الملف المراد استيراده (.csv or
+                        .xlsx):</label>
+                    <input type="file" name="file" class="form-control mb-2" accept=".csv, .xlsx"
+                        style="border: 1px solid #ccc; border-radius: 5px;">
+                </div>
+                <div class="d-flex">
+                    <button type="submit" class="btn btn-primary mr-2" style="border-radius: 5px;">استيراد</button>
+                </div>
+            </form>
             @include('inc.flash')
             <div class="col-lg-12 pt-5 pb-5">
                 <div class="bg-white ">
