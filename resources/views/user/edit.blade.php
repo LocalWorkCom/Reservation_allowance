@@ -196,7 +196,21 @@
                                     placeholder="رقم الملف" value="{{ $user->file_number }}" dir="rtl">
                             </div>
                         </div>
+                        <div class="form-row mx-2 mx-2 d-flex justify-content-center flex-row-reverse">
+                            <div class="form-group col-md-10">
+                                <label for="input13">هل يمكن لهذا لموظف ان يكون مستخدم ؟ </label>
+                                {{-- <span>نعم : اختار مستخدم</span>
+                                    <span>/</span>
+                                    <span>لا : اختار موظف</span> --}}
 
+                                <select id="input13" name="flag" class="form-control select2">
+                                    <option value="user" selected>نعم</option>
+                                    {{-- <option value="employee">موظف</option> --}}
+                                    {{-- <option value="user">مستخدم</option> --}}
+                                    <option value="employee" selected>لا</option>
+                                </select>
+                            </div>
+                        </div>
                         {{-- @if ($user->flag == 'user' || Auth::user()->rule->name == 'inspector') --}}
                         <div class="form-row  mx-3 d-flex justify-content-center flex-row-reverse">
 
@@ -230,43 +244,7 @@
                                 </select>
                             </div>
                         </div>
-                        {{-- <div class="form-row mx-2  d-flex justify-content-center flex-row-reverse">
-                                <div class="form-group col-md-10 mx-2">
-                                    <label for="input25"> القسم</label>
-                                    <select id="input25" name="department_id" class="form-control select2"
-                                        placeholder="القسم">
-                                        <option  disabled>اختار من القائمة</option>
-
-                                        @foreach ($department as $item)
-                                            <option value="{{ $item->id }}"
-        {{ $user->department_id == $item->id ? 'selected' : '' }}>
-        {{ $item->name }}
-        </option>
-        @endforeach
-
-        </select>
-    </div>
-    </div> --}}
-                        {{-- @endif --}}
-
-                        <div class="form-row mx-2 mx-2 d-flex justify-content-center flex-row-reverse">
-                            <div class="form-group col-md-10">
-                                <label for="input13">هل يمكن لهذا لموظف ان يكون مستخدم ؟ </label>
-                                {{-- <span>نعم : اختار مستخدم</span>
-                                    <span>/</span>
-                                    <span>لا : اختار موظف</span> --}}
-
-                                <select id="input13" name="flag" class="form-control select2">
-                                    <option value="user" selected>نعم</option>
-                                    {{-- <option value="employee">موظف</option> --}}
-                                    {{-- <option value="user">مستخدم</option> --}}
-                                    <option value="employee" selected>لا</option>
-                                </select>
-                            </div>
-                        </div>
-
-
-
+                        
                         <div class="form-row mx-md-2  d-flex justify-content-center flex-row-reverse">
                             <div class="form-group col-md-5 mx-md-2">
                                 <label for="input44">العنوان </label>

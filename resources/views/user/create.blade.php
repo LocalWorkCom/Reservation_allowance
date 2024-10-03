@@ -170,23 +170,6 @@
                             </div>
 
 
-                            <div class="form-row mx-md-3 d-flex justify-content-center flex-row-reverse">
-                                <div class="form-group col-md-5 mx-2">
-                                    <label for="input44">العنوان</label>
-                                    <textarea id="input44" name="address_1" class="form-control" placeholder="  العنوان"
-                                        value="{{ old('address_1') }}"></textarea>
-                                </div>
-                                <div class="form-group col-md-5 mx-2">
-                                    <label for="input11"> <i class="fa-solid fa-asterisk"
-                                            style="color:red; font-size:10px;"></i> رقم المدنى</label>
-                                    <input type="text" id="input11" name="Civil_number" class="form-control"
-                                        placeholder="رقم المدنى" value="{{ old('Civil_number') }}">
-                                </div>
-
-
-                            </div>
-
-
                             <div class="form-row  mx-md-3 d-flex justify-content-center flex-row-reverse">
                                 <div class="form-group col-md-5 mx-2">
                                     <label for="input9"> المسمي الوظيفي</label>
@@ -215,10 +198,29 @@
                                 <input type="text" id="input6" name="military_number" class="form-control"
                                     placeholder="رقم العسكرى" value="{{ old('military_number') }}">
                             </div>
-                            <div class="form-group col-md-10 mx-2" id="input12Div">
+                            <div class="form-group col-md-5 mx-2">
                                 <label for="input12"><i class="fa-solid fa-asterisk"
                                         style="color:red; font-size:10px;"></i>
                                     رقم الملف
+                                </label>
+                                <input type="text" id="input12" name="file_number" class="form-control"
+                                    placeholder="رقم الملف" value="{{ old('file_number') }}">
+                            </div>
+                        </div>
+                        <div class="form-row mx-2 mx-2 d-flex justify-content-center flex-row-reverse">
+                            <div class="form-group col-md-10">
+                                <label for="input13">هل يمكن لهذا لموظف ان يكون مستخدم ؟ </label>
+                                <select id="input13" name="flag" class="form-control select2">
+                                    <option value="user" selected>نعم</option>
+                                    <option value="employee" selected>لا</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row mx-md-3 d-flex justify-content-center flex-row-reverse col-12"
+                            id="additionalFields" style="visibility: hidden;">
+                            <div class="form-group col-md-5 mx-2">
+                                <label for="input66">
+                                    <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i> الباسورد
                                 </label>
                                 <div class="password-container">
                                     <input type="password" id="input3" name="password" class="form-control"
@@ -232,7 +234,8 @@
                                 <label for="input77">
                                     <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i> المهام
                                 </label>
-                                <select id="input77" name="rule_id" class="form-control select2" placeholder="المهام">
+                                <select id="input77" name="rule_id" class="form-control select2"
+                                    placeholder="المهام">
                                     <option selected disabled>اختار من القائمة</option>
                                     @foreach ($rule as $item)
                                         <option value="{{ $item->id }}"
@@ -242,37 +245,6 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="form-row mx-md-3 d-flex justify-content-center flex-row-reverse col-12"
-                                id="additionalFields" style="visibility: hidden;">
-                                <div class="form-group col-md-5 mx-2">
-                                    <label for="input66">
-                                        <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i> الباسورد
-                                    </label>
-                                    <div class="password-container">
-                                        <input type="password" id="input3" name="password" class="form-control"
-                                            placeholder="الباسورد" style="position: absolute">
-                                        <label class="toggle-password" onclick="togglePasswordVisibility()">
-                                            <i id="toggleIcon" class="fa fa-eye eye-icon"></i>
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="form-group col-md-5 mx-2">
-                                    <label for="input77">
-                                        <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i> المهام
-                                    </label>
-                                    <select id="input77" name="rule_id" class="form-control select2"
-                                        placeholder="المهام">
-                                        <option selected disabled>اختار من القائمة</option>
-                                        @foreach ($rule as $item)
-                                            <option value="{{ $item->id }}"
-                                                {{ old('name') == $item->id ? 'selected' : '' }}>
-                                                {{ $item->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-
                         </div>
                         <div class="form-row  mx-md-3 d-flex justify-content-center flex-row-reverse">
 
