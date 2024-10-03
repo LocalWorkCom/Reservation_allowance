@@ -164,7 +164,8 @@ class DepartmentController extends Controller
     {
         //create Main Administration
 
-        $sectors = Sector::where('id', $id)->pluck('id', 'name');
+        $sectors = Sector::where('id',$id)->get();
+       // dd($sectors);
         $managers = User::whereNot('id', auth()->user()->id)->get();
         $employees = User::where('flag', 'employee')->where('department_id', null)->get();
         return view('departments.create', compact('sectors', 'managers', 'employees'));

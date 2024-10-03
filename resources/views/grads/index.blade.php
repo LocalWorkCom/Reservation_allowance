@@ -123,9 +123,9 @@
                                 <select name="typeadd" id="typeadd" aria-placeholder="اختر نوع الرتبه"
                                     class="form-control" required>
                                     <option value="" selected disabled>اختر نوع الرتبه</option>
-                                    <option value="0">ظابط</option>
+                                    <option value="2">ظابط</option>
                                     <option value="1">فرد </option>
-                                    <option value="2"> مهني</option>
+                                    <option value="3"> مهني</option>
                                 </select>
                                 <span class="text-danger span-error" id="typeadd-error" dir="rtl"></span>
 
@@ -199,11 +199,11 @@
                                 <label for="typeedit">الفئة</label>
                                 <select name="typeedit" id="typeedit" class="form-control">
                                     <option value="" selected disabled>اختر نوع الرتبه</option>
-                                    <option value="0" {{ session('old_typeedit') == '0' ? 'selected' : '' }}>ظابط
+                                    <option value="2" {{ session('old_typeedit') == '2' ? 'selected' : '' }}>ظابط
                                     </option>
                                     <option value="1" {{ session('old_typeedit') == '1' ? 'selected' : '' }}> فرد
                                     </option>
-                                    <option value="2" {{ session('old_typeedit') == '2' ? 'selected' : '' }}> مهني
+                                    <option value="3" {{ session('old_typeedit') == '3' ? 'selected' : '' }}> مهني
                                     </option>
                                 </select>
                                 <span class="text-danger span-error" id="typeedit-error" dir="rtl"></span>
