@@ -30,6 +30,13 @@ use Illuminate\Console\View\Components\Alert;
 use Illuminate\Validation\Rule as ValidationRule;
 use App\helper; // Adjust this namespace as per your helper file location
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\ImportUser;
+use App\Exports\ExportUser;
+use App\Exports\UsersExport;
+use App\Exports\UsersImportTemplate;
+
+
 /**
  * Send emails
  */
@@ -1007,5 +1014,42 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+    public function importView(Request $request){
+        return view('importFile');
+    }
+
+    public function import(Request $request)
+    {
+        // Validate the uploaded file
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv',
+        ]);
+    
+        try {
+            // If no errors, proceed to import the data
+            Excel::import(new ImportUser, $request->file('file'));
+    
+            return redirect()->back()->with('success', 'Users imported successfully!');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+    
+            $errorMessages = [];
+    
+            foreach ($failures as $failure) {
+                $errorMessages[] = 'Error in row ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+            }
+    
+            return redirect()->back()->withErrors(['errors' => $errorMessages]);
+        }
+    }
+    
+
+    public function exportUsers(Request $request){
+        return Excel::download(new UsersExport, 'users.xlsx');
+    }
+    public function downloadTemplate()
+    {
+        return Excel::download(new UsersImportTemplate, 'users_import_template.xlsx');
     }
 }
