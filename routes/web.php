@@ -263,6 +263,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/setting/update', [settingController::class, 'UpdateSetting'])->name('setting.update')->middleware('check.permission:edit Setting');
     Route::get('/setting/delete', [settingController::class, 'deleteSetting'])->name('setting.delete')->middleware('check.permission:delete Setting');
 
+    Route::post('/get-grades', [UserController::class, 'getGradesByViolationType'])->name('get.grades');
 
     //start gards
     Route::get('setting/grads', [settingController::class, 'getAllgrads'])->name('setting.getAllgrads')->middleware('check.permission:view grade');
