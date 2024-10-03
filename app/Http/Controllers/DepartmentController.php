@@ -21,7 +21,6 @@ class DepartmentController extends Controller
 {
     public function index($id)
     {
-        dd('d');
         // if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
         $users = User::where('flag', 'employee')->where('department_id', NULL)->get();
 
@@ -149,10 +148,15 @@ class DepartmentController extends Controller
                     default => 'حجز كلى و حجز جزئى',
                 };
             })
+            ->addColumn('subDepartment', function ($row) { // New column for departments count
+                $sub = departements::where('parent_id', $row->id)->count();
+                return $sub;
+            })
             ->addColumn('manager_name', function ($row) {
                 return $row->manager ? $row->manager->name : 'لايوجد مدير للأداره';
             })
-            ->rawColumns(['action'])
+
+            ->rawColumns(['action', 'subDepartment'])
             ->make(true);
     }
 
@@ -164,8 +168,9 @@ class DepartmentController extends Controller
     {
         //create Main Administration
 
-        $sectors = Sector::where('id',$id)->get();
-       // dd($sectors);
+
+        $sectors = Sector::where('id', $id)->get();
+        // dd($sectors);
         $managers = User::whereNot('id', auth()->user()->id)->get();
         $employees = User::where('flag', 'employee')->where('department_id', null)->get();
         return view('departments.create', compact('sectors', 'managers', 'employees'));

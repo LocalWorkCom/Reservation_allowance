@@ -35,7 +35,7 @@
                         </tr>
                         <tr >
                             <th scope="row">مدير القطاع</th>
-                            <td>{{ $data->manager ? $data->manager_name->name : '' }}</td>
+                            <td>{{ $data->manager ? $data->manager_name->name : 'لا يوجد مدير' }}</td>
                         </tr>
                         <tr >
                             <th scope="row">ميزانية البدل</th>
@@ -48,19 +48,19 @@
                         <tr>
                             <th scope="row">الأدارات الخاصه بهذا القطاع</th>
                             <td>
-                                @foreach ($departments as $department)
-                                    {{ $department->name }}
-                                    -
-                                @endforeach
+                                @if(!empty($departments))
+                                {{ implode(' - ', $departments->pluck('name')->toArray()) }}
+                            @else
+                                لا يوجد إدارات
+                            @endif
+
                             </td>
                         <tr>
-                            <th scope="row">الموظفين الخاصه بهذا القطاع</th>
+                            <th scope="row">الموظفين الخاصين بهذا القطاع</th>
                             <td>
-                                @foreach ($users as $user)
-                                    {{ $user->name }}
-                                    -
-                                @endforeach
+                                {{ implode(' - ', $users->pluck('name')->toArray()) }}
                             </td>
+
                         </tr>
 
                     </tbody>
