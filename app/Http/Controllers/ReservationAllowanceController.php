@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Cache;
 
 class ReservationAllowanceController extends Controller
 {
@@ -274,6 +275,51 @@ class ReservationAllowanceController extends Controller
         return view('reservation_allowance.get_departements', compact('get_departements', 'departement_id'));
     }
 
+    public function search_employee_new(Request $request)
+    {
+        $to_day = Carbon::now()->format('Y-m-d');
+        $to_day_name = Carbon::now()->translatedFormat('l');
+        $user = auth()->user();
+        if($user->rule_id == 2)
+        {
+            $sectors = Sector::get();
+        }else{
+            if($user->department_id == null){
+                $sectors[] = $user->sectors;
+            }else{
+                $sectors[] = $user->sectors;
+            }
+        }
+
+        $department_type = $request->department_type;
+        $sector_id = 0;
+        $departement_id = 0;
+        if($request->sector_id){
+            $sector_id = $request->sector_id;
+        }
+        if($request->departement_id){
+            $departement_id = $request->departement_id;
+        }
+
+        if($user->department_id == null){
+            $get_departements = departements::where('sector_id', $sector_id)->where('parent_id', null)->get();
+        }else{
+            $user = auth()->user();
+            $get_departements = departements::where('id', $user->department_id)->get();
+        }
+
+        if($sector_id != 0){
+            $data = User::query()->where('sector', $sector_id)->where('flag', 'employee');
+            if($departement_id != 0){
+                $data = $data->where('department_id', $departement_id);
+            }
+        }
+        
+        $employees = $data->get();
+
+        return view('reservation_allowance.search_employee_new', compact('department_type', 'sector_id', 'departement_id', 'sectors', 'get_departements', 'employees'));
+    }
+
     public function search_employee(Request $request)
     {
         $to_day = Carbon::now()->format('Y-m-d');
@@ -353,8 +399,8 @@ class ReservationAllowanceController extends Controller
                 if($row->file_number == null){return "لا يوجد رقم ملف";}else{return $row->file_number;}
             })
 
-            ->addColumn('employee_allowance_type_btn', function ($row) {
-                return $btn = '<div class="d-flex" style="justify-content: space-around !important"><div style="display: inline-flex; direction: ltr;"><label for="">  حجز كلى</label><input type="radio" name="allowance[]['.$row->id.']" id="allowance[]['.$row->id.']" value="1" class="form-control"></div><span>|</span><div style="display: inline-flex; direction: ltr;"><label for="">  حجز جزئى</label><input type="radio" name="allowance[]['.$row->id.']" id="allowance[]['.$row->id.']" value="2" class="form-control"></div><span>|</span><div style="display: inline-flex; direction: ltr;"><label for="">  لا يوجد</label><input type="radio" name="allowance[]['.$row->id.']" id="allowance[]['.$row->id.']" value="0" checked class="form-control"></div></div>';
+            ->addColumn('employee_allowance_type_btn', function ($row) { 
+                return $btn = '<div class="d-flex" style="justify-content: space-around !important"><div style="display: inline-flex; direction: ltr;"><label for="">  حجز كلى</label><input type="radio" name="allowance[]['.$row->id.']" id="allowance[1]['.$row->id.']" value="1" class="form-control c-radio"></div><span>|</span><div style="display: inline-flex; direction: ltr;"><label for="">  حجز جزئى</label><input type="radio" name="allowance[]['.$row->id.']" id="allowance[2]['.$row->id.']" value="2" class="form-control c-radio"></div><span>|</span><div style="display: inline-flex; direction: ltr;"><label for="">  لا يوجد</label><input type="radio" name="allowance[]['.$row->id.']" id="allowance[0]['.$row->id.']" value="0" checked class="form-control c-radio"></div></div>';
             })
             ->addColumn('employee_allowance_amount', function ($row) {
                 return $row->amount;  // Display the count of iotelegrams
@@ -363,5 +409,19 @@ class ReservationAllowanceController extends Controller
             ->rawColumns(['employee_allowance_type_btn'])
             //->rawColumns(['action'])
             ->make(true);
+    }
+
+    public function add_reservation_allowances_employess($type, $id)
+    {
+        $arr = Cache::get('allowances_employee4');
+        $arr[] = ['id'=>$id, 'type'=>$type];
+        Cache::put('allowances_employee4', $arr);
+
+        return Cache::get('allowances_employee4');
+    }
+
+    public function view_reservation_allowances_employess()
+    {
+        return Cache::get('allowances_employee4');
     }
 }
