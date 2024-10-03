@@ -159,9 +159,8 @@
                     </div>
                 </div>
 
-                <div class="form-row mx-2 d-flex justify-content-center">
-                    <div class="input-group moftsh px-md-5 px-3 pt-3">
-                        <label for="Civil_number"> رقم الهوية</label>
+                <div class="input-group moftsh px-md-4 px-3 pt-3">
+                <label for="Civil_number" class="col-12"> أرقام الهوية</label>
                         <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px">
                             @foreach ($employees as $employee)
                                 {{ $employee->Civil_number }}
@@ -169,6 +168,19 @@
                         </textarea>
                     </div>
                 </div>
+                {{-- <div class="input-group moftsh px-md-5 px-3 pt-3">
+                    <label  for="" class="col-12">صلاحيه الحجز</label>
+                    <div class="d-flex mt-3" dir="rtl">
+                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part" style="height:30px;" @if($data->reservation_allowance_type == 1 ||$data->reservation_allowance_type == 3 )checked @endif
+                            name="part[]">
+                        <label for="part" class="col-12"> حجز كلى</label><input type="checkbox" class="toggle-radio-buttons mx-2" style="height:30px;" @if($data->reservation_allowance_type == 2 ||$data->reservation_allowance_type == 3 )checked @endif
+                            value="2" id="part" name="part[]">
+                        <label for="part" class="col-12">حجز جزئى</label>
+                        @error('part')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div> --}}
                 <div class="container col-11">
                     <div class="form-row d-flex justify-content-end mt-4 mb-3">
                         <button type="submit" class="btn-blue">

@@ -145,11 +145,11 @@
         `;
 
                     // Only show the Edit button if the row's department ID matches the authenticated user's department ID and is not 1
-                    if (row.id === authDepartmentId) {
+                    // if (row.id === authDepartmentId) {
                         buttons += `
                 <a href="${departmentEdit}" class="btn btn-sm" style="background-color: #F7AF15;"> <i class="fa fa-edit"></i> تعديل</a>
             `;
-                    }
+                    // }
 
                     return buttons; // Return the constructed buttons
                 }
