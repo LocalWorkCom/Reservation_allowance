@@ -59,7 +59,8 @@
                                     <th>ميزانية البدل</th>
                                     <th>صلاحيه الحجز</th>
                                     <th>عدد الأدارات الفرعيه</th>
-
+                                    <th>عدد الموظفين</th>
+                                    <th> عدد الموظفين بالادارات الفرعية</th>
                                     <th>إجراء</th>
                                 </tr>
                             </thead>
@@ -118,6 +119,14 @@
                     }
                 },
                 {
+                    data: 'num_managers',
+                    name: 'num_managers',
+                },
+                {
+                    data: 'num_subdepartment_managers',
+                    name: 'num_subdepartment_managers'
+                },
+                {
                     data: 'action',
                     name: 'action',
                     sWidth: '100px',
@@ -145,11 +154,11 @@
         `;
 
                     // Only show the Edit button if the row's department ID matches the authenticated user's department ID and is not 1
-                    if (row.id === authDepartmentId) {
+                    // if (row.id === authDepartmentId) {
                         buttons += `
                 <a href="${departmentEdit}" class="btn btn-sm" style="background-color: #F7AF15;"> <i class="fa fa-edit"></i> تعديل</a>
             `;
-                    }
+                    // }
 
                     return buttons; // Return the constructed buttons
                 }

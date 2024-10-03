@@ -114,7 +114,7 @@
                     </a>
                     @endif
 
-                    
+
                 </li>
 
                 <li class="nav-item {{ request()->routeIs('reservation_allowances') || request()->routeIs('reservation_allowances.index') || request()->routeIs('reservation_allowances.create') || request()->routeIs('ReservationStaticsCredit.index') ? 'active' : '' }}"
@@ -163,13 +163,22 @@
 
 
                 {{-- @if (Auth::user()->hasPermission('view sectors')) --}}
-                    <li
-                        class="nav-item {{ request()->routeIs('sectors.index') ? 'active' : '' }} @isset($search) @if ($search == 'dept') active @endif @endisset">
-                        <a href="{{ route('sectors.index') }}">
-                            <img src="{{ asset('frontend/images/managements.svg') }}" alt="logo">
-                            <h6>القطاعات</h6>
-                        </a>
-                    </li>
+                @if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2 || Auth::user()->rule->id == 4)
+                <li class="nav-item {{ request()->routeIs('sectors.index') ? 'active' : '' }} @isset($search) @if ($search == 'dept') active @endif @endisset">
+                    <a href="{{ route('sectors.index') }}">
+                        <img src="{{ asset('frontend/images/managements.svg') }}" alt="logo">
+                        <h6>القطاعات</h6>
+                    </a>
+                </li>
+            @else
+                <li class="nav-item {{ request()->routeIs('departments.index') ? 'active' : '' }} @isset($search) @if ($search == 'dept') active @endif @endisset">
+                    <a href="{{ route('departments.index', ['id' => Auth::user()->sector]) }}">
+                        <img src="{{ asset('frontend/images/managements.svg') }}" alt="logo">
+                        <h6>الأدارات</h6>
+                    </a>
+                </li>
+            @endif
+
                 {{-- @endif --}}
                 @if (Auth::user()->hasPermission('view job') ||
                         Auth::user()->hasPermission('view VacationType') ||
