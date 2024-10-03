@@ -33,6 +33,8 @@ use App\Http\Controllers\statisticController;
 use App\Http\Controllers\ViolationTypesController;
 use App\Http\Controllers\ReservationStaticsController;
 use App\Http\Controllers\ReservationStaticsCreditController;
+use App\Http\Controllers\ReserveFetchController;
+
 
 
 // use App\Http\Controllers\ViolationReportController;
@@ -483,6 +485,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reservation_statics_credit/print', [ReservationStaticsCreditController::class, 'printReport'])->name('Reserv_statistic_credit.print')->middleware('check.permission:view Inspector');
 
     Route::get('/get-manager-details/{id}', [DepartmentController::class, 'getManagerDetails']);
+
+ 
+    //reservation search
+    Route::get('/reservation_fetch', [ReserveFetchController::class, 'static'])->name('reservation_fetch.index')->middleware('check.permission:view Inspector');
+    Route::get('/reservation_fetch/search', [ReserveFetchController::class, 'getFilteredData'])->name('reservation_fetch.search')->middleware('check.permission:view Inspector');
+    Route::any('/reservation_fetch/getAll', [ReserveFetchController::class, 'getAll'])->name('reservation_fetch.getAll')->middleware('check.permission:view Inspector');
+    Route::get('/reservation_fetch/print', [ReserveFetchController::class, 'printReport'])->name('reservation_fetch.print')->middleware('check.permission:view Inspector');
+
 
 });
 
