@@ -61,7 +61,7 @@
             
             <form action="{{ route('import') }}" method="POST" enctype="multipart/form-data">
                 @csrf
-                <div class="d-flex justify-content-between mt-4" dir="rtl">
+                <div class="d-flex  mt-4" dir="rtl">
                 <div class="d-flex form-group">
                     <label for="file" style="color: #555;    font-weight: 700;
     line-height: 48.78px;">اختر الملف المراد استيراده :</label>
