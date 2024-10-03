@@ -442,23 +442,20 @@ class DepartmentController extends Controller
     public function edit(departements $department)
     {
         // dd($department);
-        $sectors = Sector::all();
-        $managers = User::where('department_id', operator: 1)
-            ->whereNot('id', auth()->user()->id)
-            ->orWhere(function ($query) use ($department) {
-                $query->where('id', $department->manger);
-            })
-            ->get();
-        // dd(auth()->user()->id, $managers);
-        $employees = User::where('flag', 'employee')
-            ->where(function ($query) use ($department) {
-                $query->where('department_id', null)
-                    ->orWhere('department_id', $department->id);
-            })
-            ->whereNot('id', auth()->user()->id)
-            ->whereNot('id', $department->manger)
-            ->get();
-        return view('departments.edit', compact('department', 'sectors', 'managers', 'employees'));
+        $id =$department->sector_id ;
+        $managers = User::where('id', '!=', auth()->user()->id)
+        ->whereNot('id', $id)
+        ->where(function ($query) use ($id) {
+            $query->where('sector', $id)
+                ->orWhere(function ($subQuery) {
+                    $subQuery->whereNull('sector');
+                });
+        })
+        ->where('department_id',$department->id) // Ensure all users do not have a department
+        ->get();
+        $rules = Rule::where('id', 3)->get();
+
+        return view('departments.edit', compact('department', 'managers', 'rules'));
         // dd($employee);
         // return view('departments.edit', compact('department', 'users', 'employee'));
     }
