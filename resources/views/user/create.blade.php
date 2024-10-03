@@ -126,16 +126,15 @@
                         <div class="form-group col-md-10 mx-2 type_military_id" id="type_military_id">
                             <div class="d-flex justify-content-end">
                                 <div class="radio-btns mx-md-4">
-                                    @foreach ($violationTypeName as $violationTypeName)
-                                        <input type="radio" class="form-check-input" id="police_{{ $loop->index }}" name="type_military" 
-                                               value="{{ $violationTypeName }}" style="height:20px; width:20px;" 
-                                               {{ $violationTypeName == $selectedViolationType ? 'checked' : '' }}>
-                                        <label class="form-check-label mx-2" for="police_{{ $loop->index }}">{{ $violationTypeName }}</label>
-                                    @endforeach
+                                    @foreach ($violationTypeName as $key => $violation)
+                                    <input type="radio" class="form-check-input" id="police_{{ $key }}" name="type_military"
+                                           value="{{ $violation }}" style="height:20px; width:20px;"
+                                           {{ old('type_military', 'police') == $violation ? 'checked' : '' }}>
+                                    <label class="form-check-label mx-2" for="police_{{ $key }}">{{ $violation }}</label>
+                                @endforeach
                                 </div>
                                 <label for="type_military">نوع العسكرى</label>
                             </div>
-                            
                         </div>
                         
                         
@@ -305,10 +304,11 @@
 
                     </div>
                     <div class="form-row  mx-md-3 d-flex justify-content-center flex-row-reverse">
+                        
                         <div class="form-group col-md-5 mx-2">
-                            <label for="input24"><i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>
+                            <label for="gradeSelect"><i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>
                                 الرتبة</label>
-                            <select id="input24" name="grade_id" class="form-control select2" placeholder="الرتبة" required>
+                            <select id="gradeSelect" name="grade_id" class="form-control select2" required>
                                 <option selected disabled>اختار من القائمة</option>
                                 @foreach ($grades as $item)
                                     <option value="{{ $item->id }}" {{ old('grade_id') == $item->id ? 'selected' : '' }}>
@@ -317,6 +317,7 @@
                                 @endforeach
                             </select>
                         </div>
+                                 
                         <div class="form-group col-md-5 mx-2">
                             <label for="input15"> <i class="fa-solid fa-asterisk"
                                     style="color:red; font-size:10px;"></i> الادارة </label>
@@ -474,6 +475,42 @@
             }
         });
         // });
+    </script>
+    <script>
+        // JavaScript to handle radio button change events
+        document.querySelectorAll('input[name="type_military"]').forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                var selectedType = this.value;
+    
+                // Make an AJAX request to fetch grades based on the selected type_military
+                fetch('/get-grades', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        violation_type: selectedType // Pass the selected violation type
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    // Clear the current grade options
+                    var gradeSelect = document.getElementById('gradeSelect');
+                    gradeSelect.innerHTML = '<option selected disabled>اختار من القائمة</option>';
+    
+                    // Populate the grade select with new options
+                    data.forEach(function (grade) {
+                        var option = document.createElement('option');
+                        option.value = grade.id;
+                        option.textContent = grade.name;
+                        gradeSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
     </script>
     {{-- <script>
     document.addEventListener('DOMContentLoaded', function() {

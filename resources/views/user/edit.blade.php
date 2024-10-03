@@ -128,29 +128,20 @@
                         <br>
                         <div class="form-group col-md-10 mx-2 type_military_id" id="type_military_id">
                             <div class="d-flex justify-content-end">
-                                <!-- Removed the condition to always show the div -->
                                 <div class="radio-btns mx-md-4">
-                                    <input type="radio" class="form-check-input" id="police" name="type_military"
-                                        value="police" style="height:20px; width:20px;"
-                                        @if ($user->type_military == 'police') checked @endif>
-                                    <label class="form-check-label mx-2" for="police">فرد</label>
-                                </div>
-                                <div class="radio-btns mx-md-4">
-                                    <input type="radio" class="form-check-input" id="police_" name="type_military"
-                                        value="police_" style="height:20px; width:20px;"
-                                        @if ($user->type_military != 'police') checked @endif>
-                                    <label class="form-check-label mx-2" for="police"> ضابط</label>
-                                </div>
-                                <div class="radio-btns mx-md-4">
-                                    <input type="radio" class="form-check-input" id="police_" name="type_military"
-                                        value="police_" style="height:20px; width:20px;"
-                                        @if ($user->type_military != 'police') checked @endif>
-                                    <label class="form-check-label mx-2" for="police"> مهني</label>
+                                    @foreach ($violationTypeName as $key => $violation)
+                                        <input type="radio" class="form-check-input" id="police_{{ $key }}" name="type_military"
+                                               value="{{ $violation }}" style="height:20px; width:20px;"
+                                               {{ old('type_military', $selectedViolationType) == $violation ? 'checked' : '' }}>
+                                        <label class="form-check-label mx-2" for="police_{{ $key }}">{{ $violation }}</label>
+                                    @endforeach
                                 </div>
                                 <label for="type_military">نوع العسكرى</label>
                             </div>
                         </div>
-
+                        
+                        
+                        
 
                         <div class="form-row mx-3 d-flex justify-content-center flex-row-reverse">
                             <div class="form-group col-md-5 mx-2">
@@ -188,19 +179,6 @@
 
                         </div>
 
-                        {{-- <div class="form-row mx-2 d-flex justify-content-center flex-row-reverse">
-                            <div class="form-group col-md-10 mx-2">
-                                <label for="input8">الوظيفة</label>
-                                <select id="input8" name="job" class="form-control select2" placeholder="المهام">
-                                    <option  disabled>اختار من القائمة</option>
-                                    @foreach ($job as $item)
-                                    <option value="{{ $item->id }}" {{ $user->job_id == $item->id ? 'selected' : ''}}>
-                    {{ $item->name }}
-                    </option>
-                    @endforeach
-                    </select>
-            </div>
-        </div> --}}
 
                         <div class="form-row  mx-3 d-flex justify-content-center flex-row-reverse">
                             <div class="form-group col-md-5 mx-2">
