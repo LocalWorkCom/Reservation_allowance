@@ -370,4 +370,20 @@
 
         });
     </script>
+    <script>
+        $('.c-radio').on('change', function() {
+            // Get the selected value
+            var selectedValue = $(this).val();
+            console.log("Selected option: " + selectedValue);
+
+            // Perform actions based on the selected value
+            if (selectedValue === '0') {
+                alert("You selected 0");
+            } else if (selectedValue === '1') {
+                alert("You selected Option 1");
+            } else if (selectedValue === '2') {
+                alert("You selected Option 2");
+            }
+        });
+    </script>
 @endpush
