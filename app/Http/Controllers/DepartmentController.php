@@ -109,16 +109,6 @@ class DepartmentController extends Controller
     }
 
 
-
-
-    // public function index_1(subDepartmentsDataTable $dataTable)
-    // {
-    //     return $dataTable->render('sub_departments.index');
-    //     // $departments = departements::with(['manager', 'managerAssistant'])->paginate(10);
-    //     // return view('sub_departments.index', compact('departments'));
-    //     // return response()->json($departments);
-    // }
-
     public function index_1($id)
     {
 
@@ -168,11 +158,11 @@ class DepartmentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create($id)
     {
         //create Main Administration
 
-        $sectors = Sector::all();
+        $sectors = Sector::where('id',$id)->pluck('id','name');
         $managers = User::whereNot('id', auth()->user()->id)->get();
         $employees = User::where('flag', 'employee')->where('department_id', null)->get();
         return view('departments.create', compact('sectors', 'managers', 'employees'));

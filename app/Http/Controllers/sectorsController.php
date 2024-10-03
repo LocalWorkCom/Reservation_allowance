@@ -21,36 +21,16 @@ class sectorsController extends Controller
     {
         $this->middleware('auth');
     }
-   
+
     public function index()
     {
-        // $governmentIds = Government::pluck('id')->toArray(); // Get all government IDs
-        $sectors = Sector::all(); // Retrieve all sectors
-
-        // $sectorGovernmentIds = []; // Initialize an array to hold the sector government IDs
-
-        // foreach ($sectors as $sector) {
-        //     // Merge the current sector's government IDs into the $sectorGovernmentIds array
-        //     $sectorGovernmentIds = array_merge($sectorGovernmentIds, $sector->governments_IDs);
-        // }
-        // // dd($governmentIds);
-        // // Now $sectorGovernmentIds contains all the IDs from all sectors
-
-        // // Check if all sector government IDs exist in the government IDs list
-        // $allExist = !array_diff($governmentIds, $sectorGovernmentIds);
-
-        //dd($allExist);
-        // return view("sectors.index", compact('allExist'));
+        $sectors = Sector::all();
         return view("sectors.index");
     }
 
     public function getsectors()
     {
         $data = Sector::all();
-
-        // foreach ($data as $sector) {
-        //     $sector->government_names = Government::whereIn('id', $sector->governments_IDs)->pluck('name')->implode(', ');
-        // }
 
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
@@ -59,6 +39,8 @@ class sectorsController extends Controller
                 // if (Auth::user()->hasPermission('edit Sector')) {
                 $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;"  href=' . route('sectors.edit', $row->id) . '><i class="fa fa-edit"></i> تعديل</a>';
                 // }
+                $add_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;"  href=' . route('departments.create', $row->id) . '><i class="fa fa-edit"></i> تعديل</a>';
+
                 // if (Auth::user()->hasPermission('view Sector')) {
                 $show_permission = '<a class="btn btn-sm" style="background-color: #274373;"  href=' . route('sectors.show', $row->id) . '> <i class="fa fa-eye"></i>عرض</a>';
                 // }
