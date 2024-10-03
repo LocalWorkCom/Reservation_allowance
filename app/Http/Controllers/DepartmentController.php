@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Hash;
 
 class DepartmentController extends Controller
 {
-    public function index(string $id)
+    public function index()
     {
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
             $departments = departements::all();
@@ -32,12 +32,11 @@ class DepartmentController extends Controller
         }
         return view("departments.index");
     }
-    public function getDepartment($sector_id)
+    public function getDepartment()
     {
 
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
             $data = departements::where('parent_id', null)
-                ->where('sector_id', $sector_id)
                 ->withCount('iotelegrams')
                 ->withCount('outgoings')
                 ->withCount('children')
