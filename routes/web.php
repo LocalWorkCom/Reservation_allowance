@@ -480,7 +480,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reservation_statics_credit/print', [ReservationStaticsCreditController::class, 'printReport'])->name('Reserv_statistic_credit.print')->middleware('check.permission:view Inspector');
 
     Route::get('/get-manager-details/{id}', [DepartmentController::class, 'getManagerDetails']);
-<<<<<<< HEAD
 
  
     //reservation search
@@ -490,8 +489,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reservation_fetch/print', [ReserveFetchController::class, 'printReport'])->name('reservation_fetch.print')->middleware('check.permission:view Inspector');
 
 
-=======
->>>>>>> cf629af3a84e1e2bf632cd1b11aa5caf94530a30
 });
 
 
