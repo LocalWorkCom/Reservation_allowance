@@ -22,14 +22,33 @@ class DepartmentController extends Controller
 {
     public function index()
     {
-        // if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
-        $users = User::where('flag', 'employee')->where('department_id', NULL)->get();
+        $user = Auth::user();
 
-        $departments = departements::where('parent_id', Auth::user()->department_id)->first();
-        return view('departments.index', compact('users', 'departments'));
-        // }else{
-        //     return redirect()->route('sub_departments.index',['id' => Auth::user()->department_id]);
-        // }
+        if ($user->rule->name == 'localworkadmin' || $user->rule->name == 'superadmin') {
+            // For localworkadmin or superadmin, show all sectors and departments
+            $sectors = Sector::all();
+            $departments = departements::all();
+            return view('departments.index', compact('sectors', 'departments'));
+        } elseif ($user->rule->name == 'sector manager') {
+            // For sector managers, show only the sector they belong to with its departments
+            $sector = Sector::where('manager', $user->id)->first();
+            if (!$sector) {
+                return redirect()->back()->with('error', 'لا يوجد قطاعات');
+            }
+            $departments = departements::where('sector_id', $sector->id)->get();
+            return view('departments.index', compact('sector', 'departments'));
+        } elseif ($user->rule->name == 'manager') {
+            // For department managers, show only the department they manage and its subdepartments
+            $department = departements::where('manager', $user->id)->first();
+            if (!$department) {
+                return redirect()->back()->with('error', ' تالا يوجد ادارات');
+            }
+            $subDepartments = departements::where('parent_id', $department->id)->get(); // Get the subdepartments of the department
+            return view('departments.index', compact('department', 'subDepartments'));
+        } else {
+            // If the user doesn't have a matching role, deny access
+            return redirect()->back()->with('error', 'You do not have access to this page.');
+        }
     }
     public function getDepartment()
     {
@@ -181,10 +200,8 @@ class DepartmentController extends Controller
             })
             ->whereNull('department_id') // Ensure all users do not have a department
             ->get();
-            $rules = Rule::where('id', 3)->get();
-            return view('departments.create', compact('sectors', 'managers', 'rules'));
-
-
+        $rules = Rule::where('id', 3)->get();
+        return view('departments.create', compact('sectors', 'managers', 'rules'));
     }
 
 
