@@ -14,7 +14,8 @@
 @push('style')
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
     <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
+    </script>
 @endpush
 
 @section('title')
@@ -23,12 +24,12 @@
 
 @section('content')
     <div class="row">
-    <div class="container welcome col-11">
-                <div class="d-flex justify-content-between">
-                    <p>الاحصائيات بدل حجز </p>
+        <div class="container welcome col-11">
+            <div class="d-flex justify-content-between">
+                <p>الاحصائيات بدل حجز </p>
 
-                </div>
             </div>
+        </div>
     </div>
 
     <br>
@@ -43,7 +44,8 @@
                         </div>
                     @endif
                     <div>
-                        <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
+                        <table id="users-table"
+                            class="display table table-responsive-sm table-bordered table-hover dataTable">
                             <thead>
                                 <tr>
                                     <th>الترتيب</th>
@@ -74,20 +76,50 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ route("Reserv_statistic.getAll") }}',
+                    url: '{{ route('Reserv_statistic.getAll') }}',
                 },
-                columns: [
-                    { data: null, name: 'order', orderable: false, searchable: false },
-                    { data: 'department_name', name: 'department_name' },
-                    { data: 'sub_departments_count', name: 'sub_departments_count' },
-                    { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' },
-                    { data: 'registered_by', name: 'registered_by' },
-                    { data: 'remaining_amount', name: 'remaining_amount' },
-                    { data: 'number_of_employees', name: 'number_of_employees' },
-                    { data: 'received_allowance_count', name: 'received_allowance_count' },
-                    { data: 'did_not_receive_allowance_count', name: 'did_not_receive_allowance_count' }
+                columns: [{
+                        data: null,
+                        name: 'order',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'department_name',
+                        name: 'department_name'
+                    },
+                    {
+                        data: 'sub_departments_count',
+                        name: 'sub_departments_count'
+                    },
+                    {
+                        data: 'reservation_allowance_budget',
+                        name: 'reservation_allowance_budget'
+                    },
+                    {
+                        data: 'registered_by',
+                        name: 'registered_by'
+                    },
+                    {
+                        data: 'remaining_amount',
+                        name: 'remaining_amount'
+                    },
+                    {
+                        data: 'number_of_employees',
+                        name: 'number_of_employees'
+                    },
+                    {
+                        data: 'received_allowance_count',
+                        name: 'received_allowance_count'
+                    },
+                    {
+                        data: 'did_not_receive_allowance_count',
+                        name: 'did_not_receive_allowance_count'
+                    }
                 ],
-                order: [[1, 'asc']],
+                order: [
+                    [1, 'asc']
+                ],
                 "oLanguage": {
                     "sSearch": "",
                     "sSearchPlaceholder": "بحث",
@@ -107,7 +139,8 @@
                 fnDrawCallback: function(oSettings) {
                     var page = this.api().page.info().pages;
                     if (page == 1) {
-                        $('.dataTables_paginate').css('visibility', 'hidden'); // Hide pagination if only one page
+                        $('.dataTables_paginate').css('visibility',
+                        'hidden'); // Hide pagination if only one page
                     }
                 },
                 createdRow: function(row, data, dataIndex) {

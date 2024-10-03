@@ -30,8 +30,8 @@
                         </button>
                         {{-- <a href="{{ route('export-users') }}" class="btn btn-primary"
                             style="border-radius: 5px;">تصدير</a> --}}
-                        <a href="{{ route('download-template') }}" class="btn btn-success"
-                            style="border-radius: 5px;">تحميل القالب</a>
+                        <a href="{{ route('download-template') }}" class="btn "
+                            style="border-radius: 5px;background-color: #274373; border-color: #274373; color:white; border-radius:10px;">تحميل القالب</a>
                     @endif
 
                 </div>
@@ -58,18 +58,21 @@
     <div class="row">
 
         <div class="container  col-11 mt-3 p-0 ">
+            
             <form action="{{ route('import') }}" method="POST" enctype="multipart/form-data">
                 @csrf
-                <div class="form-group">
-                    <label for="file" style="color: #555;">اختر الملف المراد استيراده (.csv or
-                        .xlsx):</label>
+                <div class="d-flex  mt-4" dir="rtl">
+                <div class="d-flex form-group">
+                    <label for="file" style="color: #555;    font-weight: 700;
+    line-height: 48.78px;">اختر الملف المراد استيراده :</label>
                     <input type="file" name="file" class="form-control mb-2" accept=".csv, .xlsx"
-                        style="border: 1px solid #ccc; border-radius: 5px;">
+                        style="    border: 1px solid #27437324;  border-radius: 5px;background-color: transparent;width: 220px;">
                 </div>
                 <div class="d-flex">
-                    <button type="submit" class="btn btn-primary mr-2" style="border-radius: 5px;">استيراد</button>
-                </div>
+                    <button type="submit" class="btn mx-2 px-4"style="border-radius: 5px;background-color: #274373; border-color: #274373; color:white; border-radius:10px; height:40px;">استيراد</button>
+                </div>  </div>
             </form>
+          
             @include('inc.flash')
             <div class="col-lg-12 pt-5 pb-5">
                 <div class="bg-white ">
