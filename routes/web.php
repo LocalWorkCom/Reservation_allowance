@@ -208,7 +208,7 @@ Route::middleware(['auth'])->group(function () {
 
 
     // getDepartment
-    Route::get('api/department', [DepartmentController::class, 'getDepartment'])->name('api.department')->middleware('check.permission:view departements');
+    Route::get('api/department/{id}', [DepartmentController::class, 'getDepartment'])->name('api.department')->middleware('check.permission:view departements');
     Route::get('api/sub_department/{id}', [DepartmentController::class, 'getSub_Department'])
         ->name('api.sub_department')
         ->middleware('check.permission:view departements');
