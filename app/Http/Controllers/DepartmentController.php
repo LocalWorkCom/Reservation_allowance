@@ -24,6 +24,7 @@ class DepartmentController extends Controller
     public function index()
     {
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
+            // dd('d');
             $departments = departements::all();
         } elseif (Auth::user()->rule->id == 4) {
             $departments = departements::where('sector_id', auth()->user()->sector);
@@ -32,60 +33,48 @@ class DepartmentController extends Controller
         }
         return view("departments.index");
     }
-    public function getDepartment()
+    public function getDepartment($id)
     {
 
-        if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
+
+        if (in_array(Auth::user()->rule->id, [1, 2,4])) {
+
             $data = departements::where('parent_id', null)
-                ->withCount('iotelegrams')
-                ->withCount('outgoings')
-                ->withCount('children')
-                ->with(['children'])
-                ->orderBy('id', 'desc')->get();
+                ->where('sector_id', $id)
+                ->orderBy('id', 'desc')
+                ->get();
         } else {
-            $data = departements::where('id', auth()->user()->department_id)->withCount('iotelegrams')
-                ->withCount('children')
-
-                ->withCount('outgoings')->where(function ($query) {
-                    $query->where('id', Auth::user()->department_id)
-                        ->orWhere('parent_id', Auth::user()->department_id); // Include rows where 'rule_id' is null
-                })
-                ->with(['children'])
-                ->orderBy('id', 'desc')->get();
+            $data = departements::where('parent_id', null)
+                ->where('sector_id', $id) 
+                ->orderBy('id', 'desc')
+                ->get();
         }
-
 
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
                 return '<button class="btn btn-primary btn-sm">Edit</button>';
             })
-            // ->addColumn('iotelegrams_count', function ($row) {
-            //     return $row->iotelegrams_count;  // Display the count of iotelegrams
-            // })
-            // ->addColumn('outgoings_count', function ($row) {
-            //     return $row->outgoings_count;
-            // })
-            ->addColumn('reservation_allowance', function ($row) { // New column for departments count
-                if ($row->reservation_allowance_type == 1) {
-                    return 'حجز كلى';
-                } elseif ($row->reservation_allowance_type == 2) {
-                    return 'حجز جزئى';
-                } else {
-                    return 'حجز كلى و حجز جزئى';
+            ->addColumn('reservation_allowance', function ($row) {
+                switch ($row->reservation_allowance_type) {
+                    case 1:
+                        return 'حجز كلى';
+                    case 2:
+                        return 'حجز جزئى';
+                    default:
+                        return 'حجز كلى و حجز جزئى';
                 }
-            })->addColumn('subDepartment', function ($row) { // New column for departments count
-                $sub = departements::where('parent_id', $row->id)->count();
-                return $sub;
+            })
+            ->addColumn('subDepartment', function ($row) {
+                return departements::where('parent_id', $row->id)->count();
             })
             ->addColumn('manager_name', function ($row) {
-                return $row->manager ? $row->manager->name : 'لايوجد مدير للأداره'; // Display the manager's name
+                return $row->manager ? $row->manager->name : 'لايوجد مدير للأداره';
             })
             ->addColumn('num_managers', function ($row) {
                 return User::where('department_id', $row->id)
                     ->where('rule_id', 3)
                     ->count();
             })
-
             ->addColumn('num_subdepartment_managers', function ($row) {
                 $subdepartment_ids = departements::where('parent_id', $row->id)->pluck('id');
                 return User::whereIn('department_id', $subdepartment_ids)
@@ -95,7 +84,7 @@ class DepartmentController extends Controller
             ->rawColumns(['action'])
             ->make(true);
     }
-    public function getManagerDetails($id)
+        public function getManagerDetails($id)
     {
         // Fetch manager data from the database
         $manager = User::find($id);
@@ -110,7 +99,7 @@ class DepartmentController extends Controller
 
         // Check if the user is an employee (flag 'user' means employee)
         $isEmployee = $manager->flag == 'employee' ? true : false;
-
+ 
         // Return the manager data in JSON format
         return response()->json([
             'rank' => $manager->grade_id ? $manager->grade->name : 'لا يوجد رتبه',
@@ -245,7 +234,7 @@ class DepartmentController extends Controller
             $employees = User::where('department_id', $departmentId)->get();
             return response()->json($employees);
         } catch (\Exception $e) {
-            \Log::error('Error fetching employees: ' . $e->getMessage());
+            Log::error('Error fetching employees: ' . $e->getMessage());
             return response()->json(['error' => 'Error fetching employees'], 500);
         }
     }

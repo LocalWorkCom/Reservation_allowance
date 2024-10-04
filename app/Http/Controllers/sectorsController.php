@@ -170,6 +170,9 @@ class sectorsController extends Controller
             return redirect()->back()->with('error', 'هذا المستخدم غير موجود');
         }
 
+        // Track Civil numbers that could not be added
+        $failed_civil_numbers = [];
+
         // Update employees in the sector
         foreach ($Civil_numbers as $Civil_number) {
             $employee = User::where('Civil_number', $Civil_number)->first();
@@ -177,11 +180,23 @@ class sectorsController extends Controller
                 $employee->sector = $sector->id;
                 $employee->department_id = null;
                 $employee->save();
+            } else {
+                // Add Civil_number to the failed list if the employee is not found or has no grade_id
+                $failed_civil_numbers[] = $Civil_number;
             }
         }
 
-        return redirect()->route('sectors.index')->with('message', 'تم أضافه قطاع جديد');
+        // Prepare success message
+        $message = 'تم أضافه قطاع جديد';
+
+        // Append failed Civil numbers to the message, if any
+        if (count($failed_civil_numbers) > 0) {
+            $message .= ' لكن بعض الموظفين لم يتم إضافتهم بسبب عدم العثور على الأرقام المدنية أو عدم وجود درجة لهم: ' . implode(', ', $failed_civil_numbers);
+        }
+
+        return redirect()->route('sectors.index')->with('message', $message);
     }
+
 
 
     /**
@@ -330,7 +345,7 @@ class sectorsController extends Controller
         return redirect()->route('sectors.index')->with('message', 'تم تحديث القطاع والموظفين بنجاح.');
     }
 
-
+ 
     /**
      * Remove the specified resource from storage.
      */
