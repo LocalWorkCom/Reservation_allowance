@@ -88,7 +88,11 @@ font-weight:700;
 <!-- Results Table -->
 <div class="container  col-11">
     <div class="">
-        <h3>نتائج البحث</h3>
+        <h3 style="font-weight: 700;
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 20px;
+    font-size: 25px;">نتائج البحث</h3>
         <div class="col-md-2 mb-2">
             <button type="button" class="btn " onclick="printPDF()"  style="background-color: #274373; color:white;">طباعة</button>
         </div>

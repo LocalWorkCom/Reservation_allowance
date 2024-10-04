@@ -31,6 +31,13 @@
     height: 43px !important;
     background-color: #fafbfd !important;
 }
+.custom-select-lg {
+    /* height: calc(2.45rem + 0px) !important; */
+    padding-top: 0.375rem;
+    padding-bottom: .375rem;
+    font-size: 125%;
+    margin-inline: 5px !important;
+}
 </style>
 
 
