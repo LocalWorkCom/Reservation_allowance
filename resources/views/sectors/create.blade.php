@@ -200,6 +200,7 @@
                     url: '/get-manager-details/' + managerId,
                     type: 'GET',
                     success: function(data) {
+                        console.log(data);
                         // Populate the manager details in the div
                         $('#manager_details').find('span').eq(0).text(data.rank); // رتبه
                         $('#manager_details').find('span#seniorty').eq(1).text(data.seniority); // أقدميه
