@@ -137,8 +137,8 @@
                     <div class="col-12 div-info d-flex justify-content-between" style="direction: rtl">
                         <div class="col-7">
                             <div class="col-12 div-info-padding"><b>الرتبه : <span></span></b></div>
-                            <div class="col-12 div-info-padding"><b>الأقدميه : <span id="seniorty"></span></b></div>
-                            <div class="col-12 div-info-padding"><b>المسمى الوظيفى: <span id="jobtitle"></span></b></div>
+                            <div class="col-12 div-info-padding"><b>الأقدميه : <span></span></b></div>
+                            <div class="col-12 div-info-padding"><b>المسمى الوظيفى: <span></span></b></div>
                         </div>
                         <div class="col-5">
                             <div class="col-12 div-info-padding"><b>الأسم: <span></span></b></div>
@@ -200,12 +200,11 @@
                     url: '/get-manager-details/' + managerId,
                     type: 'GET',
                     success: function(data) {
-                        console.log(data);
                         // Populate the manager details in the div
                         $('#manager_details').find('span').eq(0).text(data.rank); // رتبه
-                        $('#manager_details').find('span#seniorty').eq(1).text(data.seniority); // أقدميه
+                        $('#manager_details').find('span').eq(1).text(data.seniority); // أقدميه
 
-                        $('#manager_details').find('span#jobtitle').eq(2).text(data.job_title); // مسمى وظيفي
+                        $('#manager_details').find('span').eq(2).text(data.job_title); // مسمى وظيفي
                         $('#manager_details').find('span').eq(3).text(data.name); // أسم
                         $('#manager_details').find('span').eq(4).text(data.phone); // هاتف
 

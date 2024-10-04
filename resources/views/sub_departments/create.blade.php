@@ -238,8 +238,8 @@
                         success: function(data) {
                             // Populate the manager details in the div
                             $('#manager_details').find('span').eq(0).text(data.rank); // رتبه
-                            $('#manager_details').find('span').eq(1).text(data.job_title); // مسمى وظيفي
-                            $('#manager_details').find('span').eq(2).text(data.seniority); // أقدميه
+                            $('#manager_details').find('span').eq(2).text(data.job_title); // مسمى وظيفي
+                            $('#manager_details').find('span').eq(1).text(data.seniority); // أقدميه
                             $('#manager_details').find('span').eq(3).text(data.name); // أسم
                             $('#manager_details').find('span').eq(4).text(data.phone); // هاتف
 
