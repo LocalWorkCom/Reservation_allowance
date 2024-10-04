@@ -52,9 +52,88 @@ class ReservationAllowanceController extends Controller
     public function create()
     {
         $user = auth()->user();
+
+        $to_day = Carbon::now()->format('Y-m-d');
+        $to_day_name = Carbon::now()->translatedFormat('l');
+        $user = auth()->user();
+        $super_admin = User::where('department_id', 1)->first();
         $employees = User::where('department_id', $user->department_id)->where('flag', 'employee')->get();
-        return view('reservation_allowance.create', compact('employees'));
+
+        if($user->rule_id == 2)
+        {
+            $sectors = Sector::get();
+            $departements = [];
+        }else{
+            if($user->department_id == null){
+                $sectors[] = $user->sectors;
+                $departements = departements::where('sector_id', $user->sector);
+            }else{
+                $sectors[] = $user->sectors;
+                $departements = departements::where('id', $user->department_id);
+            }
+        }
+
+        return view('reservation_allowance.create', compact('sectors', 'departements', 'employees', 'to_day', 'to_day_name', 'super_admin'));
     }
+
+    public function create_employee_new(Request $request)
+    {
+        $to_day = Carbon::now()->format('Y-m-d');
+        $to_day_name = Carbon::now()->translatedFormat('l');
+        $user = auth()->user();
+        if($user->rule_id == 2)
+        {
+            $sectors = Sector::get();
+        }else{
+            if($user->department_id == null){
+                $sectors[] = $user->sectors;
+            }else{
+                $sectors[] = $user->sectors;
+            }
+        }
+
+        $department_type = $request->department_type;
+        $sector_id = 0;
+        $departement_id = 0;
+        if($request->sector_id){
+            $sector_id = $request->sector_id;
+        }
+        if($request->departement_id){
+            $departement_id = $request->departement_id;
+        }
+
+        if($user->department_id == 0){
+            $get_departements = departements::where('id', '!=', 1)->where('sector_id', $sector_id)->where('parent_id', null)->get();
+        }else{
+            $user = auth()->user();
+            $get_departements = departements::where('id', '!=', 1)->where('id', $user->department_id)->get();
+        }
+
+        $data = [];
+        $reservation_allowance_type = 0;
+        if($sector_id != 0){
+            $data = User::query()->where('sector', $sector_id)->where('flag', 'employee');
+            if($departement_id != 0){
+                $data = $data->where('department_id', $departement_id);
+            }else{
+                $data = $data->where('department_id', null);
+            }
+            $data = $data->get();
+
+            if($departement_id != 0){
+                $reservation_allowance_type = departements::where('id', $departement_id)->first()->reservation_allowance_type;
+            }else{
+                $reservation_allowance_type = Sector::where('id', $sector_id)->first()->reservation_allowance_type;
+            }
+
+        }
+
+
+        $employees = $data;
+
+        return view('reservation_allowance.create_employee_new', compact('department_type', 'sector_id', 'departement_id', 'sectors', 'get_departements', 'employees', 'reservation_allowance_type'));
+    }
+
 
     /**
      * Store a newly created resource in storage.
@@ -101,8 +180,9 @@ class ReservationAllowanceController extends Controller
             $add_reservation_allowance->amount = $grade_value;
             $add_reservation_allowance->date = $to_day;
             $add_reservation_allowance->day = $to_day_name;
-            $add_reservation_allowance->sector_id = $user->department->sector_id;
-            $add_reservation_allowance->departement_id = $user->department->id;
+            $add_reservation_allowance->sector_id = $request->sector_id;
+            $add_reservation_allowance->departement_id = $request->departement_id;
+            $add_reservation_allowance->grade_id = $employee->grade_id;
             $add_reservation_allowance->created_by = $user->id;
             $add_reservation_allowance->save();
             return redirect()->route('reservation_allowances.index')->with('success', 'تم اضافه بدل حجز بنجاح');
@@ -113,9 +193,84 @@ class ReservationAllowanceController extends Controller
 
     public function create_all()
     {
+        $to_day = Carbon::now()->format('Y-m-d');
+        $to_day_name = Carbon::now()->translatedFormat('l');
         $user = auth()->user();
+        $super_admin = User::where('department_id', 1)->first();
         $employees = User::where('department_id', $user->department_id)->where('flag', 'employee')->get();
-        return view('reservation_allowance.create_all', compact('employees'));
+
+        if($user->rule_id == 2)
+        {
+            $sectors = Sector::get();
+            $departements = [];
+        }else{
+            if($user->department_id == null){
+                $sectors[] = $user->sectors;
+                $departements = departements::where('sector_id', $user->sector);
+            }else{
+                $sectors[] = $user->sectors;
+                $departements = departements::where('id', $user->department_id);
+            }
+        }
+
+        return view('reservation_allowance.create_all', compact('sectors', 'departements', 'employees', 'to_day', 'to_day_name', 'super_admin'));
+    }
+
+    public function create_employee_all(Request $request)
+    {
+        $to_day = Carbon::now()->format('Y-m-d');
+        $to_day_name = Carbon::now()->translatedFormat('l');
+        $user = auth()->user();
+        if($user->rule_id == 2)
+        {
+            $sectors = Sector::get();
+        }else{
+            if($user->department_id == null){
+                $sectors[] = $user->sectors;
+            }else{
+                $sectors[] = $user->sectors;
+            }
+        }
+
+        $department_type = $request->department_type;
+        $sector_id = 0;
+        $departement_id = 0;
+        if($request->sector_id){
+            $sector_id = $request->sector_id;
+        }
+        if($request->departement_id){
+            $departement_id = $request->departement_id;
+        }
+
+        if($user->department_id == 0){
+            $get_departements = departements::where('id', '!=', 1)->where('sector_id', $sector_id)->where('parent_id', null)->get();
+        }else{
+            $user = auth()->user();
+            $get_departements = departements::where('id', '!=', 1)->where('id', $user->department_id)->get();
+        }
+
+        $data = [];
+        $reservation_allowance_type = 0;
+        if($sector_id != 0){
+            $data = User::query()->where('sector', $sector_id)->where('flag', 'employee');
+            if($departement_id != 0){
+                $data = $data->where('department_id', $departement_id);
+            }else{
+                $data = $data->where('department_id', null);
+            }
+            $data = $data->get();
+
+            if($departement_id != 0){
+                $reservation_allowance_type = departements::where('id', $departement_id)->first()->reservation_allowance_type;
+            }else{
+                $reservation_allowance_type = Sector::where('id', $sector_id)->first()->reservation_allowance_type;
+            }
+
+        }
+
+        $employees = $data;
+
+        return view('reservation_allowance.create_employee_all', compact('department_type', 'sector_id', 'departement_id', 'sectors', 'get_departements', 'employees', 'reservation_allowance_type'));
     }
 
     /**
@@ -123,7 +278,7 @@ class ReservationAllowanceController extends Controller
      */
     public function store_all(Request $request)
     {
-        try{
+        //try{
             $messages = [
                 'Civil_number.required' => 'رقم الهوية مطلوب ولا يمكن تركه فارغاً.'
             ];
@@ -163,8 +318,9 @@ class ReservationAllowanceController extends Controller
                             $add_reservation_allowance->amount = $grade_value;
                             $add_reservation_allowance->date = $to_day;
                             $add_reservation_allowance->day = $to_day_name;
-                            $add_reservation_allowance->sector_id = $user->department->sector_id;
-                            $add_reservation_allowance->departement_id = $user->department->id;
+                            $add_reservation_allowance->sector_id = $request->sector_id;
+                            $add_reservation_allowance->departement_id = $request->departement_id;
+                            $add_reservation_allowance->grade_id = $employee->grade_id;
                             $add_reservation_allowance->created_by = $user->id;
                             $add_reservation_allowance->save();
                         }
@@ -173,9 +329,9 @@ class ReservationAllowanceController extends Controller
             }
 
             return redirect()->route('reservation_allowances.index')->with('success', 'تم اضافه بدل حجز بنجاح');
-        }catch(\Exception $e){
+        /*}catch(\Exception $e){
             return redirect()->back()->with('error', 'An error occurred while creating the group. Please try agai');
-        }
+        }*/
     }
 
     /**
