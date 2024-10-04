@@ -27,7 +27,7 @@ class ReservationAllowanceController extends Controller
         $to_day_name = Carbon::now()->translatedFormat('l');
         $user = auth()->user();
         $super_admin = User::where('department_id', 1)->first();
-        $employees = User::where('department_id', $user->department_id)->where('flag', 'employee')->get();        
+        $employees = User::where('department_id', $user->department_id)->where('flag', 'employee')->get();
 
         if($user->rule_id == 2)
         {
@@ -89,7 +89,7 @@ class ReservationAllowanceController extends Controller
             }else{
                 return redirect()->back()->with('error','عفوا يجب ان يتم اضافة رتبة  '.$employee->name);
             }
-            
+
 
             $check_reservation_allowance = ReservationAllowance::where(['user_id' => $employee->id, 'date' => $to_day])->first();
             if($check_reservation_allowance){
@@ -146,14 +146,14 @@ class ReservationAllowanceController extends Controller
             foreach($Civil_numbers as $Civil_number){
 
                 $employee = User::where('Civil_number', $Civil_number)->first();
-                if($employee){// check if employee 
+                if($employee){// check if employee
                     if($employee->grade_id != null){ // check if employee has grade
                         if($request->type == 1){
                             $grade_value = $employee->grade->value_all;
                         }else{
                             $grade_value = $employee->grade->value_part;
                         }
-                    
+
                         $check_reservation_allowance = ReservationAllowance::where(['user_id' => $employee->id, 'date' => $to_day])->first();
                         if(!$check_reservation_allowance){
                             //return redirect()->back()->with('error','عفوا تم اضافة بدل لحجز '.$employee->name.' فى هذا اليوم من قبل');
@@ -265,10 +265,10 @@ class ReservationAllowanceController extends Controller
     public function get_departement($sector_id, $type)
     {
         if($type == 1){
-            $get_departements = departements::where('sector_id', $sector_id)->where('parent_id', null)->get();
+            $get_departements = departements::where('id', '!=', 1)->where('sector_id', $sector_id)->where('parent_id', null)->get();
         }else{
             $user = auth()->user();
-            $get_departements = departements::where('id', $user->department_id)->get();
+            $get_departements = departements::where('id', '!=', 1)->where('id', $user->department_id)->get();
         }
         $departement_id = 0;
 
@@ -277,6 +277,18 @@ class ReservationAllowanceController extends Controller
 
     public function search_employee_new(Request $request)
     {
+        /*$messages = [
+            'sector_id.required' => 'اختيار القطاع مطلوب ولا يمكن تركه فارغاً.'
+        ];
+
+        $validatedData = Validator::make($request->all(), [
+            'sector_id' => 'required'
+        ], $messages);
+
+        if ($validatedData->fails()) {
+            return redirect()->back()->withErrors($validatedData)->withInput();
+        }*/
+
         $to_day = Carbon::now()->format('Y-m-d');
         $to_day_name = Carbon::now()->translatedFormat('l');
         $user = auth()->user();
@@ -301,21 +313,30 @@ class ReservationAllowanceController extends Controller
             $departement_id = $request->departement_id;
         }
 
+        /*if($sector_id == 0){
+            return redirect()->back()->with('error','عفوا يجب اختيار اسم القطاع');
+        }*/
+
         if($user->department_id == null){
-            $get_departements = departements::where('sector_id', $sector_id)->where('parent_id', null)->get();
+            $get_departements = departements::where('id', '!=', 1)->where('sector_id', $sector_id)->where('parent_id', null)->get();
         }else{
             $user = auth()->user();
-            $get_departements = departements::where('id', $user->department_id)->get();
+            $get_departements = departements::where('id', '!=', 1)->where('id', $user->department_id)->get();
         }
+
+        $data = [];
 
         if($sector_id != 0){
             $data = User::query()->where('sector', $sector_id)->where('flag', 'employee');
             if($departement_id != 0){
                 $data = $data->where('department_id', $departement_id);
+            }else{
+                $data = $data->where('department_id', null);
             }
+            $data = $data->get();
         }
-        
-        $employees = $data->get();
+
+        $employees = $data;
 
         return view('reservation_allowance.search_employee_new', compact('department_type', 'sector_id', 'departement_id', 'sectors', 'get_departements', 'employees'));
     }
@@ -367,7 +388,7 @@ class ReservationAllowanceController extends Controller
                 $data = $data->where('department_id', $departement_id);
             }
         }
-        
+
         $data = $data->get();
 
 
@@ -399,7 +420,7 @@ class ReservationAllowanceController extends Controller
                 if($row->file_number == null){return "لا يوجد رقم ملف";}else{return $row->file_number;}
             })
 
-            ->addColumn('employee_allowance_type_btn', function ($row) { 
+            ->addColumn('employee_allowance_type_btn', function ($row) {
                 return $btn = '<div class="d-flex" style="justify-content: space-around !important"><div style="display: inline-flex; direction: ltr;"><label for="">  حجز كلى</label><input type="radio" name="allowance[]['.$row->id.']" id="allowance[1]['.$row->id.']" value="1" class="form-control c-radio"></div><span>|</span><div style="display: inline-flex; direction: ltr;"><label for="">  حجز جزئى</label><input type="radio" name="allowance[]['.$row->id.']" id="allowance[2]['.$row->id.']" value="2" class="form-control c-radio"></div><span>|</span><div style="display: inline-flex; direction: ltr;"><label for="">  لا يوجد</label><input type="radio" name="allowance[]['.$row->id.']" id="allowance[0]['.$row->id.']" value="0" checked class="form-control c-radio"></div></div>';
             })
             ->addColumn('employee_allowance_amount', function ($row) {
@@ -413,15 +434,95 @@ class ReservationAllowanceController extends Controller
 
     public function add_reservation_allowances_employess($type, $id)
     {
-        $arr = Cache::get('allowances_employee4');
+        $arr = Cache::get(auth()->user()->id);
         $arr[] = ['id'=>$id, 'type'=>$type];
-        Cache::put('allowances_employee4', $arr);
+        Cache::put(auth()->user()->id, $arr);
 
-        return Cache::get('allowances_employee4');
+        return Cache::get(auth()->user()->id);
     }
 
     public function view_reservation_allowances_employess()
     {
-        return Cache::get('allowances_employee4');
+        return Cache::get(auth()->user()->id);
+    }
+
+    public function confirm_reservation_allowances()
+    {
+        if(Cache::has(auth()->user()->id)){
+
+            $user = auth()->user();
+            $to_day = Carbon::now()->format('Y-m-d');
+            $to_day_name = Carbon::now()->translatedFormat('l');
+            $get_employees = Cache::get(auth()->user()->id);
+            $employee_amount = 0;
+            $reservation_amout = 0;
+            foreach($get_employees as $get_employee){
+                $employee = User::where('id', $get_employee['id'])->first();
+
+                if($employee){// check if employee
+                    if($employee->grade_id != null){ // check if employee has grade
+                        if($get_employee['type'] == 1){
+                            $grade_value = $employee->grade->value_all;
+                        }else{
+                            $grade_value = $employee->grade->value_part;
+                        }
+                        $employee_amount += $grade_value;
+
+                        $type_departement = 1;
+                        $reservation_amout = departements::where('id', $employee->department_id)->first()->reservation_allowance_amount;
+                        if($employee->department_id == null){
+                            $type_departement = 2;
+                            $reservation_amout = departements::where('id', $employee->sector)->first()->reservation_allowance_amount;
+                        }
+
+                    }
+                }
+            }
+
+            if($reservation_amout <= $employee_amount){
+                return redirect()->back()->with('error','عفوا لقد تجاوزت ملبغ بدل الحجز');
+            }
+
+            //add ReservationAllowance
+            foreach($get_employees as $get_employee){
+
+                $employee = User::where('id', $get_employee['id'])->first();
+                if($employee){// check if employee
+                    if($employee->grade_id != null){ // check if employee has grade
+                        if($get_employee['type'] == 1){
+                            $grade_value = $employee->grade->value_all;
+                        }else{
+                            $grade_value = $employee->grade->value_part;
+                        }
+
+                        $type_departement = 1;
+                        if($employee->department_id == null){
+                            $type_departement = 2;
+                        }
+
+                        $check_reservation_allowance = ReservationAllowance::where(['user_id' => $employee->id, 'date' => $to_day])->first();
+                        if(!$check_reservation_allowance){
+                            if($get_employee['type'] != 0){
+                                //return redirect()->back()->with('error','عفوا تم اضافة بدل لحجز '.$employee->name.' فى هذا اليوم من قبل');
+                                $add_reservation_allowance = new ReservationAllowance();
+                                $add_reservation_allowance->user_id = $employee->id;
+                                $add_reservation_allowance->type = $get_employee['type'];
+                                $add_reservation_allowance->amount = $grade_value;
+                                $add_reservation_allowance->date = $to_day;
+                                $add_reservation_allowance->day = $to_day_name;
+                                $add_reservation_allowance->sector_id = $employee->sector;
+                                $add_reservation_allowance->type_departement = $type_departement;
+                                $add_reservation_allowance->departement_id = $employee->department_id;
+                                $add_reservation_allowance->grade_id = $employee->grade_id;
+                                $add_reservation_allowance->created_by = $user->id;
+                                $add_reservation_allowance->save();
+                            }
+                        }
+                    }
+                }
+            }
+            Cache::forget(auth()->user()->id);
+        }
+        return redirect()->route('reservation_allowances.index')->with('success', 'تم اضافه بدل حجز بنجاح');
     }
 }

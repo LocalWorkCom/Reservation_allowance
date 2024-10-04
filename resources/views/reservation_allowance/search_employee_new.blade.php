@@ -23,6 +23,14 @@
 .div-info-padding b span {
     color: #032F70;
 }
+
+.custom-select {
+    width: 100%;
+    color: green !important;
+    border-radius: 10px !important;
+    height: 43px !important;
+    background-color: #fafbfd !important;
+}
 </style>
 
 
@@ -39,84 +47,106 @@
 @endsection
 @section('content')
 <div class="row">
-
     <div class="container welcome col-11" style="height: auto !important">
+
+    @if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+    @endif
+    @if (session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+    @endif
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
+
         <div class="d-flex justify-content-between">
             <div class="col-12">
-                <div class="row" style="direction: rtl">
-                        <div class="col-2">
-                            <p> بدل الحجز</p>
-                        </div>
-
-                        <form class="col-6" action="{{ route('reservation_allowances.search_employee_new') }}" method="post" enctype="multipart/form-data">
-                        @csrf
-                            <div class="row">
+                <div class="row d-flex " style="direction: rtl">
+                    <div class="col-2">
+                        <p> بدل الحجز</p>
+                    </div>
+                        <form class="" action="{{ route('reservation_allowances.search_employee_new') }}" method="post"
+                            enctype="multipart/form-data">
+                            @csrf
+                            <div class="row d-flex flex-wrap justify-content-between">
                                 <!-- 1 for sector , 2 for department -->
-                                <input name="department_type" id="department_type" type="hidden" value="{{Auth::user()->department_id == null ? 1 : 2}}">
+                                <input name="department_type" id="department_type" type="hidden"
+                                    value="{{Auth::user()->department_id == null ? 1 : 2}}">
 
-                                <div class="col-4">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                                    <label for="Civil_number"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار القطاع</label>
-                                    <select class="custom-select custom-select-lg mb-3 select2" name="sector_id" id="sector_id">
-                                        <option value="0" selected disabled>اختار من القائمة</option>
+                                    <div class="d-flex">
+                                        {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
+                                        <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
+                                        <select class="custom-select custom-select-lg select2" name="sector_id"
+                                            id="sector_id" required>
+                                            <option value="0" selected>اختار القطاع</option>
                                             @foreach ($sectors as $sector)
-                                            <option value="{{ $sector->id }}" {{$sector_id == $sector->id ? "selected" : ""}}>
+                                            <option value="{{ $sector->id }}" {{$sector->id == $sector_id ? "selected" : ""}}>
                                                 {{ $sector->name }}</option>
                                             @endforeach
-                                    </select>
-                                </div>
+                                        </select>
+                                    </div>
 
-                                <div class="col-4">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                                    <label for="Civil_number"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label>
-                                    <select class="custom-select custom-select-lg mb-3 select2" name="departement_id" id="departement_id">
-                                        <option value="0" selected disabled>اختار من القائمة</option>
-                                        @if($get_departements)
-                                            @foreach($get_departements as $departement)
-                                                <option value="{{ $departement->id }}" {{$departement_id == $departement->id ? "selected" : ""}}>{{ $departement->name }}</option>
-                                                @if(count($departement->children))
-                                                    @include('reservation_allowance.manageChildren',['children' => $departement->children, 'parent_id'=>''])
-                                                @endif
-                                            @endforeach
-                                        @endif
-                                    </select>
-                                </div>
+                                    <div class="d-flex mx-2">
+                                        {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
+                                        <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
+                                        <select class="custom-select custom-select-lg select2" name="departement_id"
+                                            id="departement_id">
+                                            <option value="0" selected>اختار الادارة</option>
+                                            @if($get_departements)
+                                                @foreach($get_departements as $departement)
+                                                    <option value="{{ $departement->id }}" {{$departement_id == $departement->id ? "selected" : ""}}>{{ $departement->name }}</option>
+                                                    @if(count($departement->children))
+                                                        @include('reservation_allowance.manageChildren',['children' => $departement->children, 'parent_id'=>''])
+                                                    @endif
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
 
-                                <div class="col-4">
-                                    <label for="Civil_number">
-                                    <button class="btn-all py-2 px-2" type="submit">
-                                        <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                        بحث عن موظفين
-                                    </button>
-                                </div>
+                                    <div class="">
+                                        <label for="Civil_number">
+                                            <button class="btn-all py-2 px-2" type="submit" style="color:green;">
+                                                <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                                                بحث عن موظفين
+                                            </button>
+                                    </div>
                             </div>
                         </form>
-
-                        <div class="col-2">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                            <a class="btn-all py-2 px-2" href="{{ route('reservation_allowances.create') }}"
-                                style="color: #0D992C;">
-                                <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-
-                                اضافة بدل حجز جديد
-                            </a>
-                            {{-- @endif --}}
+                        <div class="d-flex justify-content-between mt-2">
+                            <div class=" mx-2">
+                                {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
+                                <a class="btn-all py-2 px-2 " href="{{ route('reservation_allowances.create') }}"
+                                    style="color: #0D992C;">
+                                    <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                                    اضافة بدل حجز جديد
+                                </a>
+                                {{-- @endif --}}
+                            </div>
+                            <div class="">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
+                                <a class="btn-all py-2 px-2" href="{{ route('reservation_allowances.create.all') }}"
+                                    style="color: #0D992C;">
+                                    <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                                    اضافة بدل حجز كلى جديد
+                                </a>
+                                {{-- @endif --}}
+                            </div>
                         </div>
-                        <div class="col-2">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                            <a class="btn-all py-2 px-2" href="{{ route('reservation_allowances.create.all') }}"
-                                style="color: #0D992C;">
-                                <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-
-                                اضافة بدل حجز كلى جديد
-                            </a>
-                            {{-- @endif --}}
-                        </div>
-
                         <!-- show_reservation_allowances_info -->
                         <div id="show_reservation_allowances_info" class="col-12"></div>
                         <!-- end of show_reservation_allowances_info -->
-
-                </div>
+                    </div>
             </div>
-
-
         </div>
     </div>
 </div>
@@ -176,6 +206,14 @@
                         @endif
                     </table>
                 </div>
+
+                <div class="" style="margin-top:20px">
+                    <label for="Civil_number">
+                        <a class="btn-all py-2 px-2" style="color:green;" href="{{route('reservation_allowances.confirm_reservation_allowances')}}" onclick="if(confirm('هل انت متاكد من انك تريد ان تضيف بدل حجز لهؤلاء الموظفين')){event.preventDefault();window.location.href = $(this).attr('href');}else{event.preventDefault();}" class="menu-link px-3">
+                            <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                        اضف بدل حجز</a>
+                </div>
+
             </div>
         </div>
 
@@ -200,7 +238,7 @@ $(document).ready(function() {
         closeModal();
     });
 
-    
+
     $(document).on("change", "#sector_id", function () {
         var sectorid = this.value;
         var department_type = document.getElementById('department_type').value;
@@ -233,10 +271,9 @@ function add_to_cache($type, $id)
     var map_url = "{{route('reservation_allowances.add_reservation_allowances_employess',['type','id'])}}";
     map_url = map_url.replace('id', $id);
     map_url = map_url.replace('type', $type);
-    $.get(map_url, function(data){
-        //$("#departement_id").html(data);
-    });
+    $.get(map_url, function(data){});
 }
+
 
 
 

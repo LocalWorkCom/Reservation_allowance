@@ -9,6 +9,10 @@ class ReservationAllowance extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'user_id', 'type', 'amount', 'date', 'day', 'sector_id', 'departement_id', 'grade_id', 'created_by'
+    ];
+
     public function users()
     {
         return $this->belongsTo(User::class, 'user_id');
