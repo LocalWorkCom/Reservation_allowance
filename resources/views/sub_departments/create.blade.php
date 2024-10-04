@@ -123,7 +123,7 @@
                             <div class="form-group col-md-10 mx-md-2" id="manager">
                                 <label for="mangered">رقم هوية المدير</label>
                                 <select name="manger" id="mangered" class=" form-control " required>
-                                    <option value="">اختار المدير</option>
+                                    <option value="">اختار رقم هوية المدر</option>
                                     @foreach ($managers as $user)
                                         <option value="{{ $user->id }}">{{ $user->Civil_number }}</option>
                                     @endforeach
