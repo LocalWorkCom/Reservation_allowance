@@ -75,15 +75,16 @@
     $(document).ready(function() {
         $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
         @php
-            $Dataurl = url('api/department');
-            if (isset($mode)) {
-                if ($mode == 'search') {
-                    $Dataurl = url('searchDept/departments') . '/' . $q;
-                }
-            }
+            $Dataurl = url('api/department').'/'.$id;
+
+            // if (isset($mode)) {
+            //     if ($mode == 'search') {
+            //         $Dataurl = url('searchDept/departments') . '/' . $q;
+            //     }
+            // }
             // dd($Dataurl);
         @endphp
-        console.log('Rasha', "{{ $Dataurl }}")
+        console.log('Rasha', "{{ $Dataurl }}");
         $('#users-table').DataTable({
             processing: true,
             serverSide: true,
@@ -145,7 +146,7 @@
                     departmentShow = departmentShow.replace(':id', row.id);
 
                     // Get the authenticated user's department ID from Blade
-                    var authDepartmentId = {{ Auth::user()->department_id }};
+                    // var authDepartmentId = {{ Auth::user()->department_id }};
 
                     // Start building the buttons
                     var buttons = `

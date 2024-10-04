@@ -39,7 +39,9 @@
     }
 </style>
 @extends('layout.main')
-
+@section('title')
+تعديل
+@endsection
 @section('content')
     <main>
         {{-- <div class="row " dir="rtl">

@@ -51,7 +51,7 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item "><a href="/">الرئيسيه</a></li>
                     <li class="breadcrumb-item"><a href="{{ route('sectors.index') }}">القطاعات</a></li>
-                    <li class="breadcrumb-item active" aria-current="page"> <a href=""> اضافة قطاع</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"> <a href=""> تعديل قطاع</a></li>
                 </ol>
             </nav>
         </div>
@@ -97,13 +97,8 @@
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
-<<<<<<< HEAD
-               
-
-=======
 
 
->>>>>>> 020cdcf69e640af36eb05815226e696f8a28d96b
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager">
                     <label class="pb-3" for="mangered">المدير</label>
                     <select name="mangered" id="mangered" class="form-control"  required>
@@ -174,7 +169,7 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
-                </div> 
+                </div>
                 <div class="container col-11">
                     <div class="form-row d-flex justify-content-end mt-4 mb-3">
                         <button type="submit" class="btn-blue">
