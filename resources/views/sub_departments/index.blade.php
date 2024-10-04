@@ -16,7 +16,7 @@
             <div class="d-flex justify-content-between">
                 <p> الأدارات الفرعيه - {{ $parentDepartment->name }} </p>
                 <div class="form-group">
-                    @if (Auth::user()->rule->name == 'manager' || Auth::user()->department_id == $parentDepartment->id)
+                    @if (Auth::user()->rule->id == 3 || Auth::user()->department_id == $parentDepartment->id)
                         <button type="button" class="wide-btn "
                             onclick="window.location.href='{{ route('sub_departments.create', ['id' => $parentDepartment->id]) }}'"
                             style="    color: #0D992C;">
@@ -56,6 +56,8 @@
                                     <th>ميزانية البدل</th>
                                     <th>صلاحيه الحجز</th>
                                     <th>عدد الأدارات الفرعيه</th>
+                                    <th>عدد الموظفين</th>
+                                    <th> عدد الموظفين بالادارات الفرعية</th>
                                     <th>إجراء</th>
                                 </tr>
                             </thead>
@@ -110,6 +112,14 @@
                         return '<button class="btn btn-link" onclick="showSubDepartments(' + row
                             .id + ')">' + data + '</button>';
                     }
+                },
+                {
+                    data: 'num_managers',
+                    name: 'num_managers',
+                },
+                {
+                    data: 'num_subdepartment_managers',
+                    name: 'num_subdepartment_managers'
                 },
                 {
                     data: 'action',
