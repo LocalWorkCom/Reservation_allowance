@@ -27,7 +27,8 @@ class ReservationAllowanceController extends Controller
         $to_day_name = Carbon::now()->translatedFormat('l');
         $user = auth()->user();
         $super_admin = User::where('department_id', 1)->first();
-        $employees = User::where('department_id', $user->department_id)->where('flag', 'employee')->get();
+        //$employees = User::where('department_id', $user->department_id)->where('flag', 'employee')->get();
+        $employees = [];
 
         if($user->rule_id == 2)
         {
@@ -358,6 +359,8 @@ class ReservationAllowanceController extends Controller
             }
             $data = ReservationAllowance::with('users', 'users.grade', 'departements')->whereIn('departement_id', $department_id)->where('date', $to_day)->get();
         }
+
+        $data = [];
 
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
