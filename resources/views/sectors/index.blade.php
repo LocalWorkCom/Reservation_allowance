@@ -85,13 +85,14 @@
                         data: 'departments',
                         name: 'departments'
                     },
-                    {
-                        data: 'reservation_allowance',
-                        name: 'reservation_allowance'
-                    },
+
                     {
                         data: 'reservation_allowance_amount',
                         name: 'reservation_allowance_amount'
+                    },
+                    {
+                        data: 'reservation_allowance',
+                        name: 'reservation_allowance'
                     },
                     {
                         data: 'employees',
