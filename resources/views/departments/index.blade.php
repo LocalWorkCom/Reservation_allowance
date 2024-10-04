@@ -59,8 +59,8 @@
                                     <th>ميزانية البدل</th>
                                     <th>صلاحيه الحجز</th>
                                     <th>عدد الأدارات الفرعيه</th>
-                                    <th>عدد الموظفين</th>
-                                    <th> عدد الموظفين بالادارات الفرعية</th>
+                                    <th>عدد القوة</th>
+                                    <th> عدد القوة بالادارات الفرعية</th>
                                     <th>إجراء</th>
                                 </tr>
                             </thead>
@@ -75,7 +75,7 @@
     $(document).ready(function() {
         $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
         @php
-            $Dataurl = url('api/department').'/'.$id;
+            $Dataurl = url('api/department') . '/' . $id;
 
             // if (isset($mode)) {
             //     if ($mode == 'search') {
@@ -83,6 +83,7 @@
             //     }
             // }
             // dd($Dataurl);
+
         @endphp
         console.log('Rasha', "{{ $Dataurl }}");
         $('#users-table').DataTable({
@@ -156,7 +157,7 @@
 
                     // Only show the Edit button if the row's department ID matches the authenticated user's department ID and is not 1
                     // if (row.id === authDepartmentId) {
-                        buttons += `
+                    buttons += `
                 <a href="${departmentEdit}" class="btn btn-sm" style="background-color: #F7AF15;"> <i class="fa fa-edit"></i> تعديل</a>
             `;
                     // }
