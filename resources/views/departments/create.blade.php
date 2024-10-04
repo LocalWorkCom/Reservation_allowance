@@ -120,9 +120,9 @@
                                 </div>
                             </div>
                             <div class="form-group col-md-10 mx-md-2" id="manager">
-                                <label for="mangered">المدير</label>
+                                <label for="mangered">رقم هوية المدير</label>
                                 <select name="mangered" id="mangered" class="form-control  select2" required>
-                                    <option value="">اختار المدير</option>
+                                    <option value="">اختار رقم هوية المدير</option>
                                     @foreach ($managers as $user)
                                         <option value="{{ $user->id }}">{{ $user->Civil_number }}</option>
                                     @endforeach

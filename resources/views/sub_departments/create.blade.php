@@ -121,7 +121,7 @@
                                 </div>
                             </div>
                             <div class="form-group col-md-10 mx-md-2" id="manager">
-                                <label for="mangered">المدير</label>
+                                <label for="mangered">رقم هوية المدير</label>
                                 <select name="manger" id="mangered" class=" form-control " required>
                                     <option value="">اختار المدير</option>
                                     @foreach ($managers as $user)

@@ -100,9 +100,9 @@
 
 
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager">
-                    <label class="pb-3" for="mangered">المدير</label>
+                    <label for="mangered">رقم هوية المدير</label>
                     <select name="mangered" id="mangered" class="form-control"  required>
-                        <option value="">اختار المدير</option>
+                        <option value="">اختار رقم هوية المدير</option>
                         @foreach ($users as $user)
                             <option value="{{ $user->id }}" @if ($user->id == $data->manager) selected @endif>{{ $user->Civil_number }}</option>
                         @endforeach

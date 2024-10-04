@@ -124,9 +124,9 @@
                             </div>
                             {{-- {{ dd($department->manager) }} --}}
                             <div class="form-group col-md-10 mx-md-2" id="manager">
-                                <label for="mangered">المدير</label>
+                                <label for="mangered">رقم هوية المدير</label>
                                 <select name="manger" id="mangered" class=" form-control " required>
-                                    <option value="">اختار المدير</option>
+                                    <option value="">اختار رقم هوية المدير</option>
                                     @foreach ($managers as $user)
                                         <option value="{{ $user->id }}" @if($user->id == $department->manager->id) selected @endif>{{ $user->Civil_number }}
                                         </option>

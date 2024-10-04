@@ -100,7 +100,7 @@
                 </div>
 
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager">
-                    <label class="pb-3" for="mangered">المدير</label>
+                    <label class="pb-3" for="mangered">رقم هوية المدير</label>
                     <select name="mangered" id="mangered" class="form-control select2" required>
                         <option value="">اختار المدير</option>
                         @foreach ($users as $user)
