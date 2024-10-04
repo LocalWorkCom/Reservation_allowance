@@ -345,7 +345,7 @@ class sectorsController extends Controller
         return redirect()->route('sectors.index')->with('message', 'تم تحديث القطاع والموظفين بنجاح.');
     }
 
-
+ 
     /**
      * Remove the specified resource from storage.
      */

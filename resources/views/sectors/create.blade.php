@@ -161,8 +161,8 @@
                         <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"
                             name="part[]" style="height:30px;">
                         <label for="part" class="col-12"> حجز كلى</label>
-                        <input type="checkbox" class="toggle-radio-buttons mx-2"
-                            value="2" id="part" name="part[]" style="height:30px;">
+                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="2" id="part"
+                            name="part[]" style="height:30px;">
                         <label for="part" class="col-12">حجز جزئى</label>
                         @error('part')
                             <div class="alert alert-danger">{{ $message }}</div>
@@ -202,8 +202,8 @@
                     success: function(data) {
                         // Populate the manager details in the div
                         $('#manager_details').find('span').eq(0).text(data.rank); // رتبه
-                        $('#manager_details').find('span').eq(1).text(data.job_title); // مسمى وظيفي
-                        $('#manager_details').find('span').eq(2).text(data.seniority); // أقدميه
+                        $('#manager_details').find('span').eq(2).text(data.job_title); // مسمى وظيفي
+                        $('#manager_details').find('span').eq(1).text(data.seniority); // أقدميه
                         $('#manager_details').find('span').eq(3).text(data.name); // أسم
                         $('#manager_details').find('span').eq(4).text(data.phone); // هاتف
 

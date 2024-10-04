@@ -99,7 +99,7 @@ class DepartmentController extends Controller
 
         // Check if the user is an employee (flag 'user' means employee)
         $isEmployee = $manager->flag == 'employee' ? true : false;
-
+ 
         // Return the manager data in JSON format
         return response()->json([
             'rank' => $manager->grade_id ? $manager->grade->name : 'لا يوجد رتبه',
