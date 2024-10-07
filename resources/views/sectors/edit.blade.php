@@ -51,7 +51,7 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item "><a href="/">الرئيسيه</a></li>
                     <li class="breadcrumb-item"><a href="{{ route('sectors.index') }}">القطاعات</a></li>
-                    <li class="breadcrumb-item active" aria-current="page"> <a href=""> اضافة قطاع</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"> <a href=""> تعديل قطاع</a></li>
                 </ol>
             </nav>
         </div>
@@ -100,9 +100,9 @@
 
 
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager">
-                    <label class="pb-3" for="mangered">المدير</label>
+                    <label for="mangered">رقم هوية المدير</label>
                     <select name="mangered" id="mangered" class="form-control"  required>
-                        <option value="">اختار المدير</option>
+                        <option value="">اختار رقم هوية المدير</option>
                         @foreach ($users as $user)
                             <option value="{{ $user->id }}" @if ($user->id == $data->manager) selected @endif>{{ $user->Civil_number }}</option>
                         @endforeach
@@ -169,7 +169,7 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
-                </div> 
+                </div>
                 <div class="container col-11">
                     <div class="form-row d-flex justify-content-end mt-4 mb-3">
                         <button type="submit" class="btn-blue">
@@ -204,8 +204,8 @@
                         success: function(data) {
                             // Populate the manager details in the div
                             $('#manager_details').find('span').eq(0).text(data.rank); // رتبه
-                            $('#manager_details').find('span').eq(1).text(data.job_title); // مسمى وظيفي
-                            $('#manager_details').find('span').eq(2).text(data.seniority); // أقدميه
+                            $('#manager_details').find('span').eq(2).text(data.job_title); // مسمى وظيفي
+                            $('#manager_details').find('span').eq(1).text(data.seniority); // أقدميه
                             $('#manager_details').find('span').eq(3).text(data.name); // أسم
                             $('#manager_details').find('span').eq(4).text(data.phone); // هاتف
                             $('#manager_details').find('span').eq(4).text(data.email); // هاتف

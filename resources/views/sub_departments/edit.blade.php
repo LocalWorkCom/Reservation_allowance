@@ -124,9 +124,9 @@
                             </div>
                             {{-- {{ dd($department->manager) }} --}}
                             <div class="form-group col-md-10 mx-md-2" id="manager">
-                                <label for="mangered">المدير</label>
+                                <label for="mangered">رقم هوية المدير</label>
                                 <select name="manger" id="mangered" class=" form-control " required>
-                                    <option value="">اختار المدير</option>
+                                    <option value="">اختار رقم هوية المدير</option>
                                     @foreach ($managers as $user)
                                         <option value="{{ $user->id }}" @if($user->id == $department->manager->id) selected @endif>{{ $user->Civil_number }}
                                         </option>
@@ -270,8 +270,8 @@ $(document).ready(function() {
                         success: function(data) {
                             // Populate the manager details in the div
                             $('#manager_details').find('span').eq(0).text(data.rank); // رتبه
-                            $('#manager_details').find('span').eq(1).text(data.job_title); // مسمى وظيفي
-                            $('#manager_details').find('span').eq(2).text(data.seniority); // أقدميه
+                            $('#manager_details').find('span').eq(2).text(data.job_title); // مسمى وظيفي
+                            $('#manager_details').find('span').eq(1).text(data.seniority); // أقدميه
                             $('#manager_details').find('span').eq(3).text(data.name); // أسم
                             $('#manager_details').find('span').eq(4).text(data.phone); // هاتف
 

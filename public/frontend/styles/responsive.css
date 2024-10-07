@@ -3,7 +3,7 @@
         width: 180px;
         margin-inline: 9px;
     } */
-/* 
+/*
     .nav-item {
         display: inline-block;
         padding: 1px 2px;
@@ -32,13 +32,13 @@
     height: 135px;
     width: 180px !important;
 }
-.dropdown-menu4{
+.dropdown-menu4 {
     top: 100%;
     left: -140px;
-    padding-inline: 10px;
+    padding-inline: 0px;
     font-size: 21px;
-    height: 177px;
-    width: 365px !important;
+    height: 175px;
+    width: 370px !important;
 }
 .dropdown-menu5 {
     display: none;
@@ -50,10 +50,10 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     z-index: 1000;
     overflow-y: auto;
-    padding-inline: 10px;
+    padding-inline: 0px;
     font-size: 21px;
     height: 175px;
-    width: 159px !important;
+    width: 200px !important;
 }
 .dropdown-menu6 {
     display: none;
@@ -338,7 +338,7 @@
     .container-responsive {
         display: none;
     }
-  
+
 }
 @media (max-width: 1400px){
     /* li {
@@ -796,7 +796,7 @@
         text-decoration: none;
         font-weight: 400;
     }
-  
+
     .dropdown-menu2 {
         top: 65px;
         left: 152px;
@@ -863,7 +863,7 @@
     .second-section input {
         width: 186px;
         height: 40px;
-        
+
     }
     .graph-card {
         width: 215px;
@@ -923,11 +923,11 @@
         margin-right: 15px;
         font-size: 23px;
     }
-   
+
     /* .first-section {
         margin-left: -72px;
     } */
-   
+
     .input-group button {
         width: 27px;
         height: 35px;
@@ -1132,7 +1132,7 @@
         flex-direction: row;
     }
     .collapse .navbar-nav {
-        padding-left: 15px; 
+        padding-left: 15px;
         padding-right: 15px;
     }
 
@@ -1396,7 +1396,7 @@
     .btn-back {
         width: 100px;
         height: 30px;
-        font-size: 15px; 
+        font-size: 15px;
     }
     .select2-container--default .select2-selection--multiple {
         height: 35px !important;
@@ -1833,7 +1833,7 @@ footer {
         width: 50px;
         margin-left: 2px;
     }
-    
+
     .upper-navbar {
         height: 70px;
     }
@@ -1869,7 +1869,7 @@ footer {
         width: 47px;
         margin-left: 2px;
     }
-    
+
     .upper-navbar {
         height: 65px;
     }

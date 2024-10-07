@@ -59,7 +59,8 @@
                                     <th>ميزانية البدل</th>
                                     <th>صلاحيه الحجز</th>
                                     <th>عدد الأدارات الفرعيه</th>
-
+                                    <th>عدد القوة</th>
+                                    <th> عدد القوة بالادارات الفرعية</th>
                                     <th>إجراء</th>
                                 </tr>
                             </thead>
@@ -74,15 +75,17 @@
     $(document).ready(function() {
         $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
         @php
-            $Dataurl = url('api/department');
-            if (isset($mode)) {
-                if ($mode == 'search') {
-                    $Dataurl = url('searchDept/departments') . '/' . $q;
-                }
-            }
+            $Dataurl = url('api/department') . '/' . $id;
+
+            // if (isset($mode)) {
+            //     if ($mode == 'search') {
+            //         $Dataurl = url('searchDept/departments') . '/' . $q;
+            //     }
+            // }
             // dd($Dataurl);
+
         @endphp
-        console.log('Rasha', "{{ $Dataurl }}")
+        console.log('Rasha', "{{ $Dataurl }}");
         $('#users-table').DataTable({
             processing: true,
             serverSide: true,
@@ -118,6 +121,14 @@
                     }
                 },
                 {
+                    data: 'num_managers',
+                    name: 'num_managers',
+                },
+                {
+                    data: 'num_subdepartment_managers',
+                    name: 'num_subdepartment_managers'
+                },
+                {
                     data: 'action',
                     name: 'action',
                     sWidth: '100px',
@@ -136,7 +147,7 @@
                     departmentShow = departmentShow.replace(':id', row.id);
 
                     // Get the authenticated user's department ID from Blade
-                    var authDepartmentId = {{ Auth::user()->department_id }};
+                    // var authDepartmentId = {{ Auth::user()->department_id }};
 
                     // Start building the buttons
                     var buttons = `
@@ -146,7 +157,7 @@
 
                     // Only show the Edit button if the row's department ID matches the authenticated user's department ID and is not 1
                     // if (row.id === authDepartmentId) {
-                        buttons += `
+                    buttons += `
                 <a href="${departmentEdit}" class="btn btn-sm" style="background-color: #F7AF15;"> <i class="fa fa-edit"></i> تعديل</a>
             `;
                     // }
