@@ -124,8 +124,8 @@
                                 @endforeach
                             </td>
                         </tr>
-                        
-                        
+
+
                         <tr>
                             <th scope="row"> الرقم المدني </th>
                             <td> {{ $user->Civil_number }} </td>
@@ -247,7 +247,21 @@
                                 </select>
                             </td>
                         </tr>
+                        <tr>
+                            <th scope="row">القطاع </th>
+                            <td>
+                                <!-- Display the selected item name here with a null check -->
 
+
+                                @if ($user->sectors)
+                                    {{ $user->sectors->name }}
+                                @else
+                                    <!-- Fallback text if no department is found -->
+                                    لا يوجد قطاع محددة
+                                @endif
+                            </td>
+
+                        </tr>
                         {{-- <tr>
                             <th scope="row"> موقع العمل </th>
                             <td> {{ $user->work_location }} </td>
