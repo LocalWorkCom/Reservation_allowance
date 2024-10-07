@@ -92,7 +92,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/violation_report', [ViolationReportController::class, 'getdata'])->name('violation_report.getdata');
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
-    Route::get('/users/{id}', [UserController::class, 'index'])->name('user.index')->middleware('check.permission:view User');
+    Route::get('/users', [UserController::class, 'index'])->name('user.index')->middleware('check.permission:view User');
     Route::get('api/users', [UserController::class, 'getUsers'])->name('api.users')->middleware('check.permission:view User');
     Route::get('/users_create', [UserController::class, 'create'])->name('user.create')->middleware('check.permission:create User');
     Route::post('/store', [UserController::class, 'store'])->name('user.store')->middleware('check.permission:create User');
@@ -105,7 +105,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/show/{id}', [UserController::class, 'show'])->name('user.show')->middleware('check.permission:view User');
     Route::post('/update/{id}', [UserController::class, 'update'])->name('user.update')->middleware('check.permission:edit User');
     Route::any('/unsigned/{id}', [UserController::class, 'unsigned'])->name('user.unsigned');
-
+    Route::any('/get-deprt-sector', [UserController::class, 'GetDepartmentsBySector'])->name('user.department.sector');
     // permission
     Route::any('/permission', [PermissionController::class, 'index'])->name('permission.index')->middleware('check.permission:view Permission');
     Route::get('api/permission', [PermissionController::class, 'getPermision'])->name('api.permission')->middleware('check.permission:view Permission');

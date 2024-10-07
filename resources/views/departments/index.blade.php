@@ -123,10 +123,18 @@
                 {
                     data: 'num_managers',
                     name: 'num_managers',
+                    render: function(data, type, row) {
+                        return '<button class="btn btn-link" onclick="showUsers(' + row
+                            .id + ')">' + data + '</button>';
+                    }
                 },
                 {
                     data: 'num_subdepartment_managers',
-                    name: 'num_subdepartment_managers'
+                    name: 'num_subdepartment_managers',
+                    render: function(data, type, row) {
+                        return '<button class="btn btn-link" onclick="showUsers(' + row
+                            .id + ')">' + data + '</button>';
+                    }
                 },
                 {
                     data: 'action',
@@ -226,6 +234,11 @@
     function showSubDepartments(departmentId) {
         // Redirect to the sub-department listing for the selected department
         window.location.href = '/sub_departments/' + departmentId;
+    }
+
+    function showUsers(departmentId) {
+        // Redirect to the sub-department listing for the selected department
+        window.location.href = '/users/' + departmentId;
     }
 </script>
 

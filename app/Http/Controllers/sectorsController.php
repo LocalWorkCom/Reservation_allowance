@@ -25,24 +25,21 @@ class sectorsController extends Controller
 
     public function index()
     {
-         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
+        if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
             $sectors = Sector::all();
-
-         }elseif(Auth::user()->rule->id == 4){
-            $sectors = Sector::where('id',auth()->user()->sector);
-
-         }
+        } elseif (Auth::user()->rule->id == 4) {
+            $sectors = Sector::where('id', auth()->user()->sector);
+        }
         return view("sectors.index");
     }
 
     public function getsectors()
     {
-        // $data = Sector::all();
-        if (Auth::user()->rule->id == 1 || Auth::user()->rule->id== 2) {
+        if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
             $data = Sector::all();
-         }elseif(Auth::user()->rule->id == 4){
-            $data = Sector::where('id',auth()->user()->sector);
-         }
+        } elseif (Auth::user()->rule->id == 4) {
+            $data = Sector::where('id', auth()->user()->sector);
+        }
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
                 $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;" href=' . route('sectors.edit', $row->id) . '><i class="fa fa-edit"></i> تعديل</a>';
@@ -56,7 +53,7 @@ class sectorsController extends Controller
             })
             ->addColumn('departments', function ($row) {
                 $num = departements::where('sector_id', $row->id)->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15px" href=' . route('departments.index', ['id'=>$row->id]) . '> ' . $num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15px" href=' . route('departments.index', ['id' => $row->id]) . '> ' . $num . '</a>';
 
                 return $btn;
             })
@@ -74,16 +71,18 @@ class sectorsController extends Controller
             })
             ->addColumn('employees', function ($row) {
                 $emp_num = User::where('sector', $row->id)->where('department_id', null)->count();
-                return $emp_num;
+                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15px" href=' . route('user.employees', ['sector' => $row->id]) . '> ' . $emp_num . '</a>';
+                return $btn;
             })
-            ->addColumn( 'employeesdep', function ($row) {
+            ->addColumn('employeesdep', function ($row) {
                 $emp_num = User::where('sector', $row->id)->whereNotNull('department_id')->count();
-                return $emp_num;
+                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15px" href=' . route('user.employees', ['sector' => $row->id]) . '> ' . $emp_num . '</a>';
+
+                return $btn;
             })
-            ->rawColumns(['action', 'departments']) // Add 'departments' to rawColumns
+            ->rawColumns(['action', 'departments', 'employees', 'employeesdep'])
             ->make(true);
     }
-
 
 
     public function create()
@@ -103,7 +102,7 @@ class sectorsController extends Controller
             'mangered.required' => 'اسم المدير مطلوب.',
             'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
-            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.01.',
+            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.00.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
         ];
@@ -112,7 +111,7 @@ class sectorsController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'mangered' => 'required',
-            'budget' => 'required|numeric|min:0.01|max:1000000',
+            'budget' => 'required|numeric|min:0.00|max:1000000',
             'part' => 'required',
         ], $messages);
 
@@ -185,10 +184,8 @@ class sectorsController extends Controller
                 $failed_civil_numbers[] = $Civil_number;
             }
         }
-
         // Prepare success message
         $message = 'تم أضافه قطاع جديد';
-
         // Append failed Civil numbers to the message, if any
         if (count($failed_civil_numbers) > 0) {
             $message .= ' لكن بعض الموظفين لم يتم إضافتهم بسبب عدم العثور على الأرقام المدنية أو عدم وجود درجة لهم: ' . implode(', ', $failed_civil_numbers);
@@ -197,15 +194,13 @@ class sectorsController extends Controller
         return redirect()->route('sectors.index')->with('message', $message);
     }
 
-
-
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
         $data = Sector::find($id);
-        $users = User::where('department_id', null)->whereNot('id',$data->manager)->Where('sector', $id)->get();
+        $users = User::where('department_id', null)->whereNot('id', $data->manager)->Where('sector', $id)->get();
         $departments = departements::where('sector_id', $id)->get();
         return view('sectors.showdetails', compact('data', 'users', 'departments'));
     }
@@ -233,13 +228,13 @@ class sectorsController extends Controller
      */
     public function update(Request $request)
     {
-        $sector = Sector::find($request->id); // Assuming $sectorId is passed or available
+        $sector = Sector::find($request->id);
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
             'mangered.required' => 'اسم المدير مطلوب.',
             'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
-            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.01.',
+            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.00.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
         ];
@@ -251,7 +246,7 @@ class sectorsController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'mangered' => 'required',
-            'budget' => 'required|numeric|min:0.01|max:1000000',
+            'budget' => 'required|numeric|min:0.00|max:1000000',
             'part' => 'required',
         ], $messages);
 
@@ -279,15 +274,13 @@ class sectorsController extends Controller
         $sector->save();
         // Check if manager has changed
         if ($oldManager != $request->mangered) {
-           // dd($sector);
-
             // Update old manager's sector to null
             if ($oldManager) {
                 $oldManagerUser = User::find($oldManager);
                 if ($oldManagerUser) {
-                    $oldManagerUser->sector = null;
+                    $oldManagerUser->sector = Null;
                     $oldManagerUser->flag = 'employee';
-                    $oldManagerUser->password = null;
+                    $oldManagerUser->password = Null;
                     $oldManagerUser->save();
                 }
             }
@@ -297,7 +290,7 @@ class sectorsController extends Controller
                 if ($newManager) {
                     $newManager->sector = $sector->id;
                     $newManager->flag = 'user';
-                    $newManager->department_id = null;
+                    $newManager->department_id = Null;
                     $newManager->rule_id = $request->rule;
                     $newManager->password = Hash::make($request->password);
                     $newManager->save();
@@ -305,11 +298,10 @@ class sectorsController extends Controller
                     return redirect()->back()->with('خطأ', 'هذا المستخدم غير موجود');
                 }
             } else {
-
                 $user = User::find($request->mangered);
                 if ($user) {
                     $user->sector = $sector->id;
-                    $user->department_id = null;
+                    $user->department_id = Null;
                     $user->save();
                 } else {
                     return redirect()->back()->with('خطأ', 'هذا المستخدم غير موجود');
@@ -345,7 +337,8 @@ class sectorsController extends Controller
         return redirect()->route('sectors.index')->with('message', 'تم تحديث القطاع والموظفين بنجاح.');
     }
 
- 
+
+
     /**
      * Remove the specified resource from storage.
      */

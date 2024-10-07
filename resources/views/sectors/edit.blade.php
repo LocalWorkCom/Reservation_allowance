@@ -67,32 +67,20 @@
         @csrf
         <div class="row" dir="rtl">
             <div id="first-container" class="container moftsh col-11 mt-3 p-0 pb-3">
-                @if (session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
-                @endif
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
                 <div class="form-row mx-2 mb-2">
                     <h3 class="pt-3 px-md-5 px-3">اضف قطاع</h3>
                     <div class="input-group moftsh px-md-5 px-3 pt-3">
                         <label class="pb-3" for="name">ادخل اسم القطاع</label>
-                        <input type="text" id="name" name="name" class="form-control" value="{{ $data->name}}" placeholder="قطاع واحد" required />
+                        <input type="text" id="name" name="name" class="form-control" value="{{ $data->name }}"
+                            placeholder="قطاع واحد" required />
                         <span class="text-danger span-error" id="name-error"></span>
                         <input type="hidden" name="id" value="{{ $data->id }}">
                     </div>
                 </div>
                 <div class="input-group moftsh px-md-5 px-3 pt-3">
                     <label class="pb-3" for="budget">ميزانية بدل حجز</label>
-                    <input type="text" name="budget" class="form-control"  value="{{ $data->reservation_allowance_amount}}" value="{{ old('budget') }}">
+                    <input type="text" name="budget" class="form-control"
+                        value="{{ $data->reservation_allowance_amount }}" value="{{ old('budget') }}">
                     @error('budget')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
@@ -101,12 +89,8 @@
 
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager">
                     <label for="mangered">رقم هوية المدير</label>
-                    <select name="mangered" id="mangered" class="form-control"  required>
-                        <option value="">اختار رقم هوية المدير</option>
-                        @foreach ($users as $user)
-                            <option value="{{ $user->id }}" @if ($user->id == $data->manager) selected @endif>{{ $user->Civil_number }}</option>
-                        @endforeach
-                    </select>
+                    <input type="text" name="mangered" id="mangered" class="form-control" value="{{ $data->manager }}"
+                        value="{{ old('mangered') }}">
                     @error('mangered')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
@@ -149,21 +133,23 @@
                 </div>
 
                 <div class="input-group moftsh px-md-4 px-3 pt-3">
-                <label for="Civil_number" class="col-12"> أرقام الهوية</label>
-                        <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px">
+                    <label for="Civil_number" class="col-12"> أرقام الهوية</label>
+                    <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px">
                             @foreach ($employees as $employee)
-                                {{ $employee->Civil_number }}
-                            @endforeach
+{{ $employee->Civil_number }}
+@endforeach
                         </textarea>
-                    </div>
+                </div>
                 <!-- </div> -->
                 <div class="input-group moftsh px-md-5 px-3 pt-3">
-                    <label  for="" class="col-12">صلاحيه الحجز</label>
+                    <label for="" class="col-12">صلاحيه الحجز</label>
                     <div class="d-flex mt-3" dir="rtl">
-                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part" style="height:30px;" @if($data->reservation_allowance_type == 1 ||$data->reservation_allowance_type == 3 )checked @endif
+                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"
+                            style="height:30px;" @if ($data->reservation_allowance_type == 1 || $data->reservation_allowance_type == 3) checked @endif name="part[]">
+                        <label for="part" class="col-12"> حجز كلى</label><input type="checkbox"
+                            class="toggle-radio-buttons mx-2" style="height:30px;"
+                            @if ($data->reservation_allowance_type == 2 || $data->reservation_allowance_type == 3) checked @endif value="2" id="part"
                             name="part[]">
-                        <label for="part" class="col-12"> حجز كلى</label><input type="checkbox" class="toggle-radio-buttons mx-2" style="height:30px;" @if($data->reservation_allowance_type == 2 ||$data->reservation_allowance_type == 3 )checked @endif
-                            value="2" id="part" name="part[]">
                         <label for="part" class="col-12">حجز جزئى</label>
                         @error('part')
                             <div class="alert alert-danger">{{ $message }}</div>
@@ -184,7 +170,7 @@
         </div>
     </form>
     <script>
-      $('.select2').select2({
+        $('.select2').select2({
             dir: "rtl"
         });
         $('#mangered').on('select2:select', function(e) {
@@ -192,23 +178,24 @@
             var managerId = $(this).val();
             fetchManagerDetails(managerId); // Fetch manager details based on the selected value
         });
-        //
-        // $(document).ready(function() {
-            // Function to fetch and display manager details
-            function fetchManagerDetails(managerId) {
-                if (managerId) {
-                    // Make an AJAX request to fetch manager details
-                    $.ajax({
-                        url: '/get-manager-details/' + managerId,
-                        type: 'GET',
-                        success: function(data) {
+        // Function to fetch and display manager details
+        function fetchManagerDetails(managerId) {
+            if (managerId) {
+                // Make an AJAX request to fetch manager details
+                $.ajax({
+                    url: '/get-manager-details/' + managerId,
+                    type: 'GET',
+                    success: function(data) {
+                        if (data.error) {
+                            alert('Error: ' + data.error);
+                        } else {
                             // Populate the manager details in the div
                             $('#manager_details').find('span').eq(0).text(data.rank); // رتبه
-                            $('#manager_details').find('span').eq(2).text(data.job_title); // مسمى وظيفي
                             $('#manager_details').find('span').eq(1).text(data.seniority); // أقدميه
-                            $('#manager_details').find('span').eq(3).text(data.name); // أسم
+                            $('#manager_details').find('span').eq(2).text(data.job_title); // مسمى وظيفي
+                            $('#manager_details').find('span').eq(3).text(data.name); // اسم
                             $('#manager_details').find('span').eq(4).text(data.phone); // هاتف
-                            $('#manager_details').find('span').eq(4).text(data.email); // هاتف
+                            $('#manager_details').find('span').eq(5).text(data.email); // ايميل
 
                             // Show the manager details div
                             $('#manager_details').show();
@@ -224,43 +211,35 @@
                                 $('#password').val('');
                                 $('#rule').val('');
                             }
-                        },
-                        error: function() {
-                            alert('Error fetching manager details.');
                         }
-                    });
-                } else {
-                    // Hide the manager details if no manager is selected
-                    $('#manager_details').hide();
-                    $('#password_field').hide(); // Hide password field
-                    $('#rule_field').hide(); // Hide rule field
-                    // Clear the input fields
-                    $('#password').val('');
-                    $('#rule').val('');
-                }
-            }
-
-            // Hide the manager details, password, and rule fields initially
-            $('#manager_details').hide();
-            $('#password_field').hide();
-            $('#rule_field').hide();
-
-            // When the manager is selected or changed
-            $('#mangered').change(function() {
-                var managerId = $(this).val();
-
-                // If the manager is changed, clear the password and rule fields
+                    },
+                    error: function() {
+                        alert('Error fetching manager details.');
+                    }
+                });
+            } else {
+                // Hide the manager details if no manager is selected
+                $('#manager_details').hide();
+                $('#password_field').hide(); // Hide password field
+                $('#rule_field').hide(); // Hide rule field
+                // Clear the input fields
                 $('#password').val('');
                 $('#rule').val('');
+            }
+        }
 
-                fetchManagerDetails(managerId); // Fetch manager details based on the selected value
-            });
-
-            // On page load, check if there's already a selected manager
+        // On page load, check if there's already a selected manager
+        $(document).ready(function() {
             var selectedManagerId = $('#mangered').val();
             if (selectedManagerId) {
                 fetchManagerDetails(selectedManagerId); // Fetch details for the pre-selected manager
             }
-        // });
+        });
+
+        // When the manager is selected or changed
+        $('#mangered').change(function() {
+            var managerId = $(this).val();
+            fetchManagerDetails(managerId); // Fetch manager details based on the selected value
+        });
     </script>
 @endsection

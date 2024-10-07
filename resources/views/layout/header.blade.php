@@ -100,16 +100,18 @@
                     onclick="toggleDropdown3(event)">
 
                     @if (Auth::user()->rule_id == 2)
-                        <a href="{{ route('user.employees', 1) }}">
-                            <img src="{{ asset('frontend/images/employees.svg') }}" alt="logo">
-                            <h6 class="btn3">موظفين الوزارة</h6>
-                        </a>
+
+                    <a href="{{ route('user.employees') }}">
+                        <img src="{{ asset('frontend/images/employees.svg') }}" alt="logo">
+                        <h6 class="btn3">موظفين الوزارة</h6>
+                    </a>
+
                     @endif
                     @if (Auth::user()->rule_id != 2)
-                        <a href="{{ route('user.employees', 1) }}">
-                            <img src="{{ asset('frontend/images/employees.svg') }}" alt="logo">
-                            <h6 class="btn3">موظفين القوة</h6>
-                        </a>
+                    <a href="{{ route('user.employees') }}">
+                        <img src="{{ asset('frontend/images/employees.svg') }}" alt="logo">
+                        <h6 class="btn3">موظفين القوة</h6>
+                    </a>
                     @endif
 
 
