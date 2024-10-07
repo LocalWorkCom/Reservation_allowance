@@ -85,32 +85,39 @@ class DepartmentController extends Controller
             ->make(true);
     }
     public function getManagerDetails($id)
-    {
-        // Fetch manager data from the database
-        $manager = User::where('Civil_number',$id)->first();
-
-        if (!$manager) {
-            return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 404);
-        }
-
-        $joiningDate = $manager->joining_date ? Carbon::parse($manager->joining_date) : Carbon::parse($manager->created_at);
-        $today = Carbon::now();
-        $yearsOfService = $joiningDate->diffInYears($today);
-
-        // Check if the user is an employee (flag 'employee' means employee)
-        $isEmployee = $manager->flag == 'employee';
-
-        // Return the manager data in JSON format
-        return response()->json([
-            'rank' => $manager->grade_id ? $manager->grade->name : 'لا يوجد رتبه',
-            'job_title' => $manager->job_title ?? 'لا يوجد مسمى وظيفى',
-            'seniority' => $yearsOfService,
-            'name' => $manager->name,
-            'phone' => $manager->phone,
-            'email' => $manager->email,
-            'isEmployee' => $isEmployee,  // Include the employee flag
-        ]);
+{
+    // Fetch manager data from the database
+    $manager = User::where('Civil_number', $id)->first();
+    if (!$manager) {
+        return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 404);
     }
+
+    // Allow this check only for input change, not for initial load
+    $isDepartmentCheck = request()->has('check_department') && request()->get('check_department') == true;
+
+    if ($isDepartmentCheck && ($manager->department_id != Null ||$manager->sector != Null )) {
+        return response()->json(['error' => 'عفوا هذا المستخدم غير متاح'], 404);
+    }
+
+    $joiningDate = $manager->joining_date ? Carbon::parse($manager->joining_date) : Carbon::parse($manager->created_at);
+    $today = Carbon::now();
+    $yearsOfService = $joiningDate->diffInYears($today);
+
+    // Check if the user is an employee (flag 'employee' means employee)
+    $isEmployee = $manager->flag == 'employee';
+
+    // Return the manager data in JSON format
+    return response()->json([
+        'rank' => $manager->grade_id ? $manager->grade->name : 'لا يوجد رتبه',
+        'job_title' => $manager->job_title ?? 'لا يوجد مسمى وظيفى',
+        'seniority' => $yearsOfService,
+        'name' => $manager->name,
+        'phone' => $manager->phone,
+        'email' => $manager->email,
+        'isEmployee' => $isEmployee,  // Include the employee flag
+    ]);
+}
+
 
 
     public function index_1($id)

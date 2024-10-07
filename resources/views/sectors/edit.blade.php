@@ -17,7 +17,6 @@
         font-weight: 700;
         line-height: 36px;
         text-align: right;
-
     }
 
     .div-info-padding b span {
@@ -38,59 +37,57 @@
         color: #3c3c3d !important;
     }
 </style>
+
 @extends('layout.main')
-@push('style')
-@endpush
+
 @section('title')
     القطاعات
 @endsection
+
 @section('content')
-    <div class="row " dir="rtl">
-        <div class="container  col-11" style="background-color:transparent;">
+    <div class="row" dir="rtl">
+        <div class="container col-11" style="background-color:transparent;">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item "><a href="/">الرئيسيه</a></li>
+                    <li class="breadcrumb-item"><a href="/">الرئيسيه</a></li>
                     <li class="breadcrumb-item"><a href="{{ route('sectors.index') }}">القطاعات</a></li>
-                    <li class="breadcrumb-item active" aria-current="page"> <a href=""> تعديل قطاع</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><a href=""> تعديل قطاع</a></li>
                 </ol>
             </nav>
         </div>
     </div>
-    {{-- <div class="row ">
-        <div class="container welcome col-11">
-            <p> القطــــاعات </p>
-        </div>
-    </div> --}}
-    {{-- {{ dd($governments) }} --}}
+
     <br>
-    <form class="edit-grade-form" id="Qta3-form" action=" {{ route('sectors.update') }}" method="POST">
+
+    <form class="edit-grade-form" id="Qta3-form" action="{{ route('sectors.update', $data->id) }}" method="POST">
         @csrf
+        @method('POST') <!-- This line indicates it's an update -->
         <div class="row" dir="rtl">
             <div id="first-container" class="container moftsh col-11 mt-3 p-0 pb-3">
                 <div class="form-row mx-2 mb-2">
                     <h3 class="pt-3 px-md-5 px-3">اضف قطاع</h3>
                     <div class="input-group moftsh px-md-5 px-3 pt-3">
                         <label class="pb-3" for="name">ادخل اسم القطاع</label>
-                        <input type="text" id="name" name="name" class="form-control" value="{{ $data->name }}"
-                            placeholder="قطاع واحد" required />
-                        <span class="text-danger span-error" id="name-error"></span>
                         <input type="hidden" name="id" value="{{ $data->id }}">
+                        <input type="text" id="name" name="name" class="form-control"
+                            value="{{ old('name', $data->name) }}" placeholder="قطاع واحد" required />
+                        <span class="text-danger span-error" id="name-error"></span>
                     </div>
                 </div>
+
                 <div class="input-group moftsh px-md-5 px-3 pt-3">
                     <label class="pb-3" for="budget">ميزانية بدل حجز</label>
                     <input type="text" name="budget" class="form-control"
-                        value="{{ $data->reservation_allowance_amount }}" value="{{ old('budget') }}">
+                        value="{{ old('budget', $data->reservation_allowance_amount) }}">
                     @error('budget')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
 
-
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager">
                     <label for="mangered">رقم هوية المدير</label>
-                    <input type="text" name="mangered" id="mangered" class="form-control" value="{{ $data->manager }}"
-                        value="{{ old('mangered') }}">
+                    <input type="text" name="mangered" id="mangered" class="form-control"
+                        value="{{ old('mangered', $data->manager_name->Civil_number) }}">
                     @error('mangered')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
@@ -109,7 +106,8 @@
                     <select name="rule" id="rule" class="form-control">
                         <option value="">اختار القانون</option>
                         @foreach ($rules as $rule)
-                            <option value="{{ $rule->id }}">{{ $rule->name }}</option>
+                            <option value="{{ $rule->id }}" {{ old('rule') == $rule->id ? 'selected' : '' }}>
+                                {{ $rule->name }}</option>
                         @endforeach
                     </select>
                     @error('rule')
@@ -135,19 +133,19 @@
                 <div class="input-group moftsh px-md-4 px-3 pt-3">
                     <label for="Civil_number" class="col-12"> أرقام الهوية</label>
                     <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px">
-                            @foreach ($employees as $employee)
+                        @foreach ($employees as $employee)
 {{ $employee->Civil_number }}
 @endforeach
-                        </textarea>
+                    </textarea>
                 </div>
-                <!-- </div> -->
+
                 <div class="input-group moftsh px-md-5 px-3 pt-3">
                     <label for="" class="col-12">صلاحيه الحجز</label>
                     <div class="d-flex mt-3" dir="rtl">
                         <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"
                             style="height:30px;" @if ($data->reservation_allowance_type == 1 || $data->reservation_allowance_type == 3) checked @endif name="part[]">
-                        <label for="part" class="col-12"> حجز كلى</label><input type="checkbox"
-                            class="toggle-radio-buttons mx-2" style="height:30px;"
+                        <label for="part" class="col-12"> حجز كلى</label>
+                        <input type="checkbox" class="toggle-radio-buttons mx-2" style="height:30px;"
                             @if ($data->reservation_allowance_type == 2 || $data->reservation_allowance_type == 3) checked @endif value="2" id="part"
                             name="part[]">
                         <label for="part" class="col-12">حجز جزئى</label>
@@ -156,6 +154,7 @@
                         @enderror
                     </div>
                 </div>
+
                 <div class="container col-11">
                     <div class="form-row d-flex justify-content-end mt-4 mb-3">
                         <button type="submit" class="btn-blue">
@@ -169,77 +168,79 @@
             </div>
         </div>
     </form>
+
     <script>
+        // Initialize select2 for RTL
         $('.select2').select2({
             dir: "rtl"
         });
-        $('#mangered').on('select2:select', function(e) {
-            // alert('select');
-            var managerId = $(this).val();
-            fetchManagerDetails(managerId); // Fetch manager details based on the selected value
+
+        // On page load: check if there's a selected manager ID
+        $(document).ready(function() {
+            var selectedManagerId = $('#mangered').val();
+            if (selectedManagerId) {
+                console.log(selectedManagerId);
+                fetchManagerDetails(selectedManagerId, false); // Pass true to skip the department check
+            } else {
+                $('#manager_details').hide();
+                $('#password_field').hide();
+                $('#rule_field').hide();
+            }
         });
-        // Function to fetch and display manager details
-        function fetchManagerDetails(managerId) {
+
+        // Modify fetchManagerDetails to accept an optional second parameter
+        function fetchManagerDetails(managerId, skipDepartmentCheck = true) {
             if (managerId) {
-                // Make an AJAX request to fetch manager details
                 $.ajax({
-                    url: '/get-manager-details/' + managerId,
+                    url: '/get-manager-details/' + managerId + (skipDepartmentCheck ? '?check_department=false' :
+                        ''),
                     type: 'GET',
                     success: function(data) {
-                        if (data.error) {
-                            alert('Error: ' + data.error);
+                        // Show the manager details div
+                        $('#manager_details').show();
+
+                        // Populate manager details
+                        $('#manager_details').find('span').eq(0).text(data.rank);
+                        $('#manager_details').find('span').eq(1).text(data.seniority);
+                        $('#manager_details').find('span').eq(2).text(data.job_title);
+                        $('#manager_details').find('span').eq(3).text(data.name);
+                        $('#manager_details').find('span').eq(4).text(data.phone);
+                        $('#manager_details').find('span').eq(5).text(data.email);
+
+                        // Show/hide password and rule fields
+                        if (data.isEmployee) {
+                            $('#password_field').show();
+                            $('#rule_field').show();
                         } else {
-                            // Populate the manager details in the div
-                            $('#manager_details').find('span').eq(0).text(data.rank); // رتبه
-                            $('#manager_details').find('span').eq(1).text(data.seniority); // أقدميه
-                            $('#manager_details').find('span').eq(2).text(data.job_title); // مسمى وظيفي
-                            $('#manager_details').find('span').eq(3).text(data.name); // اسم
-                            $('#manager_details').find('span').eq(4).text(data.phone); // هاتف
-                            $('#manager_details').find('span').eq(5).text(data.email); // ايميل
-
-                            // Show the manager details div
-                            $('#manager_details').show();
-
-                            // Show or hide password and rule fields based on employee flag
-                            if (data.isEmployee) {
-                                $('#password_field').show(); // Show password field
-                                $('#rule_field').show(); // Show rule field
-                            } else {
-                                $('#password_field').hide(); // Hide password field
-                                $('#rule_field').hide(); // Hide rule field
-                                // Clear the input fields if the manager is not an employee
-                                $('#password').val('');
-                                $('#rule').val('');
-                            }
+                            $('#password_field').hide();
+                            $('#rule_field').hide();
+                            $('#password').val(''); // Clear password field
+                            $('#rule').val(''); // Clear rule field
                         }
                     },
-                    error: function() {
-                        alert('Error fetching manager details.');
+                    error: function(xhr) {
+                        // Handle different error responses
+                        if (xhr.status === 404) {
+                            alert(xhr.responseJSON.error || 'عفوا هذا المستخدم غير موجود');
+                        } else {
+                            alert('حدث خطأ، حاول مرة أخرى.');
+                        }
                     }
                 });
             } else {
-                // Hide the manager details if no manager is selected
+                // Hide details if no manager ID
                 $('#manager_details').hide();
-                $('#password_field').hide(); // Hide password field
-                $('#rule_field').hide(); // Hide rule field
-                // Clear the input fields
+                $('#password_field').hide();
+                $('#rule_field').hide();
                 $('#password').val('');
                 $('#rule').val('');
             }
         }
-
-        // On page load, check if there's already a selected manager
-        $(document).ready(function() {
-            var selectedManagerId = $('#mangered').val();
-            if (selectedManagerId) {
-                fetchManagerDetails(selectedManagerId); // Fetch details for the pre-selected manager
-            }
-        });
-
-        // When the manager is selected or changed
-        $('#mangered').change(function() {
+        $('#mangered').on('input', function() {
             var managerId = $(this).val();
-            fetchManagerDetails(managerId); // Fetch manager details based on the selected value
+            $('#password').val(''); // Clear previous input
+            $('#rule').val(''); // Clear previous input
+            fetchManagerDetails(managerId , true); // Fetch new details
         });
     </script>
 @endsection
