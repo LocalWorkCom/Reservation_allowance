@@ -501,13 +501,16 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/get-manager-details/{id}', [DepartmentController::class, 'getManagerDetails']);
 
-
-    //reservation search
+//reserv search
     Route::get('/reservation_fetch', [ReserveFetchController::class, 'static'])->name('reservation_fetch.index')->middleware('check.permission:view Inspector');
     Route::get('/reservation_fetch/search', [ReserveFetchController::class, 'getFilteredData'])->name('reservation_fetch.search')->middleware('check.permission:view Inspector');
     Route::any('/reservation_fetch/getAll', [ReserveFetchController::class, 'getAll'])->name('reservation_fetch.getAll')->middleware('check.permission:view Inspector');
     Route::get('/reservation_fetch/print', [ReserveFetchController::class, 'printReport'])->name('reservation_fetch.print')->middleware('check.permission:view Inspector');
-
+    Route::any('/reservations/last-month', [ReserveFetchController::class, 'getLastMonth'])->name('reservation_fetch.getLastMonth')->middleware('check.permission:view Inspector');
+    Route::any('/reservations/last-three-months', [ReserveFetchController::class, 'getLastThreeMonths'])->name('reservation_fetch.getLastThreeMonths')->middleware('check.permission:view Inspector');
+    Route::any('/reservations/last-six-months', [ReserveFetchController::class, 'getLastSixMonths'])->name('reservation_fetch.getLastSixMonths')->middleware('check.permission:view Inspector');
+    Route::any('/reservations/last-year', [ReserveFetchController::class, 'getLastYear'])->name('reservation_fetch.getLastYear')->middleware('check.permission:view Inspector');
+    Route::any('/reservations/other-dates', [ReserveFetchController::class, 'getCustomDateRange'])->name('reservation_fetch.getCustomDateRange')->middleware('check.permission:view Inspector');
 
     Route::get('/file-import', [UserController::class, 'importView'])->name('import-view');
     Route::post('/import', [UserController::class, 'import'])->name('import');
