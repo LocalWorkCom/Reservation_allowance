@@ -228,7 +228,7 @@
 
     function showUsers(departmentId) {
         // Redirect to the sub-department listing for the selected department
-        window.location.href = '/users/' + departmentId;
+        window.location.href = '/employees/' + departmentId;
     }
 </script>
 
