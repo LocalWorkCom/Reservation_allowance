@@ -178,7 +178,7 @@ class sectorsController extends Controller
             }
             $user->save();
             // Optionally send email notification
-            Sendmail('مدير قطاع','تم أضافتك كمدير قطاع ', $user->username, $request->password ? $request->password : null, $user->email);
+            Sendmail('مدير قطاع','تم أضافتك كمدير قطاع ', $user->Civil_number, $request->password ? $request->password : null, $user->email);
         } else {
             return redirect()->back()->with('error', 'هذا المستخدم غير موجود');
         }
@@ -186,7 +186,7 @@ class sectorsController extends Controller
         // Track Civil numbers that could not be added
         $failed_civil_numbers = [];
 
-        // Update employees in the sector
+        // Update employees in the secto
         foreach ($Civil_numbers as $Civil_number) {
             $employee = User::where('Civil_number', $Civil_number)->first();
             if ($employee && $employee->grade_id != null) {
@@ -302,12 +302,13 @@ class sectorsController extends Controller
             if ($newManager) {
                 $newManager->sector = $sector->id;
                 $newManager->department_id = Null;
+                // dd('n');
 
                 if ($request->password) {
                     $newManager->flag = 'user';
                     $newManager->rule_id = $request->rule;
                     $newManager->password = Hash::make($request->password);
-
+                    // dd('p');
                 }
                 $newManager->save();
                 Sendmail('مدير قطاع','تم أضافتك كمدير قطاع ', $newManager->Civil_number, $request->password ? $request->password : '', $newManager->email);
@@ -318,14 +319,14 @@ class sectorsController extends Controller
         } else {
             $Manager = User::find($manager);
             if ($request->password) {
+                // dd('u');
                 $Manager->sector = $sector->id;
                 $Manager->flag = 'user';
                 $Manager->rule_id = $request->rule;
                 $Manager->password = Hash::make($request->password);
+                $Manager->save();
+                // Sendmail('مدير قطاع','تم أضافتك كمدير قطاع ', $Manager->Civil_number, $request->password ? $request->password : '', $Manager->email);
             }
-            $Manager->save();
-            Sendmail('مدير قطاع','تم أضافتك كمدير قطاع ', $Manager->Civil_number, $request->password ? $request->password : '', $Manager->email);
-
         }
 
         // Handle employee Civil_number updates

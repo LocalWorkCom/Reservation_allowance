@@ -87,7 +87,7 @@
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager">
                     <label for="mangered">رقم هوية المدير</label>
                     <input type="text" name="mangered" id="mangered" class="form-control"
-                        value="{{ old('mangered', $data->manager_name->Civil_number) }}">
+                        value="{{ old('mangered',$data->manager ? $data->manager_name->Civil_number : null) }}">
                     @error('mangered')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
