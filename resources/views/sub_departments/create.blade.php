@@ -93,6 +93,20 @@
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             </div>
+
+                            <div class="form-group col-md-10 mx-md-2">
+                                <label for="parent_department">اسم الادارة الرئيسية</label>
+                                @php
+                                    $parentDepartment = App\Models\departements::find($department->id);
+                                @endphp
+                                <input type="hidden" name="parent" value="{{ $department->id }}">
+                                <input type="text" class="form-control" name="parent_department" id="parent_department"
+                                    value="{{ $parentDepartment ? $parentDepartment->name : 'No Parent Department' }}"
+                                    disabled>
+                                @error('parent_department')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="name">أسم الأداره الفرعية</label>
                                 <input type="text" name="name" class="form-control" value="{{ old('name') }}">
@@ -122,12 +136,8 @@
                             </div>
                             <div class="form-group col-md-10 mx-md-2" id="manager">
                                 <label for="mangered">رقم هوية المدير</label>
-                                <select name="manger" id="mangered" class=" form-control " required>
-                                    <option value="">اختار رقم هوية المدير</option>
-                                    @foreach ($managers as $user)
-                                        <option value="{{ $user->id }}">{{ $user->Civil_number }}</option>
-                                    @endforeach
-                                </select>
+                                <input type="text" name="manger" class="form-control" value="" required>
+
                                 @error('manger')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
