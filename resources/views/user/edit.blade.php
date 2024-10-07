@@ -227,9 +227,8 @@
                                 </select>
                             </div>
                         </div>
-
                         <div class="form-row mx-3 d-flex justify-content-center flex-row-reverse" id="additionalFields"
-                            style="{{ $user->flag == 'user' ? 'display: flex;' : 'display: none;' }}">
+                            style="{{ $user->flag == 'user' ? 'visibility: visible;' : 'visibility: hidden;' }}">
                             <!-- Password field -->
                             <div class="form-group col-md-5 mx-2">
                                 <label for="input3">
@@ -272,26 +271,40 @@
                                     <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>
                                     الرتبة
                                 </label>
-                                <select id="gradeSelect" name="grade_id" class="form-control select2" required>
-                                    <option selected disabled>اختار من القائمة</option>
+                                <select id="gradeSelect" name="grade_id" class="form-control " required>
+                                    <option>اختار من القائمة</option>
                                     @foreach ($grades as $item)
-                                        <option value="{{ $item->id }}" 
+                                        <option value="{{ $item->id }}"
                                             {{ $user->grade_id == $item->id ? 'selected' : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
                                 </select>
-                                
+
                             </div>
-                            
-                            
 
                             <div class="form-group col-md-5 mx-2">
-                                <label for="input15">
+                                <label for="sector"> <i class="fa-solid fa-asterisk"
+                                        style="color:red; font-size:10px;"></i>
+                                    القطاع </label>
+                                <select id="sector" name="sector" class="form-control " placeholder="القطاع">
+                                    <option value="{{ null }}" selected>
+                                        لا يوجد قسم محدد</option>
+                                    @foreach ($sectors as $sector)
+                                        <option value="{{ $sector->id }}"
+                                            {{ old('sector') == $sector->id ? 'selected' : '' }}>
+                                            {{ $sector->name }}</option>
+                                    @endforeach
+
+                                </select>
+                            </div>
+
+                            <div class="form-group col-md-5 mx-2">
+                                <label for="department_id">
                                     <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>
                                     الادارة
                                 </label>
-                                <select id="input15" name="public_administration" class="form-control select2"
+                                <select id="department_id" name="public_administration" class="form-control select2"
                                     placeholder="الادارة ">
                                     @if ($user->department_id == null)
                                         <option selected disabled>اختار من القائمة</option>
@@ -305,6 +318,7 @@
 
                                 </select>
                             </div>
+
                         </div>
                         {{-- <div class="form-row mx-md-2  d-flex justify-content-center flex-row-reverse">
 
@@ -327,8 +341,8 @@
                                     placeholder="تاريخ الالتحاق" value="{{ $user->joining_date }}">
                             </div>
                         </div>
-                
-{{-- 
+
+                        {{-- 
                         <div class="form-row mx-2 d-flex justify-content-center flex-row-reverse">
                             <div class="form-group col-md-10 mx-2">
                                 <label for="input24"> الرتبة</label>
@@ -384,22 +398,16 @@
     </section>
     <script>
         $(document).ready(function() {
-            // Ensure the page is fully loaded before checking the flag value
-            setTimeout(function() {
-                // Show or hide additional fields based on the initial flag value
-                if ($('#input13').val() == 'user') {
-                    $('#additionalFields').show();
-                } else {
-                    $('#additionalFields').hide();
-                }
-            }, 100); // Adding a small delay to ensure the DOM and data are fully loaded
-
-            // Listen for changes in the select dropdown
             $('#input13').change(function() {
+
+
                 if ($(this).val() == 'user') {
-                    $('#additionalFields').show();
+                    console.log($(this).val());
+                    $('#additionalFields').css('visibility', 'visible');
+
                 } else {
-                    $('#additionalFields').hide();
+                    $('#additionalFields').css('visibility', 'hidden');
+
                 }
             });
 
@@ -408,7 +416,14 @@
                 dir: "rtl"
             });
         });
-
+        $('#sector').on('change', function() {
+            /*  if ($(this).val() === 'ضابط') {
+                 alert('opt1');
+             } else if ($(this).val() === 'مهني') {
+                 alert('opt2')
+             } */
+            getDepartment(this.value)
+        });
 
 
         // Function to toggle password visibility
@@ -557,53 +572,88 @@
             });
         });
     </script>
-<script>
-    $(document).ready(function() {
-        // Get the current military type value from the database
-        var currentMilitaryType = $('input[name="type_military"]:checked').val(); // Get the checked radio button value
-        if (currentMilitaryType) {
-            getGrades(currentMilitaryType); // Populate grades based on the current value
+    <script>
+        $(document).ready(function() {
+            // Get the current military type value from the database
+            // var currentMilitaryType = $('input[name="type_military"]:checked')
+            //     .val(); // Get the checked radio button value
+            // if (currentMilitaryType) {
+            //     getGrades(currentMilitaryType); // Populate grades based on the current value
+            // }
+
+            // Listen for changes in the radio button
+            $('input[name="type_military"]').on('change', function() {
+
+                getgrades(this.value)
+            });
+
+        });
+
+        function getgrades(id) {
+            // Create the URL with query parameters
+            var url = '/get-grades?violation_type=' + id;
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function(response) {
+                    console.log(response); // Log the response for debugging
+
+                    // Clear the current grade options
+                    var gradeSelect = $('#gradeSelect');
+                    gradeSelect.empty(); // Clear the current options
+
+                    // Add default option
+                    gradeSelect.append('<option>اختار من القائمة</option>');
+
+                    // Populate the grade select with new options
+                    response.forEach(function(grade) {
+                        gradeSelect.append($('<option></option>').val(grade.id).text(grade.name));
+                    });
+
+                    // Re-initialize select2 to apply it on the new options
+                    // gradeSelect.select2({
+                    //     dir: "rtl" // RTL direction
+                    // });
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error fetching grades:', textStatus, errorThrown);
+                }
+            });
         }
 
-        // Listen for changes in the radio button
-        $('input[name="type_military"]').on('change', function() {
-            getGrades(this.value); // Fetch grades when the type changes
-        });
-    });
+        function getDepartment(id) {
 
-    function getGrades(id) {
-        // Create the URL with query parameters
-        var url = '/get-grades?violation_type=' + id;
+            console.log(id);
 
-        $.ajax({
-            url: url,
-            type: 'GET',
-            success: function(response) {
-                console.log(response); // Log the response for debugging
+            var url = '/get-deprt-sector?sector=' + id;
 
-                // Clear the current grade options
-                var gradeSelect = $('#gradeSelect');
-                gradeSelect.empty(); // Clear the current options
+            $.ajax({
+                url: url,
+                type: 'GET', // Use GET method
+                success: function(response) {
+                    console.log(response);
 
-                // Add default option
-                gradeSelect.append('<option selected disabled>اختار من القائمة</option>');
 
-                // Populate the grade select with new options
-                response.forEach(function(grade) {
-                    gradeSelect.append($('<option></option>').val(grade.id).text(grade.name));
-                });
+                    // Clear the current grade options
+                    var department_id = document.getElementById('department_id');
+                    department_id.innerHTML = '<option selected disabled>اختار من القائمة</option>';
 
-                // Re-initialize select2 to apply it on the new options
-                gradeSelect.select2({
-                    dir: "rtl" // RTL direction
-                });
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.error('Error fetching grades:', textStatus, errorThrown);
-            }
-        });
-    }
-</script>
+                    // Populate the grade select with new options
+                    response.forEach(function(grade) { // Use `response` instead of `data`
+                        var option = document.createElement('option');
+                        option.value = grade.id;
+                        option.textContent = grade.name;
+                        department_id.appendChild(option);
+                    });
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error fetching grades:', textStatus, errorThrown);
+                }
+            });
+
+        }
+    </script>
 
 
     {{-- <script>
