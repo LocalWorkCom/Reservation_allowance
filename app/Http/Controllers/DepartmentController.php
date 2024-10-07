@@ -84,11 +84,20 @@ class DepartmentController extends Controller
     }
     public function getManagerDetails($id)
     {
+
+
         // Fetch manager data from the database
         $manager = User::where('Civil_number', $id)->first();
 
         if (!$manager) {
             return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 404);
+        }
+
+        // Allow this check only for input change, not for initial load
+        $isDepartmentCheck = request()->has('check_department') && request()->get('check_department') == true;
+
+        if ($isDepartmentCheck && ($manager->department_id != Null || $manager->sector != Null)) {
+            return response()->json(['error' => 'عفوا هذا المستخدم غير متاح'], 404);
         }
 
         $joiningDate = $manager->joining_date ? Carbon::parse($manager->joining_date) : Carbon::parse($manager->created_at);
@@ -109,6 +118,7 @@ class DepartmentController extends Controller
             'isEmployee' => $isEmployee,  // Include the employee flag
         ]);
     }
+
 
 
     public function index_1($id)
