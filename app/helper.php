@@ -18,8 +18,8 @@ use App\Models\InspectorGroupHistory;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Google\Client as GoogleClient;
-
-
+use App\Mail\SendEmail;
+use Illuminate\Support\Facades\Mail;
 if (!function_exists('whats_send')) {
     function whats_send($mobile, $message, $country_code)
     {
@@ -121,7 +121,7 @@ if (!function_exists('send_sms_code')) {
  * @image => name of file image in database
  * @realname =>real name file in db
  * @model => $model where to save files in
- * @request => the file input request which holds the file uploading 
+ * @request => the file input request which holds the file uploading
  */
 
 if (!function_exists('UploadFiles')) {
@@ -433,13 +433,23 @@ function getTokenDevice($inspector_id)
     $device_token = User::find($user_id)->device_token;
     return $device_token;
 }
+function Sendmail($title, $body, $username, $password, $email)
+{
+    $details = [
+        'title' => $title,
+        'body' => $body,
+        'username' => $username,
+        'password' => $password
+    ];
+    return    Mail::to($email)->send(new SendEmail($details));
+}
 if (!function_exists('send_push_notification')) {
     /* function send_push_notification($mission_id,$token,$title,$message){
-        $serverkey = 'AAAAFN778j8:APA91bFt1GglZf07Po-5ccwa8tYHuaIz0ymvDZCeDKJ2bxpaNrj2eM1TbON3_EdkhjkcH9IhKsaTOUv0mHSXHWQ-O2t61J6OwgoBmzoftKS-1uKBzTmwlGs0kkGClVYcP0TTXtFArxIT';// this is a Firebase server key 
+        $serverkey = 'AAAAFN778j8:APA91bFt1GglZf07Po-5ccwa8tYHuaIz0ymvDZCeDKJ2bxpaNrj2eM1TbON3_EdkhjkcH9IhKsaTOUv0mHSXHWQ-O2t61J6OwgoBmzoftKS-1uKBzTmwlGs0kkGClVYcP0TTXtFArxIT';// this is a Firebase server key
         // device_token
             $data = array(
                 'to' => $token,
-                'notification' => 
+                'notification' =>
                         array(
                         'body' => $message,
                         'title' => $title),
@@ -447,10 +457,10 @@ if (!function_exists('send_push_notification')) {
                                 "mission_id"=> $mission_id,
                                 // "mode"=>"rate",
                                 "title"=>$title
-                            
+
                             )
                         );
-       
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL,"https://fcm.googleapis.com/fcm/send");
         curl_setopt($ch, CURLOPT_POST, 1);

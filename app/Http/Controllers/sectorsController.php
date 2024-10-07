@@ -25,23 +25,21 @@ class sectorsController extends Controller
 
     public function index()
     {
-         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
+        if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
             $sectors = Sector::all();
-
-         }elseif(Auth::user()->rule->id == 4){
-            $sectors = Sector::where('id',auth()->user()->sector);
-
-         }
+        } elseif (Auth::user()->rule->id == 4) {
+            $sectors = Sector::where('id', auth()->user()->sector);
+        }
         return view("sectors.index");
     }
 
     public function getsectors()
     {
-        if (Auth::user()->rule->id == 1 || Auth::user()->rule->id== 2) {
+        if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
             $data = Sector::all();
-         }elseif(Auth::user()->rule->id == 4){
-            $data = Sector::where('id',auth()->user()->sector);
-         }
+        } elseif (Auth::user()->rule->id == 4) {
+            $data = Sector::where('id', auth()->user()->sector);
+        }
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
                 $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;" href=' . route('sectors.edit', $row->id) . '><i class="fa fa-edit"></i> تعديل</a>';
@@ -55,7 +53,7 @@ class sectorsController extends Controller
             })
             ->addColumn('departments', function ($row) {
                 $num = departements::where('sector_id', $row->id)->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15px" href=' . route('departments.index', ['id'=>$row->id]) . '> ' . $num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15px" href=' . route('departments.index', ['id' => $row->id]) . '> ' . $num . '</a>';
 
                 return $btn;
             })
@@ -73,16 +71,16 @@ class sectorsController extends Controller
             })
             ->addColumn('employees', function ($row) {
                 $emp_num = User::where('sector', $row->id)->where('department_id', null)->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15px" href=' . route('departments.index', ['id'=>$row->id]) . '> ' . $emp_num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15px" href=' . route('user.employees', ['sector' => $row->id]) . '> ' . $emp_num . '</a>';
                 return $btn;
             })
-            ->addColumn( 'employeesdep', function ($row) {
+            ->addColumn('employeesdep', function ($row) {
                 $emp_num = User::where('sector', $row->id)->whereNotNull('department_id')->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15px" href=' . route('departments.index', ['id'=>$row->id]) . '> ' . $emp_num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15px" href=' . route('user.employees', ['sector' => $row->id]) . '> ' . $emp_num . '</a>';
 
                 return $btn;
             })
-            ->rawColumns(['action', 'departments','employees', 'employeesdep'])
+            ->rawColumns(['action', 'departments', 'employees', 'employeesdep'])
             ->make(true);
     }
 
@@ -202,7 +200,7 @@ class sectorsController extends Controller
     public function show(string $id)
     {
         $data = Sector::find($id);
-        $users = User::where('department_id', null)->whereNot('id',$data->manager)->Where('sector', $id)->get();
+        $users = User::where('department_id', null)->whereNot('id', $data->manager)->Where('sector', $id)->get();
         $departments = departements::where('sector_id', $id)->get();
         return view('sectors.showdetails', compact('data', 'users', 'departments'));
     }
@@ -338,6 +336,7 @@ class sectorsController extends Controller
 
         return redirect()->route('sectors.index')->with('message', 'تم تحديث القطاع والموظفين بنجاح.');
     }
+
 
 
     /**
