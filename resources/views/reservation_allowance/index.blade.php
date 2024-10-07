@@ -137,7 +137,7 @@
                                 <a class="btn-all py-2 px-2" href="{{ route('reservation_allowances.create.all') }}"
                                     style="color: #0D992C;">
                                     <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                    اضافة بدل حجز كلى جديد
+                                    اضافة بدل حجز جماعي 
                                 </a>
                                 {{-- @endif --}}
                             </div>
