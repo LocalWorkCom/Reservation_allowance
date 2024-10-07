@@ -307,10 +307,10 @@ class sectorsController extends Controller
                     $newManager->flag = 'user';
                     $newManager->rule_id = $request->rule;
                     $newManager->password = Hash::make($request->password);
-                    Sendmail('مدير قطاع','تم أضافتك كمدير قطاع ', $newManager->username, $request->password ? $request->password : '', $newManager->email);
 
                 }
                 $newManager->save();
+                Sendmail('مدير قطاع','تم أضافتك كمدير قطاع ', $newManager->Civil_number, $request->password ? $request->password : '', $newManager->email);
 
             } else {
                 return redirect()->back()->with('خطأ', 'هذا المستخدم غير موجود');
@@ -322,9 +322,10 @@ class sectorsController extends Controller
                 $Manager->flag = 'user';
                 $Manager->rule_id = $request->rule;
                 $Manager->password = Hash::make($request->password);
-                Sendmail('مدير قطاع','تم أضافتك كمدير قطاع ', $Manager->Civil_number, $request->password ? $request->password : '', $Manager->email);
             }
             $Manager->save();
+            Sendmail('مدير قطاع','تم أضافتك كمدير قطاع ', $Manager->Civil_number, $request->password ? $request->password : '', $Manager->email);
+
         }
 
         // Handle employee Civil_number updates
