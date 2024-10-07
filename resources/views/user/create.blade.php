@@ -269,11 +269,11 @@
                                         style="color:red; font-size:10px;"></i>
                                     القطاع </label>
                                 <select id="sector" name="sector" class="form-control " placeholder="القطاع">
-                                    <option value="{{ null }}" selected>
+                                    <option value="{{ null }}">
                                         لا يوجد قسم محدد</option>
                                     @foreach ($sectors as $sector)
                                         <option value="{{ $sector->id }}"
-                                            {{ old('sector') == $sector->id ? 'selected' : '' }}>
+                                            {{ $user->sector == $sector->id ? 'selected' : '' }}>
                                             {{ $sector->name }}</option>
                                     @endforeach
 
@@ -298,7 +298,7 @@
                             </div>
                         </div>
                         <div class="form-row mx-md-3  d-flex justify-content-center flex-row-reverse">
-
+ 
                             <div class="form-group col-md-5 mx-2">
                                 <label for="gradeSelect"><i class="fa-solid fa-asterisk"
                                         style="color:red; font-size:10px;"></i>
