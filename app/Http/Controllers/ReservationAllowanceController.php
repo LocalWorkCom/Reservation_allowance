@@ -423,6 +423,7 @@ class ReservationAllowanceController extends Controller
 
     public function get_departement($sector_id, $type)
     {
+       // dd($type);
         if($type == 1){
             $get_departements = departements::where('id', '!=', 1)->where('sector_id', $sector_id)->where('parent_id', null)->get();
         }else{

@@ -4,9 +4,9 @@
         <p>جميع الحقوق محفوظه </p>
     </div>
 </footer>
-@stack('scripts')
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+
 <script>
     $(document).ready(function() {
         function resetModal() {
@@ -156,6 +156,7 @@
             }
         }
     }
+
     function toggleDropdown5() {
         var dropdownMenu = document.getElementById("dropdownMenu5");
         if (dropdownMenu.style.display === "block") {
@@ -176,6 +177,7 @@
             }
         }
     }
+
     function toggleDropdown6() {
         var dropdownMenu = document.getElementById("dropdownMenu6");
         if (dropdownMenu.style.display === "block") {
@@ -325,83 +327,86 @@
             fileList.appendChild(listItem);
         }
     }
+
     function toggleDropdown4(event) {
-    event.stopPropagation();
-    const menu4 = document.getElementById('dropdownMenu4');
-    const menu5 = document.getElementById('dropdownMenu5');
-    const menu6 = document.getElementById('dropdownMenu6');
+        event.stopPropagation();
+        const menu4 = document.getElementById('dropdownMenu4');
+        const menu5 = document.getElementById('dropdownMenu5');
+        const menu6 = document.getElementById('dropdownMenu6');
 
-    if (menu4.style.display === 'block') {
-        menu4.style.display = 'none';
-    } else {
-        menu4.style.display = 'block';
-        menu5.style.display = 'none'; 
-        menu6.style.display = 'none'; 
-    }
-}
-
-function toggleDropdown5(event) {
-    event.stopPropagation();
-    const menu4 = document.getElementById('dropdownMenu4');
-    const menu5 = document.getElementById('dropdownMenu5');
-    const menu6 = document.getElementById('dropdownMenu6');
-
-    if (menu5.style.display === 'block') {
-        menu5.style.display = 'none';
-    } else {
-        menu5.style.display = 'block';
-        menu4.style.display = 'none'; 
-        menu6.style.display = 'none'; 
-    }
-}
-
-function toggleDropdown6(event) {
-    event.stopPropagation();
-    const menu4 = document.getElementById('dropdownMenu4');
-    const menu5 = document.getElementById('dropdownMenu5');
-    const menu6 = document.getElementById('dropdownMenu6');
-
-    if (menu6.style.display === 'block') {
-        menu6.style.display = 'none';
-    } else {
-        menu6.style.display = 'block';
-        menu4.style.display = 'none'; 
-        menu5.style.display = 'none'; 
-    }
-}
-
-document.addEventListener('click', function(event) {
-    const menu4 = document.getElementById('dropdownMenu4');
-    const menu5 = document.getElementById('dropdownMenu5');
-    const menu6 = document.getElementById('dropdownMenu6');
-
-
-    if (!event.target.closest('.btn4') && !event.target.closest('#dropdownMenu4')) {
-        menu4.style.display = 'none';
+        if (menu4.style.display === 'block') {
+            menu4.style.display = 'none';
+        } else {
+            menu4.style.display = 'block';
+            menu5.style.display = 'none';
+            menu6.style.display = 'none';
+        }
     }
 
-    if (!event.target.closest('.btn5') && !event.target.closest('#dropdownMenu5')) {
-        menu5.style.display = 'none';
+    function toggleDropdown5(event) {
+        event.stopPropagation();
+        const menu4 = document.getElementById('dropdownMenu4');
+        const menu5 = document.getElementById('dropdownMenu5');
+        const menu6 = document.getElementById('dropdownMenu6');
+
+        if (menu5.style.display === 'block') {
+            menu5.style.display = 'none';
+        } else {
+            menu5.style.display = 'block';
+            menu4.style.display = 'none';
+            menu6.style.display = 'none';
+        }
     }
 
-    if (!event.target.closest('.btn6') && !event.target.closest('#dropdownMenu6')) {
-        menu6.style.display = 'none';
+    function toggleDropdown6(event) {
+        event.stopPropagation();
+        const menu4 = document.getElementById('dropdownMenu4');
+        const menu5 = document.getElementById('dropdownMenu5');
+        const menu6 = document.getElementById('dropdownMenu6');
+
+        if (menu6.style.display === 'block') {
+            menu6.style.display = 'none';
+        } else {
+            menu6.style.display = 'block';
+            menu4.style.display = 'none';
+            menu5.style.display = 'none';
+        }
     }
 
-});
+    document.addEventListener('click', function(event) {
+        const menu4 = document.getElementById('dropdownMenu4');
+        const menu5 = document.getElementById('dropdownMenu5');
+        const menu6 = document.getElementById('dropdownMenu6');
 
+
+        if (!event.target.closest('.btn4') && !event.target.closest('#dropdownMenu4')) {
+            menu4.style.display = 'none';
+        }
+
+        if (!event.target.closest('.btn5') && !event.target.closest('#dropdownMenu5')) {
+            menu5.style.display = 'none';
+        }
+
+        if (!event.target.closest('.btn6') && !event.target.closest('#dropdownMenu6')) {
+            menu6.style.display = 'none';
+        }
+
+    });
 </script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <!-- for input time  -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
-        flatpickr("#start_time, #end_time, #fromTime,#toTime, #start_time_edit, #end_time_edit, #start_time_show, #end_time_show, #fromTime, #toTime", {
-            enableTime: true,        // Enable time picker
-            noCalendar: true,        // Disable calendar view
-            dateFormat: "h:i K",     // Set format for 12-hour time with AM/PM
-            time_24hr: false,        // Use 12-hour format (set to true for 24-hour format)
-            minuteIncrement: 1       // Set minute increment step
+    flatpickr(
+        "#start_time, #end_time, #fromTime,#toTime, #start_time_edit, #end_time_edit, #start_time_show, #end_time_show, #fromTime, #toTime", {
+            enableTime: true, // Enable time picker
+            noCalendar: true, // Disable calendar view
+            dateFormat: "h:i K", // Set format for 12-hour time with AM/PM
+            time_24hr: false, // Use 12-hour format (set to true for 24-hour format)
+            minuteIncrement: 1 // Set minute increment step
         });
-    </script>
+</script>
+@stack('scripts')

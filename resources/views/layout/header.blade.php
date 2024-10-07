@@ -59,9 +59,9 @@
                         الادارات
                     </option>
                     <option value="sect"
-                    @isset($search) @if ($search == 'sect') selected @endif @endisset>
-                    القطاعات
-                </option>
+                        @isset($search) @if ($search == 'sect') selected @endif @endisset>
+                        القطاعات
+                    </option>
                     <option value="emps"
                         @isset($search) @if ($search == 'emps') selected @endif @endisset>
                         الموظفين
@@ -100,18 +100,16 @@
                     onclick="toggleDropdown3(event)">
 
                     @if (Auth::user()->rule_id == 2)
-
-                    <a href="{{ route('user.employees', 1) }}">
-                        <img src="{{ asset('frontend/images/employees.svg') }}" alt="logo">
-                        <h6 class="btn3">موظفين الوزارة</h6>
-                    </a>
-
+                        <a href="{{ route('user.employees', 1) }}">
+                            <img src="{{ asset('frontend/images/employees.svg') }}" alt="logo">
+                            <h6 class="btn3">موظفين الوزارة</h6>
+                        </a>
                     @endif
                     @if (Auth::user()->rule_id != 2)
-                    <a href="{{ route('user.employees', 1) }}">
-                        <img src="{{ asset('frontend/images/employees.svg') }}" alt="logo">
-                        <h6 class="btn3">موظفين القوة</h6>
-                    </a>
+                        <a href="{{ route('user.employees', 1) }}">
+                            <img src="{{ asset('frontend/images/employees.svg') }}" alt="logo">
+                            <h6 class="btn3">موظفين القوة</h6>
+                        </a>
                     @endif
 
 
@@ -131,7 +129,7 @@
                                         class="{{ request()->routeIs('reservation_allowances.create') ? 'active' : '' }}">
                                         <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
                                             style="margin-left: 7px;">
-                                        <a href="{{ route('reservation_allowances.index') }}">عرض بدل حجز</a>
+                                        <a href="{{ route('reservation_allowances.index') }}">اضافة بدل حجز</a>
                                     </li>
                                     <li
                                         class="{{ request()->routeIs('reservation_allowances.index') ? 'active' : '' }}">
@@ -145,8 +143,7 @@
                                             style="margin-left: 7px;">
                                         <a href="{{ route('Reserv_statistic.index') }}">احصائيات بدل حجز</a>
                                     </li>
-                                    <li
-                                        class="{{ request()->routeIs('reservation_fetch.index') ? 'active' : '' }}">
+                                    <li class="{{ request()->routeIs('reservation_fetch.index') ? 'active' : '' }}">
                                         <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
                                             style="margin-left: 7px;">
                                         <a href="{{ route('reservation_fetch.index') }}">بحث بدل حجز</a>
@@ -164,20 +161,22 @@
 
                 {{-- @if (Auth::user()->hasPermission('view sectors')) --}}
                 @if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2 || Auth::user()->rule->id == 4)
-                <li class="nav-item {{ request()->routeIs('sectors.index') ? 'active' : '' }} @isset($search) @if ($search == 'dept') active @endif @endisset">
-                    <a href="{{ route('sectors.index') }}">
-                        <img src="{{ asset('frontend/images/managements.svg') }}" alt="logo">
-                        <h6>القطاعات</h6>
-                    </a>
-                </li>
-            @else
-                <li class="nav-item {{ request()->routeIs('departments.index') ? 'active' : '' }} @isset($search) @if ($search == 'dept') active @endif @endisset">
-                    <a href="{{ route('departments.index', ['id' => Auth::user()->sector]) }}">
-                        <img src="{{ asset('frontend/images/managements.svg') }}" alt="logo">
-                        <h6>الأدارات</h6>
-                    </a>
-                </li>
-            @endif
+                    <li
+                        class="nav-item {{ request()->routeIs('sectors.index') ? 'active' : '' }} @isset($search) @if ($search == 'dept') active @endif @endisset">
+                        <a href="{{ route('sectors.index') }}">
+                            <img src="{{ asset('frontend/images/managements.svg') }}" alt="logo">
+                            <h6>القطاعات</h6>
+                        </a>
+                    </li>
+                @else
+                    <li
+                        class="nav-item {{ request()->routeIs('departments.index') ? 'active' : '' }} @isset($search) @if ($search == 'dept') active @endif @endisset">
+                        <a href="{{ route('departments.index', ['id' => Auth::user()->sector]) }}">
+                            <img src="{{ asset('frontend/images/managements.svg') }}" alt="logo">
+                            <h6>الأدارات</h6>
+                        </a>
+                    </li>
+                @endif
 
                 {{-- @endif --}}
                 @if (Auth::user()->hasPermission('view job') ||
@@ -247,13 +246,12 @@
                                         @endif
 
                                         @if (Auth::user()->hasPermission('view VacationType'))
-                                        <li
-                                            class="{{ request()->routeIs('nationality.index') ? 'active' : '' }}">
-                                            <img src="{{ asset('frontend/images/holidays.svg') }}" alt="logo"
-                                                style="margin-left: 7px;">
-                                            <a href="{{ route('nationality.index') }}">الدول والجنسيات</a>
-                                        </li>
-                                    @endif
+                                            <li class="{{ request()->routeIs('nationality.index') ? 'active' : '' }}">
+                                                <img src="{{ asset('frontend/images/holidays.svg') }}" alt="logo"
+                                                    style="margin-left: 7px;">
+                                                <a href="{{ route('nationality.index') }}">الدول والجنسيات</a>
+                                            </li>
+                                        @endif
 
 
                                         @if (Auth::user()->hasPermission('view Rule'))
