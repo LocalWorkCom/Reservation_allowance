@@ -49,8 +49,21 @@ class sectorsController extends Controller
                 return $show_permission . ' ' . $edit_permission . '' . $add_permission;
             })
             ->addColumn('manager_name', function ($row) {
-                return $row->manager_name->name ?? 'لا يوجد مدير';
+                // Check if manager exists before accessing its attributes
+                $manager = User::find($row->manager);
+
+                if ($manager) {
+                    // Check the flag to determine if the manager is an employee
+                    $is_allow = $manager->flag == 'employee' ? 'لا يسمح بالدخول' : 'يسمح بالدخول';
+
+                    // Return the manager's name along with the access permission status
+                    return $manager->name . ' (' . $is_allow . ')';
+                }
+
+                // If no manager exists, return a default message
+                return 'لا يوجد مدير';
             })
+
             ->addColumn('departments', function ($row) {
                 $num = departements::where('sector_id', $row->id)->count();
                 $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15px" href=' . route('departments.index', ['id' => $row->id]) . '> ' . $num . '</a>';
@@ -125,12 +138,17 @@ class sectorsController extends Controller
 
         // Find employees based on Civil_number
         $employees = User::whereIn('Civil_number', $Civil_numbers)->pluck('id')->toArray();
-
+        $manager = User::where('Civil_number', $request->mangered)->value('id');
+        // dd($manager);
         // Check if the selected manager is one of the employees
-        if (in_array($request->mangered, $employees)) {
-            return redirect()->back()->with('error', 'المدير لا يمكن أن يكون أحد الموظفين المدرجين.');
+        if (in_array($manager, $employees)) {
+            return redirect()->back()->withErrors( 'المدير لا يمكن أن يكون أحد الموظفين المدرجين.')->withInput();
         }
+        if ($manager == null) {
+            return redirect()->back()->withErrors( 'رقم هويه المدير غير موجود')->withInput();
 
+            // return redirect()->back()->with('error',);
+        }
         // Handle reservation allowance type
         $part = $request->input('part');
         $reservation_allowance_type = null;
@@ -148,13 +166,13 @@ class sectorsController extends Controller
         $sector->name = $request->name;
         $sector->reservation_allowance_type = $reservation_allowance_type;
         $sector->reservation_allowance_amount = $request->budget;
-        $sector->manager = $request->mangered;
+        $sector->manager = $manager;
         $sector->created_by = Auth::id();
         $sector->updated_by = Auth::id();
         $sector->save();
 
         // Handle manager update (with or without password)
-        $user = User::find($request->mangered);
+        $user = User::find($manager);
         if ($user) {
             $user->sector = $sector->id;
             $user->department_id = null;
@@ -165,14 +183,16 @@ class sectorsController extends Controller
             }
             $user->save();
             // Optionally send email notification
+            Sendmail('مدير قطاع', 'تم أضافتك كمدير قطاع ', $user->Civil_number, $request->password ? $request->password : null, $user->email);
         } else {
             return redirect()->back()->with('error', 'هذا المستخدم غير موجود');
         }
+        dd($user);
 
         // Track Civil numbers that could not be added
         $failed_civil_numbers = [];
 
-        // Update employees in the sector
+        // Update employees in the secto
         foreach ($Civil_numbers as $Civil_number) {
             $employee = User::where('Civil_number', $Civil_number)->first();
             if ($employee && $employee->grade_id != null) {
@@ -241,7 +261,13 @@ class sectorsController extends Controller
 
         // Retrieve the old manager before updating
         $oldManager = $sector->manager;
+        $manager = User::where('Civil_number', $request->mangered)->value('id');
+       
+        if ($manager == null) {
+            return redirect()->back()->withErrors( 'رقم هويه المدير غير موجود')->withInput();
 
+            // return redirect()->back()->with('error',);
+        }
         // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -264,16 +290,14 @@ class sectorsController extends Controller
         } elseif (in_array('2', $part)) {
             $reservation_allowance_type = 2;
         }
-
         // Update sector details
         $sector->name = $request->name;
         $sector->reservation_allowance_type = $reservation_allowance_type;
         $sector->reservation_allowance_amount = $request->budget;
-        $sector->manager = $request->mangered;
+        $sector->manager = $manager;
         $sector->updated_by = Auth::id();
         $sector->save();
-        // Check if manager has changed
-        if ($oldManager != $request->mangered) {
+        if ($oldManager != $manager) {
             // Update old manager's sector to null
             if ($oldManager) {
                 $oldManagerUser = User::find($oldManager);
@@ -285,33 +309,39 @@ class sectorsController extends Controller
                 }
             }
             // Update new manager's sector
-            if ($request->password) {
-                $newManager = User::find($request->mangered);
-                if ($newManager) {
-                    $newManager->sector = $sector->id;
+            $newManager = User::find($manager);
+            if ($newManager) {
+                $newManager->sector = $sector->id;
+                $newManager->department_id = Null;
+                // dd('n');
+
+                if ($request->password) {
                     $newManager->flag = 'user';
-                    $newManager->department_id = Null;
                     $newManager->rule_id = $request->rule;
                     $newManager->password = Hash::make($request->password);
-                    $newManager->save();
-                } else {
-                    return redirect()->back()->with('خطأ', 'هذا المستخدم غير موجود');
+                    // dd('p');
                 }
+                $newManager->save();
+                Sendmail('مدير قطاع', 'تم أضافتك كمدير قطاع ', $newManager->Civil_number, $request->password ? $request->password : '', $newManager->email);
             } else {
-                $user = User::find($request->mangered);
-                if ($user) {
-                    $user->sector = $sector->id;
-                    $user->department_id = Null;
-                    $user->save();
-                } else {
-                    return redirect()->back()->with('خطأ', 'هذا المستخدم غير موجود');
-                }
+                return redirect()->back()->with('خطأ', 'هذا المستخدم غير موجود');
+            }
+        } else {
+            $Manager = User::find($manager);
+            if ($request->password) {
+                // dd('u');
+                $Manager->sector = $sector->id;
+                $Manager->flag = 'user';
+                $Manager->rule_id = $request->rule;
+                $Manager->password = Hash::make($request->password);
+                $Manager->save();
+                Sendmail('مدير قطاع', 'تم تعديل بيناتك كمدير قطاع ', $Manager->Civil_number, $request->password ? $request->password : '', $Manager->email);
             }
         }
 
         // Handle employee Civil_number updates
         $currentEmployees = User::where('sector', $sector->id)
-            ->where('department_id', null)
+            ->where('department_id', null)->whereNot('id', $manager)
             ->pluck('Civil_number')
             ->toArray();
 
@@ -327,7 +357,9 @@ class sectorsController extends Controller
         }
 
         foreach ($employeesToAdd as $Civil_number) {
-            $employee = User::where('Civil_number', $Civil_number)->first();
+            $number = trim($Civil_number);
+
+            $employee = User::where('Civil_number', $number)->first();
             if ($employee && $employee->grade_id != null) {
                 $employee->sector = $sector->id;
                 $employee->save();

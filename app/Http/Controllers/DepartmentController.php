@@ -16,6 +16,7 @@ use App\Http\Requests\StoreDepartmentRequest;
 use App\Models\Rule;
 use App\Models\Sector;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
 
 use Illuminate\Support\Facades\Hash;
 
@@ -91,6 +92,15 @@ class DepartmentController extends Controller
             return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 404);
         }
 
+        // Allow this check only for input change, not for initial load
+        $isDepartmentCheck = request()->has('check_department') && request()->get('check_department') == true;
+
+        // Ensure the manager is not assigned to another sector or department
+        if ($isDepartmentCheck && ($manager->department_id != null || $manager->sector != null)) {
+            return response()->json(['error' => 'عفوا هذا المستخدم غير متاح'], 404);
+        }
+
+        // Calculate seniority/years of service
         $joiningDate = $manager->joining_date ? Carbon::parse($manager->joining_date) : Carbon::parse($manager->created_at);
         $today = Carbon::now();
         $yearsOfService = $joiningDate->diffInYears($today);
@@ -109,6 +119,7 @@ class DepartmentController extends Controller
             'isEmployee' => $isEmployee,  // Include the employee flag
         ]);
     }
+
 
 
     public function index_1($id)
@@ -247,7 +258,7 @@ class DepartmentController extends Controller
             'mangered.required' => 'اسم المدير مطلوب.',
             'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
-            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.01.',
+            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
 
             'part.required' => 'نوع بدل الحجز مطلوب.',
@@ -260,7 +271,7 @@ class DepartmentController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'mangered' => 'required',
-            'budget' => 'required|numeric|min:0.01|max:1000000',
+            'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
 
         ], $messages);
@@ -303,6 +314,14 @@ class DepartmentController extends Controller
             }
             $user->save();
             // Optionally send email notification
+            // Send email notification
+            Sendmail(
+                'مدير ادارة',  // Email subject
+                'تم أضافتك كمدير ادارة',  // Email body
+                $user->Civil_number,
+                $request->password ? $request->password : null,
+                $user->email
+            );
         } else {
             return redirect()->back()->with('error', 'هذا المستخدم غير موجود');
         }
@@ -336,7 +355,7 @@ class DepartmentController extends Controller
             'manger.required' => 'اسم المدير مطلوب.',
             'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
-            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.01.',
+            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
 
             'part.required' => 'نوع بدل الحجز مطلوب.',
@@ -349,7 +368,7 @@ class DepartmentController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'manger' => 'required',
-            'budget' => 'required|numeric|min:0.01|max:1000000',
+            'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
 
         ], $messages);
@@ -388,6 +407,14 @@ class DepartmentController extends Controller
         $user = User::find($request->manger);
         $user->department_id = $departements->id;
         $user->save();
+
+        Sendmail(
+            'مدير ادارة فرعية',  // Email subject
+            'تم أضافتك كمدير ادارة فرعية',  // Email body
+            $user->Civil_number,
+            $request->password ? $request->password : null,
+            $user->email
+        );
 
         if ($request->has('employess')) {
             foreach ($request->employess as $item) {
@@ -472,7 +499,7 @@ class DepartmentController extends Controller
             'manger.required' => 'اسم المدير مطلوب.',
             'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
-            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.01.',
+            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
 
             'part.required' => 'نوع بدل الحجز مطلوب.',
@@ -485,7 +512,7 @@ class DepartmentController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'manger' => 'required',
-            'budget' => 'required|numeric|min:0.01|max:1000000',
+            'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
 
         ], $messages);
@@ -556,6 +583,14 @@ class DepartmentController extends Controller
                     $user->sector = $request->sector;
                     $user->department_id = $departements->id;
                     $user->save();
+
+                    Sendmail(
+                        'مدير ادارة',  // Email subject
+                        'تم أضافتك كمدير ادارة',  // Email body
+                        $user->Civil_number,
+                        $request->password ? $request->password : null,
+                        $user->email
+                    );
                 } else {
                     return redirect()->back()->with('خطأ', 'هذا المستخدم غير موجود');
                 }
@@ -598,7 +633,7 @@ class DepartmentController extends Controller
             'manger.required' => 'اسم المدير مطلوب.',
             'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
-            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.01.',
+            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
 
             'part.required' => 'نوع بدل الحجز مطلوب.',
@@ -611,7 +646,7 @@ class DepartmentController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'manger' => 'required',
-            'budget' => 'required|numeric|min:0.01|max:1000000',
+            'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
 
         ], $messages);
@@ -660,6 +695,13 @@ class DepartmentController extends Controller
         $user = User::find($request->manger);
         $user->department_id = $departements->id;
         $user->save();
+        Sendmail(
+            'مدير ادارة فرعية',  // Email subject
+            'تم أضافتك كمدير ادارة فرعية',  // Email body
+            $user->Civil_number,
+            $request->password ? $request->password : null,
+            $user->email
+        );
 
         if ($request->has('employess')) {
             foreach ($request->employess as $item) {
