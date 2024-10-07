@@ -3,8 +3,7 @@
 @push('style')
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
 <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
-</script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer></script>
 
 <style>
 .div-info {
@@ -50,10 +49,19 @@ h3 {
     border-radius: 10px !important;
     background-color: #f5f6fa;
 }
-#search-form label{
-font-size:20px;
-margin-inline:10px;
-font-weight:700;
+
+#search-form label {
+    font-size: 20px;
+    margin-inline: 10px;
+    font-weight: 700;
+}
+
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-top: 10px;
 }
 </style>
 @endpush
@@ -64,37 +72,67 @@ font-weight:700;
 
 @section('content')
 <div class="container welcome col-11 my-4" dir="rtl">
-    <div class="d-flex justify-content-between">
-        <!-- Search Form -->
-        <form id="search-form" class="row col-12">
-            <div class=" d-flex">
-                <label for="civil_number " class="d-flex w-50">رقم الهوية</label>
-                <input type="text" id="civil_number" name="civil_number" class="form-control" required>
-            </div>
-            <div class=" d-flex">
-                <label for="start_date">من </label>
-                <input type="date" id="start_date" name="start_date" class="form-control">
-            </div>
-            <div class=" d-flex">
-                <label for="end_date">الى </label>
-                <input type="date" id="end_date" name="end_date" class="form-control">
-            </div>
-            <div class=" ">
-                <button type="submit" class="btn mx-2" style="background-color: #274373; color:white;">بحث</button>
-            </div>
+    <!-- Search Form and Buttons Container -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap">
+        <!-- General Search Form -->
+        <form id="search-form" class="d-flex align-items-center me-3" method="get" action="{{ route('reservation_fetch.getAll') }}">
+            <label for="civil_number" class="form-label mx-2">رقم الهوية</label>
+            <input type="text" id="civil_number" name="civil_number" class="form-control" required>
+            <button type="submit" class="btn btn-primary mx-2" style="background-color: #274373; color:white;">بحث</button>
+        </form>
+
+        <!-- Buttons Group -->
+        <div class="d-flex gap-2 flex-wrap">
+            <!-- Last Month Search Form -->
+            <form id="last-month-form" method="get" action="{{ route('reservation_fetch.getLastMonth') }}">
+                <input type="hidden" name="civil_number" id="last_month_civil_number">
+                <button type="submit" class="btn btn-secondary" style="background-color: #274373; color:white;">الشهر الماضي</button>
+            </form>
+
+            <!-- Last 3 Months Search Form -->
+            <form id="last-three-month-form" method="get" action="{{ route('reservation_fetch.getLastThreeMonths') }}">
+                <input type="hidden" name="civil_number" id="last_three_month_civil_number">
+                <button type="submit" class="btn btn-secondary" style="background-color: #274373; color:white;">آخر 3 شهور</button>
+            </form>
+
+            <!-- Last 6 Months Search Form -->
+            <form id="last-six-months-form" method="get" action="{{ route('reservation_fetch.getLastSixMonths') }}">
+                <input type="hidden" name="civil_number" id="last_six_months_civil_number">
+                <button type="submit" class="btn btn-secondary" style="background-color: #274373; color:white;">آخر ستة أشهر</button>
+            </form>
+
+            <!-- Last Year Search Form -->
+            <form id="last-year-form" method="get" action="{{ route('reservation_fetch.getLastYear') }}">
+                <input type="hidden" name="civil_number" id="last_year_civil_number">
+                <button type="submit" class="btn btn-secondary" style="background-color: #274373; color:white;">السنة الماضية</button>
+            </form>
+                 <!-- Other Dates Button -->
+                 <button id="other-dates-button" class="btn btn-info" style="background-color: #274373; color:white;">تواريخ أخرى</button>
+        </div>
+         <!-- Date Range Picker (Initially Hidden) -->
+    <div id="date-picker-container" class="row col-12 mt-3" style="display: none;">
+        <form id="custom-date-form" class="d-flex align-items-center">
+            <label for="start_date" class="form-label mx-2">من</label>
+            <input type="date" id="start_date" name="start_date" class="form-control mx-2">
+            <label for="end_date" class="form-label mx-2">إلى</label>
+            <input type="date" id="end_date" name="end_date" class="form-control mx-2">
+            <button type="submit" class="btn btn-success mx-2" style="background-color: #274373; color:white;">بحث بالتواريخ</button>
         </form>
     </div>
+    </div>
+
+   
 </div>
+
+</div>
+
+
 <!-- Results Table -->
-<div class="container  col-11">
-    <div class="">
-        <h3 style="font-weight: 700;
-    display: flex;
-    justify-content: flex-end;
-    padding-top: 20px;
-    font-size: 25px;">نتائج البحث</h3>
+<div class="container col-11">
+    <div class="table-box">
+        <h3 style="font-weight: 700; display: flex; justify-content: flex-end; padding-top: 20px; font-size: 25px;">نتائج البحث</h3>
         <div class="col-md-2 mb-2">
-            <button type="button" class="btn " onclick="printPDF()"  style="background-color: #274373; color:white;">طباعة</button>
+            <button type="button" class="btn" onclick="printPDF()" style="background-color: #274373; color:white;">طباعة</button>
         </div>
         <table id="reservation-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
             <thead>
@@ -111,7 +149,6 @@ font-weight:700;
         </table>
     </div>
 </div>
-</div>
 @endsection
 
 @push('scripts')
@@ -119,13 +156,12 @@ font-weight:700;
 $(document).ready(function() {
     var table = null;
 
-    // Function to initialize the DataTable
-    function initializeTable() {
+    function initializeTable(url) {
         table = $('#reservation-table').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
-                url: '{{ route("reservation_fetch.getAll") }}',
+                url: url,
                 data: function(d) {
                     d.civil_number = $('#civil_number').val().trim();
                     d.start_date = $('#start_date').val();
@@ -137,40 +173,16 @@ $(document).ready(function() {
                     }
                 }
             },
-            columns: [{
-                    data: null,
-                    name: 'order',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'day',
-                    name: 'day'
-                },
-                {
-                    data: 'date',
-                    name: 'date'
-                },
-                {
-                    data: 'name',
-                    name: 'name'
-                },
-                {
-                    data: 'department',
-                    name: 'department'
-                },
-                {
-                    data: 'type',
-                    name: 'type'
-                },
-                {
-                    data: 'amount',
-                    name: 'amount'
-                }
+            columns: [
+                { data: null, name: 'order', orderable: false, searchable: false },
+                { data: 'day', name: 'day' },
+                { data: 'date', name: 'date' },
+                { data: 'name', name: 'name' },
+                { data: 'department', name: 'department' },
+                { data: 'type', name: 'type' },
+                { data: 'amount', name: 'amount' }
             ],
-            order: [
-                [2, 'asc']
-            ],
+            order: [[2, 'asc']],
             "oLanguage": {
                 "sSearch": "",
                 "sSearchPlaceholder": "بحث",
@@ -207,26 +219,79 @@ $(document).ready(function() {
 
         if (civil_number !== '') {
             if (table === null) {
-                initializeTable(); // Initialize DataTable if not initialized
+                initializeTable('{{ route("reservation_fetch.getAll") }}');
             } else {
-                table.draw(); // Reload table only if civil_number is provided
+                table.ajax.url('{{ route("reservation_fetch.getAll") }}').load();
             }
         } else {
             alert('Please enter a valid Civil Number');
         }
     });
+
+    // Set the civil number for the last month form submission
+    $('#last-month-form').on('submit', function(e) {
+        e.preventDefault();
+        $('#last_month_civil_number').val($('#civil_number').val().trim());
+        submitDataTableForm('{{ route("reservation_fetch.getLastMonth") }}');
+    });
+
+    $('#last-three-month-form').on('submit', function(e) {
+        e.preventDefault();
+        $('#last_three_month_civil_number').val($('#civil_number').val().trim());
+        submitDataTableForm('{{ route("reservation_fetch.getLastThreeMonths") }}');
+    });
+
+    $('#last-six-months-form').on('submit', function(e) {
+        e.preventDefault();
+        $('#last_six_months_civil_number').val($('#civil_number').val().trim());
+        submitDataTableForm('{{ route("reservation_fetch.getLastSixMonths") }}');
+    });
+
+    $('#last-year-form').on('submit', function(e) {
+        e.preventDefault();
+        $('#last_year_civil_number').val($('#civil_number').val().trim());
+        submitDataTableForm('{{ route("reservation_fetch.getLastYear") }}');
+    });
+ // Show/hide the date range picker when clicking "Other Dates"
+ $('#other-dates-button').on('click', function() {
+        $('#date-picker-container').toggle(); // Toggle the visibility of the date picker
+    });
+
+    // Handle custom date range form submission
+    $('#custom-date-form').on('submit', function(e) {
+        e.preventDefault();
+
+        var civil_number = $('#civil_number').val().trim();
+        var start_date = $('#start_date').val();
+        var end_date = $('#end_date').val();
+
+        if (civil_number !== '' && start_date !== '' && end_date !== '') {
+            if (table === null) {
+                initializeTable('{{ route("reservation_fetch.getCustomDateRange") }}');
+            } else {
+                table.ajax.url('{{ route("reservation_fetch.getCustomDateRange") }}').load();
+            }
+        } else {
+            alert('يرجى إدخال رقم هوية وتواريخ صالحة');
+        }
+    });
+    function submitDataTableForm(url) {
+        var civil_number = $('#civil_number').val().trim();
+        if (civil_number !== '') {
+            if (table === null) {
+                initializeTable(url);
+            } else {
+                table.ajax.url(url).load();
+            }
+        } else {
+            alert('Please enter a valid Civil Number');
+        }
+    }
 });
-
-
 
 function printPDF() {
     let civil_number = $('#civil_number').val();
-    let start_date = $('#start_date').val();
-    let end_date = $('#end_date').val();
-
-    // Redirect to the print route with search parameters
-    window.open('{{ route("reservation_fetch.print") }}' + '?civil_number=' + civil_number + '&start_date=' +
-        start_date + '&end_date=' + end_date, '_blank');
+    window.open('{{ route("reservation_fetch.print") }}' + '?civil_number=' + civil_number, '_blank');
 }
 </script>
 @endpush
