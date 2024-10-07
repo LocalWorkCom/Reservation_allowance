@@ -124,7 +124,7 @@
                     data: 'num_managers',
                     name: 'num_managers',
                     render: function(data, type, row) {
-                        return '<button class="btn btn-link" onclick="showEmployees(' + row
+                        return '<button class="btn btn-link" onclick="showUsers(' + row
                             .id + ')">' + data + '</button>';
                     }
                 },
