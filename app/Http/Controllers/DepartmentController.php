@@ -72,13 +72,11 @@ class DepartmentController extends Controller
             })
             ->addColumn('num_managers', function ($row) {
                 return User::where('department_id', $row->id)
-                    ->where('rule_id', 3)
                     ->count();
             })
             ->addColumn('num_subdepartment_managers', function ($row) {
                 $subdepartment_ids = departements::where('parent_id', $row->id)->pluck('id');
                 return User::whereIn('department_id', $subdepartment_ids)
-                    ->where('rule_id', 3)
                     ->count();
             })
             ->rawColumns(['action'])
@@ -87,7 +85,7 @@ class DepartmentController extends Controller
     public function getManagerDetails($id)
     {
         // Fetch manager data from the database
-        $manager = User::where('Civil_number',$id)->first();
+        $manager = User::where('Civil_number', $id)->first();
 
         if (!$manager) {
             return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 404);
