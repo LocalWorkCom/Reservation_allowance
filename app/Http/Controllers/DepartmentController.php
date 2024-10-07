@@ -168,14 +168,11 @@ class DepartmentController extends Controller
             })
             ->addColumn('num_managers', function ($row) {
                 return User::where('department_id', $row->id)
-                    ->where('rule_id', 3)
                     ->count();
             })
-
             ->addColumn('num_subdepartment_managers', function ($row) {
                 $subdepartment_ids = departements::where('parent_id', $row->id)->pluck('id');
                 return User::whereIn('department_id', $subdepartment_ids)
-                    ->where('rule_id', 3)
                     ->count();
             })
 
