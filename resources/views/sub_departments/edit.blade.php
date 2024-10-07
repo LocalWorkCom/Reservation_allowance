@@ -171,18 +171,13 @@
                                 @enderror
                             </div>
 
-
-                            <div class="form-group col-md-10 mx-md-2">
-                                <label for="employess">الموظفين </label>
-                                <select name="employess[]" id="employess" class="form-group col-md-12 " multiple
-                                    dir="rtl"
-                                    style=" height: 150px;font-size: 18px;border: 0.2px solid lightgray; overflow-y: auto;">
-                                    @foreach ($employees as $item)
-                                        <option value="{{ $item->id }}"
-                                            @if ($item->department_id == $department->id) selected @endif>{{ $item->name }}</option>
-                                    @endforeach
-                                </select>
-
+                            <div class="input-group moftsh col-md-10 mx-md-2">
+                                <label for="Civil_number" class="col-12"> أرقام الهوية</label>
+                                <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px">
+                                            @foreach ($employees as $employee)
+{{ $employee->Civil_number }}
+@endforeach
+                                        </textarea>
                             </div>
                         </div>
 

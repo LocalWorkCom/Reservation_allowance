@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use Google\Client as GoogleClient;
 use App\Mail\SendEmail;
 use Illuminate\Support\Facades\Mail;
+
 if (!function_exists('whats_send')) {
     function whats_send($mobile, $message, $country_code)
     {
