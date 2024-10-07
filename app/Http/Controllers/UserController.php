@@ -812,7 +812,7 @@ class UserController extends Controller
         // Get the selected violation type from the user (if it exists)
         $selectedViolationType = old('type_military', $user->type_military); // Default to old input or user's current value
 
-        
+
         // Fetch grades based on the selected violation type
         $grades = Grade::where('type', $selectedViolationType)->get();
         // dd($user);
