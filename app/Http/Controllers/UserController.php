@@ -76,6 +76,7 @@ class UserController extends Controller
 
     public function getUsers()
     {
+        // dd(request());
         $parentDepartment = Departements::find(Auth()->user()->department_id);
 
         if (Auth::user()->rule->name == "localworkadmin") {
@@ -100,8 +101,13 @@ class UserController extends Controller
             $data = $data->where('department_id', request()->get('department_id'));
         }
 
-        if (request()->has('sector')) {
-            $data = $data->where('sector', request()->get('sector'))->whereNull('department_id');
+        if (request()->has('sector_id') && request()->has('type')) {
+            if (request()->has('type') == 0) {
+
+                $data = $data->where('sector', request()->get('sector_id'))->whereNull('department_id');
+            } else {
+                $data = $data->where('sector', request()->get('sector_id'))->whereNotNull('department_id');
+            }
         }
 
         // Finally, fetch the results
@@ -584,7 +590,7 @@ class UserController extends Controller
                 'rule_id.required' => ' المهام  مطلوب ولا يمكن تركه فارغاً.',
                 'password.required' => ' الباسورد مطلوب ولا يمكن تركه فارغاً.',
                 'grade_id.required' => 'يجب اختيار رتبه',
-                
+
 
                 // Add more custom messages here
             ];
@@ -704,14 +710,7 @@ class UserController extends Controller
             $newUser->save();
             $id = $request->type;
 
-            $details = [
-                'title' => 'بيانات دخولك على نظام القوة المطور',
-                'body' => 'هذه بيانات دخولك على نظام القوة المطور',
-                'username' => $request->Civil_number,
-                'password' => $request->password
-            ];
-
-            Mail::to($request->email)->send(new SendEmail($details));
+            Sendmail('بيانات دخولك على نظام القوة المطور', 'هذه بيانات دخولك على نظام القوة المطور',  $request->Civil_number, $request->password, $request->email);
 
             return redirect()->route('user.index', ['id' => $id]);
         } else {
@@ -759,14 +758,9 @@ class UserController extends Controller
 
                 UploadFilesWithoutReal($path, 'image', $newUser, $file);
             }
-            $details = [
-                'title' => 'بيانات دخولك على نظام القوة المطور',
-                'body' => 'هذه بيانات دخولك على نظام القوة المطور',
-                'username' => $request->Civil_number,
-                'password' => $request->password
-            ];
+
             session()->flash('success', 'تم الحفظ بنجاح.');
-            Mail::to($request->email)->send(new SendEmail($details));
+            Sendmail('بيانات دخولك على نظام القوة المطور', 'هذه بيانات دخولك على نظام القوة المطور',  $request->Civil_number, $request->password, $request->email);
 
             $id = $request->type;
             return redirect()->route('user.employees', ['id' => $id]);
