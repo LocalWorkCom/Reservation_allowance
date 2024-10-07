@@ -136,8 +136,9 @@
 
 
                                 @php
-                                $department_id = request()->get('department_id'); // Get department_id from request
-                                $sector_id = request()->get('sector_id'); // Get department_id from request
+                                    $department_id = request()->get('department_id'); // Get department_id from request
+                                    $sector_id = request()->get('sector_id'); // Get department_id from request
+                                    $type = request()->get('type'); // Get department_id from request
 
                                     $Dataurl = url('api/users');
                                     if (isset($mode)) {
@@ -149,8 +150,10 @@
                                     if ($department_id) {
                                         $Dataurl .= '?department_id=' . $department_id;
                                     }
-                                    if ($sector_id) {
+
+                                    if ($sector_id && $type) {
                                         $Dataurl .= '?sector_id=' . $sector_id;
+                                        $Dataurl .= '&type=' . $type;
                                     }
                                 @endphp
                                 /*   

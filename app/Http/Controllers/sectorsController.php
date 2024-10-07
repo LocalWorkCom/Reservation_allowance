@@ -71,12 +71,12 @@ class sectorsController extends Controller
             })
             ->addColumn('employees', function ($row) {
                 $emp_num = User::where('sector', $row->id)->where('department_id', null)->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15px" href=' . route('user.employees', ['sector' => $row->id]) . '> ' . $emp_num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15px" href=' . route('user.employees', ['sector_id' => $row->id, 'type' => 0]) . '> ' . $emp_num . '</a>';
                 return $btn;
             })
             ->addColumn('employeesdep', function ($row) {
                 $emp_num = User::where('sector', $row->id)->whereNotNull('department_id')->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15px" href=' . route('user.employees', ['sector' => $row->id]) . '> ' . $emp_num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15px" href=' . route('user.employees', ['sector_id' => $row->id, 'type' => 1]) . '> ' . $emp_num . '</a>';
 
                 return $btn;
             })
