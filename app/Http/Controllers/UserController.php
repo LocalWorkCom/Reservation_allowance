@@ -74,7 +74,7 @@ class UserController extends Controller
         return view('user.view', compact('departments'));
     }
 
-    public function getUsers()
+    public function getUsers(Request $request)
     {
         // dd(request());
         $parentDepartment = Departements::find(Auth()->user()->department_id);
@@ -95,19 +95,26 @@ class UserController extends Controller
                 $data = User::where('department_id', $parentDepartment->id);
             }
         }
+           // dd($request);
 
         // Apply additional filters using `request()->get()`
         if (request()->has('department_id')) {
             $data = $data->where('department_id', request()->get('department_id'));
         }
-
-        if (request()->has('sector_id') && request()->has('type')) {
-            if (request()->has('type') == 0) {
-
+        //dd($request->amp;type);
+        if (request()->has('sector_id') && request()->has('amp;type')) {
+            if (request()->has('amp;type') == 0) {
+               // dd('0');
                 $data = $data->where('sector', request()->get('sector_id'))->whereNull('department_id');
             } else {
+                //dd('1');
                 $data = $data->where('sector', request()->get('sector_id'))->whereNotNull('department_id');
             }
+        }
+        if (request()->has('sector_id') ) {
+            
+                $data = $data->where('sector', request()->get('sector_id'))->whereNull('department_id');
+           
         }
 
         // Finally, fetch the results

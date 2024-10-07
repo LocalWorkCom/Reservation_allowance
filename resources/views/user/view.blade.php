@@ -139,22 +139,51 @@
                                     $department_id = request()->get('department_id'); // Get department_id from request
                                     $sector_id = request()->get('sector_id'); // Get department_id from request
                                     $type = request()->get('type'); // Get department_id from request
-
-                                    $Dataurl = url('api/users');
+                                    // dd($sector_id);
+                                    //  $Dataurl = 'api/users';
+                                    $Dataurl = 'api.users';
                                     if (isset($mode)) {
                                         if ($mode == 'search') {
-                                            $Dataurl = url('searchUsers/users');
+                                            //  $Dataurl = 'searchUsers/users';
+                                            $Dataurl = 'search.user';
                                         }
                                     }
+                                    $parms = [];
                                     // dd($Dataurl);
                                     if ($department_id) {
-                                        $Dataurl .= '?department_id=' . $department_id;
+                                        //  $Dataurl .= '?department_id=' . $department_id;
+                                        /*  if ($parms != '') {
+                                                                                                                                                                                                                                                                    $parms .= '&';
+                                                                                                                                                                                                                                                                } else {
+                                                                                                                                                                                                                                                                    $parms = '?';
+                                                                                                                                                                                                                                                                } */
+                                        $parms['department_id'] = $department_id;
                                     }
 
-                                    if ($sector_id && $type) {
-                                        $Dataurl .= '?sector_id=' . $sector_id;
-                                        $Dataurl .= '&type=' . $type;
+                                    if ($sector_id) {
+                                        /*   if ($parms != '') {
+                                                                                                                                                                                                                                                                    $parms .= '&';
+                                                                                                                                                                                                                                                                } else {
+                                                                                                                                                                                                                                                                    $parms = '?';
+                                                                                                                                                                                                                                                                }*/
+
+                                        $parms['sector_id'] = $sector_id;
                                     }
+                                    if ($type) {
+                                        /*  if ($parms != '') {
+                                                                                                                                                                                                                                                                    $parms .= '&';
+                                                                                                                                                                                                                                                                } else {
+                                                                                                                                                                                                                                        $parms = '?';
+                                                                                                                                                                                                                                                                }*/
+
+                                        $parms['type'] = $type;
+                                    }
+                                    //dd($parms);
+                                  //  $url_data = route($Dataurl, $parms);
+
+                                    //  dd(http_build_query($parms));
+                                    // $Dataurl .= '?' . http_build_query($parms);
+                                   // dd($url_data);
                                 @endphp
                                 /*   
                                   $('#users-table tfoot th').each(function (i) {
@@ -168,8 +197,8 @@
                                 var table = $('#users-table').DataTable({
                                     processing: true,
                                     serverSide: true,
-                                    ajax: '{{ $Dataurl }}/' +
-                                        '{{ isset($q) ? $q : '' }}', // Correct URL concatenation
+                                    ajax: '{{ route($Dataurl, $parms) }}' +
+                                        '{{ isset($q) ? '/' . $q : '' }}', // Correct URL concatenation
                                     bAutoWidth: false,
 
                                     columns: [{
