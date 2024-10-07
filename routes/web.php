@@ -507,8 +507,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/import', [UserController::class, 'import'])->name('import');
     Route::get('/export-users', [UserController::class, 'exportUsers'])->name('export-users');
     Route::get('download-template', [UserController::class, 'downloadTemplate'])->name('download-template');
-
-
 });
 
 
