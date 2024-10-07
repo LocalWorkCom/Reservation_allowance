@@ -159,9 +159,9 @@
                         <input type="checkbox" class="toggle-radio-buttons mx-2" value="2" id="part"
                             name="part[]" style="height:30px;">
                         <label for="part" class="col-12">حجز جزئى</label>
-                        @error('part')
+                        {{-- @error('part')
                             <div class="alert alert-danger">{{ $message }}</div>
-                        @enderror
+                        @enderror --}}
                     </div>
                 </div>
                 <div class="container col-11">

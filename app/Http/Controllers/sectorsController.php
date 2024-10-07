@@ -139,11 +139,16 @@ class sectorsController extends Controller
         // Find employees based on Civil_number
         $employees = User::whereIn('Civil_number', $Civil_numbers)->pluck('id')->toArray();
         $manager = User::where('Civil_number', $request->mangered)->value('id');
+        // dd($manager);
         // Check if the selected manager is one of the employees
         if (in_array($manager, $employees)) {
-            return redirect()->back()->with('error', 'المدير لا يمكن أن يكون أحد الموظفين المدرجين.');
+            return redirect()->back()->withErrors( 'المدير لا يمكن أن يكون أحد الموظفين المدرجين.')->withInput();
         }
+        if ($manager == null) {
+            return redirect()->back()->withErrors( 'رقم هويه المدير غير موجود')->withInput();
 
+            // return redirect()->back()->with('error',);
+        }
         // Handle reservation allowance type
         $part = $request->input('part');
         $reservation_allowance_type = null;
@@ -178,10 +183,11 @@ class sectorsController extends Controller
             }
             $user->save();
             // Optionally send email notification
-            Sendmail('مدير قطاع','تم أضافتك كمدير قطاع ', $user->Civil_number, $request->password ? $request->password : null, $user->email);
+            Sendmail('مدير قطاع', 'تم أضافتك كمدير قطاع ', $user->Civil_number, $request->password ? $request->password : null, $user->email);
         } else {
             return redirect()->back()->with('error', 'هذا المستخدم غير موجود');
         }
+        dd($user);
 
         // Track Civil numbers that could not be added
         $failed_civil_numbers = [];
@@ -256,7 +262,12 @@ class sectorsController extends Controller
         // Retrieve the old manager before updating
         $oldManager = $sector->manager;
         $manager = User::where('Civil_number', $request->mangered)->value('id');
+       
+        if ($manager == null) {
+            return redirect()->back()->withErrors( 'رقم هويه المدير غير موجود')->withInput();
 
+            // return redirect()->back()->with('error',);
+        }
         // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -311,8 +322,7 @@ class sectorsController extends Controller
                     // dd('p');
                 }
                 $newManager->save();
-                Sendmail('مدير قطاع','تم أضافتك كمدير قطاع ', $newManager->Civil_number, $request->password ? $request->password : '', $newManager->email);
-
+                Sendmail('مدير قطاع', 'تم أضافتك كمدير قطاع ', $newManager->Civil_number, $request->password ? $request->password : '', $newManager->email);
             } else {
                 return redirect()->back()->with('خطأ', 'هذا المستخدم غير موجود');
             }
@@ -325,13 +335,13 @@ class sectorsController extends Controller
                 $Manager->rule_id = $request->rule;
                 $Manager->password = Hash::make($request->password);
                 $Manager->save();
-                // Sendmail('مدير قطاع','تم أضافتك كمدير قطاع ', $Manager->Civil_number, $request->password ? $request->password : '', $Manager->email);
+                Sendmail('مدير قطاع', 'تم تعديل بيناتك كمدير قطاع ', $Manager->Civil_number, $request->password ? $request->password : '', $Manager->email);
             }
         }
 
         // Handle employee Civil_number updates
         $currentEmployees = User::where('sector', $sector->id)
-            ->where('department_id', null)->whereNot('id',$manager)
+            ->where('department_id', null)->whereNot('id', $manager)
             ->pluck('Civil_number')
             ->toArray();
 

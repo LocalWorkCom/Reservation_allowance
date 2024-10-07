@@ -43,6 +43,7 @@ use App\Exports\UsersImportTemplate;
 
 use App\Mail\SendEmail;
 use Illuminate\Support\Facades\Mail;
+use TCPDF;
 
 class UserController extends Controller
 {
@@ -74,7 +75,7 @@ class UserController extends Controller
         return view('user.view', compact('departments'));
     }
 
-    public function getUsers()
+    public function getUsers(Request $request)
     {
         // dd(request());
         $parentDepartment = Departements::find(Auth()->user()->department_id);
@@ -95,19 +96,26 @@ class UserController extends Controller
                 $data = User::where('department_id', $parentDepartment->id);
             }
         }
+           // dd($request);
 
         // Apply additional filters using `request()->get()`
         if (request()->has('department_id')) {
             $data = $data->where('department_id', request()->get('department_id'));
         }
-
-        if (request()->has('sector_id') && request()->has('type')) {
-            if (request()->has('type') == 0) {
-
+        //dd($request->amp;type);
+        if (request()->has('sector_id') && request()->has('amp;type')) {
+            if (request()->has('amp;type') == 0) {
+               // dd('0');
                 $data = $data->where('sector', request()->get('sector_id'))->whereNull('department_id');
             } else {
+                //dd('1');
                 $data = $data->where('sector', request()->get('sector_id'))->whereNotNull('department_id');
             }
+        }
+        if (request()->has('sector_id') ) {
+            if (request()->has('amp;type') != 1) 
+                $data = $data->where('sector', request()->get('sector_id'))->whereNull('department_id');
+           
         }
 
         // Finally, fetch the results
@@ -828,7 +836,7 @@ class UserController extends Controller
         $job = job::all();
         $govermnent = Government::all();
         $area = Region::all();
-        $sector = Sector::all();
+        $sectors = Sector::all();
         $countries = Country::all();
         $qualifications = Qualification::all();
 
@@ -840,7 +848,7 @@ class UserController extends Controller
 
 
         // Fetch grades based on the selected violation type
-        $grades = Grade::where('type', $selectedViolationType)->get();
+        $grades = Grade::all();
         // dd($user);
         if ($user->department_id == "NULL") {
             $department = departements::all();
@@ -853,7 +861,7 @@ class UserController extends Controller
         }
         // $department = departements::all();
         $hisdepartment = $user->createdDepartments;
-        return view('user.edit', compact('user', 'rule', 'grade', 'grades', 'department', 'hisdepartment', 'violationTypeName', 'selectedViolationType', 'end_of_service', 'job', 'sector', 'area', 'govermnent', 'qualifications', 'countries'));
+        return view('user.edit', compact('user', 'rule', 'grade', 'grades', 'department', 'hisdepartment', 'violationTypeName', 'selectedViolationType', 'end_of_service', 'job', 'sectors', 'area', 'govermnent', 'qualifications', 'countries'));
     }
 
     /**
@@ -1051,4 +1059,58 @@ class UserController extends Controller
     {
         return Excel::download(new UsersImportTemplate, 'users_import_template.xlsx');
     }
+    public function printUsers(Request $request)
+    {
+      
+        // Fetch the user by Civil_number
+        $user = User::all();
+    
+        if ($user) {
+            // Create query for ReservationAllowance based on user_id and optional date range
+        
+    
+            // Create a new TCPDF instance
+            $pdf = new TCPDF();
+    
+            // Set document information
+            $pdf->SetCreator('Your App');
+            $pdf->SetAuthor('Your App');
+            $pdf->SetTitle('Reservation Report');
+            $pdf->SetSubject('Report');
+    
+            // Set default monospaced font
+            $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+    
+            // Set margins
+            $pdf->SetMargins(10, 10, 10);
+            $pdf->SetHeaderMargin(10);
+            $pdf->SetFooterMargin(10);
+    
+            // Set auto page breaks
+            $pdf->SetAutoPageBreak(TRUE, 10);
+    
+            // Set font for Arabic
+            $pdf->SetFont('dejavusans', '', 12);
+    
+            // Add a page
+            $pdf->AddPage();
+    
+            // Set RTL direction
+            $pdf->setRTL(true);
+    
+            // Write HTML content
+            $html = view('user.view', [
+                'user' => $user,
+            ])->render();
+    
+            // Print text using writeHTMLCell method
+            $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
+    
+            // Output PDF
+            return $pdf->Output('users.pdf', 'I'); // 'I' will display in the browser
+        } else {
+            return redirect()->back()->with('error', 'No user found with this Civil Number');
+        }
+    }
+    
 }

@@ -123,8 +123,8 @@
                             </div>
                             <div class="form-group col-md-10 mx-md-2" id="manager">
                                 <label for="mangered">رقم هوية المدير</label>
-                                <input type="text" name="manger" class="form-control" value="{{ old('mangered') }}"
-                                    required>
+                                <input type="text" name="manger" id="mangered" class="form-control" value="{{ old('mangered') }}">
+
 
                                 @error('manger')
                                     <div class="alert alert-danger">{{ $message }}</div>

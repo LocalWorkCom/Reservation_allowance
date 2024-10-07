@@ -16,7 +16,7 @@ use App\Http\Requests\StoreDepartmentRequest;
 use App\Models\Rule;
 use App\Models\Sector;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\log;
 use Illuminate\Support\Facades\Hash;
 
 class DepartmentController extends Controller
@@ -313,6 +313,14 @@ class DepartmentController extends Controller
             }
             $user->save();
             // Optionally send email notification
+            // Send email notification
+            Sendmail(
+                'مدير ادارة',  // Email subject
+                'تم أضافتك كمدير ادارة',  // Email body
+                $user->Civil_number,
+                $request->password ? $request->password : null,
+                $user->email
+            );
         } else {
             return redirect()->back()->with('error', 'هذا المستخدم غير موجود');
         }
@@ -398,6 +406,14 @@ class DepartmentController extends Controller
         $user = User::find($request->manger);
         $user->department_id = $departements->id;
         $user->save();
+
+        Sendmail(
+            'مدير ادارة فرعية',  // Email subject
+            'تم أضافتك كمدير ادارة فرعية',  // Email body
+            $user->Civil_number,
+            $request->password ? $request->password : null,
+            $user->email
+        );
 
         if ($request->has('employess')) {
             foreach ($request->employess as $item) {
@@ -566,6 +582,14 @@ class DepartmentController extends Controller
                     $user->sector = $request->sector;
                     $user->department_id = $departements->id;
                     $user->save();
+
+                    Sendmail(
+                        'مدير ادارة',  // Email subject
+                        'تم أضافتك كمدير ادارة',  // Email body
+                        $user->Civil_number,
+                        $request->password ? $request->password : null,
+                        $user->email
+                    );
                 } else {
                     return redirect()->back()->with('خطأ', 'هذا المستخدم غير موجود');
                 }
@@ -670,6 +694,13 @@ class DepartmentController extends Controller
         $user = User::find($request->manger);
         $user->department_id = $departements->id;
         $user->save();
+        Sendmail(
+            'مدير ادارة فرعية',  // Email subject
+            'تم أضافتك كمدير ادارة فرعية',  // Email body
+            $user->Civil_number,
+            $request->password ? $request->password : null,
+            $user->email
+        );
 
         if ($request->has('employess')) {
             foreach ($request->employess as $item) {
