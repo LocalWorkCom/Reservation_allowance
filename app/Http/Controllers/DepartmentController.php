@@ -84,8 +84,6 @@ class DepartmentController extends Controller
     }
     public function getManagerDetails($id)
     {
-
-
         // Fetch manager data from the database
         $manager = User::where('Civil_number', $id)->first();
 
@@ -96,10 +94,12 @@ class DepartmentController extends Controller
         // Allow this check only for input change, not for initial load
         $isDepartmentCheck = request()->has('check_department') && request()->get('check_department') == true;
 
-        if ($isDepartmentCheck && ($manager->department_id != Null || $manager->sector != Null)) {
+        // Ensure the manager is not assigned to another sector or department
+        if ($isDepartmentCheck && ($manager->department_id != null || $manager->sector != null)) {
             return response()->json(['error' => 'عفوا هذا المستخدم غير متاح'], 404);
         }
 
+        // Calculate seniority/years of service
         $joiningDate = $manager->joining_date ? Carbon::parse($manager->joining_date) : Carbon::parse($manager->created_at);
         $today = Carbon::now();
         $yearsOfService = $joiningDate->diffInYears($today);
@@ -257,7 +257,7 @@ class DepartmentController extends Controller
             'mangered.required' => 'اسم المدير مطلوب.',
             'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
-            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.01.',
+            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
 
             'part.required' => 'نوع بدل الحجز مطلوب.',
@@ -270,7 +270,7 @@ class DepartmentController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'mangered' => 'required',
-            'budget' => 'required|numeric|min:0.01|max:1000000',
+            'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
 
         ], $messages);
@@ -346,7 +346,7 @@ class DepartmentController extends Controller
             'manger.required' => 'اسم المدير مطلوب.',
             'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
-            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.01.',
+            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
 
             'part.required' => 'نوع بدل الحجز مطلوب.',
@@ -359,7 +359,7 @@ class DepartmentController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'manger' => 'required',
-            'budget' => 'required|numeric|min:0.01|max:1000000',
+            'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
 
         ], $messages);
@@ -482,7 +482,7 @@ class DepartmentController extends Controller
             'manger.required' => 'اسم المدير مطلوب.',
             'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
-            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.01.',
+            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
 
             'part.required' => 'نوع بدل الحجز مطلوب.',
@@ -495,7 +495,7 @@ class DepartmentController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'manger' => 'required',
-            'budget' => 'required|numeric|min:0.01|max:1000000',
+            'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
 
         ], $messages);
@@ -608,7 +608,7 @@ class DepartmentController extends Controller
             'manger.required' => 'اسم المدير مطلوب.',
             'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
-            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.01.',
+            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
 
             'part.required' => 'نوع بدل الحجز مطلوب.',
@@ -621,7 +621,7 @@ class DepartmentController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'manger' => 'required',
-            'budget' => 'required|numeric|min:0.01|max:1000000',
+            'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
 
         ], $messages);
