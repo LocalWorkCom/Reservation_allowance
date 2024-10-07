@@ -31,7 +31,8 @@
                         {{-- <a href="{{ route('export-users') }}" class="btn btn-primary"
                             style="border-radius: 5px;">تصدير</a> --}}
                         <a href="{{ route('download-template') }}" class="btn "
-                            style="border-radius: 5px;background-color: #274373; border-color: #274373; color:white; border-radius:10px;">تحميل القالب</a>
+                            style="border-radius: 5px;background-color: #274373; border-color: #274373; color:white; border-radius:10px;">تحميل
+                            القالب</a>
                     @endif
 
                 </div>
@@ -45,7 +46,7 @@
             </div>
         </div>
 
-    
+
 
 
 
@@ -58,21 +59,42 @@
     <div class="row">
 
         <div class="container  col-11 mt-3 p-0 ">
-            
+
             <form action="{{ route('import') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="d-flex  mt-4" dir="rtl">
-                <div class="d-flex form-group">
-                    <label for="file" style="color: #555;    font-weight: 700;
-    line-height: 48.78px;">اختر الملف المراد استيراده :</label>
-                    <input type="file" name="file" class="form-control mb-2" accept=".csv, .xlsx"
-                        style="    border: 1px solid #27437324;  border-radius: 5px;background-color: transparent;width: 220px;">
+                    <div class="d-flex form-group">
+                        <label for="file" style="color: #555;    font-weight: 700;
+    line-height: 48.78px;">اختر
+                            الملف المراد استيراده :</label>
+                        <input type="file" name="file" class="form-control mb-2" accept=".csv, .xlsx"
+                            style="    border: 1px solid #27437324;  border-radius: 5px;background-color: transparent;width: 220px;">
+                    </div>
+                    <div class="d-flex">
+                        <button type="submit"
+                            class="btn mx-2 px-4"style="border-radius: 5px;background-color: #274373; border-color: #274373; color:white; border-radius:10px; height:40px;">استيراد</button>
+                    </div>
+                </div>
+            </form>
+            {{-- <form action="{{ route('user.employees') }}" method="GET">
+                <div class="form-group col-md-5 mx-2">
+                    <label for="department_id"> الادارة</label>
+
+                    <select id="department_id" name="department_id" class="form-control select2" placeholder="الادارة">
+                        <option>اختار من القائمة</option>
+                        @foreach ($departments as $department)
+                            <option value="{{ $department->id }}">
+                                {{ $department->name }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="d-flex">
-                    <button type="submit" class="btn mx-2 px-4"style="border-radius: 5px;background-color: #274373; border-color: #274373; color:white; border-radius:10px; height:40px;">استيراد</button>
-                </div>  </div>
-            </form>
-          
+                    <button type="submit"
+                        class="btn mx-2 px-4"style="border-radius: 5px;background-color: #274373; border-color: #274373; color:white; border-radius:10px; height:40px;">بحث</button>
+                </div>
+            </form> --}}
+
             @include('inc.flash')
             <div class="col-lg-12 pt-5 pb-5">
                 <div class="bg-white ">
@@ -82,12 +104,14 @@
                             class="display table table-responsive-sm  table-bordered table-hover dataTable">
                             <thead>
                                 <tr>
-                                    <th>رقم التعريف</th>
+                                    <th>رقم المسلسل</th>
+                                    <th>الرتبه</th>
                                     <th>الاسم</th>
-                                    <th>القسم</th>
-                                    <th>الهاتف</th>
+                                    <th>رقم الهوية</th>
                                     <th>الرقم العسكري</th>
-                                    <th>النوع</th>
+                                    <th>الهاتف</th>
+                                    <th>الادارة</th>
+                                    <th>القطاع</th>
                                     <th style="width:150px !important;">العمليات</th>
                                 </tr>
                             </thead>
@@ -112,6 +136,10 @@
 
 
                                 @php
+                                    $department_id = request()->get('department_id'); // Get department_id from request
+                                    $sector_id = request()->get('sector_id'); // Get department_id from request
+                                    $type = request()->get('type'); // Get department_id from request
+
                                     $Dataurl = url('api/users');
                                     if (isset($mode)) {
                                         if ($mode == 'search') {
@@ -119,6 +147,14 @@
                                         }
                                     }
                                     // dd($Dataurl);
+                                    if ($department_id) {
+                                        $Dataurl .= '?department_id=' . $department_id;
+                                    }
+
+                                    if ($sector_id && $type) {
+                                        $Dataurl .= '?sector_id=' . $sector_id;
+                                        $Dataurl .= '&type=' . $type;
+                                    }
                                 @endphp
                                 /*   
                                   $('#users-table tfoot th').each(function (i) {
@@ -135,30 +171,48 @@
                                     ajax: '{{ $Dataurl }}/' +
                                         '{{ isset($q) ? $q : '' }}', // Correct URL concatenation
                                     bAutoWidth: false,
+
                                     columns: [{
-                                            data: 'id',
+                                            data: null, // Using 'null' here as we will populate it manually
                                             sWidth: '50px',
-                                            name: 'id'
+                                            orderable: false,
+                                            searchable: false,
+                                            render: function(data, type, row, meta) {
+                                                return meta.row + 1; // Display the sequential index
+                                            }
+                                        },
+                                        // {
+                                        //     data: 'id',
+                                        //     sWidth: '50px',
+                                        //     name: 'id'
+                                        // },
+                                        {
+                                            data: 'grade',
+                                            name: 'grade'
                                         },
                                         {
                                             data: 'name',
                                             name: 'name'
                                         },
                                         {
-                                            data: 'department',
-                                            name: 'department'
-                                        },
-                                        {
-                                            data: 'phone',
-                                            name: 'phone'
+                                            data: 'Civil_number',
+                                            name: 'Civil_number'
                                         },
                                         {
                                             data: 'military_number',
                                             name: 'military_number'
                                         },
                                         {
-                                            data: 'flag',
-                                            name: 'flag'
+                                            data: 'phone',
+                                            name: 'phone'
+                                        },
+                                        {
+                                            data: 'department',
+                                            name: 'department'
+                                        },
+                                        {
+                                            data: 'sector',
+                                            name: 'sector'
                                         },
                                         {
                                             data: 'action',

@@ -116,17 +116,29 @@
                     data: 'subDepartment',
                     name: 'subDepartment',
                     render: function(data, type, row) {
-                        return '<button class="btn btn-link" onclick="showSubDepartments(' + row
-                            .id + ')">' + data + '</button>';
+                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showSubDepartments(' +
+                            row.id + ')">' + data + '</button>';
+
+
                     }
                 },
                 {
                     data: 'num_managers',
                     name: 'num_managers',
+                    render: function(data, type, row) {
+                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showUsers(' +
+                            row
+                            .id + ')">' + data + '</button>';
+                    }
                 },
                 {
                     data: 'num_subdepartment_managers',
-                    name: 'num_subdepartment_managers'
+                    name: 'num_subdepartment_managers',
+                    render: function(data, type, row) {
+                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showUsers(' +
+                            row
+                            .id + ')">' + data + '</button>';
+                    }
                 },
                 {
                     data: 'action',
@@ -226,6 +238,11 @@
     function showSubDepartments(departmentId) {
         // Redirect to the sub-department listing for the selected department
         window.location.href = '/sub_departments/' + departmentId;
+    }
+
+    function showUsers(departmentId) {
+        // Redirect to the sub-department listing for the selected department
+        window.location.href = '/employees/' + departmentId;
     }
 </script>
 

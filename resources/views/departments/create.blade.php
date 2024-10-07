@@ -86,8 +86,10 @@
                         <div class="form-row mx-3 mt-4 d-flex justify-content-center">
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="sector">اختر القطاع </label>
-                                <input type="text" name="name" id="name" class="form-control" value="{{ $sectors->name }}" disabled>
-                                <input type="hidden" name="sector" id="sector" class="form-control" value="{{ $sectors->id }}">
+                                <input type="text" name="name" id="name" class="form-control"
+                                    value="{{ $sectors->name }}" disabled>
+                                <input type="hidden" name="sector" id="sector" class="form-control"
+                                    value="{{ $sectors->id }}">
                                 @error('sector')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
@@ -121,13 +123,10 @@
                             </div>
                             <div class="form-group col-md-10 mx-md-2" id="manager">
                                 <label for="mangered">رقم هوية المدير</label>
-                                <select name="mangered" id="mangered" class="form-control  select2" required>
-                                    <option value="">اختار رقم هوية المدير</option>
-                                    @foreach ($managers as $user)
-                                        <option value="{{ $user->id }}">{{ $user->Civil_number }}</option>
-                                    @endforeach
-                                </select>
-                                @error('mangered')
+                                <input type="text" name="manger" class="form-control" value="{{ old('mangered') }}"
+                                    required>
+
+                                @error('manger')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -178,8 +177,8 @@
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-10 mx-2">
-                                <label for="Civil_number"> رقم الهوية</label>
+                            <div class="input-group moftsh col-md-10 mx-md-2">
+                                <label for="Civil_number" class="col-12"> أرقام الهوية</label>
                                 <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px"></textarea>
                             </div>
                         </div>

@@ -9,12 +9,12 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item "><a href="/">الرئيسيه</a></li>
 
-                        @if (Auth::user()->rule_id == 2)
-                            <li class="breadcrumb-item"><a href="{{ route('user.employees', 1) }}">موظفين الوزارة</a></li>
-                        @endif
-                        @if (Auth::user()->rule_id != 2)
-                            <li class="breadcrumb-item"><a href="{{ route('user.employees', 1) }}">موظفين القوة</a></li>
-                        @endif
+                    @if (Auth::user()->rule_id == 2)
+                        <li class="breadcrumb-item"><a href="{{ route('user.employees', 1) }}">موظفين الوزارة</a></li>
+                    @endif
+                    @if (Auth::user()->rule_id != 2)
+                        <li class="breadcrumb-item"><a href="{{ route('user.employees', 1) }}">موظفين القوة</a></li>
+                    @endif
                     <li class="breadcrumb-item active" aria-current="page"> <a href=""> اضافة </a></li>
                 </ol>
             </nav>
@@ -22,12 +22,12 @@
     </div>
     <div class="row ">
         <div class="container welcome col-11">
-                @if (Auth::user()->rule_id == 2)
-                    <p>موظفين الوزارة</p>
-                @endif
-                @if (Auth::user()->rule_id != 2)
-                    <p>موظفين القوة<< /p>
-                @endif
+            @if (Auth::user()->rule_id == 2)
+                <p>موظفين الوزارة</p>
+            @endif
+            @if (Auth::user()->rule_id != 2)
+                <p>موظفين القوة<< /p>
+            @endif
         </div>
     </div>
     <div class="row">
@@ -69,28 +69,29 @@
                                 <label for="input44 " class="input44-none mx-3">الفئة </label>
 
                             </div>
-                            
+
                             <div class="form-group d-flex justify-content-center col-md-5 mx-2 pb-2">
                                 <!-- Violation type radio buttons -->
                                 @foreach ($violationTypeName as $key => $violation)
                                     <div class="radio-btns" style="margin-left: 1.5rem; margin-right: 1.5rem;">
-                                        <input type="radio" class="form-check-input" id="police_{{ $key }}" name="type_military"
-                                            value="{{ $violation->id }}" 
-                                            style="height: 20px; width: 20px;" 
+                                        <input type="radio" class="form-check-input" id="police_{{ $key }}"
+                                            name="type_military" value="{{ $violation->id }}"
+                                            style="height: 20px; width: 20px;"
                                             {{ old('type_military', 'police') == $violation->id ? 'checked' : '' }}>
-                                        <label class="form-check-label mx-2" for="police_{{ $key }}" style="margin-left: 0.5rem;">
+                                        <label class="form-check-label mx-2" for="police_{{ $key }}"
+                                            style="margin-left: 0.5rem;">
                                             {{ $violation->name }}
                                         </label>
                                     </div>
                                 @endforeach
-                            
+
                                 <!-- Label for the radio group -->
                                 <label for="type_military" style="margin-left: 1.5rem; margin-right: 1.5rem;">
                                     نوع العسكرى
                                 </label>
                             </div>
-                            
-                            
+
+
                             {{-- <div class="form-group d-flex  justify-content-end col-md-5 mx-2">
                             <div class="radio-btns mx-md-4 ">
                                 <input type="radio" class="form-check-input" id="solder" name="solderORcivil"
@@ -202,7 +203,7 @@
 
                         <div class="form-row  mx-md-3 d-flex justify-content-center flex-row-reverse">
 
-                                <div class="form-group col-md-5 mx-2" id="military_number_id">
+                            <div class="form-group col-md-5 mx-2" id="military_number_id">
 
                                 <label for="input6"> <i class="fa-solid fa-asterisk"
                                         style="color:red; font-size:10px;"></i>
@@ -210,7 +211,7 @@
                                 <input type="text" id="input6" name="military_number" class="form-control"
                                     placeholder="رقم العسكرى" value="{{ old('military_number') }}">
                             </div>
-                                <div class="form-group col-md-5 mx-2" id="input12Div">
+                            <div class="form-group col-md-5 mx-2" id="input12Div">
 
                                 <label for="input12"><i class="fa-solid fa-asterisk"
                                         style="color:red; font-size:10px;"></i>
@@ -259,8 +260,44 @@
 
                         </div>
 
-                        
+
                         <div class="form-row  mx-md-3 d-flex justify-content-center flex-row-reverse">
+
+
+                            <div class="form-group col-md-5 mx-2">
+                                <label for="sector"> <i class="fa-solid fa-asterisk"
+                                        style="color:red; font-size:10px;"></i>
+                                    القطاع </label>
+                                <select id="sector" name="sector" class="form-control " placeholder="القطاع">
+                                    <option value="{{ null }}" selected>
+                                        لا يوجد قسم محدد</option>
+                                    @foreach ($sectors as $sector)
+                                        <option value="{{ $sector->id }}"
+                                            {{ old('sector') == $sector->id ? 'selected' : '' }}>
+                                            {{ $sector->name }}</option>
+                                    @endforeach
+
+                                </select>
+                            </div>
+
+                            <div class="form-group col-md-5 mx-2">
+                                <label for="department_id"> <i class="fa-solid fa-asterisk"
+                                        style="color:red; font-size:10px;"></i>
+                                    الادارة </label>
+                                <select id="department_id" name="department_id" class="form-control "
+                                    placeholder="الادارة">
+                                    <option value="{{ null }}" selected>
+                                        لا يوجد قسم محدد</option>
+                                    @foreach ($alldepartment as $item)
+                                        <option value="{{ $item->id }}"
+                                            {{ old('department_id') == $item->id ? 'selected' : '' }}>
+                                            {{ $item->name }}</option>
+                                    @endforeach
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row mx-md-3  d-flex justify-content-center flex-row-reverse">
 
                             <div class="form-group col-md-5 mx-2">
                                 <label for="gradeSelect"><i class="fa-solid fa-asterisk"
@@ -274,23 +311,6 @@
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
-                                </select>
-                            </div>
-
-                            <div class="form-group col-md-5 mx-2">
-                                <label for="input15"> <i class="fa-solid fa-asterisk"
-                                        style="color:red; font-size:10px;"></i>
-                                    الادارة </label>
-                                <select id="input15" name="department_id" class="form-control select2"
-                                    placeholder="الادارة">
-                                    <option value="{{ null }}" selected>
-                                        لا يوجد قسم محدد</option>
-                                    @foreach ($alldepartment as $item)
-                                        <option value="{{ $item->id }}"
-                                            {{ old('department_id') == $item->id ? 'selected' : '' }}>
-                                            {{ $item->name }}</option>
-                                    @endforeach
-
                                 </select>
                             </div>
                         </div>
@@ -365,39 +385,6 @@
         </script>
         <script>
             // $(document).ready(function() {
-            $('#sector').on('change', function() {
-                var sector_id = $(this).val();
-
-
-                if (sector_id) {
-                    $.ajax({
-                        url: '/getGoverment/' + sector_id,
-                        type: 'GET',
-                        dataType: 'json',
-                        success: function(data) {
-                            $('#Provinces').empty();
-                            $('#region').empty();
-                            $('#Provinces').append('<option selected> اختار من القائمة </option>');
-                            $.each(data, function(key, employee) {
-                                console.log(employee);
-                                $('#Provinces').append('<option value="' + employee.id + '">' +
-                                    employee
-                                    .name + '</option>').trigger('change');
-                                $('#Provinces').trigger('change');
-
-                            });
-                        },
-                        error: function(xhr, status, error) {
-                            console.log('Error:', error);
-                            console.log('XHR:', xhr.responseText);
-                        }
-                    });
-                } else {
-                    $('#Provinces').empty();
-                    $('#region').empty();
-                }
-            });
-            // });
 
             // $(document).ready(function() {
             $('#Provinces').on('change', function() {
@@ -441,6 +428,14 @@
                      } */
                     getgrades(this.value)
                 });
+                $('#sector').on('change', function() {
+                    /*  if ($(this).val() === 'ضابط') {
+                         alert('opt1');
+                     } else if ($(this).val() === 'مهني') {
+                         alert('opt2')
+                     } */
+                    getDepartment(this.value)
+                });
             });
             // JavaScript to handle radio button change events
 
@@ -470,6 +465,38 @@
                         console.error('Error fetching grades:', textStatus, errorThrown);
                     }
                 });
+            }
+
+            function getDepartment(id) {
+
+                console.log(id);
+
+                var url = '/get-deprt-sector?sector=' + id;
+
+                $.ajax({
+                    url: url,
+                    type: 'GET', // Use GET method
+                    success: function(response) {
+                        console.log(response);
+                        
+
+                        // Clear the current grade options
+                        var department_id = document.getElementById('department_id');
+                        department_id.innerHTML = '<option selected disabled>اختار من القائمة</option>';
+
+                        // Populate the grade select with new options
+                        response.forEach(function(grade) { // Use `response` instead of `data`
+                            var option = document.createElement('option');
+                            option.value = grade.id;
+                            option.textContent = grade.name;
+                            department_id.appendChild(option);
+                        });
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error('Error fetching grades:', textStatus, errorThrown);
+                    }
+                });
+
             }
         </script>
         {{-- <script>

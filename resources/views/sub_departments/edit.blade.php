@@ -125,13 +125,9 @@
                             {{-- {{ dd($department->manager) }} --}}
                             <div class="form-group col-md-10 mx-md-2" id="manager">
                                 <label for="mangered">رقم هوية المدير</label>
-                                <select name="manger" id="mangered" class=" form-control " required>
-                                    <option value="">اختار رقم هوية المدير</option>
-                                    @foreach ($managers as $user)
-                                        <option value="{{ $user->id }}" @if($user->id == $department->manager->id) selected @endif>{{ $user->Civil_number }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <input type="text" name="manger" class="form-control" value="{{ $department->manger }}"
+                                    required>
+
                                 @error('manger')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
@@ -175,18 +171,13 @@
                                 @enderror
                             </div>
 
-
-                            <div class="form-group col-md-10 mx-md-2">
-                                <label for="employess">الموظفين </label>
-                                <select name="employess[]" id="employess" class="form-group col-md-12 " multiple
-                                    dir="rtl"
-                                    style=" height: 150px;font-size: 18px;border: 0.2px solid lightgray; overflow-y: auto;">
-                                    @foreach ($employees as $item)
-                                        <option value="{{ $item->id }}"
-                                            @if ($item->department_id == $department->id) selected @endif>{{ $item->name }}</option>
-                                    @endforeach
-                                </select>
-
+                            <div class="input-group moftsh col-md-10 mx-md-2">
+                                <label for="Civil_number" class="col-12"> أرقام الهوية</label>
+                                <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px">
+                                            @foreach ($employees as $employee)
+{{ $employee->Civil_number }}
+@endforeach
+                                        </textarea>
                             </div>
                         </div>
 
@@ -215,57 +206,58 @@
             dir: "rtl"
         });
         $(document).ready(function() {
-    // Function to fetch and display manager details
-    function fetchManagerDetails(managerId) {
-        if (managerId) {
-            // Make an AJAX request to fetch manager details
-            $.ajax({
-                url: '/get-manager-details/' + managerId, // Define your route to get manager details
-                type: 'GET',
-                success: function(data) {
-                    // Populate the manager details in the div
-                    $('#manager_details').find('span').eq(0).text(data.rank); // رتبه
-                    $('#manager_details').find('span').eq(1).text(data.job_title); // مسمى وظيفي
-                    $('#manager_details').find('span').eq(2).text(data.seniority); // أقدميه
-                    $('#manager_details').find('span').eq(3).text(data.name); // أسم
-                    $('#manager_details').find('span').eq(4).text(data.phone); // هاتف
-
-                    // Show the manager details div
-                    $('#manager_details').show();
-                },
-                error: function() {
-                    alert('Error fetching manager details.');
-                }
-            });
-        } else {
-            // Hide the manager details if no manager is selected
-            $('#manager_details').hide();
-        }
-    }
-
-    // Hide the manager details div initially
-    $('#manager_details').hide();
-
-    // When the manager is selected or changed
-    $('#mangered').change(function() {
-        var managerId = $(this).val();
-        fetchManagerDetails(managerId); // Fetch manager details based on the selected value
-    });
-
-    // On page load, check if there's already a selected manager
-    var selectedManagerId = $('#mangered').val();
-    if (selectedManagerId) {
-        fetchManagerDetails(selectedManagerId); // Fetch details for the pre-selected manager
-    }
-});
-$(document).ready(function() {
             // Function to fetch and display manager details
             function fetchManagerDetails(managerId) {
                 if (managerId) {
                     // Make an AJAX request to fetch manager details
                     $.ajax({
                         url: '/get-manager-details/' +
-                        managerId, // Define your route to get manager details
+                            managerId, // Define your route to get manager details
+                        type: 'GET',
+                        success: function(data) {
+                            // Populate the manager details in the div
+                            $('#manager_details').find('span').eq(0).text(data.rank); // رتبه
+                            $('#manager_details').find('span').eq(1).text(data.job_title); // مسمى وظيفي
+                            $('#manager_details').find('span').eq(2).text(data.seniority); // أقدميه
+                            $('#manager_details').find('span').eq(3).text(data.name); // أسم
+                            $('#manager_details').find('span').eq(4).text(data.phone); // هاتف
+
+                            // Show the manager details div
+                            $('#manager_details').show();
+                        },
+                        error: function() {
+                            alert('Error fetching manager details.');
+                        }
+                    });
+                } else {
+                    // Hide the manager details if no manager is selected
+                    $('#manager_details').hide();
+                }
+            }
+
+            // Hide the manager details div initially
+            $('#manager_details').hide();
+
+            // When the manager is selected or changed
+            $('#mangered').change(function() {
+                var managerId = $(this).val();
+                fetchManagerDetails(managerId); // Fetch manager details based on the selected value
+            });
+
+            // On page load, check if there's already a selected manager
+            var selectedManagerId = $('#mangered').val();
+            if (selectedManagerId) {
+                fetchManagerDetails(selectedManagerId); // Fetch details for the pre-selected manager
+            }
+        });
+        $(document).ready(function() {
+            // Function to fetch and display manager details
+            function fetchManagerDetails(managerId) {
+                if (managerId) {
+                    // Make an AJAX request to fetch manager details
+                    $.ajax({
+                        url: '/get-manager-details/' +
+                            managerId, // Define your route to get manager details
                         type: 'GET',
                         success: function(data) {
                             // Populate the manager details in the div
