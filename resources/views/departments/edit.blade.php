@@ -168,7 +168,7 @@
                             </div>
 
 
-                            <div class="input-group moftsh px-md-4 px-3 pt-3">
+                            <div class="input-group moftsh col-md-10 mx-md-2">
                                 <label for="Civil_number" class="col-12"> أرقام الهوية</label>
                                 <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px">
                                             @foreach ($employees as $employee)
