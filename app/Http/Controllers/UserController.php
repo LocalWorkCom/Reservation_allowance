@@ -60,56 +60,69 @@ class UserController extends Controller
     // }
     public function index()
     {
+        $departments = departements::all();
         // if()
-        return view('user.view');
+        // $department_id = 0;
+        // $sector_id = 0;
+        // if (request()->has('department_id')) {
+        //     $department_id = request()->has('department_id');
+        // }
+
+        // if (request()->has('sector')) {
+        //     $sector_id = request()->has('sector');
+        // }
+        return view('user.view', compact('departments'));
     }
 
     public function getUsers()
     {
-
-
-
         $parentDepartment = Departements::find(Auth()->user()->department_id);
 
-        // dd(Auth::user()->rule->name);
         if (Auth::user()->rule->name == "localworkadmin") {
-
-            $data = User::get();
-            // dd($data);
+            $data = User::query(); // Start as a query
         } elseif (Auth::user()->rule->name == "superadmin") {
-            $data = User::get();
+            $data = User::query(); // Start as a query for superadmins too
         } else {
             if (is_null($parentDepartment->parent_id)) {
                 $subdepart = Departements::where('parent_id', $parentDepartment->id)->pluck('id')->toArray();
-
                 $data = User::where(function ($query) use ($subdepart, $parentDepartment) {
-                        $query->whereIn('department_id', $subdepart)
-                            ->orWhere('department_id', $parentDepartment->id)
-                            ->orwhereNull('department_id');
-                    })
-                    // ->whereIn('department_id', $subdepart)
-                    // ->orWhere('department_id', $parentDepartment->id)
-                    ->get();
+                    $query->whereIn('department_id', $subdepart)
+                        ->orWhere('department_id', $parentDepartment->id)
+                        ->orWhereNull('department_id');
+                });
             } else {
-                $data = User::where('department_id', $parentDepartment->id)
-                    ->get();
+                $data = User::where('department_id', $parentDepartment->id);
             }
         }
 
+        // Apply additional filters using `request()->get()`
+        if (request()->has('department_id')) {
+            $data = $data->where('department_id', request()->get('department_id'));
+        }
 
+        if (request()->has('sector')) {
+            $data = $data->where('sector', request()->get('sector'));
+        }
+
+        // Finally, fetch the results
+        $data = $data->get();
 
         return DataTables::of($data)->addColumn('action', function ($row) {
-
             return $row;
         })
-            ->addColumn('department', function ($row) { // New column for departments count
-
-                $department = departements::where('id', $row->department_id)->pluck('name')->first();
-                return $department;
+            ->addColumn('department', function ($row) {
+                return Departements::where('id', $row->department_id)->pluck('name')->first();
+            })
+            ->addColumn('grade', function ($row) {
+                return grade::where('id', $row->grade_id)->pluck('name')->first();
+            })
+            ->addColumn('sector', function ($row) {
+                return sector::where('id', $row->sector)->pluck('name')->first();
             })
             ->rawColumns(['action'])
             ->make(true);
     }
+
 
     // public function login(Request $request)
     // {
@@ -812,7 +825,7 @@ class UserController extends Controller
         // Get the selected violation type from the user (if it exists)
         $selectedViolationType = old('type_military', $user->type_military); // Default to old input or user's current value
 
-        
+
         // Fetch grades based on the selected violation type
         $grades = Grade::where('type', $selectedViolationType)->get();
         // dd($user);
@@ -827,7 +840,7 @@ class UserController extends Controller
         }
         // $department = departements::all();
         $hisdepartment = $user->createdDepartments;
-        return view('user.edit', compact('user', 'rule', 'grade','grades', 'department', 'hisdepartment', 'violationTypeName', 'selectedViolationType', 'end_of_service', 'job', 'sector', 'area', 'govermnent', 'qualifications', 'countries'));
+        return view('user.edit', compact('user', 'rule', 'grade', 'grades', 'department', 'hisdepartment', 'violationTypeName', 'selectedViolationType', 'end_of_service', 'job', 'sector', 'area', 'govermnent', 'qualifications', 'countries'));
     }
 
     /**

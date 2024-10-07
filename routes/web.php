@@ -92,7 +92,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/violation_report', [ViolationReportController::class, 'getdata'])->name('violation_report.getdata');
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
-    Route::get('/users/{id}', [UserController::class, 'index'])->name('user.index')->middleware('check.permission:view User');
+    Route::get('/users', [UserController::class, 'index'])->name('user.index')->middleware('check.permission:view User');
     Route::get('api/users', [UserController::class, 'getUsers'])->name('api.users')->middleware('check.permission:view User');
     Route::get('/users_create', [UserController::class, 'create'])->name('user.create')->middleware('check.permission:create User');
     Route::post('/store', [UserController::class, 'store'])->name('user.store')->middleware('check.permission:create User');
