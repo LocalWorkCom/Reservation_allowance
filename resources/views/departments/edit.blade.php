@@ -40,7 +40,7 @@
 </style>
 @extends('layout.main')
 @section('title')
-تعديل
+    تعديل
 @endsection
 @section('content')
     <main>
@@ -121,14 +121,9 @@
                             </div>
                             <div class="form-group col-md-10 mx-md-2" id="manager">
                                 <label for="mangered">رقم هوية المدير</label>
-                                <select name="manger" id="mangered" class=" form-control select2" required>
-                                    <option value="">اختار رقم هوية المدير</option>
-                                    @foreach ($managers as $user)
-                                        <option value="{{ $user->id }}"
-                                            @if ($user->id == $department->manager->id) selected @endif>{{ $user->Civil_number }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <input type="text" name="manger" class="form-control" value="{{ $department->manger }}"
+                                    required>
+
                                 @error('manger')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror

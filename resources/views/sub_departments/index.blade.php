@@ -116,10 +116,18 @@
                 {
                     data: 'num_managers',
                     name: 'num_managers',
+                    render: function(data, type, row) {
+                        return '<button class="btn btn-link" onclick="showUsers(' + row
+                            .id + ')">' + data + '</button>';
+                    }
                 },
                 {
                     data: 'num_subdepartment_managers',
-                    name: 'num_subdepartment_managers'
+                    name: 'num_subdepartment_managers',
+                    render: function(data, type, row) {
+                        return '<button class="btn btn-link" onclick="showUsers(' + row
+                            .id + ')">' + data + '</button>';
+                    }
                 },
                 {
                     data: 'action',
@@ -132,9 +140,8 @@
             columnDefs: [{
                 targets: -1,
                 render: function(data, type, row) {
-                    var departmentEdit = '{{ route('sub_departments.edit', ':id') }}';
-                    departmentEdit = departmentEdit.replace(':id', row.id);
-                    departmentEdit = departmentEdit.replace(':id', row.id);
+                    var subdepartmentEdit = '{{ route('sub_departments.edit', ':id') }}';
+                    subdepartmentEdit = subdepartmentEdit.replace(':id', row.id);
                     var subdepartment = '{{ route('sub_departments.create', ':id') }}';
                     subdepartment = subdepartment.replace(':id', row.id);
                     var departmentShow = '{{ route('departments.show', ':id') }}';
@@ -144,18 +151,12 @@
                     var buttons = `
             <a href="${subdepartment}" class="btn btn-sm" style="background-color: #274373;"> <i class="fa fa-plus"></i> ادارات فرعيه</a>
             <a href="${departmentShow}" class="btn btn-sm" style="background-color: #274373;"> <i class="fa fa-eye"></i> عرض</a>
-        `;
-                    // Get the role and department info from Blade
-                    var canEdit = @json(Auth::user()->rule->name == 'manager' || Auth::user()->department_id == $parentDepartment->id);
+        
 
-                    // Conditionally render the Edit button based on the user's role and department
-                    if (canEdit) {
-                        buttons += `
-                <a href="${departmentEdit}" class="btn btn-sm"  style="background-color: #F7AF15;">
+                <a href="${subdepartmentEdit}" class="btn btn-sm"  style="background-color: #F7AF15;">
                     <i class="fa fa-edit"></i>تعديل
-                </a>
-            `;
-                    }
+                </a>`;
+
                     return buttons;
                 }
             }],
@@ -220,6 +221,11 @@
     function showSubDepartments(departmentId) {
         // Redirect to the sub-department listing for the selected department
         window.location.href = '/sub_departments/' + departmentId;
+    }
+
+    function showUsers(departmentId) {
+        // Redirect to the sub-department listing for the selected department
+        window.location.href = '/users/' + departmentId;
     }
 </script>
 
