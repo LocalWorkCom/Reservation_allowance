@@ -28,8 +28,13 @@
                             onclick="window.location.href='{{ route('user.create') }}'" style="color: #0D992C;">
                             اضافة جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
                         </button>
-                        {{-- <a href="{{ route('export-users') }}" class="btn btn-primary"
-                            style="border-radius: 5px;">تصدير</a> --}}
+                        <a href="{{ route('export-users') }}" class="btn btn-primary"
+                            style="border-radius: 5px;">تصدير</a>
+                        <button type="button" class="btn btn-success" id="print-table"
+                            style="background-color: #274373; color:white;">طباعة الجدول</button>
+                        {{-- 
+                        <button type="button" class="btn " onclick="printPDF()"
+                            style="background-color: #274373; color:white;">طباعة</button> --}}
                         <a href="{{ route('download-template') }}" class="btn "
                             style="border-radius: 5px;background-color: #274373; border-color: #274373; color:white; border-radius:10px;">تحميل
                             القالب</a>
@@ -336,4 +341,55 @@
 
     </div>
 </section>
+
+
+<script>
+    $(document).ready(function() {
+        $('#print-table').on('click', function() {
+            // Clone the DataTable to a new window
+            var printWindow = window.open('', '', 'width=900,height=600');
+
+            // Get the content of the table
+            var tableContent = document.getElementById('users-table').outerHTML;
+
+            // Format the content for printing
+            printWindow.document.write('<html><head><title>طباعة الجدول</title>');
+            printWindow.document.write(
+                '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">'
+            );
+            printWindow.document.write(
+                '<style>table { width: 100%; margin: 20px; border-collapse: collapse; } th, td { padding: 8px 12px; border: 1px solid #ddd; } th { background: #f4f4f4; }</style>'
+            );
+            printWindow.document.write('</head><body dir="rtl">');
+            printWindow.document.write('<h3 style="text-align:center;">جدول الموظفين</h3>');
+            printWindow.document.write(tableContent); // Write the table HTML into the print window
+            printWindow.document.write('</body></html>');
+            printWindow.document.close(); // Close the document for printing
+
+            // Wait for the document to be fully loaded before printing
+            printWindow.onload = function() {
+                printWindow.print();
+                printWindow.close();
+            };
+        });
+    });
+
+    function openAndPrint(url) {
+        // var url = "${urls.printReturn}?id=" + encodeURIComponent(rowId);
+        // فتح الصفحة في نافذة جديدة
+        var newWindow = window.open(url, '_blank');
+        newWindow.onload = function() {
+            newWindow.print();
+        };
+    }
+
+    function printPDF() {
+        // let civil_number = $('#civil_number').val();
+        // let start_date = $('#start_date').val();
+        // let end_date = $('#end_date').val();
+
+        // Redirect to the print route with search parameters
+        window.open('{{ route('print-users') }}', '_blank');
+    }
+</script>
 @endsection
