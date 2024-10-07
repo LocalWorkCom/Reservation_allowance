@@ -17,7 +17,6 @@ use App\Models\Rule;
 use App\Models\Sector;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\log;
-
 use Illuminate\Support\Facades\Hash;
 
 class DepartmentController extends Controller
