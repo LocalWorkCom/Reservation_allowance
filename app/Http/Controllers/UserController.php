@@ -101,7 +101,7 @@ class UserController extends Controller
         }
 
         if (request()->has('sector')) {
-            $data = $data->where('sector', request()->get('sector'));
+            $data = $data->where('sector', request()->get('sector'))->whereNull('department_id');
         }
 
         // Finally, fetch the results
@@ -491,7 +491,7 @@ class UserController extends Controller
         $countries = Country::all();
 
         $area = Region::all();
-        $sector = Sector::all();
+        $sectors = Sector::all();
         $qualifications = Qualification::all();
         $violationTypeName = ViolationTypes::whereJsonContains('type_id', 0)->get();
 
@@ -538,9 +538,19 @@ class UserController extends Controller
         // dd($allPermission);
         // $alldepartment = $user->createdDepartments;
         // return view('role.create',compact('allPermission','alldepartment'));
-        return view('user.create', compact('alldepartment', 'rule', 'grade', 'job', 'alluser', 'govermnent', 'area', 'selectedViolationType', 'sector', 'qualifications', 'grades', 'countries', 'violationTypeName'));
+        return view('user.create', compact('alldepartment', 'rule', 'grade', 'job', 'alluser', 'govermnent', 'area', 'selectedViolationType', 'sectors', 'qualifications', 'grades', 'countries', 'violationTypeName'));
     }
 
+    public function GetDepartmentsBySector()
+    {
+
+        $id = $_GET['sector'];
+        $data = departements::where('sector_id', $id)
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return $data;
+    }
     public function unsigned($id)
     {
         //
@@ -574,6 +584,7 @@ class UserController extends Controller
                 'rule_id.required' => ' المهام  مطلوب ولا يمكن تركه فارغاً.',
                 'password.required' => ' الباسورد مطلوب ولا يمكن تركه فارغاً.',
                 'grade_id.required' => 'يجب اختيار رتبه',
+                
 
                 // Add more custom messages here
             ];
@@ -699,6 +710,7 @@ class UserController extends Controller
                 'username' => $request->Civil_number,
                 'password' => $request->password
             ];
+
             Mail::to($request->email)->send(new SendEmail($details));
 
             return redirect()->route('user.index', ['id' => $id]);
@@ -747,7 +759,14 @@ class UserController extends Controller
 
                 UploadFilesWithoutReal($path, 'image', $newUser, $file);
             }
+            $details = [
+                'title' => 'بيانات دخولك على نظام القوة المطور',
+                'body' => 'هذه بيانات دخولك على نظام القوة المطور',
+                'username' => $request->Civil_number,
+                'password' => $request->password
+            ];
             session()->flash('success', 'تم الحفظ بنجاح.');
+            Mail::to($request->email)->send(new SendEmail($details));
 
             $id = $request->type;
             return redirect()->route('user.employees', ['id' => $id]);
