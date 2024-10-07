@@ -16,7 +16,7 @@ use App\Http\Requests\StoreDepartmentRequest;
 use App\Models\Rule;
 use App\Models\Sector;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\log;
 
 use Illuminate\Support\Facades\Hash;
 
