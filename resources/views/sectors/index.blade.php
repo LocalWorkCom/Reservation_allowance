@@ -48,8 +48,8 @@
                                     <th>عدد الأدارات التابعه </th>
                                     <th>ميزانية البدل</th>
                                     <th>صلاحيه الحجز</th>
-                                    <th>عدد الموظفين</th>
-                                    <th>عدد موظفين الأدارات</th>
+                                    <th>عدد القوة</th>
+                                    <th>عدد قوة الأدارات</th>
 
                                     <th style="width:150px;">العمليات</th>
                                 </tr>
@@ -85,13 +85,14 @@
                         data: 'departments',
                         name: 'departments'
                     },
-                    {
-                        data: 'reservation_allowance',
-                        name: 'reservation_allowance'
-                    },
+
                     {
                         data: 'reservation_allowance_amount',
                         name: 'reservation_allowance_amount'
+                    },
+                    {
+                        data: 'reservation_allowance',
+                        name: 'reservation_allowance'
                     },
                     {
                         data: 'employees',
