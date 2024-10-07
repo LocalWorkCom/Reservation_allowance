@@ -207,82 +207,53 @@
         $('.select2').select2({
             dir: "rtl"
         });
-        $(document).ready(function() {
-            // Assuming you have a list of users available in JavaScript
-            var allUsers = @json($employees); // If you pass the users list from Blade to JavaScript
 
-            $('#mangered').on('change', function() {
-                var selectedManager = $(this).val();
-                console.log('Selected Manager:', selectedManager);
-
-                // Clear the employees dropdown
-                $('#employess').empty();
-
-                // Iterate over the users list and add only those who are not the selected manager
-                allUsers.forEach(function(user) {
-                    if (user.id != selectedManager) {
-                        $('#employess').append('<option value="' + user.id + '">' + user.name +
-                            '</option>');
+        function fetchManagerDetails(managerId) {
+            if (managerId) {
+                $.ajax({
+                    url: '/get-manager-details/' + managerId,
+                    type: 'GET',
+                    success: function(data) {
+                        $('#manager_details').find('span').eq(0).text(data.rank);
+                        $('#manager_details').find('span').eq(1).text(data.seniority);
+                        $('#manager_details').find('span').eq(2).text(data.job_title);
+                        $('#manager_details').find('span').eq(3).text(data.name);
+                        $('#manager_details').find('span').eq(4).text(data.phone);
+                        $('#manager_details').show();
+                        if (data.isEmployee) {
+                            $('#password_field').show();
+                            $('#rule_field').show();
+                        } else {
+                            $('#password_field').hide();
+                            $('#rule_field').hide();
+                            $('#password').val('');
+                            $('#rule').val('');
+                        }
+                    },
+                    error: function() {
+                        alert('عفوا هذا المستخدم غير موجود');
                     }
                 });
-            });
-
-            // Initial population of employees list excluding the selected manager (if any)
-            $('#mangered').trigger('change');
-        });
-        $(document).ready(function() {
-            // Function to fetch and display manager details
-            function fetchManagerDetails(managerId) {
-                if (managerId) {
-                    // Make an AJAX request to fetch manager details
-                    $.ajax({
-                        url: '/get-manager-details/' +
-                            managerId, // Define your route to get manager details
-                        type: 'GET',
-                        success: function(data) {
-                            // Populate the manager details in the div
-                            $('#manager_details').find('span').eq(0).text(data.rank); // رتبه
-                            $('#manager_details').find('span').eq(2).text(data.job_title); // مسمى وظيفي
-                            $('#manager_details').find('span').eq(1).text(data.seniority); // أقدميه
-                            $('#manager_details').find('span').eq(3).text(data.name); // أسم
-                            $('#manager_details').find('span').eq(4).text(data.phone); // هاتف
-
-                            // Show the manager details div
-                            $('#manager_details').show();
-
-                            // Check if the user is an employee and show password field
-                            if (data.isEmployee) {
-                                $('#password_field').show(); // Show the password field
-                            } else {
-                                $('#password_field').hide(); // Hide the password field
-                            }
-                        },
-                        error: function() {
-                            alert('Error fetching manager details.');
-                        }
-                    });
-                } else {
-                    // Hide the manager details if no manager is selected
-                    $('#manager_details').hide();
-                    $('#password_field').hide(); // Hide the password field
-                }
+            } else {
+                $('#manager_details').hide();
+                $('#password_field').hide();
+                $('#rule_field').hide();
+                $('#password').val('');
+                $('#rule').val('');
             }
-
-            // Hide the manager details and password field initially
-            $('#manager_details').hide();
-            $('#password_field').hide();
-
-            // When the manager is selected or changed
-            $('#mangered').change(function() {
-                var managerId = $(this).val();
-                fetchManagerDetails(managerId); // Fetch manager details based on the selected value
-            });
-
-            // On page load, check if there's already a selected manager
-            var selectedManagerId = $('#mangered').val();
-            if (selectedManagerId) {
-                fetchManagerDetails(selectedManagerId); // Fetch details for the pre-selected manager
-            }
+        }
+        $('#manager_details').hide();
+        $('#password_field').hide();
+        $('#rule_field').hide();
+        $('#mangered').on('input', function() {
+            var managerId = $(this).val();
+            $('#password').val('');
+            $('#rule').val('');
+            fetchManagerDetails(managerId);
         });
+        var selectedManagerId = $('#mangered').val();
+        if (selectedManagerId) {
+            fetchManagerDetails(selectedManagerId);
+        }
     </script>
 @endsection
