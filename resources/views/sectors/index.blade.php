@@ -50,7 +50,6 @@
                                     <th>صلاحيه الحجز</th>
                                     <th>عدد القوة</th>
                                     <th>عدد قوة الأدارات</th>
-
                                     <th style="width:150px;">العمليات</th>
                                 </tr>
                             </thead>
@@ -72,7 +71,7 @@
                 serverSide: true,
                 ajax: {
                     url: '{{ route('getAllsectors') }}',
-                }, // Correct URL concatenation
+                },
                 columns: [{
                         data: 'name',
                         name: 'name'
@@ -122,13 +121,11 @@
                     "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
                     "sZeroRecords": 'نأسف لا توجد نتيجة',
                     "oPaginate": {
-                        "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
-                        "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
-                        "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
-                        "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
+                        "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
+                        "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
+                        "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
+                        "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
                     }
-
-
                 },
                 layout: {
                     bottomEnd: {
@@ -143,14 +140,10 @@
                     var page = this.api().page.info().pages;
                     console.log($('#users-table tr').length);
                     if (page == 1) {
-                        //   $('.dataTables_paginate').hide();//css('visiblity','hidden');
-                        $('.dataTables_paginate').css('visibility', 'hidden'); // to hide
-
+                        $('.dataTables_paginate').css('visibility', 'hidden');
                     }
                 }
             });
-
-
         });
     </script>
 @endpush

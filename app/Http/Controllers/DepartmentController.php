@@ -37,7 +37,7 @@ class DepartmentController extends Controller
     {
 
 
-        if (in_array(Auth::user()->rule->id, [1, 2,4])) {
+        if (in_array(Auth::user()->rule->id, [1, 2, 4])) {
 
             $data = departements::where('parent_id', null)
                 ->where('sector_id', $id)
@@ -45,7 +45,7 @@ class DepartmentController extends Controller
                 ->get();
         } else {
             $data = departements::where('parent_id', null)
-                ->where('sector_id', $id) 
+                ->where('sector_id', $id)
                 ->orderBy('id', 'desc')
                 ->get();
         }
@@ -84,22 +84,22 @@ class DepartmentController extends Controller
             ->rawColumns(['action'])
             ->make(true);
     }
-        public function getManagerDetails($id)
+    public function getManagerDetails($id)
     {
         // Fetch manager data from the database
-        $manager = User::find($id);
+        $manager = User::where('Civil_number',$id)->first();
 
         if (!$manager) {
-            return response()->json(['error' => 'Manager not found'], 404);
+            return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 404);
         }
 
         $joiningDate = $manager->joining_date ? Carbon::parse($manager->joining_date) : Carbon::parse($manager->created_at);
         $today = Carbon::now();
         $yearsOfService = $joiningDate->diffInYears($today);
 
-        // Check if the user is an employee (flag 'user' means employee)
-        $isEmployee = $manager->flag == 'employee' ? true : false;
- 
+        // Check if the user is an employee (flag 'employee' means employee)
+        $isEmployee = $manager->flag == 'employee';
+
         // Return the manager data in JSON format
         return response()->json([
             'rank' => $manager->grade_id ? $manager->grade->name : 'لا يوجد رتبه',
@@ -111,7 +111,6 @@ class DepartmentController extends Controller
             'isEmployee' => $isEmployee,  // Include the employee flag
         ]);
     }
-
 
 
     public function index_1($id)

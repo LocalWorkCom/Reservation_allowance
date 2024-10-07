@@ -101,12 +101,7 @@
 
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager">
                     <label class="pb-3" for="mangered">رقم هوية المدير</label>
-                    <select name="mangered" id="mangered" class="form-control select2" required>
-                        <option value="">اختار رقم هوية المدير</option>
-                        @foreach ($users as $user)
-                            <option value="{{ $user->id }}">{{ $user->Civil_number }}</option>
-                        @endforeach
-                    </select>
+                    <input type="text" name="mangered" id="mangered" class="form-control" value="{{ old('mangered') }}">
                     @error('mangered')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
@@ -186,79 +181,53 @@
         $('.select2').select2({
             dir: "rtl"
         });
-        $('#mangered').on('select2:select', function(e) {
-            // alert('select');
-            var managerId = $(this).val();
-            fetchManagerDetails(managerId); // Fetch manager details based on the selected value
-        });
-        // $(document).ready(function() {
-        // Function to fetch and display manager details
+
         function fetchManagerDetails(managerId) {
             if (managerId) {
-                // Make an AJAX request to fetch manager details
                 $.ajax({
                     url: '/get-manager-details/' + managerId,
                     type: 'GET',
                     success: function(data) {
-                        // Populate the manager details in the div
-                        $('#manager_details').find('span').eq(0).text(data.rank); // رتبه
-                        $('#manager_details').find('span').eq(1).text(data.seniority); // أقدميه
-
-                        $('#manager_details').find('span').eq(2).text(data.job_title); // مسمى وظيفي
-                        $('#manager_details').find('span').eq(3).text(data.name); // أسم
-                        $('#manager_details').find('span').eq(4).text(data.phone); // هاتف
-
-                        // Show the manager details div
+                        $('#manager_details').find('span').eq(0).text(data.rank);
+                        $('#manager_details').find('span').eq(1).text(data.seniority);
+                        $('#manager_details').find('span').eq(2).text(data.job_title);
+                        $('#manager_details').find('span').eq(3).text(data.name);
+                        $('#manager_details').find('span').eq(4).text(data.phone);
                         $('#manager_details').show();
-
-                        // Show or hide password and rule fields based on employee flag
                         if (data.isEmployee) {
-                            $('#password_field').show(); // Show password field
-                            $('#rule_field').show(); // Show rule field
+                            $('#password_field').show();
+                            $('#rule_field').show();
                         } else {
-                            $('#password_field').hide(); // Hide password field
-                            $('#rule_field').hide(); // Hide rule field
-                            // Clear the input fields if the manager is not an employee
+                            $('#password_field').hide();
+                            $('#rule_field').hide();
                             $('#password').val('');
                             $('#rule').val('');
                         }
                     },
                     error: function() {
-                        alert('Error fetching manager details.');
+                        alert('عفوا هذا المستخدم غير موجود');
                     }
                 });
             } else {
-                // Hide the manager details if no manager is selected
                 $('#manager_details').hide();
-                $('#password_field').hide(); // Hide password field
-                $('#rule_field').hide(); // Hide rule field
-                // Clear the input fields
+                $('#password_field').hide();
+                $('#rule_field').hide();
                 $('#password').val('');
                 $('#rule').val('');
             }
         }
-
-        // Hide the manager details, password, and rule fields initially
         $('#manager_details').hide();
         $('#password_field').hide();
         $('#rule_field').hide();
-
-        // When the manager is selected or changed
-        $('#mangered').change(function() {
+        $('#mangered').on('input', function() {
             var managerId = $(this).val();
-
-            // If the manager is changed, clear the password and rule fields
             $('#password').val('');
             $('#rule').val('');
-
-            fetchManagerDetails(managerId); // Fetch manager details based on the selected value
+            fetchManagerDetails(managerId);
         });
-
-        // On page load, check if there's already a selected manager
         var selectedManagerId = $('#mangered').val();
         if (selectedManagerId) {
-            fetchManagerDetails(selectedManagerId); // Fetch details for the pre-selected manager
+            fetchManagerDetails(selectedManagerId);
         }
-        // });
     </script>
 @endsection
