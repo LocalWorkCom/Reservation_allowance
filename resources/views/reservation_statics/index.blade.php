@@ -25,9 +25,8 @@
 @section('content')
     <div class="row">
         <div class="container welcome col-11">
-            <div class="d-flex justify-content-between">
-                <p>الاحصائيات بدل حجز </p>
-
+        <div class="d-flex justify-content-between">
+                <p>الاحصائيات بدل حجز - {{ $sector_name }}</p>
             </div>
         </div>
     </div>
@@ -76,7 +75,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ route('Reserv_statistic.getAll') }}',
+                    url: '{{ route('Reserv_statistic.getAll', ['sector_id' => $sector_id]) }}', 
                 },
                 columns: [{
                         data: null,
@@ -84,6 +83,7 @@
                         orderable: false,
                         searchable: false
                     },
+                   
                     {
                         data: 'department_name',
                         name: 'department_name'

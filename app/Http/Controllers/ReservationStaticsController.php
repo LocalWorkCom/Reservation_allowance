@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Models\User;
 use App\Models\departements;
 use App\Models\ReservationAllowance;
@@ -12,46 +11,34 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Sector;
 
 class ReservationStaticsController extends Controller
 {
-    public function static()
+    public function static($sector_id)
     {
-        $user = Auth::user();
-    
-        if ($user && ( $user->rule_id == 2)) {
-           
-                return view('reservation_statics.index' );
-            
-        } else {
-            return abort(403, 'Unauthorized action.');
-        }
+      
+            $sector = Sector::find($sector_id);
+
+            return view('reservation_statics.index', [
+                'sector_id' => $sector_id,
+                'sector_name' => $sector ? $sector->name : 'Unknown Sector'
+            ]);
+       
     }
-    public function getAll()
+
+    public function getAll($sector_id)
     {
         try {
             // Fetch the authenticated user
-        $userId = Auth::id();
-
-        // Verify that the authenticated user has 'rule_id' = 2
-        $authUser = User::where('id', $userId)->where('rule_id', 2)->first();
-        if (!$authUser) {
-            return response()->json([
-                'draw' => 0,
-                'recordsTotal' => 0,
-                'recordsFiltered' => 0,
-                'data' => [],
-                'error' => 'User does not have the required rule.'
-            ]);
-        }
-
+           
     
-            // Fetch only main departments (where parent_id is null)
-            $data = departements::withCount('children')
-                ->where('created_by', $userId)
-                ->whereNull('parent_id')
-                ->orderBy('updated_at', 'desc')
-                ->orderBy('created_at', 'desc')
+            // Fetch only main departments that belong to the given sector
+            $query = departements::withCount('children')
+                ->where('sector_id', $sector_id)
+                ->whereNull('parent_id');
+    
+            $data = $query->orderBy('updated_at', 'desc')
                 ->get();
     
             return DataTables::of($data)
@@ -65,14 +52,14 @@ class ReservationStaticsController extends Controller
                     // Sum of 'reservation_allowance_amount' for sub-departments
                     $subDepartmentsSum = departements::where('parent_id', $row->id)
                         ->sum('reservation_allowance_amount');
-                    
+    
                     // If no sub-departments, take the main department's own 'reservation_allowance_amount'
                     return $subDepartmentsSum > 0 ? $subDepartmentsSum : $row->reservation_allowance_amount;
                 })
                 ->addColumn('registered_by', function($row) {
                     // Fetch sub-department IDs for the main department
                     $subDepartmentIds = departements::where('parent_id', $row->id)->pluck('id');
-                    
+    
                     // Sum of 'amount' from the reservation_allowances table for those sub-departments
                     $totalRegisteredAmount = ReservationAllowance::whereIn('departement_id', $subDepartmentIds)->sum('amount');
     
@@ -85,7 +72,7 @@ class ReservationStaticsController extends Controller
                 })
                 ->addColumn('remaining_amount', function($row) {
                     // Calculate "المبلغ المتبقى" as "ميزانية بدل الحجز" - "المسجل"
-                    
+    
                     // First, get the reservation allowance budget
                     $subDepartmentsSum = departements::where('parent_id', $row->id)
                         ->sum('reservation_allowance_amount');
@@ -93,7 +80,7 @@ class ReservationStaticsController extends Controller
     
                     // Fetch sub-department IDs for the main department
                     $subDepartmentIds = departements::where('parent_id', $row->id)->pluck('id');
-                    
+    
                     // Then, calculate the total registered amount
                     $totalRegisteredAmount = ReservationAllowance::whereIn('departement_id', $subDepartmentIds)->sum('amount');
                     if ($subDepartmentIds->isEmpty()) {
@@ -106,7 +93,7 @@ class ReservationStaticsController extends Controller
                 ->addColumn('number_of_employees', function($row) {
                     // Fetch sub-department IDs for the main department
                     $subDepartmentIds = departements::where('parent_id', $row->id)->pluck('id');
-                    
+    
                     // Count the users in these departments where 'flag' = 'employee'
                     $totalEmployees = User::whereIn('department_id', $subDepartmentIds)
                         ->where('flag', 'employee')
@@ -124,7 +111,7 @@ class ReservationStaticsController extends Controller
                 ->addColumn('received_allowance_count', function($row) {
                     // Fetch sub-department IDs for the main department
                     $subDepartmentIds = departements::where('parent_id', $row->id)->pluck('id');
-                    
+    
                     // Fetch the unique user_ids from the reservation_allowances table for these sub-departments
                     $uniqueUsers = ReservationAllowance::whereIn('departement_id', $subDepartmentIds)
                         ->distinct('user_id')
@@ -141,10 +128,10 @@ class ReservationStaticsController extends Controller
                 })
                 ->addColumn('did_not_receive_allowance_count', function($row) {
                     // Calculate "لم يحصل على بدل حجز" as "عدد الموظفين" - "الحاصلين على بدل حجز"
-                    
+    
                     // Fetch sub-department IDs for the main department
                     $subDepartmentIds = departements::where('parent_id', $row->id)->pluck('id');
-                    
+    
                     // Count the users in these departments where 'flag' = 'employee'
                     $totalEmployees = User::whereIn('department_id', $subDepartmentIds)
                         ->where('flag', 'employee')
@@ -187,8 +174,4 @@ class ReservationStaticsController extends Controller
             ]);
         }
     }
-    
-    
-    
-    
 }
