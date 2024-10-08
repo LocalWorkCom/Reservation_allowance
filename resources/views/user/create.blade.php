@@ -205,8 +205,7 @@
 
                             <div class="form-group col-md-5 mx-2" id="military_number_id">
 
-                                <label for="input6"> <i class="fa-solid fa-asterisk"
-                                        style="color:red; font-size:10px;"></i>
+                                <label for="input6"> 
                                     رقم العسكرى</label>
                                 <input type="text" id="input6" name="military_number" class="form-control"
                                     placeholder="رقم العسكرى" value="{{ old('military_number') }}">
@@ -265,15 +264,14 @@
 
 
                             <div class="form-group col-md-5 mx-2">
-                                <label for="sector"> <i class="fa-solid fa-asterisk"
-                                        style="color:red; font-size:10px;"></i>
+                                <label for="sector"> 
                                     القطاع </label>
                                 <select id="sector" name="sector" class="form-control " placeholder="القطاع">
                                     <option value="{{ null }}">
                                         لا يوجد قسم محدد</option>
                                     @foreach ($sectors as $sector)
                                         <option value="{{ $sector->id }}"
-                                            {{ $user->sector == $sector->id ? 'selected' : '' }}>
+                                            {{ old('name') == $sector->id ? 'selected' : '' }}>
                                             {{ $sector->name }}</option>
                                     @endforeach
 
@@ -281,8 +279,7 @@
                             </div>
 
                             <div class="form-group col-md-5 mx-2">
-                                <label for="department_id"> <i class="fa-solid fa-asterisk"
-                                        style="color:red; font-size:10px;"></i>
+                                <label for="department_id"> 
                                     الادارة </label>
                                 <select id="department_id" name="department_id" class="form-control "
                                     placeholder="الادارة">
