@@ -149,7 +149,7 @@
             columnDefs: [{
                 targets: -1,
                 render: function(data, type, row) {
-                    console.log(data);
+                    console.log(row);
                     var departmentEdit = '{{ route('departments.edit', ':id') }}';
                     departmentEdit = departmentEdit.replace(':id', row.id);
                     var subdepartment = '{{ route('sub_departments.create', ':id') }}';
@@ -157,8 +157,9 @@
                     var departmentShow = '{{ route('departments.show', ':id') }}';
                     departmentShow = departmentShow.replace(':id', row.id);
                     var addReservation =
-                        '{{ route('reservation_allowances.search_employee_new', ':id') }}';
+                        '{{ route('reservation_allowances.search_employee_new', 'sector_id=:sector&departement_id=:id') }}';
                     addReservation = addReservation.replace(':id', row.id);
+                    addReservation = addReservation.replace(':sector', row.sector_id);
 
                     // Get the authenticated user's department ID from Blade
                     // var authDepartmentId = {{ Auth::user()->department_id }};

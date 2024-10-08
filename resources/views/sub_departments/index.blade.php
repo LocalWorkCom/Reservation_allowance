@@ -174,13 +174,18 @@
             columnDefs: [{
                 targets: -1,
                 render: function(data, type, row) {
+                    console.log(row);
                     var subdepartmentEdit = '{{ route('sub_departments.edit', ':id') }}';
                     subdepartmentEdit = subdepartmentEdit.replace(':id', row.id);
                     var subdepartment = '{{ route('sub_departments.create', ':id') }}';
                     subdepartment = subdepartment.replace(':id', row.id);
                     var departmentShow = '{{ route('departments.show', ':id') }}';
                     departmentShow = departmentShow.replace(':id', row.id);
-                    var addReservation = '{{ route('departments.show', ':id') }}';
+                    // var addReservation = '{{ route('departments.show', ':id') }}';
+                    var addReservation =
+                        '{{ route('reservation_allowances.search_employee_new', 'sector_id=:sector&departement_id=:id') }}';
+                    addReservation = addReservation.replace(':id', row.id);
+                    addReservation = addReservation.replace(':sector', row.sector_id);
                     addReservation = addReservation.replace(':id', row.id);
 
                     // Start building the buttons
