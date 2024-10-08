@@ -155,6 +155,8 @@
                     subdepartment = subdepartment.replace(':id', row.id);
                     var departmentShow = '{{ route('departments.show', ':id') }}';
                     departmentShow = departmentShow.replace(':id', row.id);
+                    var addReservation = '{{ route('departments.show', ':id') }}';
+                    addReservation = addReservation.replace(':id', row.id);
 
                     // Get the authenticated user's department ID from Blade
                     // var authDepartmentId = {{ Auth::user()->department_id }};
@@ -169,6 +171,8 @@
                     // if (row.id === authDepartmentId) {
                     buttons += `
                 <a href="${departmentEdit}" class="btn btn-sm" style="background-color: #F7AF15;"> <i class="fa fa-edit"></i> تعديل</a>
+                <a href="${addReservation}" class="btn btn-sm" style="background-color: #274373;"> <i class="fa fa-edit"></i> اضافة بدل حجز</a>
+
             `;
                     // }
 
