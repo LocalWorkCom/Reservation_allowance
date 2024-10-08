@@ -9,6 +9,19 @@
 @section('title')
     عرض
 @endsection
+<div class="row " dir="rtl">
+    <div class="container  col-11" style="background-color:transparent;">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item "><a href="{{ route('home') }}">الرئيسيه</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('sectors.index', ['id' => $sectors->id]) }}">القطاعات</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page"> <a href="">
+                        الادارات الرئيسية</a></li>
+            </ol>
+        </nav>
+    </div>
+</div>
 <section>
     <div class="row">
         <div class="container welcome col-11">
