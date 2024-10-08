@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Hash;
 
 class DepartmentController extends Controller
 {
-    public function index()
+    public function index($id)
     {
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
             // dd('d');
@@ -31,7 +31,12 @@ class DepartmentController extends Controller
         } elseif (Auth::user()->rule->id == 3) {
             $departments = departements::where('id', auth()->user()->department_id);
         }
-        return view("departments.index");
+        $departments = departements::where('sector_id', $id)->get();
+
+        // Fetch the related sector information
+        $sectors = Sector::findOrFail($id);
+
+        return view('departments.index', compact('departments', 'sectors'));
     }
 
 
