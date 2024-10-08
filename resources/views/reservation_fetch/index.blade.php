@@ -141,7 +141,10 @@ h3 {
                     <th>اليوم</th>
                     <th>التاريخ</th>
                     <th>الاسم</th>
+                    <th>قطاع</th>
                     <th>الادارة</th>
+                    <th>نوع</th>  
+                    <th>رتبه</th>
                     <th>نوع الحجز</th>
                     <th>القيمة</th>
                 </tr>
@@ -178,9 +181,14 @@ $(document).ready(function() {
                 { data: 'day', name: 'day' },
                 { data: 'date', name: 'date' },
                 { data: 'name', name: 'name' },
+                { data: 'sector', name: 'sector' },
                 { data: 'department', name: 'department' },
+                { data: 'grade', name: 'grade' }, 
+                { data: 'grade_type', name: 'grade_type' },
                 { data: 'type', name: 'type' },
-                { data: 'amount', name: 'amount' }
+                { data: 'amount', name: 'amount' },
+
+            
             ],
             order: [[2, 'asc']],
             "oLanguage": {

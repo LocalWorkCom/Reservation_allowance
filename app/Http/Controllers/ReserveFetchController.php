@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\ReservationAllowance;
 use App\Models\User;
 use App\Models\departements;
+use App\Models\grade;
+use App\Models\Sector;
 use TCPDF;
 use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
@@ -45,6 +47,34 @@ class ReserveFetchController extends Controller
                     $department = departements::find($row->departement_id);
                     return $department ? $department->name : 'N/A'; // Department name
                 })
+                ->addColumn('grade_type', function () use ($user) {
+                    // Fetch the grade type based on the grade_id from the grades table
+                    $grade = Grade::find($user->grade_id);
+                    if ($grade) {
+                        switch ($grade->type) {
+                            case 1:
+                                return 'فرد';
+                            case 2:
+                                return 'ظابط';
+                            case 3:
+                                return 'مهني';
+                            default:
+                                return 'N/A';
+                        }
+                    }
+                    return 'N/A';
+                })
+                ->addColumn('grade', function () use ($user) {
+                    // Fetch the grade name based on the grade_id from the grades table
+                    $grade = Grade::find($user->grade_id);
+                    return $grade ? $grade->name : 'N/A'; // Grade name
+                })
+                ->addColumn('sector', function () use ($user) {
+                    // Fetch the sector name based on the sector_id from the sectors table
+                    $sector = Sector::find($user->sector);
+                    return $sector ? $sector->name : 'N/A'; // Sector name
+                })
+                
                 ->addColumn('type', function ($row) {
                     return $row->type == 1 ? 'حجز كلي' : 'حجز جزئي'; // Reservation type (1: Full, 2: Partial)
                 })
@@ -101,6 +131,34 @@ class ReserveFetchController extends Controller
                     $department = departements::find($row->departement_id);
                     return $department ? $department->name : 'N/A'; // Department name
                 })
+                ->addColumn('grade_type', function () use ($user) {
+                    // Fetch the grade type based on the grade_id from the grades table
+                    $grade = Grade::find($user->grade_id);
+                    if ($grade) {
+                        switch ($grade->type) {
+                            case 1:
+                                return 'فرد';
+                            case 2:
+                                return 'ظابط';
+                            case 3:
+                                return 'مهني';
+                            default:
+                                return 'N/A';
+                        }
+                    }
+                    return 'N/A';
+                })
+                ->addColumn('grade', function () use ($user) {
+                    // Fetch the grade name based on the grade_id from the grades table
+                    $grade = Grade::find($user->grade_id);
+                    return $grade ? $grade->name : 'N/A'; // Grade name
+                })
+                ->addColumn('sector', function () use ($user) {
+                    // Fetch the sector name based on the sector_id from the sectors table
+                    $sector = Sector::find($user->sector_id);
+                    return $sector ? $sector->name : 'N/A'; // Sector name
+                })
+                
                 ->addColumn('type', function ($row) {
                     return $row->type == 1 ? 'حجز كلي' : 'حجز جزئي'; // Reservation type (1: Full, 2: Partial)
                 })
@@ -160,6 +218,34 @@ class ReserveFetchController extends Controller
                 ->addColumn('type', function ($row) {
                     return $row->type == 1 ? 'حجز كلي' : 'حجز جزئي'; // Reservation type (1: Full, 2: Partial)
                 })
+                ->addColumn('grade_type', function () use ($user) {
+                    // Fetch the grade type based on the grade_id from the grades table
+                    $grade = Grade::find($user->grade_id);
+                    if ($grade) {
+                        switch ($grade->type) {
+                            case 1:
+                                return 'فرد';
+                            case 2:
+                                return 'ظابط';
+                            case 3:
+                                return 'مهني';
+                            default:
+                                return 'N/A';
+                        }
+                    }
+                    return 'N/A';
+                })
+                ->addColumn('grade', function () use ($user) {
+                    // Fetch the grade name based on the grade_id from the grades table
+                    $grade = Grade::find($user->grade_id);
+                    return $grade ? $grade->name : 'N/A'; // Grade name
+                })
+                ->addColumn('sector', function () use ($user) {
+                    // Fetch the sector name based on the sector_id from the sectors table
+                    $sector = Sector::find($user->sector_id);
+                    return $sector ? $sector->name : 'N/A'; // Sector name
+                })
+                
                 ->addColumn('amount', function ($row) {
                     return number_format($row->amount, 2); // Format the amount
                 })
@@ -215,6 +301,34 @@ class ReserveFetchController extends Controller
                 $department = departements::find($row->departement_id);
                 return $department ? $department->name : 'N/A'; // Department name
             })
+            ->addColumn('grade_type', function () use ($user) {
+                // Fetch the grade type based on the grade_id from the grades table
+                $grade = Grade::find($user->grade_id);
+                if ($grade) {
+                    switch ($grade->type) {
+                        case 1:
+                            return 'فرد';
+                        case 2:
+                            return 'ظابط';
+                        case 3:
+                            return 'مهني';
+                        default:
+                            return 'N/A';
+                    }
+                }
+                return 'N/A';
+            })
+            ->addColumn('grade', function () use ($user) {
+                // Fetch the grade name based on the grade_id from the grades table
+                $grade = Grade::find($user->grade_id);
+                return $grade ? $grade->name : 'N/A'; // Grade name
+            })
+            ->addColumn('sector', function () use ($user) {
+                // Fetch the sector name based on the sector_id from the sectors table
+                $sector = Sector::find($user->sector_id);
+                return $sector ? $sector->name : 'N/A'; // Sector name
+            })
+            
             ->addColumn('type', function ($row) {
                 return $row->type == 1 ? 'حجز كلي' : 'حجز جزئي'; // Reservation type (1: Full, 2: Partial)
             })
@@ -272,6 +386,34 @@ public function getLastYear(Request $request)
                 $department = departements::find($row->departement_id);
                 return $department ? $department->name : 'N/A'; // Department name
             })
+            ->addColumn('grade_type', function () use ($user) {
+                // Fetch the grade type based on the grade_id from the grades table
+                $grade = Grade::find($user->grade_id);
+                if ($grade) {
+                    switch ($grade->type) {
+                        case 1:
+                            return 'فرد';
+                        case 2:
+                            return 'ظابط';
+                        case 3:
+                            return 'مهني';
+                        default:
+                            return 'N/A';
+                    }
+                }
+                return 'N/A';
+            })
+            ->addColumn('grade', function () use ($user) {
+                // Fetch the grade name based on the grade_id from the grades table
+                $grade = Grade::find($user->grade_id);
+                return $grade ? $grade->name : 'N/A'; // Grade name
+            })
+            ->addColumn('sector', function () use ($user) {
+                // Fetch the sector name based on the sector_id from the sectors table
+                $sector = Sector::find($user->sector_id);
+                return $sector ? $sector->name : 'N/A'; // Sector name
+            })
+            
             ->addColumn('type', function ($row) {
                 return $row->type == 1 ? 'حجز كلي' : 'حجز جزئي'; // Reservation type (1: Full, 2: Partial)
             })
@@ -331,6 +473,34 @@ public function getCustomDateRange(Request $request)
                 $department = departements::find($row->departement_id);
                 return $department ? $department->name : 'N/A'; // Department name
             })
+            ->addColumn('grade_type', function () use ($user) {
+                // Fetch the grade type based on the grade_id from the grades table
+                $grade = Grade::find($user->grade_id);
+                if ($grade) {
+                    switch ($grade->type) {
+                        case 1:
+                            return 'فرد';
+                        case 2:
+                            return 'ظابط';
+                        case 3:
+                            return 'مهني';
+                        default:
+                            return 'N/A';
+                    }
+                }
+                return 'N/A';
+            })
+            ->addColumn('grade', function () use ($user) {
+                // Fetch the grade name based on the grade_id from the grades table
+                $grade = Grade::find($user->grade_id);
+                return $grade ? $grade->name : 'N/A'; // Grade name
+            })
+            ->addColumn('sector', function () use ($user) {
+                // Fetch the sector name based on the sector_id from the sectors table
+                $sector = Sector::find($user->sector_id);
+                return $sector ? $sector->name : 'N/A'; // Sector name
+            })
+            
             ->addColumn('type', function ($row) {
                 return $row->type == 1 ? 'حجز كلي' : 'حجز جزئي'; // Reservation type (1: Full, 2: Partial)
             })
