@@ -42,18 +42,28 @@
 
 @section('content')
     <main>
-        {{-- <div class="row " dir="rtl">
+        <div class="row " dir="rtl">
             <div class="container  col-11" style="background-color:transparent;">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item "><a href="{{ route('home') }}">الرئيسيه</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('departments.index') }}">القطاعات </a></li>
-                        <li class="breadcrumb-item active" aria-current="page"> <a href="{{ route('departments.create') }}">
-                                اضافة قطاع</a></li>
+                        @if ($department->parent_id)
+                            <li class="breadcrumb-item"><a
+                                    href="{{ route('sub_departments.index', ['id' => $department->parent_id]) }}">
+                                    {{ $department->name }}
+                                </a></li>
+                        @else
+                            <li class="breadcrumb-item"><a
+                                    href="{{ route('departments.index', ['id' => $department->id]) }}">
+                                    {{ $department->name }}
+                                </a></li>
+                        @endif
+                        <li class="breadcrumb-item active" aria-current="page"> <a href="">
+                                اضافة ادارة فرعية</a></li>
                     </ol>
                 </nav>
             </div>
-        </div> --}}
+        </div>
         <div class="row ">
             <div class="container welcome col-11">
                 <p> اضافه أداره </p>

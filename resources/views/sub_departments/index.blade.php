@@ -10,6 +10,39 @@
     عرض
 @endsection
 <section>
+    <div class="row" dir="rtl">
+        <div class="container col-11" style="background-color:transparent;">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ route('home') }}">الرئيسيه</a></li>
+                    <li class="breadcrumb-item"><a
+                            href="{{ route('departments.index', ['id' => $sectors->id]) }}">الادارات</a></li>
+
+                    @foreach ($breadcrumbs as $breadcrumb)
+                        @if ($loop->last)
+                            <li class="breadcrumb-item active" aria-current="page">
+                                <a href="">{{ $breadcrumb->name }}</a>
+                            </li>
+                        @else
+                            @if ($breadcrumb->parent_id)
+                                <li class="breadcrumb-item">
+                                    <a href="{{ route('sub_departments.index', ['id' => $breadcrumb->id]) }}">
+                                        {{ $breadcrumb->name }}
+                                    </a>
+                                </li>
+                            @else
+                                <li class="breadcrumb-item">
+                                    <a href="{{ route('sub_departments.index', ['id' => $breadcrumb->id]) }}">
+                                        {{ $breadcrumb->name }}
+                                    </a>
+                                </li>
+                            @endif
+                        @endif
+                    @endforeach
+                </ol>
+            </nav>
+        </div>
+    </div>
 
     <div class="row">
         <div class="container welcome col-11">
