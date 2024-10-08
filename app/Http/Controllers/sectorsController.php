@@ -44,9 +44,10 @@ class sectorsController extends Controller
             ->addColumn('action', function ($row) {
                 $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;" href=' . route('sectors.edit', $row->id) . '><i class="fa fa-edit"></i> تعديل</a>';
                 $add_permission = '<a class="btn btn-sm" style="background-color: #274373;" href="' .  route('department.create', ['id' => $row->id]) . '"><i class="fa fa-plus"></i> أضافة أداره</a>';
+                $reservationAllowence='<a class="btn btn-sm" style="background-color: #F7AF15;" href=' . route('reservation_allowances.search_employee_new', 'sector_id='.$row->id) . '><i class="fa fa-plus"></i> اضافة بدل حجز جماعى</a>';
                 $show_permission = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('sectors.show', $row->id) . '> <i class="fa fa-eye"></i>عرض</a>';
 
-                return $show_permission . ' ' . $edit_permission . '' . $add_permission;
+                return $show_permission . ' ' . $edit_permission . '' . $add_permission.' '.$reservationAllowence;
             })
             ->addColumn('manager_name', function ($row) {
                 // Check if manager exists before accessing its attributes

@@ -149,13 +149,15 @@
             columnDefs: [{
                 targets: -1,
                 render: function(data, type, row) {
+                    console.log(data);
                     var departmentEdit = '{{ route('departments.edit', ':id') }}';
                     departmentEdit = departmentEdit.replace(':id', row.id);
                     var subdepartment = '{{ route('sub_departments.create', ':id') }}';
                     subdepartment = subdepartment.replace(':id', row.id);
                     var departmentShow = '{{ route('departments.show', ':id') }}';
                     departmentShow = departmentShow.replace(':id', row.id);
-                    var addReservation = '{{ route('departments.show', ':id') }}';
+                    var addReservation =
+                        '{{ route('reservation_allowances.search_employee_new', ':id') }}';
                     addReservation = addReservation.replace(':id', row.id);
 
                     // Get the authenticated user's department ID from Blade
