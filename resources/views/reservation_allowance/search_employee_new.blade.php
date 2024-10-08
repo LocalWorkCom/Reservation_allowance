@@ -43,7 +43,7 @@
 @endpush
 
 @section('title')
-القطاعات
+اضافة بدل حجز
 @endsection
 @section('content')
 <div class="row">
@@ -77,7 +77,7 @@
                         <p> بدل الحجز</p>
                     </div>
                         <form class="" action="{{ route('reservation_allowances.search_employee_new') }}" method="post"
-                            enctype="multipart/form-data">
+                            >
                             @csrf
                             <div class="row d-flex flex-wrap justify-content-between">
                                 <!-- 1 for sector , 2 for department -->

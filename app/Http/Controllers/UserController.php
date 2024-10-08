@@ -116,8 +116,8 @@ class UserController extends Controller
             }
         }
         if (request()->has('sector_id')) {
-
-            $data = $data->where('sector', request()->get('sector_id'))->whereNull('department_id');
+            if (request()->has('amp;type') != 1)
+                $data = $data->where('sector', request()->get('sector_id'))->whereNull('department_id');
         }
 
         // Finally, fetch the results
