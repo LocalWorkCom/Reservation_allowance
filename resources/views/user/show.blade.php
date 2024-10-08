@@ -11,9 +11,6 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item "><a href="/">الرئيسيه</a></li>
 
-                    @if ($user->flag == 'user')
-                        <li class="breadcrumb-item"><a href="{{ route('user.index', 0) }}">المستخدمين</a></li>
-                    @elseif ($user->flag == 'employee')
                         @if (Auth::user()->rule_id == 2)
                             <li class="breadcrumb-item"><a href="{{ route('user.employees', 1) }}">موظفين الوزارة</a>
                             </li>
@@ -21,7 +18,6 @@
                         @if (Auth::user()->rule_id != 2)
                             <li class="breadcrumb-item"><a href="{{ route('user.employees', 1) }}">موظفين القوة</a></li>
                         @endif
-                    @endif
                     <li class="breadcrumb-item active" aria-current="page"> <a href=""> عرض </a></li>
                 </ol>
 
@@ -30,16 +26,13 @@
     </div>
     <div class="row ">
         <div class="container welcome col-11">
-            @if ($user->flag == 'user')
-                <p>المستخدمين</p>
-            @elseif ($user->flag == 'employee')
+           
                 @if (Auth::user()->rule_id == 2)
                     <p>موظفين الوزارة</p>
                 @endif
                 @if (Auth::user()->rule_id != 2)
                     <p>موظفين القوة<< /p>
                 @endif
-            @endif
         </div>
     </div>
 
