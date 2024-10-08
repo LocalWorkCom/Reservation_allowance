@@ -33,6 +33,8 @@ class DepartmentController extends Controller
         }
         return view("departments.index");
     }
+
+
     public function getDepartment($id)
     {
 
@@ -128,7 +130,28 @@ class DepartmentController extends Controller
         $departments = departements::where('parent_id', $id)->get();
         $parentDepartment = departements::findOrFail($id);
 
-        return view('sub_departments.index', compact('users', 'departments', 'parentDepartment'));
+        $breadcrumbs = $this->getDepartmentBreadcrumbs($parentDepartment);
+
+        $sectors = Sector::findOrFail($parentDepartment->sector_id);
+
+        return view('sub_departments.index', compact('users', 'departments', 'sectors', 'parentDepartment', 'breadcrumbs'));
+    }
+
+    public function getDepartmentBreadcrumbs($department)
+    {
+        $breadcrumbs = [];
+
+        // Keep fetching parent departments until we reach the top-most department (parent_id is null)
+        while ($department) {
+            // Add the current department to the breadcrumbs array
+            $breadcrumbs[] = $department;
+
+            // Fetch the parent department if it exists
+            $department = departements::find($department->parent_id);
+        }
+
+        // Reverse the breadcrumbs to start from the top-most parent
+        return array_reverse($breadcrumbs);
     }
     public function getSub_Department(Request $request, $id)
     {
@@ -200,6 +223,7 @@ class DepartmentController extends Controller
             ->get();
 
         $rules = Rule::where('id', 3)->get();
+
         return view('departments.create', compact('sectors', 'managers', 'rules'));
     }
 

@@ -10,7 +10,7 @@
     'locale' => 'ar',
     'fallback_locale' => 'ar',
     'faker_locale' => 'en_US',
-    'key' => 'base64:eyL7oeJk21lz1oQ1PkEtwU77ta1TUc0G6+4KEwA38Nw=',
+    'key' => 'base64:n4MLhJY283XrWy3IF2VnjRuTIHOTpgdC5Gn1ybvCYRs=',
     'cipher' => 'AES-256-CBC',
     'maintenance' => 
     array (
@@ -208,7 +208,7 @@
       'file' => 
       array (
         'driver' => 'file',
-        'path' => 'C:\\Users\\pc\\res\\Reservation_allowance\\storage\\framework/cache/data',
+        'path' => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\storage\\framework/cache/data',
       ),
       'memcached' => 
       array (
@@ -437,13 +437,13 @@
       'local' => 
       array (
         'driver' => 'local',
-        'root' => 'C:\\Users\\pc\\res\\Reservation_allowance\\storage\\app',
+        'root' => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\storage\\app',
         'throw' => false,
       ),
       'public' => 
       array (
         'driver' => 'local',
-        'root' => 'C:\\Users\\pc\\res\\Reservation_allowance\\storage\\app/public',
+        'root' => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\storage\\app/public',
         'url' => 'http://localhost/storage',
         'visibility' => 'public',
         'throw' => false,
@@ -463,7 +463,7 @@
     ),
     'links' => 
     array (
-      'C:\\Users\\pc\\res\\Reservation_allowance\\public\\storage' => 'C:\\Users\\pc\\res\\Reservation_allowance\\storage\\app/public',
+      'C:\\Users\\PC\\Desktop\\Reservation_allowance\\public\\storage' => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\storage\\app/public',
     ),
   ),
   'hashing' => 
@@ -502,13 +502,13 @@
       'single' => 
       array (
         'driver' => 'single',
-        'path' => 'C:\\Users\\pc\\res\\Reservation_allowance\\storage\\logs/laravel.log',
+        'path' => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\storage\\logs/laravel.log',
         'level' => 'debug',
       ),
       'daily' => 
       array (
         'driver' => 'daily',
-        'path' => 'C:\\Users\\pc\\res\\Reservation_allowance\\storage\\logs/laravel.log',
+        'path' => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\storage\\logs/laravel.log',
         'level' => 'debug',
         'days' => 14,
       ),
@@ -560,7 +560,7 @@
       ),
       'emergency' => 
       array (
-        'path' => 'C:\\Users\\pc\\res\\Reservation_allowance\\storage\\logs/laravel.log',
+        'path' => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\storage\\logs/laravel.log',
       ),
     ),
   ),
@@ -572,11 +572,11 @@
       'smtp' => 
       array (
         'transport' => 'smtp',
-        'host' => 'mailpit',
-        'port' => '1025',
-        'encryption' => NULL,
-        'username' => NULL,
-        'password' => NULL,
+        'host' => 'mail.testdomain100.online',
+        'port' => '465',
+        'encryption' => 'tls',
+        'username' => 'info@testdomain100.online',
+        'password' => '![Z!_(gy3,le',
         'timeout' => NULL,
         'local_domain' => NULL,
       ),
@@ -618,7 +618,7 @@
     ),
     'from' => 
     array (
-      'address' => 'hello@example.com',
+      'address' => 'info@testdomain100.online',
       'name' => 'Laravel',
     ),
     'markdown' => 
@@ -626,7 +626,7 @@
       'theme' => 'default',
       'paths' => 
       array (
-        0 => 'C:\\Users\\pc\\res\\Reservation_allowance\\resources\\views/vendor/mail',
+        0 => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\resources\\views/vendor/mail',
       ),
     ),
   ),
@@ -785,7 +785,7 @@
     'lifetime' => '120',
     'expire_on_close' => false,
     'encrypt' => false,
-    'files' => 'C:\\Users\\pc\\res\\Reservation_allowance\\storage\\framework/sessions',
+    'files' => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\storage\\framework/sessions',
     'connection' => NULL,
     'table' => 'sessions',
     'store' => NULL,
@@ -805,9 +805,9 @@
   array (
     'paths' => 
     array (
-      0 => 'C:\\Users\\pc\\res\\Reservation_allowance\\resources\\views',
+      0 => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\resources\\views',
     ),
-    'compiled' => 'C:\\Users\\pc\\res\\Reservation_allowance\\storage\\framework\\views',
+    'compiled' => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\storage\\framework\\views',
   ),
   'image' => 
   array (
@@ -926,7 +926,7 @@
     ),
     'temporary_files' => 
     array (
-      'local_path' => 'C:\\Users\\pc\\res\\Reservation_allowance\\storage\\framework/cache/laravel-excel',
+      'local_path' => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\storage\\framework/cache/laravel-excel',
       'local_permissions' => 
       array (
       ),
@@ -1019,7 +1019,7 @@
     array (
     ),
     'enable_runnable_solutions' => NULL,
-    'remote_sites_path' => 'C:\\Users\\pc\\res\\Reservation_allowance',
+    'remote_sites_path' => 'C:\\Users\\PC\\Desktop\\Reservation_allowance',
     'local_sites_path' => '',
     'housekeeping_endpoint_prefix' => '_ignition',
     'settings_file_path' => '',
