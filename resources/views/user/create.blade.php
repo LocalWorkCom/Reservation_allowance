@@ -188,7 +188,7 @@
                             </div>
                             <div class="form-group col-md-5 mx-2">
                                 <label for="country_select">الجنسية</label>
-                                <select id="country_select" name="nationality" class="form-control">
+                                <select id="country_select" name="nationality" class="form-control select2">
                                     <option selected disabled>اختار من القائمة</option>
                                     @foreach ($countries as $country)
                                         <option value="{{ $country->id }}"
@@ -205,7 +205,7 @@
 
                             <div class="form-group col-md-5 mx-2" id="military_number_id">
 
-                                <label for="input6"> 
+                                <label for="input6">
                                     رقم العسكرى</label>
                                 <input type="text" id="input6" name="military_number" class="form-control"
                                     placeholder="رقم العسكرى" value="{{ old('military_number') }}">
@@ -264,7 +264,7 @@
 
 
                             <div class="form-group col-md-5 mx-2">
-                                <label for="sector"> 
+                                <label for="sector">
                                     القطاع </label>
                                 <select id="sector" name="sector" class="form-control " placeholder="القطاع">
                                     <option value="{{ null }}">
@@ -279,7 +279,7 @@
                             </div>
 
                             <div class="form-group col-md-5 mx-2">
-                                <label for="department_id"> 
+                                <label for="department_id">
                                     الادارة </label>
                                 <select id="department_id" name="department_id" class="form-control "
                                     placeholder="الادارة">
@@ -295,7 +295,7 @@
                             </div>
                         </div>
                         <div class="form-row mx-md-3  d-flex justify-content-center flex-row-reverse">
- 
+
                             <div class="form-group col-md-5 mx-2">
                                 <label for="gradeSelect"><i class="fa-solid fa-asterisk"
                                         style="color:red; font-size:10px;"></i>
@@ -475,7 +475,7 @@
                     type: 'GET', // Use GET method
                     success: function(response) {
                         console.log(response);
-                        
+
 
                         // Clear the current grade options
                         var department_id = document.getElementById('department_id');

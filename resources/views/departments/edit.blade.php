@@ -44,18 +44,19 @@
 @endsection
 @section('content')
     <main>
-        {{-- <div class="row " dir="rtl">
-            <div class="container  col-11" style="background-color:transparent;">
+        <div class="row" dir="rtl">
+            <div class="container col-11" style="background-color:transparent;">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item "><a href="{{ route('home') }}">الرئيسيه</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('departments.index') }}">القطاعات </a></li>
-                        <li class="breadcrumb-item active" aria-current="page"> <a href="{{ route('departments.create') }}">
-                                اضافة قطاع</a></li>
+                        <li class="breadcrumb-item"><a href="/">الرئيسيه</a></li>
+                        <li class="breadcrumb-item"><a
+                                href="{{ route('departments.index', ['id' => $department->id]) }}">{{ $department->name }}</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page"><a href=""> تعديل ادارة</a></li>
                     </ol>
                 </nav>
             </div>
-        </div> --}}
+        </div>
         <div class="row ">
             <div class="container welcome col-11">
                 <p> تعديل أداره الرئيسيه </p>
@@ -175,18 +176,22 @@
 {{ $employee->Civil_number }}
 @endforeach
                                         </textarea>
+
                             </div>
+
                         </div>
+
+                </div>
+                <div class="container col-10 mt-5 mb-3 ">
+                    <div class="form-row col-10 " dir="ltr">
+                        <button class="btn-blue " type="submit">
+                            اضافة </button>
+                    </div>
                 </div>
             </div>
 
         </div>
-        <div class="container col-10 mt-5 mb-3 ">
-            <div class="form-row col-10 " dir="ltr">
-                <button class="btn-blue " type="submit">
-                    اضافة </button>
-            </div>
-        </div>
+
         <br>
 
         </form>

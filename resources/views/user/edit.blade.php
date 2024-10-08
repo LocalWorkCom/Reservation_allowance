@@ -311,26 +311,26 @@
                         </div> --}}
                         <div class="form-row mx-2 mx-3 d-flex justify-content-center flex-row-reverse">
 
-                        <div class="form-group col-md-5 mx-2">
-                            <label for="gradeSelect">
-                                <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>
-                                الرتبة
-                            </label>
-                            <select id="gradeSelect" name="grade_id" class="form-control ">
-                                <option value="">اختار من القائمة</option>
-                                @foreach ($grades as $item)
-                                    <option value="{{ $item->id }}"
-                                        {{ $user->grade_id == $item->id ? 'selected' : '' }}>
-                                        {{ $item->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <div class="form-group col-md-5 mx-2">
+                                <label for="gradeSelect">
+                                    <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>
+                                    الرتبة
+                                </label>
+                                <select id="gradeSelect" name="grade_id" class="form-control ">
+                                    <option value="">اختار من القائمة</option>
+                                    @foreach ($grades as $item)
+                                        <option value="{{ $item->id }}"
+                                            {{ $user->grade_id == $item->id ? 'selected' : '' }}>
+                                            {{ $item->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
 
+                            </div>
                         </div>
-                    </div>
 
                         <div class="form-row mx-2 mx-3 d-flex justify-content-center flex-row-reverse">
-                            
+
                             <div class="form-group col-md-5 mx-2">
                                 <label for="input19">تاريخ الميلاد</label>
                                 <input type="date" id="input19" name="date_of_birth" class="form-control"
@@ -398,6 +398,9 @@
 
     </section>
     <script>
+        $('.select2').select2({
+            dir: "rtl"
+        });
         $(document).ready(function() {
             $('#input13').change(function() {
 
@@ -413,9 +416,7 @@
             });
 
             // Initialize the select2 plugin
-            $('.select2').select2({
-                dir: "rtl"
-            });
+
         });
         $('#sector').on('change', function() {
             getDepartment(this.value)
