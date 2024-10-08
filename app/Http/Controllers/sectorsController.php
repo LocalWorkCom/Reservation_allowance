@@ -45,8 +45,9 @@ class sectorsController extends Controller
                 $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;" href=' . route('sectors.edit', $row->id) . '><i class="fa fa-edit"></i> تعديل</a>';
                 $add_permission = '<a class="btn btn-sm" style="background-color: #274373;" href="' .  route('department.create', ['id' => $row->id]) . '"><i class="fa fa-plus"></i> أضافة أداره</a>';
                 $show_permission = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('sectors.show', $row->id) . '> <i class="fa fa-eye"></i>عرض</a>';
+                $addbadal_permission = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('sectors.show', $row->id) . '> <i class="fa fa-plus"></i>أضافه بدل</a>';
 
-                return $show_permission . ' ' . $edit_permission . '' . $add_permission;
+                return $show_permission . ' ' . $edit_permission . '' . $add_permission.' '.$addbadal_permission;
             })
             ->addColumn('manager_name', function ($row) {
                 // Check if manager exists before accessing its attributes
@@ -262,7 +263,7 @@ class sectorsController extends Controller
         // Retrieve the old manager before updating
         $oldManager = $sector->manager;
         $manager = User::where('Civil_number', $request->mangered)->value('id');
-       
+
         if ($manager == null) {
             return redirect()->back()->withErrors( 'رقم هويه المدير غير موجود')->withInput();
 
