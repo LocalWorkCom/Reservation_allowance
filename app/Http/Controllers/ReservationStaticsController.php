@@ -30,6 +30,7 @@ class ReservationStaticsController extends Controller
     public function getAll($sector_id)
     {
         try {
+            // Fetch the authenticated user
            
     
             // Fetch only main departments that belong to the given sector
@@ -38,7 +39,6 @@ class ReservationStaticsController extends Controller
                 ->whereNull('parent_id');
     
             $data = $query->orderBy('updated_at', 'desc')
-                ->orderBy('created_at', 'desc')
                 ->get();
     
             return DataTables::of($data)
@@ -46,8 +46,6 @@ class ReservationStaticsController extends Controller
                     return $row->name;
                 })
                 ->addColumn('sub_departments_count', function($row) {
-
-                    
                     return $row->children_count;
                 })
                 ->addColumn('reservation_allowance_budget', function($row) {
