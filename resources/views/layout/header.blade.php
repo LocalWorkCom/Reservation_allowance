@@ -139,12 +139,7 @@
                                             style="margin-left: 7px;">
                                         <a href="{{ route('ReservationStaticsCredit.index') }}">رصيد بدل حجز</a>
                                     </li>
-                                    <li
-                                        class="{{ request()->routeIs('reservation_allowances.index') ? 'active' : '' }}">
-                                        <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
-                                            style="margin-left: 7px;">
-                                        <a href="{{ route('Reserv_statistic.index') }}">احصائيات بدل حجز</a>
-                                    </li>
+
                                     <li class="{{ request()->routeIs('reservation_fetch.index') ? 'active' : '' }}">
                                         <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
                                             style="margin-left: 7px;">
@@ -153,7 +148,7 @@
                                     <li class="{{ request()->routeIs('reservation_fetch.index') ? 'active' : '' }}">
                                         <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
                                             style="margin-left: 7px;">
-                                        <a href="{{ route('Reserv_statistic_sector.index') }}">احصائيات قطاعات بدل حجز</a>
+                                        <a href="{{ route('Reserv_statistic_sector.index') }}">احصائيات بدل حجز</a>
                                     </li>
 
 

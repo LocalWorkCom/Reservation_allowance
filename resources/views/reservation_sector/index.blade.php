@@ -61,17 +61,31 @@
             $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm';
 
             $('#sectors-table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: '{{ route('Reserv_statistic_sector.getAll') }}',
-                },
+            processing: true,
+            serverSide: true,
+            ajax: {
+        url: '{{ route('Reserv_statistic_sector.getAll') }}', // Adjusted to correct route name
+    },
                 columns: [
                     { data: 'order', name: 'order', orderable: false, searchable: false },
-                    { data: 'sector', name: 'sector' },
-                    { data: 'main_departments_count', name: 'main_departments_count' },
+                    { 
+                        data: 'sector', 
+                        name: 'sector', 
+                        render: function(data, type, row) {
+                            return '<a href="/statistics_department/' + row.id + '">' + data + '</a>';
+                        }
+                    },          
+                  { data: 'main_departments_count', name: 'main_departments_count',
+                    render: function(data, type, row) {
+                            return '<a href="/statistics_department/' + row.id + '">' + data + '</a>';
+                        }
+                   },
                     { data: 'sub_departments_count', name: 'sub_departments_count' },
-                    { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' },
+                    { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' ,
+                        render: function(data, type, row) {
+                            return '<a href="/statistics_department/' + row.id + '">' + data + '</a>';
+                        }
+                    },
                     { data: 'registered_amount', name: 'registered_amount' },
                     { data: 'remaining_amount', name: 'remaining_amount' },
                     { data: 'employees_count', name: 'employees_count' },
