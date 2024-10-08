@@ -96,7 +96,7 @@ class UserController extends Controller
                 $data = User::where('department_id', $parentDepartment->id);
             }
         }
-           // dd($request);
+        // dd($request);
 
         // Apply additional filters using `request()->get()`
         if (request()->has('department_id')) {
@@ -105,17 +105,16 @@ class UserController extends Controller
         //dd($request->amp;type);
         if (request()->has('sector_id') && request()->has('amp;type')) {
             if (request()->has('amp;type') == 0) {
-               // dd('0');
+                // dd('0');
                 $data = $data->where('sector', request()->get('sector_id'))->whereNull('department_id');
             } else {
                 //dd('1');
                 $data = $data->where('sector', request()->get('sector_id'))->whereNotNull('department_id');
             }
         }
-        if (request()->has('sector_id') ) {
-            if (request()->has('amp;type') != 1) 
+        if (request()->has('sector_id')) {
+            if (request()->has('amp;type') != 1)
                 $data = $data->where('sector', request()->get('sector_id'))->whereNull('department_id');
-           
         }
 
         // Finally, fetch the results
@@ -588,116 +587,96 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request);
-        // validation
 
-        if ($request->type == "0") {
-            $messages = [
-                'name.required' => 'الاسم  مطلوب ولا يمكن تركه فارغاً.',
-                'email.required' => 'البريد الالكتروني  مطلوب ولا يمكن تركه فارغاً.',
-                'rule_id.required' => ' المهام  مطلوب ولا يمكن تركه فارغاً.',
-                'password.required' => ' الباسورد مطلوب ولا يمكن تركه فارغاً.',
-                'grade_id.required' => 'يجب اختيار رتبه',
+        $messages = [
+            'name.required' => 'الاسم  مطلوب ولا يمكن تركه فارغاً.',
+            'name.string' => 'الاسم  يجب أن يكون نصاً.',
+            'Civil_number.unique' => 'رقم المدنى الذي أدخلته موجود بالفعل.',
+            'file_number.unique' => 'رقم الملف الذي أدخلته موجود بالفعل.',
+            'phone.required' => 'رقم الهاتف مطلوب ولا يمكن تركه فارغاً.',
+            'phone.unique' => 'رقم الهاتف الذي أدخلته موجود بالفعل.',
+            'phone.max' => 'رقم الهاتف اقل من 6 اراقام',
+            'email.required' => 'البريد الالكتروني  مطلوب ولا يمكن تركه فارغاً.',
+            'email.unique' => 'البريد الالكتروني  الذي أدخلته موجود بالفعل.',
+            'grade_id.required' => 'يجب اختيار رتبه',
+            'file_number.required' => 'رقم الملف مطلوب ولا يمكن تركه فارغاً.',
+            'Civil_number.required' => 'رقم المدنى مطلوب ولا يمكن تركه فارغاً   .',
+            // 'department_id.required' => 'القسم  يجب أن يكون نصاً.',
+            // Add more custom messages here
+        ];
 
-
-                // Add more custom messages here
-            ];
-
-            $validatedData = Validator::make($request->all(), [
-                'name' => 'required|string',
-                'email' => 'required',
-                'rule_id' => 'required',
-                'password' => 'required',
-                'grade_id' => 'required',
-
-            ], $messages);
-        } else {
-            $messages = [
-                'name.required' => 'الاسم  مطلوب ولا يمكن تركه فارغاً.',
-                'name.string' => 'الاسم  يجب أن يكون نصاً.',
-                'military_number.required_if' => 'رقم العسكري مطلوب ولا يمكن تركه فارغاً.',
-                'military_number.unique' => 'رقم العسكري الذي أدخلته موجود بالفعل.',
-                'Civil_number.unique' => 'رقم المدنى الذي أدخلته موجود بالفعل.',
-                // 'file_number.unique' => 'رقم الملف الذي أدخلته موجود بالفعل.',
-                'phone.required' => 'رقم الهاتف مطلوب ولا يمكن تركه فارغاً.',
-                'phone.unique' => 'رقم الهاتف الذي أدخلته موجود بالفعل.',
-                'phone.max' => 'رقم الهاتف اقل من 6 اراقام',
-                'email.required' => 'البريد الالكتروني  مطلوب ولا يمكن تركه فارغاً.',
-                'email.unique' => 'البريد الالكتروني  الذي أدخلته موجود بالفعل.',
-
-                // 'file_number.required' => 'رقم الملف مطلوب ولا يمكن تركه فارغاً.',
-                'Civil_number.required' => 'رقم المدنى مطلوب ولا يمكن تركه فارغاً   .',
-                // 'department_id.required' => 'القسم  يجب أن يكون نصاً.',
-                // Add more custom messages here
-            ];
-
-            $rules = [
-                'phone' => [
-                    'required',
-                    'max:8',
-                    ValidationRule::unique('users', 'phone'),
-                ],
-                'email' => [
-                    'required',
-                    ValidationRule::unique('users', 'email'),
-                ],
-                'name' => 'required|string',
-                // 'department_id' => 'required',
-                'Civil_number' => [
-                    'max:12',
-                    ValidationRule::unique('users', 'Civil_number'),
-                ],
+        $rules = [
+            'phone' => [
+                'required',
+                'max:8',
+                ValidationRule::unique('users', 'phone'),
+            ],
+            'email' => [
+                'required',
+                ValidationRule::unique('users', 'email'),
+            ],
+            'name' => 'required|string',
+            // 'department_id' => 'required',
+            'Civil_number' => [
+                'max:12',
+                'required',
+                ValidationRule::unique('users', 'Civil_number'),
+            ],
+            'file_number' => [
+                'required',
+                ValidationRule::unique('users', 'file_number'),
+            ],
+            'grade_id' => [
+                'required',
+            ],
 
 
-                /*   'military_number' => [
+            /*   'military_number' => [
                    'required_if:type_military,police',
                 ], */
-            ];
-            /* 'file_number' => [
-                    ValidationRule::unique('users', 'file_number'),
-                ],*/
-            if ($request->has('type_military') && $request->type_military == "police") {
-                // dd("dd");
-                if ($request->has('military_number')) {
-                    $rules['military_number'] = [
-                        'required_if:type_military,police',
-                        'string',
-                        'max:255',
-                        ValidationRule::unique('users', 'military_number'),
-                    ];
-                }
-                /*   if ($request->has('file_number')) {
-                    $rules['file_number'] = [
-                        'required_if:type_military,police',
-                        'string',
-                        'max:255',
-                        ValidationRule::unique('users', 'file_number'),
-                    ];
-                } */
-            }
+        ];
+        // if ($request->has('type_military') && $request->type_military == "police") {
+        //     // dd("dd");
+        //     if ($request->has('military_number')) {
+        //         $rules['military_number'] = [
+        //             'required_if:type_military,police',
+        //             'string',
+        //             'max:255',
+        //             ValidationRule::unique('users', 'military_number'),
+        //         ];
+        //     }
+        //     /*   if ($request->has('file_number')) {
+        //         $rules['file_number'] = [
+        //             'required_if:type_military,police',
+        //             'string',
+        //             'max:255',
+        //             ValidationRule::unique('users', 'file_number'),
+        //         ];
+        //     } */
+        // }
 
 
-            if ($request->has('Civil_number')) {
-                $rules['Civil_number'] = [
-                    'required',
-                    'string',
-                    'max:255',
-                    ValidationRule::unique('users', 'Civil_number'),
-                ];
-            }
+        // if ($request->has('Civil_number')) {
+        //     $rules['Civil_number'] = [
+        //         'required',
+        //         'string',
+        //         'max:255',
+        //         ValidationRule::unique('users', 'Civil_number'),
+        //     ];
+        // }
 
-            if ($request->has('file_number')  && $request->type_military == "police") {
-                $rules['file_number'] = [
-                    'required',
-                    'string',
-                    'max:255',
-                    ValidationRule::unique('users', 'file_number'),
-                ];
-            }
+        // if ($request->has('file_number')  && $request->type_military == "police") {
+        //     $rules['file_number'] = [
+        //         'required',
+        //         'string',
+        //         'max:255',
+        //         ValidationRule::unique('users', 'file_number'),
+        //     ];
+        // }
 
 
-            $validatedData = Validator::make($request->all(), $rules, $messages);
-        }
+        $validatedData = Validator::make($request->all(), $rules, $messages);
+
 
 
         // Handle validation failure
@@ -706,73 +685,73 @@ class UserController extends Controller
         }
 
 
-        if ($request->type == "0") {
-            $newUser = User::find($request->name);
-            // if ($newUser->department_id == null) {
-            //     return redirect()->back()->withErrors(['يجب اختيار ادارة للمستخدم اولا'])->withInput();
-            // }
-            $newUser->department_id = 1;
-            $newUser->password = Hash::make($request->password);
-            $newUser->flag = "user";
-            $newUser->rule_id = $request->rule_id;
-            $newUser->save();
-            $id = $request->type;
+        // if ($request->type == "0") {
+        //     $newUser = User::find($request->name);
+        //     // if ($newUser->department_id == null) {
+        //     //     return redirect()->back()->withErrors(['يجب اختيار ادارة للمستخدم اولا'])->withInput();
+        //     // }
+        //     $newUser->department_id = 1;
+        //     $newUser->password = Hash::make($request->password);
+        //     $newUser->flag = "user";
+        //     $newUser->rule_id = $request->rule_id;
+        //     $newUser->save();
+        //     $id = $request->type;
 
-            Sendmail('بيانات دخولك على نظام القوة المطور', 'هذه بيانات دخولك على نظام القوة المطور',  $request->Civil_number, $request->password, $request->email);
+        //     Sendmail('بيانات دخولك على نظام القوة المطور', 'هذه بيانات دخولك على نظام القوة المطور',  $request->Civil_number, $request->password, $request->email);
 
-            return redirect()->route('user.index', ['id' => $id]);
-        } else {
+        //     return redirect()->route('user.index', ['id' => $id]);
+        // } else {
 
 
-            $newUser = new User();
-            $newUser->name = $request->name;
-            $newUser->email = $request->email;
-            $newUser->type = $request->gender;
-            $newUser->address1 = $request->address_1;
-            $newUser->address2 = $request->address_2;
-            $newUser->Provinces = $request->Provinces;
-            $newUser->sector = $request->sector;
-            $newUser->region = $request->region;
-            $newUser->military_number = $request->military_number;
-            $newUser->phone = $request->phone;
-            $newUser->job_title = $request->job_title;
-            $newUser->nationality = $request->nationality;
-            $newUser->Civil_number = $request->Civil_number;
-            $newUser->seniority = $request->seniority;
-            $newUser->department_id = $request->department_id;
-            $newUser->public_administration = $request->department_id;
-            $newUser->work_location = $request->work_location;
-            $newUser->qualification = $request->qualification;
-            $newUser->date_of_birth = $request->date_of_birth;
-            $newUser->joining_date = $request->joining_date;
-            $newUser->length_of_service = $request->end_of_service;
-            $newUser->description = $request->description;
-            $newUser->file_number = $request->file_number;
-            // $newUser->type_military = $request->type_military;
-            //
-            // $newUser->employee_type = $request->solderORcivil;
-            $newUser->flag = "employee";
-            $newUser->grade_id = $request->grade_id;
-            if ($request->has('job')) {
-                $newUser->job_id = $request->job;
-            }
-
-            $newUser->save();
-            // dd($newUser);
-
-            if ($request->hasFile('image')) {
-                $file = $request->image;
-                $path = 'users/user_profile';
-
-                UploadFilesWithoutReal($path, 'image', $newUser, $file);
-            }
-
-            session()->flash('success', 'تم الحفظ بنجاح.');
-            Sendmail('بيانات دخولك على نظام القوة المطور', 'هذه بيانات دخولك على نظام القوة المطور',  $request->Civil_number, $request->password, $request->email);
-
-            $id = $request->type;
-            return redirect()->route('user.employees', ['id' => $id]);
+        $newUser = new User();
+        $newUser->name = $request->name;
+        $newUser->email = $request->email;
+        $newUser->type = $request->gender;
+        $newUser->address1 = $request->address_1;
+        $newUser->address2 = $request->address_2;
+        $newUser->Provinces = $request->Provinces;
+        $newUser->sector = $request->sector;
+        $newUser->region = $request->region;
+        $newUser->military_number = $request->military_number;
+        $newUser->phone = $request->phone;
+        $newUser->job_title = $request->job_title;
+        $newUser->nationality = $request->nationality;
+        $newUser->Civil_number = $request->Civil_number;
+        $newUser->seniority = $request->seniority;
+        $newUser->department_id = $request->department_id;
+        $newUser->public_administration = $request->department_id;
+        $newUser->work_location = $request->work_location;
+        $newUser->qualification = $request->qualification;
+        $newUser->date_of_birth = $request->date_of_birth;
+        $newUser->joining_date = $request->joining_date;
+        $newUser->length_of_service = $request->end_of_service;
+        $newUser->description = $request->description;
+        $newUser->file_number = $request->file_number;
+        // $newUser->type_military = $request->type_military;
+        //
+        // $newUser->employee_type = $request->solderORcivil;
+        $newUser->flag = "employee";
+        $newUser->grade_id = $request->grade_id;
+        if ($request->has('job')) {
+            $newUser->job_id = $request->job;
         }
+
+        $newUser->save();
+        // dd($newUser);
+
+        if ($request->hasFile('image')) {
+            $file = $request->image;
+            $path = 'users/user_profile';
+
+            UploadFilesWithoutReal($path, 'image', $newUser, $file);
+        }
+
+        session()->flash('success', 'تم الحفظ بنجاح.');
+        Sendmail('بيانات دخولك على نظام القوة المطور', 'هذه بيانات دخولك على نظام القوة المطور',  $request->Civil_number, $request->password, $request->email);
+
+        $id = $request->type;
+        return redirect()->route('user.employees', ['id' => $id]);
+        // }
 
 
         // if($user->flag == "user")
@@ -844,12 +823,10 @@ class UserController extends Controller
         $violationTypeName = ViolationTypes::whereJsonContains('type_id', 0)->get();
 
         // Get the selected violation type from the user (if it exists)
-        $selectedViolationType = old('type_military', $user->type_military); // Default to old input or user's current value
-
+        // $selectedViolationType = old('type_military', $user->type_military); // Default to old input or user's current value
 
         // Fetch grades based on the selected violation type
-        $grades = Grade::all();
-        // dd($user);
+        $grades = Grade::where('type', $user->grade->type)->get();
         if ($user->department_id == "NULL") {
             $department = departements::all();
         } else {
@@ -861,7 +838,7 @@ class UserController extends Controller
         }
         // $department = departements::all();
         $hisdepartment = $user->createdDepartments;
-        return view('user.edit', compact('user', 'rule', 'grade', 'grades', 'department', 'hisdepartment', 'violationTypeName', 'selectedViolationType', 'end_of_service', 'job', 'sectors', 'area', 'govermnent', 'qualifications', 'countries'));
+        return view('user.edit', compact('user', 'rule', 'grade', 'grades', 'department', 'hisdepartment', 'violationTypeName', 'end_of_service', 'job', 'sectors', 'area', 'govermnent', 'qualifications', 'countries'));
     }
 
     /**
@@ -869,17 +846,18 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // dd($request);
         $user = User::find($id);
 
         $military_number = $request->solderORcivil === 'military' ? $request->military_number : null;
 
         $messages = [
-            'military_number.required_if' => 'رقم العسكري مطلوب ولا يمكن تركه فارغاً.',
+            'military_number' => 'رقم العسكري مطلوب ولا يمكن تركه فارغاً.',
             'phone.required' => 'رقم الهاتف مطلوب ولا يمكن تركه فارغاً.',
+            'grade_id.required' => 'الرتبة مطلوبة ولا يمكن تركه فارغا',
             // 'file_number.required' => 'رقم الملف مطلوب ولا يمكن تركه فارغاً.',
             'email.required' => 'البريد الالكتروني  مطلوب ولا يمكن تركه فارغاً.',
             'email.unique' => 'البريد الالكتروني  الذي أدخلته موجود بالفعل.',
+            'email.email' => 'البريد الالكتروني يجب ان يكون يحتوي علي @ .com',
 
             'Civil_number.required' => 'رقم المدنى مطلوب ولا يمكن تركه فارغاً.',
         ];
@@ -892,19 +870,20 @@ class UserController extends Controller
         // Define validation rules
         $rules = [
             'military_number' => [
-                'required_if:type_military,police',
                 'max:255',
                 new UniqueNumberInUser($user),
             ],
-            'email' => [
-                'required',
-                ValidationRule::unique('users', 'email'),
-            ],
+            // 'email' => [
+            //     'required',
+            //     ValidationRule::unique('users', 'email'),
+            // ],
+            'email' => ['required', 'email', ValidationRule::unique('users')->ignore($user->id)],
+
             'phone' => [
                 'required',
                 new UniqueNumberInUser($user),
             ],
-
+            'grade_id' => ['required'],
             // 'public_administration' => 'required',
             'Civil_number' => [
                 'required',
@@ -989,14 +968,10 @@ class UserController extends Controller
 
         $user->save();
 
-        $id = $user->flag == "user" ? "0" : "1";
+        // $id = $user->flag == "user" ? "0" : "1";
+        $id = $request->type;
         session()->flash('success', 'تم الحفظ بنجاح.');
-        if ($user->flag == "user") {
-            // return view('user.view', compact('id'));
-            return redirect()->route('user.index', ['id' => $id]);
-        } else {
-            return redirect()->route('user.employees', ['id' => $id]);
-        }
+        return redirect()->route('user.employees', ['id' => $id]);
     }
 
     public function getGoverment($id)
@@ -1061,56 +1036,55 @@ class UserController extends Controller
     }
     public function printUsers(Request $request)
     {
-      
+
         // Fetch the user by Civil_number
         $user = User::all();
-    
+
         if ($user) {
             // Create query for ReservationAllowance based on user_id and optional date range
-        
-    
+
+
             // Create a new TCPDF instance
             $pdf = new TCPDF();
-    
+
             // Set document information
             $pdf->SetCreator('Your App');
             $pdf->SetAuthor('Your App');
             $pdf->SetTitle('Reservation Report');
             $pdf->SetSubject('Report');
-    
+
             // Set default monospaced font
             $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-    
+
             // Set margins
             $pdf->SetMargins(10, 10, 10);
             $pdf->SetHeaderMargin(10);
             $pdf->SetFooterMargin(10);
-    
+
             // Set auto page breaks
             $pdf->SetAutoPageBreak(TRUE, 10);
-    
+
             // Set font for Arabic
             $pdf->SetFont('dejavusans', '', 12);
-    
+
             // Add a page
             $pdf->AddPage();
-    
+
             // Set RTL direction
             $pdf->setRTL(true);
-    
+
             // Write HTML content
             $html = view('user.view', [
                 'user' => $user,
             ])->render();
-    
+
             // Print text using writeHTMLCell method
             $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
-    
+
             // Output PDF
             return $pdf->Output('users.pdf', 'I'); // 'I' will display in the browser
         } else {
             return redirect()->back()->with('error', 'No user found with this Civil Number');
         }
     }
-    
 }
