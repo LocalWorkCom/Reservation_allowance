@@ -137,30 +137,31 @@
     </div>
 
 
-    <!-- Results Table -->
-    <div class="container col-11">
-        <div class="table-box">
-            <h3 style="font-weight: 700; display: flex; justify-content: flex-end; padding-top: 20px; font-size: 25px;">
-                نتائج البحث</h3>
-            <div class="col-md-2 mb-2">
-                <button type="button" class="btn" onclick="printPDF()"
-                    style="background-color: #274373; color:white;">طباعة</button>
-            </div>
-            <table id="reservation-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
-                <thead>
-                    <tr>
-                        <th>الترتيب</th>
-                        <th>اليوم</th>
-                        <th>التاريخ</th>
-                        <th>الاسم</th>
-                        <th>الادارة</th>
-                        <th>نوع الحجز</th>
-                        <th>القيمة</th>
-                    </tr>
-                </thead>
-            </table>
+<!-- Results Table -->
+<div class="container col-11">
+    <div class="table-box">
+        <h3 style="font-weight: 700; display: flex; justify-content: flex-end; padding-top: 20px; font-size: 25px;">نتائج البحث</h3>
+        <div class="col-md-2 mb-2">
+            <button type="button" class="btn" onclick="printPDF()" style="background-color: #274373; color:white;">طباعة</button>
         </div>
+        <table id="reservation-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
+            <thead>
+                <tr>
+                    <th>الترتيب</th>
+                    <th>اليوم</th>
+                    <th>التاريخ</th>
+                    <th>الاسم</th>
+                    <th>قطاع</th>
+                    <th>الادارة</th>
+                    <th>نوع</th>  
+                    <th>رتبه</th>
+                    <th>نوع الحجز</th>
+                    <th>القيمة</th>
+                </tr>
+            </thead>
+        </table>
     </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -168,87 +169,66 @@
         $(document).ready(function() {
             var table = null;
 
-            function initializeTable(url) {
-                table = $('#reservation-table').DataTable({
-                    processing: true,
-                    serverSide: true,
-                    ajax: {
-                        url: url,
-                        data: function(d) {
-                            d.civil_number = $('#civil_number').val().trim();
-                            d.start_date = $('#start_date').val();
-                            d.end_date = $('#end_date').val();
-                        },
-                        error: function(xhr, error, code) {
-                            if (xhr.responseJSON && xhr.responseJSON.error) {
-                                alert(xhr.responseJSON.error); // Show the error if no user is found
-                            }
-                        }
-                    },
-                    columns: [{
-                            data: null,
-                            name: 'order',
-                            orderable: false,
-                            searchable: false
-                        },
-                        {
-                            data: 'day',
-                            name: 'day'
-                        },
-                        {
-                            data: 'date',
-                            name: 'date'
-                        },
-                        {
-                            data: 'name',
-                            name: 'name'
-                        },
-                        {
-                            data: 'department',
-                            name: 'department'
-                        },
-                        {
-                            data: 'type',
-                            name: 'type'
-                        },
-                        {
-                            data: 'amount',
-                            name: 'amount'
-                        }
-                    ],
-                    order: [
-                        [2, 'asc']
-                    ],
-                    "oLanguage": {
-                        "sSearch": "",
-                        "sSearchPlaceholder": "بحث",
-                        "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
-                        "sInfoEmpty": 'لا توجد بيانات متاحه',
-                        "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
-                        "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
-                        "sZeroRecords": 'نأسف لا توجد نتيجة مطابقة',
-                        "sEmptyTable": 'لا توجد بيانات متاحة',
-                        "oPaginate": {
-                            "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
-                            "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
-                            "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
-                            "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
-                        }
-                    },
-                    pagingType: "full_numbers",
-                    fnDrawCallback: function(oSettings) {
-                        var page = this.api().page.info().pages;
-                        console.log('Page =>' + page)
-                        if (page <= 1) {
-                            $('.dataTables_paginate').css('visibility', 'hidden');
-                        }
-                    },
-                    createdRow: function(row, data, dataIndex) {
-                        $('td', row).eq(0).html(dataIndex +
-                        1); // Automatic numbering in the first column
+    function initializeTable(url) {
+        table = $('#reservation-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: url,
+                data: function(d) {
+                    d.civil_number = $('#civil_number').val().trim();
+                    d.start_date = $('#start_date').val();
+                    d.end_date = $('#end_date').val();
+                },
+                error: function(xhr, error, code) {
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        alert(xhr.responseJSON.error); // Show the error if no user is found
                     }
-                });
+                }
+            },
+            columns: [
+                { data: null, name: 'order', orderable: false, searchable: false },
+                { data: 'day', name: 'day' },
+                { data: 'date', name: 'date' },
+                { data: 'name', name: 'name' },
+                { data: 'sector', name: 'sector' },
+                { data: 'department', name: 'department' },
+                { data: 'grade', name: 'grade' }, 
+                { data: 'grade_type', name: 'grade_type' },
+                { data: 'type', name: 'type' },
+                { data: 'amount', name: 'amount' },
+
+            
+            ],
+            order: [[2, 'asc']],
+            "oLanguage": {
+                "sSearch": "",
+                "sSearchPlaceholder": "بحث",
+                "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
+                "sInfoEmpty": 'لا توجد بيانات متاحه',
+                "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
+                "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
+                "sZeroRecords": 'نأسف لا توجد نتيجة مطابقة',
+                "sEmptyTable": 'لا توجد بيانات متاحة',
+                "oPaginate": {
+                    "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
+                    "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
+                    "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
+                    "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
+                }
+            },
+            pagingType: "full_numbers",
+            fnDrawCallback: function(oSettings) {
+                var page = this.api().page.info().pages;
+                if (page == 1) {
+                    $('.dataTables_paginate').css('visibility', 'hidden');
+                }
+            },
+            createdRow: function(row, data, dataIndex) {
+                $('td', row).eq(0).html(dataIndex + 1); // Automatic numbering in the first column
             }
+        });
+    }
 
             // Trigger the table reload on search form submission
             $('#search-form').on('submit', function(e) {

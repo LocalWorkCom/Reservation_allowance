@@ -141,7 +141,8 @@
 
 
                                 @php
-                                    $department_id = request()->get('department_id'); // Get department_id from request
+                                    $department_id = request()->get('department_id');
+                                    $parent_department_id = request()->get('parent_department_id');
                                     $sector_id = request()->get('sector_id'); // Get department_id from request
                                     $type = request()->get('type'); // Get department_id from request
                                     // dd($sector_id);
@@ -158,37 +159,46 @@
                                     if ($department_id) {
                                         //  $Dataurl .= '?department_id=' . $department_id;
                                         /*  if ($parms != '') {
-                                                                                                                                                                                                                                                                    $parms .= '&';
-                                                                                                                                                                                                                                                                } else {
-                                                                                                                                                                                                                                                                    $parms = '?';
-                                                                                                                                                                                                                                                                } */
+                                                                                                                                                                                                                                                                                                                                                                                $parms .= '&';
+                                                                                                                                                                                                                                                                                                                                                                            } else {
+                                                                                                                                                                                                                                                                                                                                                                                $parms = '?';
+                                                                                                                                                                                                                                                                                                                                                                            } */
                                         $parms['department_id'] = $department_id;
+                                    }
+                                    if ($parent_department_id) {
+                                        //  $Dataurl .= '?department_id=' . $department_id;
+                                        /*  if ($parms != '') {
+                                                                                                                                                                                                                                                                                                                                                                                $parms .= '&';
+                                                                                                                                                                                                                                                                                                                                                                            } else {
+                                                                                                                                                                                                                                                                                                                                                                                $parms = '?';
+                                                                                                                                                                                                                                                                                                                                                                            } */
+                                        $parms['parent_department_id'] = $parent_department_id;
                                     }
 
                                     if ($sector_id) {
                                         /*   if ($parms != '') {
-                                                                                                                                                                                                                                                                    $parms .= '&';
-                                                                                                                                                                                                                                                                } else {
-                                                                                                                                                                                                                                                                    $parms = '?';
-                                                                                                                                                                                                                                                                }*/
+                                                                                                                                                                                                                                                                                                                                                                                $parms .= '&';
+                                                                                                                                                                                                                                                                                                                                                                            } else {
+                                                                                                                                                                                                                                                                                                                                                                                $parms = '?';
+                                                                                                                                                                                                                                                                                                                                                                            }*/
 
                                         $parms['sector_id'] = $sector_id;
                                     }
                                     if ($type) {
                                         /*  if ($parms != '') {
-                                                                                                                                                                                                                                                                    $parms .= '&';
-                                                                                                                                                                                                                                                                } else {
-                                                                                                                                                                                                                                        $parms = '?';
-                                                                                                                                                                                                                                                                }*/
+                                                                                                                                                                                                                                                                                                                                                                                $parms .= '&';
+                                                                                                                                                                                                                                                                                                                                                                            } else {
+                                                                                                                                                                                                                                                                                                                                                    $parms = '?';
+                                                                                                                                                                                                                                                                                                                                                                            }*/
 
                                         $parms['type'] = $type;
                                     }
                                     //dd($parms);
-                                  //  $url_data = route($Dataurl, $parms);
+                                    //  $url_data = route($Dataurl, $parms);
 
                                     //  dd(http_build_query($parms));
                                     // $Dataurl .= '?' . http_build_query($parms);
-                                   // dd($url_data);
+                                    // dd($url_data);
                                 @endphp
                                 /*   
                                   $('#users-table tfoot th').each(function (i) {

@@ -126,7 +126,7 @@
                     data: 'num_subdepartment_managers',
                     name: 'num_subdepartment_managers',
                     render: function(data, type, row) {
-                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showUsers(' +
+                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showSubUsers(' +
                             row.id + ')">' + data + '</button>';
                     }
                 },
@@ -147,6 +147,8 @@
                     subdepartment = subdepartment.replace(':id', row.id);
                     var departmentShow = '{{ route('departments.show', ':id') }}';
                     departmentShow = departmentShow.replace(':id', row.id);
+                    var addReservation = '{{ route('departments.show', ':id') }}';
+                    addReservation = addReservation.replace(':id', row.id);
 
                     // Start building the buttons
                     var buttons = `
@@ -156,7 +158,9 @@
 
                 <a href="${subdepartmentEdit}" class="btn btn-sm"  style="background-color: #F7AF15;">
                     <i class="fa fa-edit"></i>تعديل
-                </a>`;
+                </a>
+                <a href="${addReservation}" class="btn btn-sm" style="background-color: #274373;"> <i class="fa fa-edit"></i> اضافة بدل حجز</a>
+`;
 
                     return buttons;
                 }
@@ -225,8 +229,11 @@
     }
 
     function showUsers(departmentId) {
-        // Redirect to the sub-department listing for the selected department
         window.location.href = '/employees?department_id=' + departmentId;
+    }
+
+    function showSubUsers(parentDepartmentId) {
+        window.location.href = '/employees?parent_department_id=' + parentDepartmentId;
     }
 </script>
 
