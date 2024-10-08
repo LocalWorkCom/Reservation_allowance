@@ -96,26 +96,28 @@ class UserController extends Controller
                 $data = User::where('department_id', $parentDepartment->id);
             }
         }
-           // dd($request);
+        // dd($request);
 
         // Apply additional filters using `request()->get()`
         if (request()->has('department_id')) {
             $data = $data->where('department_id', request()->get('department_id'));
+        } elseif ($request->has('parent_department_id')) {
+            $subdepartment_ids = Departements::where('parent_id', $request->get('parent_department_id'))->pluck('id');
+            $data = $data->whereIn('department_id', $subdepartment_ids);
         }
         //dd($request->amp;type);
         if (request()->has('sector_id') && request()->has('amp;type')) {
             if (request()->has('amp;type') == 0) {
-               // dd('0');
+                // dd('0');
                 $data = $data->where('sector', request()->get('sector_id'))->whereNull('department_id');
             } else {
                 //dd('1');
                 $data = $data->where('sector', request()->get('sector_id'))->whereNotNull('department_id');
             }
         }
-        if (request()->has('sector_id') ) {
-            if (request()->has('amp;type') != 1) 
+        if (request()->has('sector_id')) {
+            if (request()->has('amp;type') != 1)
                 $data = $data->where('sector', request()->get('sector_id'))->whereNull('department_id');
-           
         }
 
         // Finally, fetch the results
@@ -1061,56 +1063,55 @@ class UserController extends Controller
     }
     public function printUsers(Request $request)
     {
-      
+
         // Fetch the user by Civil_number
         $user = User::all();
-    
+
         if ($user) {
             // Create query for ReservationAllowance based on user_id and optional date range
-        
-    
+
+
             // Create a new TCPDF instance
             $pdf = new TCPDF();
-    
+
             // Set document information
             $pdf->SetCreator('Your App');
             $pdf->SetAuthor('Your App');
             $pdf->SetTitle('Reservation Report');
             $pdf->SetSubject('Report');
-    
+
             // Set default monospaced font
             $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-    
+
             // Set margins
             $pdf->SetMargins(10, 10, 10);
             $pdf->SetHeaderMargin(10);
             $pdf->SetFooterMargin(10);
-    
+
             // Set auto page breaks
             $pdf->SetAutoPageBreak(TRUE, 10);
-    
+
             // Set font for Arabic
             $pdf->SetFont('dejavusans', '', 12);
-    
+
             // Add a page
             $pdf->AddPage();
-    
+
             // Set RTL direction
             $pdf->setRTL(true);
-    
+
             // Write HTML content
             $html = view('user.view', [
                 'user' => $user,
             ])->render();
-    
+
             // Print text using writeHTMLCell method
             $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
-    
+
             // Output PDF
             return $pdf->Output('users.pdf', 'I'); // 'I' will display in the browser
         } else {
             return redirect()->back()->with('error', 'No user found with this Civil Number');
         }
     }
-    
 }
