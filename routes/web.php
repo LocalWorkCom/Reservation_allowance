@@ -34,6 +34,8 @@ use App\Http\Controllers\ViolationTypesController;
 use App\Http\Controllers\ReservationStaticsController;
 use App\Http\Controllers\ReservationStaticsCreditController;
 use App\Http\Controllers\ReserveFetchController;
+use App\Http\Controllers\ReserveSectorController;
+
 
 
 
@@ -490,6 +492,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/statistics/search', [ReservationStaticsController::class, 'getFilteredData'])->name('Reserv_statistic.search')->middleware('check.permission:view Inspector');
     Route::any('/statistics/getAll', [ReservationStaticsController::class, 'getAll'])->name('Reserv_statistic.getAll')->middleware('check.permission:view Inspector');
 
+    //reservation statics
+    Route::get('/statistics_sector', [ReserveSectorController::class, 'static'])->name('Reserv_statistic_sector.index')->middleware('check.permission:view Inspector');
+    Route::get('/statistics_sector/search', [ReserveSectorController::class, 'getFilteredData'])->name('Reserv_statistic_sector.search')->middleware('check.permission:view Inspector');
+    Route::any('/statistics_sector/getAll', [ReserveSectorController::class, 'getAll'])->name('Reserv_statistic_sector.getAll')->middleware('check.permission:view Inspector');
 
 
 
