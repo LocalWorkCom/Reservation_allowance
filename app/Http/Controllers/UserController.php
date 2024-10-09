@@ -108,10 +108,8 @@ class UserController extends Controller
         //dd($request->amp;type);
         if (request()->has('sector_id') && request()->has('amp;type')) {
             if (request()->has('amp;type') == 0) {
-                // dd('0');
                 $data = $data->where('sector', request()->get('sector_id'))->whereNull('department_id');
             } else {
-                //dd('1');
                 $data = $data->where('sector', request()->get('sector_id'))->whereNotNull('department_id');
             }
         }
@@ -121,7 +119,7 @@ class UserController extends Controller
         }
 
         // Finally, fetch the results
-        $data = $data->get();
+        $data = $data->orderby('grade_id')->get();
 
         return DataTables::of($data)->addColumn('action', function ($row) {
             return $row;
@@ -851,7 +849,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        $military_number = $request->solderORcivil === 'military' ? $request->military_number : null;
+        $military_number =  $request->military_number;
 
         $messages = [
             'military_number' => 'رقم العسكري مطلوب ولا يمكن تركه فارغاً.',

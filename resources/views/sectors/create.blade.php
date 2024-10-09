@@ -186,7 +186,7 @@
 
         function fetchManagerDetails(managerId, skipDepartmentCheck = true) {
             if (managerId) {
-                sector = 0;
+                sector = null;
                 $.ajax({
                     url: '/get-manager-sector-details/' + managerId + '/' + sector + (skipDepartmentCheck ?
                         '?check_department=false' :
