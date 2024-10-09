@@ -37,10 +37,10 @@ class sectorsController extends Controller
 
         // Allow this check only for input change, not for initial load
         $isDepartmentCheck = request()->has('check_department') && request()->get('check_department') == true;
-    //    dd(vars: $isDepartmentCheck , $sector ,$manager->sector,($manager->department_id != null || $manager->sector != null || $sector != $manager->sector ));
+      // dd( $isDepartmentCheck , $sector ,$manager->sector,($manager->department_id != null || $manager->sector != null || $sector != $manager->sector ));
 
         // Ensure the manager is not assigned to another sector or department
-        if ($isDepartmentCheck && ($manager->department_id != null || $manager->sector != null || $sector != $manager->sector )) {
+        if ($isDepartmentCheck && ($manager->department_id != null || $manager->sector != null || ($sector != $manager->sector && $manager->sector != null) )) {
 
             return response()->json(['error' =>'هذا المستخدم موجود فى قطاع مسبقا . هل تريد نقله ?'], 404);
         }
