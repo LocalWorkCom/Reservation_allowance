@@ -48,11 +48,14 @@ class SubDepartmentReservationController extends Controller
             ->groupBy('date')
             ->orderBy('date', 'asc')
             ->get();
-
+    
         return DataTables::of($reservationData)
             ->addColumn('day', fn($row) => Carbon::parse($row->date)->translatedFormat('l'))
             ->addColumn('date', fn($row) => Carbon::parse($row->date)->format('Y-m-d'))
-            ->addColumn('prisoners_count', fn($row) => $row->prisoners_count)
+            ->addColumn('prisoners_count', function ($row) use ($subDepartmentId) {
+                $url = route('prisoners.details', ['subDepartmentId' => $subDepartmentId, 'date' => $row->date]);
+                return '<a href="' . $url . '" style="color:blue !important">' . $row->prisoners_count . '</a>';
+            })
             ->addColumn('partial_reservation_count', fn($row) => ReservationAllowance::where('departement_id', $subDepartmentId)->where('date', $row->date)->where('type', 2)->count())
             ->addColumn('partial_reservation_amount', fn($row) => ReservationAllowance::where('departement_id', $subDepartmentId)->where('date', $row->date)->where('type', 2)->sum('amount'))
             ->addColumn('full_reservation_count', fn($row) => ReservationAllowance::where('departement_id', $subDepartmentId)->where('date', $row->date)->where('type', 1)->count())
@@ -64,7 +67,8 @@ class SubDepartmentReservationController extends Controller
             })
             ->addColumn('print', fn($row) => '<button class="btn btn-sm btn-primary" onclick="printReport(\'' . $row->date . '\')">طباعة</button>')
             ->addIndexColumn()
-            ->rawColumns(['print'])
+            ->rawColumns(['prisoners_count', 'print']) // Ensure raw HTML rendering for these columns
             ->make(true);
     }
+    
 }

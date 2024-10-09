@@ -137,7 +137,7 @@ public function indexbationality(Request $request)
   public function getAllNationality(Request $request)
   {
       $data = Country::orderBy('country_name_en', 'ASC')->get();
-    
+
       // Get the filtered data
     //   $data = $data->get();
     //dd($data[0]);
@@ -146,7 +146,7 @@ public function indexbationality(Request $request)
               // Safely handle null values for JavaScript function parameters
               $name = $row->country_name_ar ? "'$row->country_name_en'" : "''";
               $order = $row->code ? "'$row->code'" : "''";
-             
+
 
               $edit_permission = null;
               $delete_permission = null;
@@ -162,7 +162,7 @@ public function indexbationality(Request $request)
               $uploadButton = $edit_permission . $delete_permission;
               return $uploadButton;
           })
-         
+
           ->rawColumns(['action'])
           ->make(true);
   }
@@ -177,7 +177,7 @@ public function indexbationality(Request $request)
       $messages = [
           'nameadd.required' => 'الاسم مطلوب.',
           'nameadd.string' => 'الاسم يجب أن يكون نصًا.',
-         
+
       ];
 
       // Create a validator instance
@@ -202,7 +202,7 @@ public function indexbationality(Request $request)
       $countries->country_name_fr = $request->nameadd;
 
       $countries->code = $request->codeAdd;
-      
+
       $countries->save();
       $message = "تم اضافه الدولة";
       return redirect()->route('nationality.index', compact('message'));
@@ -232,7 +232,7 @@ public function indexbationality(Request $request)
       // Create a validator instance
       $validator = Validator::make($request->all(), [
           'name' => 'required|string',
-        
+
       ], $messages);
 
       if ($validator->fails()) {
@@ -241,7 +241,7 @@ public function indexbationality(Request $request)
           session([
               'old_name' => $request->name,
               'old_codeedit' => $request->codeedit,
-              
+
               'edit_id' => $request->id,
           ]);
 
@@ -256,7 +256,7 @@ public function indexbationality(Request $request)
 
       $country->name = $request->name;
       $country->code = $request->codeedit;
-     
+
 
       $country->save();
       $message = 'تم تعديل الدولة';
@@ -284,9 +284,9 @@ public function indexbationality(Request $request)
     {
         $all = grade::count();
 
-        $Officer = grade::where('type', 0)->count();
+        $Officer = grade::where('type', 2)->count();
         $Officer2 = grade::where('type', 1)->count();
-        $person = grade::where('type', 2)->count();
+        $person = grade::where('type', 3)->count();
         return view("grads.index", compact('all', 'Officer', 'Officer2', 'person'));
     }
     //create GRAD
@@ -300,10 +300,10 @@ public function indexbationality(Request $request)
         // dd($filter);
         // Apply the filter based on the type
         if ($filter == 'assigned') {
-            $data->where('type', 0);
+            $data->where('type', 2);
         } elseif ($filter == 'unassigned') {
             // Filter for type 1 and 2
-            $data->whereIn('type', [1, 2]);
+            $data->whereIn('type', [1, 3]);
         }
 
         // Get the filtered data

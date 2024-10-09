@@ -31,7 +31,8 @@ class ReserveFetchController extends Controller
         if ($user) {
             // Base query for ReservationAllowance based on user_id
             $reservations = ReservationAllowance::where('user_id', $user->id);
-
+            $totalAmount = $reservations->sum('amount');
+           
             return DataTables::of($reservations)
                 ->addColumn('day', function ($row) {
                     return Carbon::parse($row->date)->translatedFormat('l'); // Get day name in Arabic
@@ -82,6 +83,11 @@ class ReserveFetchController extends Controller
                     return number_format($row->amount, 2); // Format the amount
                 })
                 ->addIndexColumn() // Auto numbering for "الترتيب"
+                ->with([
+                    'totalAmount' => number_format($totalAmount, 2),
+                    
+                ]) // Add totals to the response
+
                 ->make(true);
         } else {
             // Return no data found message in JSON format
@@ -166,6 +172,11 @@ class ReserveFetchController extends Controller
                     return number_format($row->amount, 2); // Format the amount
                 })
                 ->addIndexColumn() // Auto numbering for "الترتيب"
+                ->with([
+                    'totalAmount' => number_format($totalAmount, 2),
+                   
+                ]) // Add totals to the response
+
                 ->make(true);
         } else {
             Log::warning('No user found with Civil Number: ' . $civilNumber);
@@ -250,6 +261,11 @@ class ReserveFetchController extends Controller
                     return number_format($row->amount, 2); // Format the amount
                 })
                 ->addIndexColumn() // Auto numbering for "الترتيب"
+                ->with([
+                    'totalAmount' => number_format($totalAmount, 2),
+                  
+                ]) // Add totals to the response
+
                 ->make(true);
         } else {
             Log::warning('No user found with Civil Number: ' . $civilNumber);
@@ -336,6 +352,11 @@ class ReserveFetchController extends Controller
                 return number_format($row->amount, 2); // Format the amount
             })
             ->addIndexColumn() // Auto numbering for "الترتيب"
+            ->with([
+                'totalAmount' => number_format($totalAmount, 2),
+                
+            ]) // Add totals to the response
+
             ->make(true);
     } else {
         Log::warning('No user found with Civil Number: ' . $civilNumber);
@@ -421,6 +442,11 @@ public function getLastYear(Request $request)
                 return number_format($row->amount, 2); // Format the amount
             })
             ->addIndexColumn() // Auto numbering for "الترتيب"
+            ->with([
+                'totalAmount' => number_format($totalAmount, 2),
+                
+            ]) // Add totals to the response
+
             ->make(true);
     } else {
         Log::warning('No user found with Civil Number: ' . $civilNumber);
@@ -508,6 +534,11 @@ public function getCustomDateRange(Request $request)
                 return number_format($row->amount, 2); // Format the amount
             })
             ->addIndexColumn() // Auto numbering for "الترتيب"
+            ->with([
+                'totalAmount' => number_format($totalAmount, 2),
+              
+            ]) // Add totals to the response
+
             ->make(true);
     } else {
         Log::warning('No user found with Civil Number: ' . $civilNumber);
@@ -522,61 +553,89 @@ public function getCustomDateRange(Request $request)
     }
 }
 
+public function printReport(Request $request)
+{
+    $civilNumber = $request->input('civil_number');
 
+    // Fetch the user by Civil_number
+    $user = User::where('Civil_number', $civilNumber)->first();
 
-    public function printReport(Request $request)
-    {
-        $civilNumber = $request->input('civil_number');
+    if ($user) {
+        // Fetch all reservations for the user and include department details
+        $reservations = ReservationAllowance::where('user_id', $user->id)
+            ->with('departements') // Ensure department details are included
+            ->get();
 
-        // Fetch the user by Civil_number
-        $user = User::where('Civil_number', $civilNumber)->first();
+        // Calculate the total amount
+        $totalAmount = $reservations->sum('amount');
+        $totalFullReservation = $reservations->where('type', 1)->sum('amount'); // Total for "حجز كلي"
+        $totalPartialReservation = $reservations->where('type', 2)->sum('amount'); // Total for "حجز جزئي"
 
-        if ($user) {
-            // Fetch all reservations for the user
-            $reservations = ReservationAllowance::where('user_id', $user->id)->with('departements')->get();
+        // Fetch additional user details
+        $sectorName = Sector::find($user->sector)?->name ?? 'N/A';
+        $departmentName = departements::find($user->department_id)?->name ?? 'N/A';
+        $gradeName = grade::find($user->grade_id)?->name ?? 'N/A';
 
-            // Create a new TCPDF instance
-            $pdf = new TCPDF();
+        // Define grade type
+        $gradeType = match (grade::find($user->grade_id)?->type ?? null) {
+            1 => 'فرد',
+            2 => 'ظابط',
+            3 => 'مهني',
+            default => 'N/A',
+        };
 
-            // Set document information
-            $pdf->SetCreator('Your App');
-            $pdf->SetAuthor('Your App');
-            $pdf->SetTitle('Reservation Report');
-            $pdf->SetSubject('Report');
+        // Create a new TCPDF instance
+        $pdf = new TCPDF();
 
-            // Set default monospaced font
-            $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+        // Set document information
+        $pdf->SetCreator('Your App');
+        $pdf->SetAuthor('Your App');
+        $pdf->SetTitle('Reservation Report');
+        $pdf->SetSubject('Report');
 
-            // Set margins
-            $pdf->SetMargins(10, 10, 10);
-            $pdf->SetHeaderMargin(10);
-            $pdf->SetFooterMargin(10);
+        // Set default monospaced font
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
-            // Set auto page breaks
-            $pdf->SetAutoPageBreak(TRUE, 10);
+        // Set margins
+        $pdf->SetMargins(10, 10, 10);
+        $pdf->SetHeaderMargin(10);
+        $pdf->SetFooterMargin(10);
 
-            // Set font for Arabic
-            $pdf->SetFont('dejavusans', '', 12);
+        // Set auto page breaks
+        $pdf->SetAutoPageBreak(TRUE, 10);
 
-            // Add a page
-            $pdf->AddPage();
+        // Set font for Arabic
+        $pdf->SetFont('dejavusans', '', 12);
 
-            // Set RTL direction
-            $pdf->setRTL(true);
+        // Add a page
+        $pdf->AddPage();
 
-            // Write HTML content
-            $html = view('reservation_fetch.pdf', [
-                'reservations' => $reservations,
-                'user' => $user,
-            ])->render();
+        // Set RTL direction
+        $pdf->setRTL(true);
 
-            // Print text using writeHTMLCell method
-            $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
+        // Write HTML content
+        $html = view('reservation_fetch.pdf', [
+            'reservations' => $reservations,
+            'user' => $user,
+            'sector' => $sectorName,
+            'department' => $departmentName,
+            'grade' => $gradeName,
+            'gradeType' => $gradeType,
+            'totalAmount' => $totalAmount, // Pass the total amount to the view
+            'totalFullReservation' => $totalFullReservation,
+            'totalPartialReservation' => $totalPartialReservation,
+        ])->render();
 
-            // Output PDF
-            return $pdf->Output('reservation_report.pdf', 'I'); // 'I' will display in the browser
-        } else {
-            return redirect()->back()->with('error', 'No user found with this Civil Number');
-        }
+        // Print text using writeHTMLCell method
+        $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
+
+        // Output PDF
+        return $pdf->Output('reservation_report.pdf', 'I'); // 'I' will display in the browser
+    } else {
+        return redirect()->back()->with('error', 'No user found with this Civil Number');
     }
+}
+
+
+
 }

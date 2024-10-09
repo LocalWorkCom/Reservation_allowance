@@ -124,12 +124,12 @@
                                 </div>
                             </div>
                             <div class="form-group col-md-10 mx-md-2" id="manager">
-                                <label for="manager">رقم هوية المدير</label>
-                                <input type="text" name="manager" id="manager" class="form-control"
-                                    value="{{ old('manager') }}">
+                                <label for="mangered">رقم هوية المدير</label>
+                                <input type="text" name="mangered" id="mangered" class="form-control"
+                                    value="{{ old('mangered') }}">
 
 
-                                @error('manager')
+                                @error('mangered')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -196,6 +196,7 @@
                 <br>
 
                 </form>
+
             </div>
 
 
@@ -206,35 +207,69 @@
 
         </div>
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         $('.select2').select2({
             dir: "rtl"
         });
 
         function fetchManagerDetails(managerId) {
+            console.log('Manager ID:', managerId);
+
             if (managerId) {
+                var sectorId = $('#sector').val();
+
                 $.ajax({
                     url: '/get-manager-details/' + managerId,
                     type: 'GET',
+                    data: {
+                        sector_id: sectorId
+                    }, // Send sector_id to the backend
                     success: function(data) {
-                        $('#manager_details').find('span').eq(0).text(data.rank);
-                        $('#manager_details').find('span').eq(1).text(data.seniority);
-                        $('#manager_details').find('span').eq(2).text(data.job_title);
-                        $('#manager_details').find('span').eq(3).text(data.name);
-                        $('#manager_details').find('span').eq(4).text(data.phone);
-                        $('#manager_details').show();
-                        if (data.isEmployee) {
-                            $('#password_field').show();
-                            $('#rule_field').show();
+                        if (data.transfer) {
+                            Swal.fire({
+                                title: 'تحذير',
+                                text: data.warning,
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: 'نعم, نقل',
+                                cancelButtonText: 'إلغاء',
+                                confirmButtonColor: '#3085d6'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Handle transfer logic here if needed
+                                }
+                            });
                         } else {
-                            $('#password_field').hide();
-                            $('#rule_field').hide();
-                            $('#password').val('');
-                            $('#rule').val('');
+                            $('#manager_details').find('span').eq(0).text(data.rank);
+                            $('#manager_details').find('span').eq(1).text(data.seniority);
+                            $('#manager_details').find('span').eq(2).text(data.job_title);
+                            $('#manager_details').find('span').eq(3).text(data.name);
+                            $('#manager_details').find('span').eq(4).text(data.phone);
+                            $('#manager_details').show();
+                            if (data.isEmployee) {
+                                $('#password_field').show();
+                                $('#rule_field').show();
+                            } else {
+                                $('#password_field').hide();
+                                $('#rule_field').hide();
+                                $('#password').val('');
+                                $('#rule').val('');
+                            }
                         }
                     },
-                    error: function() {
-                        alert('عفوا هذا المستخدم غير موجود');
+                    error: function(xhr, status, error) {
+                        console.log(xhr.responseText);
+                        console.log(status);
+                        console.log(error);
+                        Swal.fire({
+                            title: 'تحذير',
+                            text: 'ززعفوا هذا المستخدم غير موجود',
+                            icon: 'warning',
+                            confirmButtonText: 'إلغاء',
+                            confirmButtonColor: '#3085d6'
+                        });
                     }
                 });
             } else {
@@ -248,15 +283,15 @@
         $('#manager_details').hide();
         $('#password_field').hide();
         $('#rule_field').hide();
-        $('#manager').on('input', function() {
+        $('#mangered').on('input', function() {
             var managerId = $(this).val();
             $('#password').val('');
             $('#rule').val('');
-            fetchManagerDetails(managerId);
+            fetchManagerDetails(managerId, true);
         });
-        var selectedManagerId = $('#manager').val();
+        var selectedManagerId = $('#mangered').val();
         if (selectedManagerId) {
-            fetchManagerDetails(selectedManagerId);
+            fetchManagerDetails(selectedManagerId, true);
         }
     </script>
 
