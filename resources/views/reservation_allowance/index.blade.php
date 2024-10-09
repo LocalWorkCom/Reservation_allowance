@@ -84,6 +84,7 @@
                         <div class="col-2">
                             <p> بدل الحجز</p>
                         </div>
+                        
                         <form class="" action="{{ route('reservation_allowances.search_employee_new') }}"
                             method="post">
                             @csrf
@@ -163,8 +164,7 @@
                     @endif
 
                     <div>
-                        <table id="users-table"
-                            class="display table table-responsive-sm  table-bordered table-hover dataTable">
+                        <table id="users-table" class="display table table-responsive-sm  table-bordered table-hover dataTable">
                             <thead>
                                 <tr>
                                     <th>الرتيب</th>
@@ -172,6 +172,7 @@
                                     <th>الاسم</th>
                                     <th>رقم الملف</th>
                                     <th>بدل الحجز</th>
+                                    <th>اليومية</th>
                                     <th>اليومية</th>
                                     <!-- <th style="width:150px;">العمليات</th>-->
                                 </tr>
@@ -218,15 +219,6 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            function closeModal() {
-                $('#delete').modal('hide');
-            }
-
-            $('#closeButton').on('click', function() {
-                closeModal();
-            });
-
-
             $(document).on("change", "#sector_id", function() {
                 var sectorid = this.value;
                 var department_type = document.getElementById('department_type').value;
@@ -237,10 +229,6 @@
                     $("#departement_id").html(data);
                 });
             });
-
-
-
-
         });
 
 
@@ -248,18 +236,9 @@
 
         //});
     </script>
-    </script>
-    <script>
-        function opendelete(id) {
-            document.getElementById('id').value = id;
-            $('#delete').modal('show');
-        }
 
-        function confirmDelete() {
-            var id = document.getElementById('id').value;
-            var form = document.getElementById('delete-form');
-            form.submit();
-        }
+    <script>
+
         $(document).ready(function() {
             // Check if there are errors
             @if ($errors->any())
@@ -272,58 +251,7 @@
             @endif
         });
 
-        function openedit(id, name, type, value_all, value_part, order) {
-            document.getElementById('nameedit').value = name;
-            document.getElementById('idedit').value = id;
-            document.getElementById('typeedit').value = type; // Set the value for type
-            document.getElementById('value_alledit').value = value_all; // Set value_all
-            document.getElementById('value_partedit').value = value_part; // Set value_part
-            document.getElementById('orderedit').value = order; // Set value_part
-
-            $('#edit').modal('show');
-        }
-
-        function confirmEdit() {
-            var id = document.getElementById('id').value;
-            var name = document.getElementById('nameedit').value;
-            console.log(name);
-            var form = document.getElementById('edit-form')
-        }
-
-        function addForm() {
-            $('#addForm').modal('show');
-        }
-
-
-
-        function confirmAdd() {
-            var name = document.getElementById('nameadd').value;
-            var idedit = document.getElementById('idedit').value;
-            var value_part = document.getElementById('value_part').value;
-            var value_all = document.getElementById('value_all').value;
-            var order = document.getElementById('order').value;
-
-            var form = document.getElementById('add-form');
-            var inputs = form.querySelectorAll('[required]');
-            var valid = true;
-
-            inputs.forEach(function(input) {
-                if (!input.value) {
-                    valid = false;
-                    input.style.borderColor = 'red'; // Optional: highlight empty inputs
-                } else {
-                    input.style.borderColor = ''; // Reset border color if input is filled
-                }
-            });
-
-            if (valid) {
-                form.submit();
-            }
-        }
-
         $(document).ready(function() {
-
-
 
             //call datatable
             $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
@@ -354,48 +282,8 @@
                         name: 'employee_file_num'
                     },
                     {
-                        data: 'employee_allowance_type_btn',
-                        name: 'employee_allowance_type_btn'
-                    },
-                    {
-                        data: 'employee_allowance_amount',
-                        name: 'employee_allowance_amount'
-                    }
-                    <?php /*{
-=========
-        }
-
-        $(document).ready(function() {
-
-
-
-            //call datatable
-            $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
-            var filter = 'all'; // Default filter
-            const table = $('#users-table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: '{{ route('reservation_allowances.getAll') }}',
-                    data: function(d) {
-                        d.filter = filter; // Use the global filter variable
-                    }
-                },
-                columns: [{
-                        data: 'id',
-                        name: 'id'
-                    },
-                    {
-                        data: 'employee_grade',
-                        name: 'employee_grade'
-                    },
-                    {
-                        data: 'employee_name',
-                        name: 'employee_name'
-                    },
-                    {
-                        data: 'employee_file_num',
-                        name: 'employee_file_num'
+                        data: 'type',
+                        name: 'type'
                     },
                     {
                         data: 'employee_allowance_type_btn',
@@ -404,15 +292,7 @@
                     {
                         data: 'employee_allowance_amount',
                         name: 'employee_allowance_amount'
-                    }
-                    <?php /*{
-                            data: 'action',
-                            name: 'action',
-                            sWidth: '100px',
-                            orderable: false,
-                            searchable: false
-                        }*/
-                    ?>
+                    } 
                 ],
                 "order": [0, 'asc'],
 
@@ -441,6 +321,8 @@
                 },
                 "pagingType": "full_numbers",
                 "fnDrawCallback": function(oSettings) {
+
+                    
                     console.log('Page ' + this.api().page.info().pages)
                     var page = this.api().page.info().pages;
                     console.log($('#users-table tr').length);
