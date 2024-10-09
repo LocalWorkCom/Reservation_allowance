@@ -28,14 +28,16 @@ class sectorsController extends Controller
     {
         // Fetch manager data from the database
         $manager = User::where('Civil_number', $id)->first();
-
+        if ($sector === 'null') {
+            $sector = null;
+        }
         if (!$manager) {
             return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 404);
         }
 
         // Allow this check only for input change, not for initial load
         $isDepartmentCheck = request()->has('check_department') && request()->get('check_department') == true;
-       // dd($isDepartmentCheck , $sector ,$manager->sector);
+    //    dd(vars: $isDepartmentCheck , $sector ,$manager->sector,($manager->department_id != null || $manager->sector != null || $sector != $manager->sector ));
 
         // Ensure the manager is not assigned to another sector or department
         if ($isDepartmentCheck && ($manager->department_id != null || $manager->sector != null || $sector != $manager->sector )) {
