@@ -280,7 +280,6 @@ class DepartmentController extends Controller
 
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            'mangered.required' => 'اسم المدير مطلوب.',
             'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
@@ -295,7 +294,7 @@ class DepartmentController extends Controller
         // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'mangered' => 'required',
+            'manger' => 'nullable',
             'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
 
@@ -328,7 +327,7 @@ class DepartmentController extends Controller
         $departements->created_by = Auth::user()->id;
         $departements->save();
 
-        $user = User::find($request->mangered);
+        $user = User::find($request->manager);
         if ($user) {
             $user->sector =  $request->sector;
             $user->department_id = $departements->id;
@@ -357,7 +356,7 @@ class DepartmentController extends Controller
         $employees = User::whereIn('Civil_number', $Civil_numbers)->pluck('id')->toArray();
 
         // Check if the selected manager is one of the employees
-        if (in_array($request->mangered, $employees)) {
+        if (in_array($request->manager, $employees)) {
             return redirect()->back()->with('error', 'المدير لا يمكن أن يكون أحد الموظفين المدرجين.');
         }
         // Update employees in the sector
@@ -377,7 +376,6 @@ class DepartmentController extends Controller
     {
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            'manger.required' => 'اسم المدير مطلوب.',
             'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
@@ -392,7 +390,7 @@ class DepartmentController extends Controller
         // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'manger' => 'required',
+            'manger' => 'nullable',
             'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
 
@@ -521,7 +519,6 @@ class DepartmentController extends Controller
         //dd($request);
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            'manger.required' => 'اسم المدير مطلوب.',
             'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
@@ -536,7 +533,7 @@ class DepartmentController extends Controller
         // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'manger' => 'required',
+            'manger' => 'nullable',
             'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
 
@@ -655,7 +652,6 @@ class DepartmentController extends Controller
     {
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            'manger.required' => 'اسم المدير مطلوب.',
             'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
@@ -670,7 +666,7 @@ class DepartmentController extends Controller
         // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'manger' => 'required',
+            'manger' => 'nullable',
             'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
 

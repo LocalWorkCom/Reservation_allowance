@@ -121,9 +121,9 @@
                                 </div>
                             </div>
                             <div class="form-group col-md-10 mx-md-2" id="manager">
-                                <label for="mangered">رقم هوية المدير</label>
-                                <input type="text" name="manger" class="form-control" value="{{ $department->manger }}"
-                                    required>
+                                <label for="manager">رقم هوية المدير</label>
+                                <input type="text" name="manager" name="manager" class="form-control"
+                                    value="{{ $department->manger }}">
 
                                 @error('manger')
                                     <div class="alert alert-danger">{{ $message }}</div>
@@ -213,7 +213,7 @@
 
         // On page load: check if there's a selected manager ID
         $(document).ready(function() {
-            var selectedManagerId = $('#mangered').val();
+            var selectedManagerId = $('#manager').val();
             if (selectedManagerId) {
                 console.log(selectedManagerId);
                 fetchManagerDetails(selectedManagerId, false); // Pass true to skip the department check
@@ -272,7 +272,7 @@
                 $('#rule').val('');
             }
         }
-        $('#mangered').on('input', function() {
+        $('#manager').on('input', function() {
             var managerId = $(this).val();
             $('#password').val(''); // Clear previous input
             $('#rule').val(''); // Clear previous input
