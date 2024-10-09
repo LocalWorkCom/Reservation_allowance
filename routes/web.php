@@ -35,6 +35,8 @@ use App\Http\Controllers\ReservationStaticsController;
 use App\Http\Controllers\ReservationStaticsCreditController;
 use App\Http\Controllers\ReserveFetchController;
 use App\Http\Controllers\ReserveSectorController;
+use App\Http\Controllers\SubDepartmentStatsController;
+use App\Http\Controllers\SubDepartmentReservationController;
 
 
 
@@ -496,15 +498,34 @@ Route::middleware(['auth'])->group(function () {
     ->name('Reserv_statistic.getAll')
     ->middleware('check.permission:view Inspector');
 
+//reservation statics per department
+    Route::get('/statistics_subdepartments/{department_id}', [SubDepartmentStatsController::class, 'index'])
+    ->name('statistics_subdepartments.index')
+    ->middleware('check.permission:view Inspector');
+Route::get('/statistics_subdepartments/getAll/{department_id}', [SubDepartmentStatsController::class, 'getAll'])
+    ->name('statistics_subdepartments.getAll')
+    ->middleware('check.permission:view Inspector');
+
+// reservation statics per subdepartment
+
+Route::get('/subdepartment_statistics/{subDepartmentId}', [SubDepartmentReservationController::class, 'static'])
+    ->name('subdepartment_reservation.index')
+    ->middleware('check.permission:view Inspector');
+
+Route::get('/subdepartment_statistics/getAll/{subDepartmentId}', [SubDepartmentReservationController::class, 'getAll'])
+    ->name('subdepartment_reservation.getAll')
+    ->middleware('check.permission:view Inspector');
+
+
+
     //reservation statics for sectors
     Route::get('/statistics_sector', [ReserveSectorController::class, 'static'])->name('Reserv_statistic_sector.index')->middleware('check.permission:view Inspector');
     Route::get('/statistics_sector/search', [ReserveSectorController::class, 'getFilteredData'])->name('Reserv_statistic_sector.search')->middleware('check.permission:view Inspector');
     Route::any('/statistics_sector/getAll', [ReserveSectorController::class, 'getAll'])->name('Reserv_statistic_sector.getAll')->middleware('check.permission:view Inspector');
-
-
+   
 
     //reservation statics credit
-    Route::get('/statistics_credit', [ReservationStaticsCreditController::class, 'static'])->name('ReservationStaticsCredit.index')->middleware('check.permission:view Inspector');
+    // Route::get('/statistics_credit', [ReservationStaticsCreditController::class, 'static'])->name('ReservationStaticsCredit.index')->middleware('check.permission:view Inspector');
     Route::get('/statistics_credit/search', [ReservationStaticsCreditController::class, 'getFilteredData'])->name('Reserv_statistic_credit.search')->middleware('check.permission:view Inspector');
     Route::any('/statistics_credit/getAll', [ReservationStaticsCreditController::class, 'getAll'])->name('Reserv_statistic_credit.getAll')->middleware('check.permission:view Inspector');
     Route::get('/reservation_statics_credit/print', [ReservationStaticsCreditController::class, 'printReport'])->name('Reserv_statistic_credit.print')->middleware('check.permission:view Inspector');
@@ -529,7 +550,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('download-template', [UserController::class, 'downloadTemplate'])->name('download-template');
     
 });
-
 
 
 
