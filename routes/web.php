@@ -531,6 +531,7 @@ Route::get('/subdepartment_statistics/getAll/{subDepartmentId}', [SubDepartmentR
     Route::get('/reservation_statics_credit/print', [ReservationStaticsCreditController::class, 'printReport'])->name('Reserv_statistic_credit.print')->middleware('check.permission:view Inspector');
 
     Route::get('/get-manager-details/{id}', [DepartmentController::class, 'getManagerDetails']);
+    Route::get('/get-manager-sector-details/{id}/{sector}', [sectorsController::class, 'getManagerSectorDetails']);
 
 //reserv search
     Route::get('/reservation_fetch', [ReserveFetchController::class, 'static'])->name('reservation_fetch.index')->middleware('check.permission:view Inspector');
@@ -548,7 +549,7 @@ Route::get('/subdepartment_statistics/getAll/{subDepartmentId}', [SubDepartmentR
     Route::get('/export-users', [UserController::class, 'exportUsers'])->name('export-users');
     Route::get('print-users', [UserController::class, 'printUsers'])->name('print-users');
     Route::get('download-template', [UserController::class, 'downloadTemplate'])->name('download-template');
-    
+
 });
 
 
