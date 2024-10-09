@@ -184,10 +184,13 @@
             dir: "rtl"
         });
 
-        function fetchManagerDetails(managerId) {
+        function fetchManagerDetails(managerId, skipDepartmentCheck = true) {
             if (managerId) {
+                sector = 0;
                 $.ajax({
-                    url: '/get-manager-details/' + managerId,
+                    url: '/get-manager-sector-details/' + managerId + '/' + sector + (skipDepartmentCheck ?
+                        '?check_department=false' :
+                        ''),
                     type: 'GET',
                     success: function(data) {
                         $('#manager_details').find('span').eq(0).text(data.rank);
@@ -206,13 +209,30 @@
                             $('#rule').val('');
                         }
                     },
-                    error: function() {
+                    error: function(xhr) {
+                        console.log(xhr);
                         Swal.fire({
                             title: 'تحذير',
-                            text: 'عفوا هذا المستخدم غير موجود',
+                            text: xhr.responseJSON.error || 'عفوا هذا المستخدم غير موجود',
                             icon: 'warning',
-                            confirmButtonText: 'إلغاء',
-                            confirmButtonColor: '#3085d6'
+                            showCancelButton: true,
+                            confirmButtonText: 'نعم, استمر',
+                            cancelButtonText: 'لا',
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // User confirmed
+                                // You may want to handle confirmation logic here
+                            } else {
+                                // User clicked "إلغاء", clear the input field
+                                $('#mangered').val('');
+                                $('#manager_details').hide();
+                                $('#password_field').hide();
+                                $('#rule_field').hide();
+                                $('#password').val('');
+                                $('#rule').val('');
+                            }
                         });
                     }
                 });
@@ -231,11 +251,11 @@
             var managerId = $(this).val();
             $('#password').val('');
             $('#rule').val('');
-            fetchManagerDetails(managerId);
+            fetchManagerDetails(managerId, true);
         });
         var selectedManagerId = $('#mangered').val();
         if (selectedManagerId) {
-            fetchManagerDetails(selectedManagerId);
+            fetchManagerDetails(selectedManagerId, true);
         }
     </script>
 @endsection
