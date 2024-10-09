@@ -300,10 +300,10 @@ public function indexbationality(Request $request)
         // dd($filter);
         // Apply the filter based on the type
         if ($filter == 'assigned') {
-            $data->where('type', 1);
+            $data->where('type', 2);
         } elseif ($filter == 'unassigned') {
             // Filter for type 1 and 2
-            $data->whereIn('type', [2, 3]);
+            $data->whereIn('type', [1, 3]);
         }
 
         // Get the filtered data
