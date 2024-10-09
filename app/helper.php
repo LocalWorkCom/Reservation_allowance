@@ -250,7 +250,6 @@ function showUserDepartment()
 
     // Access the department name
     // dd($user->department);
-<<<<<<< HEAD
     if($user->sector == null && $user->department_id == null){
         $name = 'القسم الرئيسي';
     }else{
@@ -260,13 +259,12 @@ function showUserDepartment()
     
             $name = $user->department != null ? ($user->department->name != null ? $user->department->name : 'القسم الرئيسي') : '';
         }    
-=======
-    if ($user->sectors && ! $user->department) {
-        $name = $user->sectors != null ? ($user->sectors->name != null ? $user->sectors->name : 'القسم الرئيسي') : '';
-    } else {
+        if ($user->sectors && ! $user->department) {
+            $name = $user->sectors != null ? ($user->sectors->name != null ? $user->sectors->name : 'القسم الرئيسي') : '';
+        } else {
 
-        $name = $user->department != null ? ($user->department->name != null ? $user->department->name : 'القسم الرئيسي') : '';
->>>>>>> a395affc5d9ca97608974e59a32c68083df7ca81
+            $name = $user->department != null ? ($user->department->name != null ? $user->department->name : 'القسم الرئيسي') : '';
+        }
     }
     
     return $name;
