@@ -227,27 +227,51 @@
             console.log('Manager ID:', managerId);
 
             if (managerId) {
+                var sectorId = $('#sector').val();
+
                 $.ajax({
                     url: '/get-manager-details/' + managerId,
                     type: 'GET',
+                    data: {
+                        sector_id: sectorId
+                    }, // Send sector_id to the backend
                     success: function(data) {
-                        $('#manager_details').find('span').eq(0).text(data.rank);
-                        $('#manager_details').find('span').eq(1).text(data.seniority);
-                        $('#manager_details').find('span').eq(2).text(data.job_title);
-                        $('#manager_details').find('span').eq(3).text(data.name);
-                        $('#manager_details').find('span').eq(4).text(data.phone);
-                        $('#manager_details').show();
-                        if (data.isEmployee) {
-                            $('#password_field').show();
-                            $('#rule_field').show();
+                        if (data.transfer) {
+                            Swal.fire({
+                                title: 'تحذير',
+                                text: data.warning,
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: 'نعم, نقل',
+                                cancelButtonText: 'إلغاء',
+                                confirmButtonColor: '#3085d6'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Handle transfer logic here if needed
+                                }
+                            });
                         } else {
-                            $('#password_field').hide();
-                            $('#rule_field').hide();
-                            $('#password').val('');
-                            $('#rule').val('');
+                            $('#manager_details').find('span').eq(0).text(data.rank);
+                            $('#manager_details').find('span').eq(1).text(data.seniority);
+                            $('#manager_details').find('span').eq(2).text(data.job_title);
+                            $('#manager_details').find('span').eq(3).text(data.name);
+                            $('#manager_details').find('span').eq(4).text(data.phone);
+                            $('#manager_details').show();
+                            if (data.isEmployee) {
+                                $('#password_field').show();
+                                $('#rule_field').show();
+                            } else {
+                                $('#password_field').hide();
+                                $('#rule_field').hide();
+                                $('#password').val('');
+                                $('#rule').val('');
+                            }
                         }
                     },
-                    error: function() {
+                    error: function(xhr, status, error) {
+                        console.log(xhr.responseText);
+                        console.log(status);
+                        console.log(error);
                         Swal.fire({
                             title: 'تحذير',
                             text: 'عفوا هذا المستخدم غير موجود',
@@ -264,19 +288,6 @@
                 $('#password').val('');
                 $('#rule').val('');
             }
-        }
-        $('#manager_details').hide();
-        $('#password_field').hide();
-        $('#rule_field').hide();
-        $('#mangered').on('input', function() {
-            var managerId = $(this).val();
-            $('#password').val('');
-            $('#rule').val('');
-            fetchManagerDetails(managerId);
-        });
-        var selectedManagerId = $('#mangered').val();
-        if (selectedManagerId) {
-            fetchManagerDetails(selectedManagerId);
         }
     </script>
 @endsection

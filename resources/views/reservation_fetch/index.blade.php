@@ -160,6 +160,10 @@
                 </tr>
             </thead>
         </table>
+        <p style="font-weight: bold; font-size: 18px; text-align: right;">
+    المجموع الكلي: <span id="total-amount">0.00</span>
+</p>
+
     </div>
 </div>
 @endsection
@@ -168,24 +172,36 @@
     <script>
         $(document).ready(function() {
             var table = null;
+          
+
 
     function initializeTable(url) {
         table = $('#reservation-table').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
-                url: url,
-                data: function(d) {
-                    d.civil_number = $('#civil_number').val().trim();
-                    d.start_date = $('#start_date').val();
-                    d.end_date = $('#end_date').val();
-                },
-                error: function(xhr, error, code) {
-                    if (xhr.responseJSON && xhr.responseJSON.error) {
-                        alert(xhr.responseJSON.error); // Show the error if no user is found
-                    }
-                }
+            url: url,
+            data: function(d) {
+                d.civil_number = $('#civil_number').val().trim();
+                d.start_date = $('#start_date').val();
+                d.end_date = $('#end_date').val();
             },
+            dataSrc: function(json) {
+    // Check if totals exist in the response and update the HTML accordingly
+    if (json.totalAmount) {
+        $('#total-amount').text(json.totalAmount);
+       
+    }
+
+    // Ensure the data array is returned for the table
+    return json.data ? json.data : [];
+},
+            error: function(xhr, error, code) {
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    alert(xhr.responseJSON.error); // Show the error if no user is found
+                }
+            }
+        },
             columns: [
                 { data: null, name: 'order', orderable: false, searchable: false },
                 { data: 'day', name: 'day' },
@@ -201,6 +217,7 @@
             
             ],
             order: [[2, 'asc']],
+            
             "oLanguage": {
                 "sSearch": "",
                 "sSearchPlaceholder": "بحث",
@@ -226,7 +243,9 @@
             },
             createdRow: function(row, data, dataIndex) {
                 $('td', row).eq(0).html(dataIndex + 1); // Automatic numbering in the first column
-            }
+            },
+            
+            
         });
     }
 
