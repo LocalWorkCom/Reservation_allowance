@@ -37,6 +37,7 @@ use App\Http\Controllers\ReserveFetchController;
 use App\Http\Controllers\ReserveSectorController;
 use App\Http\Controllers\SubDepartmentStatsController;
 use App\Http\Controllers\SubDepartmentReservationController;
+use App\Http\Controllers\PrisonersDetailsController;
 
 
 
@@ -472,6 +473,10 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/reservation_allowances/create', [ReservationAllowanceController::class, 'create'])->name('reservation_allowances.create')->middleware('check.permission:create Inspector');
     Route::any('/reservation_allowances/store', [ReservationAllowanceController::class, 'store'])->name('reservation_allowances.store')->middleware('check.permission:create Inspector');
     Route::any('/reservation_allowances/create_all', [ReservationAllowanceController::class, 'create_all'])->name('reservation_allowances.create.all')->middleware('check.permission:create Inspector');
+    Route::any('/reservation_allowances/get_crate_all_form/{sector}/{department}', [ReservationAllowanceController::class, 'get_crate_all_form'])->name('reservation_allowances.get_crate_all_form')->middleware('check.permission:view Inspector');
+    Route::any('/reservation_allowances/get_check_sector_department/{sector}/{department}/{civilNumber}', [ReservationAllowanceController::class, 'get_check_sector_department'])->name('reservation_allowances.get_check_sector_department')->middleware('check.permission:view Inspector');
+
+    
     Route::any('/reservation_allowances/store_all', [ReservationAllowanceController::class, 'store_all'])->name('reservation_allowances.store.all')->middleware('check.permission:create Inspector');
 
     Route::any('/reservation_allowances/update', [ReservationAllowanceController::class, 'update'])->name('reservation_allowances.edit')->middleware('check.permission:edit Inspector');
@@ -515,7 +520,17 @@ Route::get('/subdepartment_statistics/{subDepartmentId}', [SubDepartmentReservat
 Route::get('/subdepartment_statistics/getAll/{subDepartmentId}', [SubDepartmentReservationController::class, 'getAll'])
     ->name('subdepartment_reservation.getAll')
     ->middleware('check.permission:view Inspector');
+    
+//reservation statics per persons
+  Route::get('/subdepartment_statistics/{subDepartmentId}/prisoners/{date}', [PrisonersDetailsController::class, 'getDetails'])
+    ->name('prisoners.details')
+    ->middleware('check.permission:view Inspector');
 
+
+// Route to fetch data for prisoners' details DataTable
+Route::get('/subdepartment_statistics/{subDepartmentId}/prisoners/{date}/data', [PrisonersDetailsController::class, 'getData'])
+    ->name('prisoners.details.data')
+    ->middleware('check.permission:view Inspector');
 
 
     //reservation statics for sectors
