@@ -150,7 +150,7 @@
                                 <label for="Civil_number"> <i class="fa-solid fa-asterisk"
                                         style="color:red; font-size:10px;"></i>
                                     رقم الهوية</label>
-                                <textarea class="form-control" rows="10" name="Civil_number" id="Civil_number" style="height: 100px"></textarea>
+                                <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 200px !important"></textarea>
                             </div>
 
                             <div class="form-group col-md-10 mx-2">
