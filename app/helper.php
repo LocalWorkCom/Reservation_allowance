@@ -243,7 +243,6 @@ function UploadFilesIM($path, $image, $model, $request)
     $model->save();
 }
 
-
 function showUserDepartment()
 {
     // Retrieve the authenticated user
@@ -251,9 +250,14 @@ function showUserDepartment()
 
     // Access the department name
     // dd($user->department);
-    $departmentName = $user->department != null ? ($user->department->name != null ? $user->department->name : 'القسم الرئيسي') : '';
+    if ($user->sector && ! $user->department) {
+        $name = $user->sector != null ? ($user->sector->name != null ? $user->sector->name : 'القسم الرئيسي') : '';
+    } else {
 
-    return $departmentName;
+        $name = $user->department != null ? ($user->department->name != null ? $user->department->name : 'القسم الرئيسي') : '';
+    }
+
+    return $name;
 }
 function CheckUploadIoFiles($id)
 {
