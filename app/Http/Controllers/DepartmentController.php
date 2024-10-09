@@ -280,7 +280,6 @@ class DepartmentController extends Controller
 
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            'mangered.required' => 'اسم المدير مطلوب.',
             'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
@@ -295,7 +294,7 @@ class DepartmentController extends Controller
         // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'mangered' => 'required',
+            'manger' => 'nullable',
             'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
 
@@ -328,7 +327,7 @@ class DepartmentController extends Controller
         $departements->created_by = Auth::user()->id;
         $departements->save();
 
-        $user = User::find($request->mangered);
+        $user = User::find($request->manager);
         if ($user) {
             $user->sector =  $request->sector;
             $user->department_id = $departements->id;
@@ -357,7 +356,7 @@ class DepartmentController extends Controller
         $employees = User::whereIn('Civil_number', $Civil_numbers)->pluck('id')->toArray();
 
         // Check if the selected manager is one of the employees
-        if (in_array($request->mangered, $employees)) {
+        if (in_array($request->manager, $employees)) {
             return redirect()->back()->with('error', 'المدير لا يمكن أن يكون أحد الموظفين المدرجين.');
         }
         // Update employees in the sector
@@ -377,85 +376,98 @@ class DepartmentController extends Controller
     {
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            'manger.required' => 'اسم المدير مطلوب.',
             'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
-
             'part.required' => 'نوع بدل الحجز مطلوب.',
-            // 'part.numeric' => 'نوع بدل الحجز يجب أن يكون رقمًا.',
-            // 'part.min' => 'نوع بدل الحجز يجب ألا يقل عن 0.01.',
-            // 'part.max' => 'نوع بدل الحجز يجب ألا يزيد عن 1000000.',
         ];
 
-        // Create a validator instance
+        // Validate the input fields
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'manger' => 'required',
+            'manager' => 'nullable',  // Make the manager optional
             'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
-
         ], $messages);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        $part = $request->input('part');
 
+        // Handle reservation allowance type logic
+        $part = $request->input('part');
         $reservation_allowance_type = null;
 
         if (in_array('1', $part) && in_array('2', $part)) {
-            // If both '1' and '2' are present, save 3
-            $reservation_allowance_type = 3;
+            $reservation_allowance_type = 3;  // Both '1' and '2' mean type 3 (both kinds of reservation)
         } elseif (in_array('1', $part)) {
-            // If only '1' is present, save 1
-            $reservation_allowance_type = 1;
+            $reservation_allowance_type = 1;  // Only '1' (full reservation)
         } elseif (in_array('2', $part)) {
-            // If only '2' is present, save 2
-            $reservation_allowance_type = 2;
+            $reservation_allowance_type = 2;  // Only '2' (partial reservation)
         }
-        $departements = new Departements();
-        $departements->name = $request->name;
-        $departements->manger = $request->manger;
-        $departements->sector_id  = $request->sector;
-        $departements->description = $request->description;
-        $departements->parent_id = $request->parent;
 
-        $departements->reservation_allowance_amount = $request->budget;
-        $departements->reservation_allowance_type = $reservation_allowance_type;
+        // Create the new sub-department
+        $departement = new Departements();
+        $departement->name = $request->name;
+        $departement->manger = $request->manager;
+        $departement->sector_id  = $request->sector;
+        $departement->parent_id = $request->parent;  // Link this as a sub-department to its parent
+        $departement->description = $request->description;
+        $departement->reservation_allowance_amount = $request->budget;
+        $departement->reservation_allowance_type = $reservation_allowance_type;
+        $departement->created_by = Auth::user()->id;
+        $departement->save();
 
-        // $departements->parent_id = Auth::user()->department_id;
-        $departements->created_by = Auth::user()->id;
-        $departements->save();
+        // Handle manager assignment (if a manager Civil Number is provided)
+        if ($request->manager) {
+            $user = User::where('Civil_number', $request->manager)->first();
 
-        $user = User::find($request->manger);
-        $user->department_id = $departements->id;
-        $user->save();
+            if ($user) {
+                // Assign the department to the manager
+                $user->sector = $request->sector;
+                $user->department_id = $departement->id;
 
-        Sendmail(
-            'مدير ادارة فرعية',  // Email subject
-            'تم أضافتك كمدير ادارة فرعية',  // Email body
-            $user->Civil_number,
-            $request->password ? $request->password : null,
-            $user->email
-        );
+                // If a password is provided, update the manager's credentials
+                if ($request->password) {
+                    $user->flag = 'user';
+                    $user->rule_id = $request->rule;
+                    $user->password = Hash::make($request->password);
+                }
 
-        if ($request->has('employess')) {
-            foreach ($request->employess as $item) {
-                // dd($item);
-                $user = User::find($item);
+                $user->save();
 
-                if ($user) {
-                    $user->department_id = $departements->id;
-                    $user->save();
-                    // dd($user);
+                // Optionally send an email notification to the manager
+                Sendmail(
+                    'مدير ادارة فرعية',
+                    'تم أضافتك كمدير ادارة فرعية',
+                    $user->Civil_number,
+                    $request->password ? $request->password : null,
+                    $user->email
+                );
+            } else {
+                // Handle the case where no user is found with the provided Civil Number
+                return redirect()->back()->with('error', 'هذا المستخدم غير موجود');
+            }
+        }
+
+        // Handle employee assignment based on Civil Numbers
+        if ($request->has('Civil_number')) {
+            $Civil_numbers = explode(',', str_replace(array("\r", "\r\n", "\n"), ',', $request->Civil_number));
+            foreach ($Civil_numbers as $Civil_number) {
+                $employee = User::where('Civil_number', $Civil_number)->first();
+                if ($employee) {
+                    $employee->sector = $request->sector;
+                    $employee->department_id = $departement->id;
+                    $employee->save();
                 }
             }
         }
-        return redirect()->route('sub_departments.index', ['id' => $request->parent])->with('success', 'Department created successfully.');
-        // return response()->json($department, 201);
+
+        return redirect()->route('sub_departments.index', ['id' => $request->parent])
+            ->with('success', 'Sub-department created successfully.');
     }
+
     /**
      * Display the specified resource.
      */
@@ -521,7 +533,6 @@ class DepartmentController extends Controller
         //dd($request);
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            'manger.required' => 'اسم المدير مطلوب.',
             'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
@@ -536,7 +547,7 @@ class DepartmentController extends Controller
         // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'manger' => 'required',
+            'manger' => 'nullable',
             'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
 
@@ -655,7 +666,6 @@ class DepartmentController extends Controller
     {
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            'manger.required' => 'اسم المدير مطلوب.',
             'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
@@ -670,7 +680,7 @@ class DepartmentController extends Controller
         // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'manger' => 'required',
+            'manger' => 'nullable',
             'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
 
