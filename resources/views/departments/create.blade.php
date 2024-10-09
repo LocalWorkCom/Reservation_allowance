@@ -124,12 +124,12 @@
                                 </div>
                             </div>
                             <div class="form-group col-md-10 mx-md-2" id="manager">
-                                <label for="mangered">رقم هوية المدير</label>
-                                <input type="text" name="manger" id="mangered" class="form-control"
-                                    value="{{ old('mangered') }}">
+                                <label for="manager">رقم هوية المدير</label>
+                                <input type="text" name="manager" id="manager" class="form-control"
+                                    value="{{ old('manager') }}">
 
 
-                                @error('manger')
+                                @error('manager')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -248,13 +248,13 @@
         $('#manager_details').hide();
         $('#password_field').hide();
         $('#rule_field').hide();
-        $('#mangered').on('input', function() {
+        $('#manager').on('input', function() {
             var managerId = $(this).val();
             $('#password').val('');
             $('#rule').val('');
             fetchManagerDetails(managerId);
         });
-        var selectedManagerId = $('#mangered').val();
+        var selectedManagerId = $('#manager').val();
         if (selectedManagerId) {
             fetchManagerDetails(selectedManagerId);
         }
