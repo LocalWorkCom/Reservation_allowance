@@ -191,9 +191,10 @@
 
         // Modify fetchManagerDetails to accept an optional second parameter
         function fetchManagerDetails(managerId, skipDepartmentCheck = true) {
+            sector = {{ $data->id }}
             if (managerId) {
                 $.ajax({
-                    url: '/get-manager-details/' + managerId + (skipDepartmentCheck ? '?check_department=false' :
+                    url: '/get-manager-sector-details/' + managerId + '/' + sector + (skipDepartmentCheck ? '?check_department=false' :
                         ''),
                     type: 'GET',
                     success: function(data) {
@@ -223,12 +224,28 @@
                         // Handle different error responses
                         if (xhr.status === 404) {
                             Swal.fire({
-                                title: 'تحذير',
-                                text: xhr.responseJSON.error || 'عفوا هذا المستخدم غير موجود',
-                                icon: 'warning',
-                                confirmButtonText: 'إلغاء',
-                                confirmButtonColor: '#3085d6'
-                            });
+                            title: 'تحذير',
+                            text: xhr.responseJSON.error || 'عفوا هذا المستخدم غير موجود',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'نعم, استمر',
+                            cancelButtonText: 'لا',
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // User confirmed
+                                // You may want to handle confirmation logic here
+                            } else {
+                                // User clicked "إلغاء", clear the input field
+                                $('#mangered').val('');
+                                $('#manager_details').hide();
+                                $('#password_field').hide();
+                                $('#rule_field').hide();
+                                $('#password').val('');
+                                $('#rule').val('');
+                            }
+                        });
                         } else {
                             Swal.fire({
                                 title: 'خطأ',

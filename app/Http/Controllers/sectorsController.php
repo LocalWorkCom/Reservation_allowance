@@ -8,6 +8,7 @@ use App\Models\Government;
 use App\Models\Rule;
 use App\Models\Sector;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +24,44 @@ class sectorsController extends Controller
     {
         $this->middleware('auth');
     }
+    public function getManagerSectorDetails($id,$sector)
+    {
+        // Fetch manager data from the database
+        $manager = User::where('Civil_number', $id)->first();
 
+        if (!$manager) {
+            return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 404);
+        }
+
+        // Allow this check only for input change, not for initial load
+        $isDepartmentCheck = request()->has('check_department') && request()->get('check_department') == true;
+       // dd($isDepartmentCheck , $sector ,$manager->sector);
+
+        // Ensure the manager is not assigned to another sector or department
+        if ($isDepartmentCheck && ($manager->department_id != null || $manager->sector != null || $sector != $manager->sector )) {
+
+            return response()->json(['error' =>'هذا المستخدم موجود فى قطاع مسبقا . هل تريد نقله ?'], 404);
+        }
+
+        // Calculate seniority/years of service
+        $joiningDate = $manager->joining_date ? Carbon::parse($manager->joining_date) : Carbon::parse($manager->created_at);
+        $today = Carbon::now();
+        $yearsOfService = $joiningDate->diffInYears($today);
+
+        // Check if the user is an employee (flag 'employee' means employee)
+        $isEmployee = $manager->flag == 'employee';
+
+        // Return the manager data in JSON format
+        return response()->json([
+            'rank' => $manager->grade_id ? $manager->grade->name : 'لا يوجد رتبه',
+            'job_title' => $manager->job_title ?? 'لا يوجد مسمى وظيفى',
+            'seniority' => $yearsOfService,
+            'name' => $manager->name,
+            'phone' => $manager->phone,
+            'email' => $manager->email,
+            'isEmployee' => $isEmployee,  // Include the employee flag
+        ]);
+    }
     public function index()
     {
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
@@ -98,6 +136,44 @@ class sectorsController extends Controller
             })
             ->rawColumns(['action', 'departments', 'employees', 'employeesdep'])
             ->make(true);
+    }
+    public function getManagerDetails($id)
+    {
+        // Fetch manager data from the database
+        $manager = User::where('Civil_number', $id)->first();
+
+        if (!$manager) {
+            return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 404);
+        }
+
+        // Allow this check only for input change, not for initial load
+        $isDepartmentCheck = request()->has('check_department') && request()->get('check_department') == true;
+
+        // Check if the manager is assigned to a sector
+        if ($isDepartmentCheck) {
+            if ($manager->department_id != null || $manager->sector != null) {
+                return response()->json(['confirm' => 'عفوا هذا المستخدم لديه قطاع بالفعل. هل أنت متأكد أنك تريد نقل هذا المستخدم إلى قسم آخر؟'], 200);
+            }
+        }
+
+        // Calculate seniority/years of service
+        $joiningDate = $manager->joining_date ? Carbon::parse($manager->joining_date) : Carbon::parse($manager->created_at);
+        $today = Carbon::now();
+        $yearsOfService = $joiningDate->diffInYears($today);
+
+        // Check if the user is an employee (flag 'employee' means employee)
+        $isEmployee = $manager->flag == 'employee';
+
+        // Return the manager data in JSON format
+        return response()->json([
+            'rank' => $manager->grade_id ? $manager->grade->name : 'لا يوجد رتبه',
+            'job_title' => $manager->job_title ?? 'لا يوجد مسمى وظيفى',
+            'seniority' => $yearsOfService,
+            'name' => $manager->name,
+            'phone' => $manager->phone,
+            'email' => $manager->email,
+            'isEmployee' => $isEmployee,  // Include the employee flag
+        ]);
     }
 
 
@@ -185,21 +261,34 @@ class sectorsController extends Controller
         // Handle updating the manager, if present
         if ($manager) {
             $user = User::find($manager);
-            if ($user) {
-                $user->sector = $sector->id;
-                $user->department_id = null;
 
-                // Update password and role if provided
-                if ($request->password) {
-                    $user->flag = 'user';
-                    $user->rule_id = $request->rule;
-                    $user->password = Hash::make($request->password);
-                }
-                $user->save();
-                Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع'.$request->name, $user->Civil_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $user->email);
-            } else {
+            if (!$user) {
                 return redirect()->back()->with('error', 'هذا المستخدم غير موجود');
             }
+
+            if($user->sector != $sector->id || $user->sector != null) {
+                // dd($user->sector);
+                $old_sector = Sector::find($user->sector);
+
+                if ($old_sector) { // Ensure old sector exists
+                    $old_sector->manager = null;
+                    $old_sector->save();
+                }
+            }
+
+            // Continue with updating the user
+            $user->sector = $sector->id;
+            $user->department_id = null;
+
+            // Update password and role if provided
+            if ($request->password) {
+                $user->flag = 'user';
+                $user->rule_id = $request->rule;
+                $user->password = Hash::make($request->password);
+            }
+
+            $user->save();
+            Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع ' . $request->name, $user->Civil_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $user->email);
         }
 
         // Track Civil numbers that could not be added
@@ -330,6 +419,14 @@ class sectorsController extends Controller
             // Update new manager's sector
             if ($manager) {
                 $newManager = User::find($manager);
+                // dd($newManager->sector ,$sector->id);
+                if($newManager->sector != $sector->id || $newManager->sector != null) {
+                    $old_sector = Sector::find($newManager->sector);
+                    if ($old_sector) {
+                        $old_sector->manager = null;
+                        $old_sector->save();
+                    }
+                }
                 if ($newManager) {
                     $newManager->sector = $sector->id;
                     $newManager->department_id = null;
