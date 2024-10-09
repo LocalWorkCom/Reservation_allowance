@@ -124,27 +124,27 @@
                                     <label for="Civil_number">
                                         <button class="btn-all py-2 px-2" type="submit" style="color:green;">
                                             <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                            بحث عن موظفين
+                                            اضافة بدل حجز اختياري
                                         </button>
                                 </div>
                             </div>
                         </form>
                         <hr /><br />
                         <div class="d-flex justify-content-between mt-2">
-                            <div class=" mx-2">
-                                {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                                <a class="btn-all py-2 px-2 " href="{{ route('reservation_allowances.create') }}"
-                                    style="color: #0D992C;">
-                                    <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                    اضافة بدل حجز جديد
-                                </a>
-                                {{-- @endif --}}
-                            </div>
+                            <!-- <div class=" mx-2">
+                                    {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
+                                    <a class="btn-all py-2 px-2 " href="{{ route('reservation_allowances.create') }}"
+                                        style="color: #0D992C;">
+                                        <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                                        اضافة بدل حجز جديد
+                                    </a>
+                                    {{-- @endif --}}
+                                </div>-->
                             <div class="">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                 <a class="btn-all py-2 px-2" href="{{ route('reservation_allowances.create.all') }}"
                                     style="color: #0D992C;">
                                     <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                    اضافة بدل حجز كلى جديد
+                                    اضافة بدل حجز جماعى بالهويات
                                 </a>
                                 {{-- @endif --}}
                             </div>
