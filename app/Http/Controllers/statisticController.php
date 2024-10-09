@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 
 class statisticController extends Controller
 {
-
+//departments when click on sector
     public function index()
     {
         if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {

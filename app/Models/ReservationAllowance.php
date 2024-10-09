@@ -22,4 +22,14 @@ class ReservationAllowance extends Model
     {
         return $this->belongsTo(departements::class, 'departement_id');
     }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // Define the relationship with the Grade model if needed
+    public function grade()
+    {
+        return $this->belongsTo(Grade::class, 'grade_id');
+    }
 }

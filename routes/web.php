@@ -37,6 +37,7 @@ use App\Http\Controllers\ReserveFetchController;
 use App\Http\Controllers\ReserveSectorController;
 use App\Http\Controllers\SubDepartmentStatsController;
 use App\Http\Controllers\SubDepartmentReservationController;
+use App\Http\Controllers\PrisonersDetailsController;
 
 
 
@@ -519,7 +520,17 @@ Route::get('/subdepartment_statistics/{subDepartmentId}', [SubDepartmentReservat
 Route::get('/subdepartment_statistics/getAll/{subDepartmentId}', [SubDepartmentReservationController::class, 'getAll'])
     ->name('subdepartment_reservation.getAll')
     ->middleware('check.permission:view Inspector');
+    
+//reservation statics per persons
+  Route::get('/subdepartment_statistics/{subDepartmentId}/prisoners/{date}', [PrisonersDetailsController::class, 'getDetails'])
+    ->name('prisoners.details')
+    ->middleware('check.permission:view Inspector');
 
+
+// Route to fetch data for prisoners' details DataTable
+Route::get('/subdepartment_statistics/{subDepartmentId}/prisoners/{date}/data', [PrisonersDetailsController::class, 'getData'])
+    ->name('prisoners.details.data')
+    ->middleware('check.permission:view Inspector');
 
 
     //reservation statics for sectors
