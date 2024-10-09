@@ -10,6 +10,7 @@ use Yajra\DataTables\Facades\DataTables;
 
 class SubDepartmentStatsController extends Controller
 {
+    //subdepartments details appear when press on a specific subdepartments
     public function index($department_id)
     {
         // Fetch the main department details
