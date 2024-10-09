@@ -284,9 +284,9 @@ public function indexbationality(Request $request)
     {
         $all = grade::count();
 
-        $Officer = grade::where('type', 0)->count();
+        $Officer = grade::where('type', 2)->count();
         $Officer2 = grade::where('type', 1)->count();
-        $person = grade::where('type', 2)->count();
+        $person = grade::where('type', 3)->count();
         return view("grads.index", compact('all', 'Officer', 'Officer2', 'person'));
     }
     //create GRAD
