@@ -73,12 +73,10 @@
             <div class="d-flex justify-content-between">
                 <div class="col-12">
                     <div class="row d-flex " style="direction: rtl">
-                        <div class="col-2">
-                            <p> بدل الحجز</p>
+                        <div class="col-4">
+                            <p> بدل حجز جماعى بالهويات</p>
                         </div>
-                        <form class="" action="{{ route('reservation_allowances.create_employee_all') }}"
-                            method="post" enctype="multipart/form-data">
-                            @csrf
+
                             <div class="row d-flex flex-wrap justify-content-between">
                                 <!-- 1 for sector , 2 for department -->
                                 <input name="department_type" id="department_type" type="hidden"
@@ -97,7 +95,7 @@
                                     </select>
                                 </div>
 
-                                <div class="d-flex mx-2">
+                                <div class="d-flex mx-2" id="departement_div">
                                     {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                     <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
                                     <select class="custom-select custom-select-lg select2" name="departement_id"
@@ -108,13 +106,12 @@
 
                                 <div class="">
                                     <label for="Civil_number">
-                                        <button class="btn-all py-2 px-2" type="submit" style="color:green;">
+                                        <button class="btn-all py-2 px-2" id="get_crate_all_form" type="button" style="color:green;">
                                             <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                            اضافة بدل حجز اختياري </button>
+                                            اضافة بدل حجز جماعى بالهويات </button>
 
                                 </div>
                             </div>
-                        </form>
 
                         <!-- show_reservation_allowances_info -->
                         <div id="show_reservation_allowances_info" class="col-12"></div>
@@ -137,10 +134,12 @@
                         </div>
                     @endif
 
-                    <div>
+                    <!-- view form -->
+                    <div id="crate_all_form"></div>
+                    <!-- end of view form -->
 
+                    <div id="view_alert_crate_all"></div>
 
-                    </div>
                 </div>
             </div>
 
@@ -154,16 +153,36 @@
 
 @endsection
 @push('scripts')
+
+    <script>
+        $(".select2").select2({
+            dir: "rtl"
+        });
+        $('#sector_id').on('select2:select', function(e) {
+            // alert('select');
+            // var managerId = $(this).val();
+            var sectorid = $(this).val();
+            var department_type = document.getElementById('department_type').value;
+            var map_url = "{{ route('reservation_allowances.get_departement', ['id', 'type']) }}";
+            map_url = map_url.replace('id', sectorid);
+            map_url = map_url.replace('type', department_type);
+            $.get(map_url, function(data) {
+                $("#departement_id").html(data);
+                // initDept()
+                $('#departement_id').val(0).trigger('change');
+
+            });
+        });
+
+        function initDept() {
+            $("#departement_id").select2({
+                dir: "rtl"
+            });
+        }
+    </script>
+
     <script>
         $(document).ready(function() {
-            function closeModal() {
-                $('#delete').modal('hide');
-            }
-
-            $('#closeButton').on('click', function() {
-                closeModal();
-            });
-
 
             $(document).on("change", "#sector_id", function() {
                 var sectorid = this.value;
@@ -176,8 +195,32 @@
                 });
             });
 
+            $(document).on("click", "#get_crate_all_form", function() {
+                var sectorid = document.getElementById('sector_id').value;
+                var departement_id = document.getElementById('departement_id').value;
+                var map_url = "{{ route('reservation_allowances.get_crate_all_form', ['sector', 'department']) }}";
+                map_url = map_url.replace('sector', sectorid);
+                map_url = map_url.replace('department', departement_id);
+                $.get(map_url, function(data) {
+                    $("#crate_all_form").html(data);
+                });
+            });
 
+            $(document).on("click", "#get_check_sector_department", function() {
+                var sector_id = document.getElementById('sector_id').value;
+                var departement_id = document.getElementById('departement_id').value;
+                var Civil_number = document.getElementById('Civil_number').value;
 
+                Civil_number = Civil_number.replace(/(\r\n|\n|\r)/gm, ",,");
+
+                var map_url = "{{ route('reservation_allowances.get_check_sector_department', ['sectorid', 'departmentid', 'civilNumber']) }}";
+                map_url = map_url.replace('sectorid', sector_id);
+                map_url = map_url.replace('departmentid', departement_id);
+                map_url = map_url.replace('civilNumber', Civil_number);
+                $.get(map_url, function(data) {
+                    $("#view_alert_crate_all").html(data);
+                });
+            });
 
         });
 

@@ -20,7 +20,7 @@
                     <p>موظفين الوزارة</p>
                 @endif
                 @if (Auth::user()->rule_id != 2)
-                    <p>موظفين القوة<< /p>
+                    <p>موظفين القوة</p>
                 @endif
                 <div class="form-group">
                     @if (Auth::user()->hasPermission('add_employee User'))

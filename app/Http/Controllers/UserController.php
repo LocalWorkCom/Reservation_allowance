@@ -85,15 +85,22 @@ class UserController extends Controller
         } elseif (Auth::user()->rule->name == "superadmin") {
             $data = User::query(); // Start as a query for superadmins too
         } else {
-            if (is_null($parentDepartment->parent_id)) {
-                $subdepart = Departements::where('parent_id', $parentDepartment->id)->pluck('id')->toArray();
-                $data = User::where(function ($query) use ($subdepart, $parentDepartment) {
-                    $query->whereIn('department_id', $subdepart)
-                        ->orWhere('department_id', $parentDepartment->id)
-                        ->orWhereNull('department_id');
-                });
+            // dd($parentDepartment);
+            if (!$parentDepartment) {
+                $sector = Auth::user()->sector;
+                $data = User::where('sector', $sector);
             } else {
-                $data = User::where('department_id', $parentDepartment->id);
+
+                if (is_null($parentDepartment->parent_id)) {
+                    $subdepart = Departements::where('parent_id', $parentDepartment->id)->pluck('id')->toArray();
+                    $data = User::where(function ($query) use ($subdepart, $parentDepartment) {
+                        $query->whereIn('department_id', $subdepart)
+                            ->orWhere('department_id', $parentDepartment->id)
+                            ->orWhereNull('department_id');
+                    });
+                } else {
+                    $data = User::where('department_id', $parentDepartment->id);
+                }
             }
         }
         // dd($request);
