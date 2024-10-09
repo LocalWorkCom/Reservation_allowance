@@ -284,7 +284,6 @@ class DepartmentController extends Controller
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
-
             'part.required' => 'نوع بدل الحجز مطلوب.',
             // 'part.numeric' => 'نوع بدل الحجز يجب أن يكون رقمًا.',
             // 'part.min' => 'نوع بدل الحجز يجب ألا يقل عن 0.01.',
@@ -294,7 +293,6 @@ class DepartmentController extends Controller
         // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'manger' => 'nullable',
             'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
 
@@ -386,7 +384,6 @@ class DepartmentController extends Controller
         // Validate the input fields
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'manager' => 'nullable',  // Make the manager optional
             'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
         ], $messages);
@@ -410,7 +407,7 @@ class DepartmentController extends Controller
         // Create the new sub-department
         $departement = new Departements();
         $departement->name = $request->name;
-        $departement->manger = $request->manager;
+        $departement->manger = $request->manger;
         $departement->sector_id  = $request->sector;
         $departement->parent_id = $request->parent;  // Link this as a sub-department to its parent
         $departement->description = $request->description;
@@ -547,7 +544,6 @@ class DepartmentController extends Controller
         // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'manger' => 'nullable',
             'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
 
@@ -680,7 +676,6 @@ class DepartmentController extends Controller
         // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'manger' => 'nullable',
             'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
 

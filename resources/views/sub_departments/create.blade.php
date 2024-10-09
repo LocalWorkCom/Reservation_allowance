@@ -147,11 +147,11 @@
                                 </div>
                             </div>
                             <div class="form-group col-md-10 mx-md-2" id="manager">
-                                <label for="manager">رقم هوية المدير</label>
-                                <input type="text" name="manager" id="manager" class="form-control"
-                                    value="{{ old('manager') }}">
+                                <label for="mangered">رقم هوية المدير</label>
+                                <input type="text" name="mangered" id="mangered" class="form-control"
+                                    value="{{ old('mangered') }}">
 
-                                @error('manager')
+                                @error('mangered')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -216,12 +216,16 @@
 
         </div>
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         $('.select2').select2({
             dir: "rtl"
         });
 
         function fetchManagerDetails(managerId) {
+            console.log('Manager ID:', managerId);
+
             if (managerId) {
                 $.ajax({
                     url: '/get-manager-details/' + managerId,
@@ -244,7 +248,13 @@
                         }
                     },
                     error: function() {
-                        alert('عفوا هذا المستخدم غير موجود');
+                        Swal.fire({
+                            title: 'تحذير',
+                            text: 'عفوا هذا المستخدم غير موجود',
+                            icon: 'warning',
+                            confirmButtonText: 'إلغاء',
+                            confirmButtonColor: '#3085d6'
+                        });
                     }
                 });
             } else {
@@ -258,13 +268,13 @@
         $('#manager_details').hide();
         $('#password_field').hide();
         $('#rule_field').hide();
-        $('#manager').on('input', function() {
+        $('#mangered').on('input', function() {
             var managerId = $(this).val();
             $('#password').val('');
             $('#rule').val('');
             fetchManagerDetails(managerId);
         });
-        var selectedManagerId = $('#manager').val();
+        var selectedManagerId = $('#mangered').val();
         if (selectedManagerId) {
             fetchManagerDetails(selectedManagerId);
         }

@@ -129,11 +129,11 @@
                             </div>
                             {{-- {{ dd($department->manager) }} --}}
                             <div class="form-group col-md-10 mx-md-2" id="manager">
-                                <label for="manager">رقم هوية المدير</label>
-                                <input type="text" name="manager" id="manager" class="form-control"
+                                <label for="mangered">رقم هوية المدير</label>
+                                <input type="text" name="mangered" id="mangered" class="form-control"
                                     value="{{ $department->manger }}">
 
-                                @error('manager')
+                                @error('mangered')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -202,66 +202,48 @@
 
         </div>
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
-        // Initialize select2 for RTL
         $('.select2').select2({
             dir: "rtl"
         });
 
-        // On page load: check if there's a selected manager ID
-        $(document).ready(function() {
-            var selectedManagerId = $('#manager').val();
-            if (selectedManagerId) {
-                console.log(selectedManagerId);
-                fetchManagerDetails(selectedManagerId, false); // Pass true to skip the department check
-            } else {
-                $('#manager_details').hide();
-                $('#password_field').hide();
-                $('#rule_field').hide();
-            }
-        });
+        function fetchManagerDetails(managerId) {
+            console.log('Manager ID:', managerId);
 
-        // Modify fetchManagerDetails to accept an optional second parameter
-        function fetchManagerDetails(managerId, skipDepartmentCheck = true) {
             if (managerId) {
                 $.ajax({
-                    url: '/get-manager-details/' + managerId + (skipDepartmentCheck ? '?check_department=false' :
-                        ''),
+                    url: '/get-manager-details/' + managerId,
                     type: 'GET',
                     success: function(data) {
-                        // Show the manager details div
-                        $('#manager_details').show();
-
-                        // Populate manager details
                         $('#manager_details').find('span').eq(0).text(data.rank);
                         $('#manager_details').find('span').eq(1).text(data.seniority);
                         $('#manager_details').find('span').eq(2).text(data.job_title);
                         $('#manager_details').find('span').eq(3).text(data.name);
                         $('#manager_details').find('span').eq(4).text(data.phone);
-                        $('#manager_details').find('span').eq(5).text(data.email);
-
-                        // Show/hide password and rule fields
+                        $('#manager_details').show();
                         if (data.isEmployee) {
                             $('#password_field').show();
                             $('#rule_field').show();
                         } else {
                             $('#password_field').hide();
                             $('#rule_field').hide();
-                            $('#password').val(''); // Clear password field
-                            $('#rule').val(''); // Clear rule field
+                            $('#password').val('');
+                            $('#rule').val('');
                         }
                     },
-                    error: function(xhr) {
-                        // Handle different error responses
-                        if (xhr.status === 404) {
-                            alert(xhr.responseJSON.error || 'عفوا هذا المستخدم غير موجود');
-                        } else {
-                            alert('حدث خطأ، حاول مرة أخرى.');
-                        }
+                    error: function() {
+                        Swal.fire({
+                            title: 'تحذير',
+                            text: 'عفوا هذا المستخدم غير موجود',
+                            icon: 'warning',
+                            confirmButtonText: 'إلغاء',
+                            confirmButtonColor: '#3085d6'
+                        });
                     }
                 });
             } else {
-                // Hide details if no manager ID
                 $('#manager_details').hide();
                 $('#password_field').hide();
                 $('#rule_field').hide();
@@ -269,11 +251,18 @@
                 $('#rule').val('');
             }
         }
-        $('#manager').on('input', function() {
+        $('#manager_details').hide();
+        $('#password_field').hide();
+        $('#rule_field').hide();
+        $('#mangered').on('input', function() {
             var managerId = $(this).val();
-            $('#password').val(''); // Clear previous input
-            $('#rule').val(''); // Clear previous input
-            fetchManagerDetails(managerId, true); // Fetch new details
+            $('#password').val('');
+            $('#rule').val('');
+            fetchManagerDetails(managerId);
         });
+        var selectedManagerId = $('#mangered').val();
+        if (selectedManagerId) {
+            fetchManagerDetails(selectedManagerId);
+        }
     </script>
 @endsection
