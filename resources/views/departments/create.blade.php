@@ -265,7 +265,7 @@
                         console.log(error);
                         Swal.fire({
                             title: 'تحذير',
-                            text: 'عفوا هذا المستخدم غير موجود',
+                            text: 'ززعفوا هذا المستخدم غير موجود',
                             icon: 'warning',
                             confirmButtonText: 'إلغاء',
                             confirmButtonColor: '#3085d6'
@@ -279,6 +279,19 @@
                 $('#password').val('');
                 $('#rule').val('');
             }
+        }
+        $('#manager_details').hide();
+        $('#password_field').hide();
+        $('#rule_field').hide();
+        $('#mangered').on('input', function() {
+            var managerId = $(this).val();
+            $('#password').val('');
+            $('#rule').val('');
+            fetchManagerDetails(managerId, true);
+        });
+        var selectedManagerId = $('#mangered').val();
+        if (selectedManagerId) {
+            fetchManagerDetails(selectedManagerId, true);
         }
     </script>
 
