@@ -343,27 +343,22 @@ class ReservationAllowanceController extends Controller
         //
     }
 
-    public function getAll()
+    public function getAll(Request $request)
     {
         $user = auth()->user();
         $to_day = Carbon::now()->format('Y-m-d');
+        $data = [];
 
-        /*if($user->rule_id == 2)
-        {
-            $data = ReservationAllowance::with('users', 'users.grade', 'departements')->where('date', $to_day)->get();
-        }else{
-            if($user->department->children->count() > 0){
-                $department_id = $user->department->children->pluck('id');
-            }else{
-                $department_id[] = $user->department_id;
-            }
-            $data = ReservationAllowance::with('users', 'users.grade', 'departements')->whereIn('departement_id', $department_id)->where('date', $to_day)->get();
-        }*/
+        $date = $request->input('date');
 
-        //$data = [];
-
-        $data = ReservationAllowance::with('users', 'users.grade', 'departements')->where('date', $to_day)->get();
-
+        $data = ReservationAllowance::Query()->with('users', 'users.grade', 'departements')->where('date', $date);
+        if($request->input('sector_id') != 0){
+            $data = $data->where('sector_id', $request->input('sector_id'));
+        }
+        if($request->input('departement_id') != 0){
+            $data = $data->where('departement_id', $request->input('departement_id'));
+        }
+        $data = $data->get();
 
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
@@ -699,7 +694,7 @@ class ReservationAllowanceController extends Controller
                             $type_departement = 2;
                         }
 
-                        $check_reservation_allowance = ReservationAllowance::where(['user_id' => $employee->id, 'date' => $to_day])->first();
+                        /*$check_reservation_allowance = ReservationAllowance::where(['user_id' => $employee->id, 'date' => $to_day])->first();
                         if(!$check_reservation_allowance){
                             if($get_employee['type'] != 0){
                                 //return redirect()->back()->with('error','عفوا تم اضافة بدل لحجز '.$employee->name.' فى هذا اليوم من قبل');
@@ -716,7 +711,32 @@ class ReservationAllowanceController extends Controller
                                 $add_reservation_allowance->created_by = $user->id;
                                 $add_reservation_allowance->save();
                             }
+                        } */
+
+                        if($get_employee['type'] != 0){
+                            $check_reservation_allowance = ReservationAllowance::updateOrCreate(
+                                [
+                                    'user_id' => $employee->id,
+                                    'date' => $to_day
+                                ],
+                                [
+                                    'type' => $get_employee['type'],
+                                    'amount' => $grade_value,
+                                    'day' => $to_day_name,
+                                    'sector_id' => $employee->sector,
+                                    'departement_id' => $employee->department_id,
+                                    'grade_id' => $employee->grade_id,
+                                    'type_departement' => $type_departement,
+                                    'created_by' => $user->id
+                                ]
+                            );
                         }
+
+                        if($get_employee['type'] == 0){
+                            $check_reservation_allowance = ReservationAllowance::where(['user_id' => $employee->id, 'date' => $to_day])->first();
+                            $check_reservation_allowance->delete();
+                        }
+
                     }
                 }
             }

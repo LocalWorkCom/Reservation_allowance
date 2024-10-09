@@ -214,9 +214,7 @@
                                     <!-- <th style="width:150px;">العمليات</th>-->
                                 </tr>
 
-                                @php($x=0)
-                                @foreach ($employees as $k_employee=>$employee)
-                                @php($x++)
+                                @foreach ($employees as $employee)
                                     <tr>
                                         <th>{{ $employee->id }}</th>
                                         <th>{{ $employee->name }}</th>
@@ -228,25 +226,25 @@
                                                 <div style="display: inline-flex; direction: ltr;">
                                                     <label for=""> حجز كلى</label>
                                                     <input type="radio" name="allowance[][{{ $employee->id }}]"
-                                                        id="allowance_all_{{ $x }}"
-                                                        onclick="add_to_cache(1, {{ $employee->id }})" value="{{ $employee->id }}"
-                                                        class="form-control emlpoyee_allowance_radio">
+                                                        id="allowance_{{ $employee->id }}"
+                                                        onclick="add_to_cache(1, {{ $employee->id }})" value="1"
+                                                        class="form-control">
                                                 </div>
                                                 <span>|</span>
                                                 <div style="display: inline-flex; direction: ltr;">
                                                     <label for=""> حجز جزئى</label>
                                                     <input type="radio" name="allowance[][{{ $employee->id }}]"
-                                                        id="allowance_part_{{ $x }}"
-                                                        onclick="add_to_cache(2, {{ $employee->id }})" value="{{ $employee->id }}"
-                                                        class="form-control emlpoyee_allowance_radio">
+                                                        id="allowance_{{ $employee->id }}"
+                                                        onclick="add_to_cache(2, {{ $employee->id }})" value="2"
+                                                        class="form-control">
                                                 </div>
                                                 <span>|</span>
                                                 <div style="display: inline-flex; direction: ltr;">
                                                     <label for=""> لا يوجد</label>
                                                     <input type="radio" name="allowance[][{{ $employee->id }}]"
-                                                        id="allowance_no_{{ $x }}"
-                                                        onclick="add_to_cache(0, {{ $employee->id }})" value="{{ $employee->id }}"
-                                                        checked class="form-control emlpoyee_allowance_radio">
+                                                        id="allowance_{{ $employee->id }}"
+                                                        onclick="add_to_cache(0, {{ $employee->id }})" value="0"
+                                                        checked class="form-control">
                                                 </div>
                                             </div>
                                         </th>
@@ -327,29 +325,7 @@
 
         function check_all($type)
         {
-            var employee_count = '{{count($employees)}}';
-            var type_name = "part";
-            if($type == 1){
-                var type_name = "all";
-            }else if($type == 2){
-                var type_name = "part";
-            }else{
-                var type_name = "no";
-            }
-
-            if(employee_count > 0){
-                for($i=1; $i<=employee_count; $i++){
-                    document.getElementById('allowance_'+type_name+'_'+$i).checked = true;
-                }
-            }
-
-            //add to chche
-            $('.emlpoyee_allowance_radio:checked').each(function(i){
-                var map_url = "{{ route('reservation_allowances.add_reservation_allowances_employess', ['type', 'id']) }}";
-                map_url = map_url.replace('id', $(this).val());
-                map_url = map_url.replace('type', $type);
-                $.get(map_url, function(data) {});
-            });
+            document.querySelector('input[name=reload_mode][value="Periodic"]').click();
         }
 
 
