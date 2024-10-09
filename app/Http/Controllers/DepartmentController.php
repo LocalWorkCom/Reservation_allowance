@@ -92,38 +92,60 @@ class DepartmentController extends Controller
     public function getManagerDetails($id)
     {
         // Fetch manager data from the database
-        $manager = User::where('Civil_number', $id)->first();
-
-        if (!$manager) {
+        $user = User::where('Civil_number', $id)->first();
+        if (!$user) {
             return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 404);
         }
 
-        // Allow this check only for input change, not for initial load
-        $isDepartmentCheck = request()->has('check_department') && request()->get('check_department') == true;
+        // Check if the user is a sector manager
+        $isSectorManager = Sector::where('manager', $user->id)->exists();
 
-        // Ensure the manager is not assigned to another sector or department
-        if ($isDepartmentCheck && ($manager->department_id != null || $manager->sector != null)) {
-            return response()->json(['error' => 'عفوا هذا المستخدم غير متاح'], 404);
+        // Prevent sector managers from being transferred or added
+        if ($isSectorManager) {
+            return response()->json(['error' => 'لا يمكن تعيين مدير قطاع كمدير أو موظف.'], 403);
         }
 
-        // Calculate seniority/years of service
-        $joiningDate = $manager->joining_date ? Carbon::parse($manager->joining_date) : Carbon::parse($manager->created_at);
+        // Check if the user is already assigned to a department
+        if ($user->department_id) {
+            $currentDepartment = Departements::find($user->department_id);
+            $currentSector = $currentDepartment ? $currentDepartment->sector_id : null;
+
+            // If the user is in a department in the same sector
+            if ($currentSector == request()->get('sector_id')) {
+                return response()->json([
+                    'warning' => 'هذا المستخدم موجود بالفعل في إدارة أخرى في نفس القطاع. هل تريد نقله إلى هذه الإدارة؟',
+                    'transfer' => true
+                ]);
+            }
+
+            // If the user is in a department in a different sector
+            if ($currentSector !== request()->get('sector_id')) {
+                return response()->json([
+                    'warning' => 'هذا المستخدم موجود بالفعل في قطاع آخر. هل تريد نقله إلى هذا القطاع وهذه الإدارة؟',
+                    'transfer' => true
+                ]);
+            }
+        }
+
+        // If the user is not in any department or sector, return their details
+        $joiningDate = $user->joining_date ? Carbon::parse($user->joining_date) : Carbon::parse($user->created_at);
         $today = Carbon::now();
         $yearsOfService = $joiningDate->diffInYears($today);
 
         // Check if the user is an employee (flag 'employee' means employee)
-        $isEmployee = $manager->flag == 'employee';
+        $isEmployee = $user->flag == 'employee';
 
-        // Return the manager data in JSON format
+        // Return the manager/employee data in JSON format
         return response()->json([
-            'rank' => $manager->grade_id ? $manager->grade->name : 'لا يوجد رتبه',
-            'job_title' => $manager->job_title ?? 'لا يوجد مسمى وظيفى',
+            'rank' => $user->grade_id ? $user->grade->name : 'لا يوجد رتبه',
+            'job_title' => $user->job_title ?? 'لا يوجد مسمى وظيفى',
             'seniority' => $yearsOfService,
-            'name' => $manager->name,
-            'phone' => $manager->phone,
-            'email' => $manager->email,
-            'isEmployee' => $isEmployee,  // Include the employee flag
-        ]);
+            'name' => $user->name,
+            'phone' => $user->phone,
+            'email' => $user->email,
+            'isEmployee' => $isEmployee,
+            'transfer' => false  // No transfer needed if they're not in any department or sector
+        ], 200);
     }
 
 
@@ -284,17 +306,12 @@ class DepartmentController extends Controller
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
-
             'part.required' => 'نوع بدل الحجز مطلوب.',
-            // 'part.numeric' => 'نوع بدل الحجز يجب أن يكون رقمًا.',
-            // 'part.min' => 'نوع بدل الحجز يجب ألا يقل عن 0.01.',
-            // 'part.max' => 'نوع بدل الحجز يجب ألا يزيد عن 1000000.',
         ];
 
         // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'manger' => 'nullable',
             'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
 
@@ -303,8 +320,38 @@ class DepartmentController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        $part = $request->input('part');
 
+        $Civil_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->Civil_number);
+        $Civil_numbers = explode(',,', $Civil_numbers);
+
+        // Find employees based on Civil_number
+        $employees = User::whereIn('Civil_number', $Civil_numbers)->pluck('id')->toArray();
+
+        // Initialize manager variable
+        $manager = null;
+
+        // Handle the case if `mangered` is provided
+        if ($request->mangered) {
+            $manager = User::where('Civil_number', $request->mangered)->first();
+
+            // Check if the Civil Number belongs to any sector manager
+            $isSectorManager = Sector::where('manager', $manager->id)->exists();
+            if ($isSectorManager) {
+                return redirect()->back()->withErrors('لا يمكن تعيين مدير قطاع كمدير أو موظف.')->withInput();
+            }
+
+            // Check if the manager is already in a department and confirm transfer if needed
+            if ($manager->department_id && $request->has('confirm_transfer')) {
+                // Update the department and sector if transfer is confirmed
+                $manager->sector = $request->sector;
+                $manager->department_id = null;  // Clear the current department if transferring
+                $manager->save();
+            } elseif ($manager->department_id) {
+                return redirect()->back()->withErrors('هذا المستخدم موجود بالفعل في قطاع آخر.')->withInput();
+            }
+        }
+
+        $part = $request->input('part');
         $reservation_allowance_type = null;
 
         if (in_array('1', $part) && in_array('2', $part)) {
@@ -327,48 +374,57 @@ class DepartmentController extends Controller
         $departements->created_by = Auth::user()->id;
         $departements->save();
 
-        $user = User::find($request->manager);
-        if ($user) {
-            $user->sector =  $request->sector;
-            $user->department_id = $departements->id;
-            if ($request->password) {
-                $user->flag = 'user';
-                $user->rule_id = $request->rule;
-                $user->password = Hash::make($request->password);
+        // Handle manager assignment and email notification
+        if ($manager) {
+            $user = User::find($manager->id);
+            if ($user) {
+                $user->sector = $request->sector;
+                $user->department_id = $departements->id;
+                if ($request->password) {
+                    $user->flag = 'user';
+                    $user->rule_id = $request->rule;
+                    $user->password = Hash::make($request->password);
+                }
+                $user->save();
+
+                // Send email notification
+                Sendmail(
+                    'مدير ادارة',
+                    'تم أضافتك كمدير ادارة',
+                    $user->Civil_number,
+                    $request->password ? $request->password : null,
+                    $user->email
+                );
+            } else {
+                return redirect()->back()->with('error', 'هذا المستخدم غير موجود');
             }
-            $user->save();
-            // Optionally send email notification
-            // Send email notification
-            Sendmail(
-                'مدير ادارة',  // Email subject
-                'تم أضافتك كمدير ادارة',  // Email body
-                $user->Civil_number,
-                $request->password ? $request->password : null,
-                $user->email
-            );
-        } else {
-            return redirect()->back()->with('error', 'هذا المستخدم غير موجود');
         }
-        $Civil_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->Civil_number);
-        $Civil_numbers = explode(',,', $Civil_numbers);
 
-        // Find employees based on Civil_number
-        $employees = User::whereIn('Civil_number', $Civil_numbers)->pluck('id')->toArray();
-
-        // Check if the selected manager is one of the employees
-        if (in_array($request->manager, $employees)) {
-            return redirect()->back()->with('error', 'المدير لا يمكن أن يكون أحد الموظفين المدرجين.');
-        }
-        // Update employees in the sector
+        /// Handle employee transfers
+        $failed_civil_numbers = [];
         foreach ($Civil_numbers as $Civil_number) {
             $employee = User::where('Civil_number', $Civil_number)->first();
-            if ($employee && $employee->grade_id != null) {
-                $employee->sector =  $request->sector;
-                $employee->department_id = $departements->id;
-                $employee->save();
+            if ($employee && $employee->grade_id !== null) {
+                // Check if the employee is already assigned to a department
+                if ($employee->department_id && $request->has('confirm_transfer')) {
+                    // Transfer the employee to the new department if confirmed
+                    $employee->sector = $request->sector;
+                    $employee->department_id = $departements->id;
+                    $employee->save();
+                } elseif ($employee->department_id) {
+                    $failed_civil_numbers[] = $Civil_number;
+                }
             }
         }
-        return redirect()->route('departments.index', ['id' => $request->sector])->with('success', 'Department created successfully.');
+
+        // Prepare success message
+        $message = 'تم أضافه ادارة جديد';
+
+        // Append failed Civil numbers to the message, if any
+        if (count($failed_civil_numbers) > 0) {
+            $message .= ' لكن بعض الموظفين لم يتم إضافتهم بسبب عدم العثور على الأرقام المدنية أو عدم وجود درجة لهم: ' . implode(', ', $failed_civil_numbers);
+        }
+        return redirect()->route('departments.index', ['id' => $request->sector])->with('message', $message);
     }
 
 
@@ -386,7 +442,6 @@ class DepartmentController extends Controller
         // Validate the input fields
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'manager' => 'nullable',  // Make the manager optional
             'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
         ], $messages);
@@ -410,7 +465,7 @@ class DepartmentController extends Controller
         // Create the new sub-department
         $departement = new Departements();
         $departement->name = $request->name;
-        $departement->manger = $request->manager;
+        $departement->manger = $request->manger;
         $departement->sector_id  = $request->sector;
         $departement->parent_id = $request->parent;  // Link this as a sub-department to its parent
         $departement->description = $request->description;
@@ -420,24 +475,35 @@ class DepartmentController extends Controller
         $departement->save();
 
         // Handle manager assignment (if a manager Civil Number is provided)
+        // Handle manager assignment (if a manager Civil Number is provided)
         if ($request->manager) {
             $user = User::where('Civil_number', $request->manager)->first();
 
             if ($user) {
-                // Assign the department to the manager
-                $user->sector = $request->sector;
-                $user->department_id = $departement->id;
+                // Check if the Civil Number belongs to any sector manager
+                $isSectorManager = Sector::where('manager', $user->id)->exists();
+                if ($isSectorManager) {
+                    return redirect()->back()->withErrors('لا يمكن تعيين مدير قطاع كمدير أو موظف.')->withInput();
+                }
 
-                // If a password is provided, update the manager's credentials
+                // Check if the manager is already in a department and confirm transfer if needed
+                if ($user->department_id && $request->has('confirm_transfer')) {
+                    // Transfer the manager to the new department
+                    $user->sector = $request->sector;
+                    $user->department_id = $departement->id;
+                } elseif ($user->department_id) {
+                    return redirect()->back()->withErrors('هذا المستخدم موجود بالفعل في قطاع آخر.')->withInput();
+                }
+
+                // Update the manager details
                 if ($request->password) {
                     $user->flag = 'user';
                     $user->rule_id = $request->rule;
                     $user->password = Hash::make($request->password);
                 }
-
                 $user->save();
 
-                // Optionally send an email notification to the manager
+                // Send email notification to the manager
                 Sendmail(
                     'مدير ادارة فرعية',
                     'تم أضافتك كمدير ادارة فرعية',
@@ -451,21 +517,42 @@ class DepartmentController extends Controller
             }
         }
 
-        // Handle employee assignment based on Civil Numbers
+        $failed_civil_numbers = [];
         if ($request->has('Civil_number')) {
             $Civil_numbers = explode(',', str_replace(array("\r", "\r\n", "\n"), ',', $request->Civil_number));
             foreach ($Civil_numbers as $Civil_number) {
                 $employee = User::where('Civil_number', $Civil_number)->first();
                 if ($employee) {
-                    $employee->sector = $request->sector;
-                    $employee->department_id = $departement->id;
-                    $employee->save();
+                    // Check if the employee is already assigned to a department and confirm transfer if needed
+                    if ($employee->department_id && $request->has('confirm_transfer')) {
+                        // Transfer the employee to the new department if confirmed
+                        $employee->sector = $request->sector;
+                        $employee->department_id = $departement->id;
+                        $employee->save();
+                    } elseif ($employee->department_id) {
+                        // If not confirmed, add the Civil Number to failed list
+                        $failed_civil_numbers[] = $Civil_number;
+                    } else {
+                        // If employee is not assigned to any department, assign them directly
+                        $employee->sector = $request->sector;
+                        $employee->department_id = $departement->id;
+                        $employee->save();
+                    }
                 }
             }
         }
 
+        // Prepare success message
+        $message = 'تم أضافه ادارة فرعية جديدة';
+
+        // Append failed Civil Numbers to the message, if any
+        if (count($failed_civil_numbers) > 0) {
+            $message .= ' لكن بعض الموظفين لم يتم إضافتهم بسبب عدم العثور على الأرقام المدنية أو عدم تأكيد النقل: ' . implode(', ', $failed_civil_numbers);
+        }
+
+        // Redirect with success message
         return redirect()->route('sub_departments.index', ['id' => $request->parent])
-            ->with('success', 'Sub-department created successfully.');
+            ->with('success', $message);
     }
 
     /**
@@ -547,7 +634,6 @@ class DepartmentController extends Controller
         // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'manger' => 'nullable',
             'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
 
@@ -680,7 +766,6 @@ class DepartmentController extends Controller
         // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'manger' => 'nullable',
             'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
 
@@ -728,15 +813,20 @@ class DepartmentController extends Controller
         }
 
         $user = User::find($request->manger);
-        $user->department_id = $departements->id;
-        $user->save();
-        Sendmail(
-            'مدير ادارة فرعية',  // Email subject
-            'تم أضافتك كمدير ادارة فرعية',  // Email body
-            $user->Civil_number,
-            $request->password ? $request->password : null,
-            $user->email
-        );
+        if ($user) {
+            $user->department_id = $departements->id;
+            $user->save();
+
+            Sendmail(
+                'مدير ادارة فرعية',
+                'تم أضافتك كمدير ادارة فرعية',
+                $user->Civil_number,
+                $request->password ? $request->password : null,
+                $user->email
+            );
+        } else {
+            return redirect()->back()->with('error', 'هذا المستخدم غير موجود');
+        }
 
         if ($request->has('employess')) {
             foreach ($request->employess as $item) {
