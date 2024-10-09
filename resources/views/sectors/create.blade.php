@@ -177,6 +177,8 @@
             </div>
         </div>
     </form>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         $('.select2').select2({
             dir: "rtl"
@@ -205,7 +207,13 @@
                         }
                     },
                     error: function() {
-                        alert('عفوا هذا المستخدم غير موجود');
+                        Swal.fire({
+                            title: 'تحذير',
+                            text: 'عفوا هذا المستخدم غير موجود',
+                            icon: 'warning',
+                            confirmButtonText: 'إلغاء',
+                            confirmButtonColor: '#3085d6'
+                        });
                     }
                 });
             } else {
