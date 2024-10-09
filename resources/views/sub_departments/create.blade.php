@@ -141,7 +141,7 @@
                                     <label for="part"> حجز كلى</label><input type="checkbox"
                                         class="toggle-radio-buttons mx-2" value="2" id="part" name="part[]">
                                     <label for="part">حجز جزئى</label>
-                                    @error('budget')
+                                    @error('part')
                                         <div class="alert alert-danger">{{ $message }}</div>
                                     @enderror
                                 </div>

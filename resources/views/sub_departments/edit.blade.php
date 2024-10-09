@@ -122,7 +122,7 @@
                                         class="toggle-radio-buttons mx-2" value="2" id="part" name="part[]"
                                         @if ($department->reservation_allowance_type == 2 || $department->reservation_allowance_type == 3) checked @endif>
                                     <label for="part">حجز جزئى</label>
-                                    @error('budget')
+                                    @error('part')
                                         <div class="alert alert-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
