@@ -251,7 +251,7 @@ function showUserDepartment()
     // Access the department name
     // dd($user->department);
     if ($user->sector && ! $user->department) {
-        $name = $user->sector != null ? ($user->sector->name != null ? $user->sector->name : 'القسم الرئيسي') : '';
+        $name = $user->sector != null ? ($user->sectors->name != null ? $user->sectors->name : 'القسم الرئيسي') : '';
     } else {
 
         $name = $user->department != null ? ($user->department->name != null ? $user->department->name : 'القسم الرئيسي') : '';
