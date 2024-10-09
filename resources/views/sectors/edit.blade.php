@@ -87,7 +87,7 @@
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager">
                     <label for="mangered">رقم هوية المدير</label>
                     <input type="text" name="mangered" id="mangered" class="form-control"
-                        value="{{ old('mangered',$data->manager ? $data->manager_name->Civil_number : null) }}">
+                        value="{{ old('mangered', $data->manager ? $data->manager_name->Civil_number : null) }}">
                     @error('mangered')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
@@ -168,6 +168,7 @@
             </div>
         </div>
     </form>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         // Initialize select2 for RTL
@@ -190,9 +191,10 @@
 
         // Modify fetchManagerDetails to accept an optional second parameter
         function fetchManagerDetails(managerId, skipDepartmentCheck = true) {
+            sector = {{ $data->id }}
             if (managerId) {
                 $.ajax({
-                    url: '/get-manager-details/' + managerId + (skipDepartmentCheck ? '?check_department=false' :
+                    url: '/get-manager-sector-details/' + managerId + '/' + sector + (skipDepartmentCheck ? '?check_department=false' :
                         ''),
                     type: 'GET',
                     success: function(data) {
@@ -221,9 +223,37 @@
                     error: function(xhr) {
                         // Handle different error responses
                         if (xhr.status === 404) {
-                            alert(xhr.responseJSON.error || 'عفوا هذا المستخدم غير موجود');
+                            Swal.fire({
+                            title: 'تحذير',
+                            text: xhr.responseJSON.error || 'عفوا هذا المستخدم غير موجود',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'نعم, استمر',
+                            cancelButtonText: 'لا',
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // User confirmed
+                                // You may want to handle confirmation logic here
+                            } else {
+                                // User clicked "إلغاء", clear the input field
+                                $('#mangered').val('');
+                                $('#manager_details').hide();
+                                $('#password_field').hide();
+                                $('#rule_field').hide();
+                                $('#password').val('');
+                                $('#rule').val('');
+                            }
+                        });
                         } else {
-                            alert('حدث خطأ، حاول مرة أخرى.');
+                            Swal.fire({
+                                title: 'خطأ',
+                                text: 'حدث خطأ، حاول مرة أخرى.',
+                                icon: 'error',
+                                confirmButtonText: 'إلغاء',
+                                confirmButtonColor: '#3085d6'
+                            });
                         }
                     }
                 });
@@ -240,7 +270,7 @@
             var managerId = $(this).val();
             $('#password').val(''); // Clear previous input
             $('#rule').val(''); // Clear previous input
-            fetchManagerDetails(managerId , true); // Fetch new details
+            fetchManagerDetails(managerId, true); // Fetch new details
         });
     </script>
 @endsection

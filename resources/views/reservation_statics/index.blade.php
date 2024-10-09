@@ -84,10 +84,15 @@
                         searchable: false
                     },
                    
-                    {
-                        data: 'department_name',
-                        name: 'department_name'
-                    },
+                   {
+                    data: 'department_name',
+                    name: 'department_name',
+                    render: function(data, type, row) {
+                        // Create a clickable link to the sub-departments page
+                        return `<a href="{{ url('/statistics_subdepartments') }}/${row.id}" style="color : blue !important">${data}</a>`;
+                    }
+                },
+               
                     {
                         data: 'sub_departments_count',
                         name: 'sub_departments_count'
