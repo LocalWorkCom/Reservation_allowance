@@ -7,7 +7,7 @@
     <div class="form-group col-md-2 mx-2">
         <label for="date"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>
             اختار التاريخ</label>
-        <input class="form-control" type="date" name="date" id="date" max="{{$today}}" required>
+        <input class="form-control" type="date" name="date" id="date" max="{{$today}}" value="{{$today}}" required>
     </div>
 
     <div class="form-group col-md-12 mx-2">

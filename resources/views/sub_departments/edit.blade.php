@@ -100,14 +100,15 @@
                             </div>
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="name">أسم الأداره الرئيسية</label>
-                                <input type="text" name="name" class="form-control" value="{{ $department->name }}">
+                                <input type="text" name="name" class="form-control" autocomplete="one-time-code"
+                                    value="{{ $department->name }}">
                                 @error('name')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="budget">ميزانية بدل حجز</label>
-                                <input type="text" name="budget" class="form-control"
+                                <input type="text" name="budget" class="form-control" autocomplete="one-time-code"
                                     value="{{ $department->reservation_allowance_amount }}">
                                 @error('budget')
                                     <div class="alert alert-danger">{{ $message }}</div>
@@ -131,7 +132,7 @@
                             <div class="form-group col-md-10 mx-md-2" id="manager">
                                 <label for="mangered">رقم هوية المدير</label>
                                 <input type="text" name="mangered" id="mangered" class="form-control"
-                                    value="{{ $department->manger }}">
+                                    autocomplete="one-time-code" value="{{ $department->manger }}">
 
                                 @error('mangered')
                                     <div class="alert alert-danger">{{ $message }}</div>
@@ -170,7 +171,7 @@
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="description">الوصف </label>
                                 <input type="text" name="description" class="form-control"
-                                    value="{{ $department->description }}">
+                                    autocomplete="one-time-code" value="{{ $department->description }}">
                                 @error('description')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
@@ -222,6 +223,24 @@
                         sector_id: sectorId
                     }, // Send sector_id to the backend
                     success: function(data) {
+                        $('#manager_details').find('span').eq(0).text(data.rank);
+                        $('#manager_details').find('span').eq(1).text(data.seniority);
+                        $('#manager_details').find('span').eq(2).text(data.job_title);
+                        $('#manager_details').find('span').eq(3).text(data.name);
+                        $('#manager_details').find('span').eq(4).text(data.phone);
+                        $('#manager_details').show();
+
+                        // Show password and rule fields for employees
+                        if (data.isEmployee) {
+                            $('#password_field').show();
+                            $('#rule_field').show();
+                        } else {
+                            $('#password_field').hide();
+                            $('#rule_field').hide();
+                            $('#password').val('');
+                            $('#rule').val('');
+                        }
+                        // Handle transfer logic
                         if (data.transfer) {
                             Swal.fire({
                                 title: 'تحذير',
@@ -233,41 +252,45 @@
                                 confirmButtonColor: '#3085d6'
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    // Handle transfer logic here if needed
+                                    // Populate manager details if no transfer is needed
+
+                                    console.log('Transfer confirmed');
+                                } else {
+                                    // Handle cancel action: clear the manager input field
+                                    $('#mangered').val(''); // Clear the input field
+                                    $('#manager_details').hide(); // Hide the manager details
+                                    $('#password_field').hide();
+                                    $('#rule_field').hide();
                                 }
                             });
-                        } else {
-                            $('#manager_details').find('span').eq(0).text(data.rank);
-                            $('#manager_details').find('span').eq(1).text(data.seniority);
-                            $('#manager_details').find('span').eq(2).text(data.job_title);
-                            $('#manager_details').find('span').eq(3).text(data.name);
-                            $('#manager_details').find('span').eq(4).text(data.phone);
-                            $('#manager_details').show();
-                            if (data.isEmployee) {
-                                $('#password_field').show();
-                                $('#rule_field').show();
-                            } else {
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Display error or warning message based on the response
+                        var response = JSON.parse(xhr.responseText);
+
+                        // Handle error message
+                        if (response.error) {
+                            Swal.fire({
+                                title: 'تحذير',
+                                text: response.error,
+                                icon: 'error',
+                                confirmButtonText: 'إلغاء',
+                                confirmButtonColor: '#3085d6'
+                            }).then((result) => {
+                                // User clicked "إلغاء", clear the input field
+                                $('#mangered').val('');
+                                $('#manager_details').hide();
                                 $('#password_field').hide();
                                 $('#rule_field').hide();
                                 $('#password').val('');
                                 $('#rule').val('');
-                            }
+                            });
                         }
-                    },
-                    error: function(xhr, status, error) {
-                        console.log(xhr.responseText);
-                        console.log(status);
-                        console.log(error);
-                        Swal.fire({
-                            title: 'تحذير',
-                            text: 'عفوا هذا المستخدم غير موجود',
-                            icon: 'warning',
-                            confirmButtonText: 'إلغاء',
-                            confirmButtonColor: '#3085d6'
-                        });
                     }
                 });
             } else {
+                // Reset the manager details if no manager ID is provided
                 $('#manager_details').hide();
                 $('#password_field').hide();
                 $('#rule_field').hide();
@@ -275,18 +298,22 @@
                 $('#rule').val('');
             }
         }
+
         $('#manager_details').hide();
         $('#password_field').hide();
         $('#rule_field').hide();
+
+        // Use 'blur' event to trigger the check when the input field loses focus
         $('#mangered').on('blur', function() {
             var managerId = $(this).val();
             $('#password').val('');
             $('#rule').val('');
-            fetchManagerDetails(managerId, true);
+            fetchManagerDetails(managerId);
         });
+
         var selectedManagerId = $('#mangered').val();
         if (selectedManagerId) {
-            fetchManagerDetails(selectedManagerId, true);
+            fetchManagerDetails(selectedManagerId);
         }
     </script>
 @endsection

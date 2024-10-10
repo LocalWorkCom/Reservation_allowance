@@ -63,7 +63,7 @@
     </div> --}}
     {{-- {{ dd($governments) }} --}}
     <br>
-    <form class="edit-grade-form" id="Qta3-form" action=" {{ route('sectors.store') }}" method="POST">
+    <form class="edit-grade-form" id="Qta3-form" action=" {{ route('sectors.store') }}" method="POST" >
         @csrf
         <div class="row" dir="rtl">
             <div id="first-container" class="container moftsh col-11 mt-3 p-0 pb-3">
@@ -86,14 +86,14 @@
                     <div class="input-group moftsh px-md-5 px-3 pt-3">
                         <label class="pb-3" for="name">ادخل اسم القطاع</label>
                         <input type="text" id="name" name="name" class="form-control" placeholder="قطاع واحد"
-                            required />
+                            required autocomplete="one-time-code"/>
                         <span class="text-danger span-error" id="name-error"></span>
 
                     </div>
                 </div>
                 <div class="input-group moftsh px-md-5 px-3 pt-3">
                     <label class="pb-3" for="budget">ميزانية بدل حجز</label>
-                    <input type="text" name="budget" class="form-control" value="{{ old('budget') }}">
+                    <input type="text" name="budget" class="form-control" value="{{ old('budget') }}"autocomplete="one-time-code">
                     @error('budget')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
@@ -101,7 +101,7 @@
 
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager">
                     <label class="pb-3" for="mangered">رقم هوية المدير</label>
-                    <input type="text" name="mangered" id="mangered" class="form-control" value="{{ old('mangered') }}">
+                    <input type="text" name="mangered" id="mangered" class="form-control" autocomplete="one-time-code">
                     @error('mangered')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
@@ -247,7 +247,7 @@
         $('#manager_details').hide();
         $('#password_field').hide();
         $('#rule_field').hide();
-        $('#mangered').on('input', function() {
+        $('#mangered').bind('blur', function() {
             var managerId = $(this).val();
             $('#password').val('');
             $('#rule').val('');

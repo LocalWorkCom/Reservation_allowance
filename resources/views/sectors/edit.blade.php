@@ -70,7 +70,7 @@
                         <label class="pb-3" for="name">ادخل اسم القطاع</label>
                         <input type="hidden" name="id" value="{{ $data->id }}">
                         <input type="text" id="name" name="name" class="form-control"
-                            value="{{ old('name', $data->name) }}" placeholder="قطاع واحد" required />
+                            value="{{ old('name', $data->name) }}" placeholder="قطاع واحد" required autocomplete="one-time-code"/>
                         <span class="text-danger span-error" id="name-error"></span>
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                 <div class="input-group moftsh px-md-5 px-3 pt-3">
                     <label class="pb-3" for="budget">ميزانية بدل حجز</label>
                     <input type="text" name="budget" class="form-control"
-                        value="{{ old('budget', $data->reservation_allowance_amount) }}">
+                        value="{{ old('budget', $data->reservation_allowance_amount) }}" autocomplete="one-time-code">
                     @error('budget')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
@@ -87,7 +87,7 @@
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager">
                     <label for="mangered">رقم هوية المدير</label>
                     <input type="text" name="mangered" id="mangered" class="form-control"
-                        value="{{ old('mangered', $data->manager ? $data->manager_name->Civil_number : null) }}">
+                        value="{{ old('mangered', $data->manager ? $data->manager_name->Civil_number : null) }}" autocomplete="one-time-code">
                     @error('mangered')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
@@ -266,7 +266,7 @@
                 $('#rule').val('');
             }
         }
-        $('#mangered').on('input', function() {
+        $('#mangered').bind('blur', function() {
             var managerId = $(this).val();
             $('#password').val(''); // Clear previous input
             $('#rule').val(''); // Clear previous input

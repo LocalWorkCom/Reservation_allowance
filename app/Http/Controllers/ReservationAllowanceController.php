@@ -483,7 +483,11 @@ class ReservationAllowanceController extends Controller
             return redirect()->back()->withErrors($validatedData)->withInput();
         }*/
 
-        $to_day = Carbon::now()->format('Y-m-d');
+        $today = Carbon::now()->format('Y-m-d');
+        if($request->has('date')){
+            $today = $request->date;
+        }
+        
         $to_day_name = Carbon::now()->translatedFormat('l');
         $user = auth()->user();
         if($user->rule_id == 2)
@@ -532,7 +536,7 @@ class ReservationAllowanceController extends Controller
 
         $employees = $data;
 
-        return view('reservation_allowance.search_employee_new', compact('department_type', 'sector_id', 'departement_id', 'sectors', 'get_departements', 'employees'));
+        return view('reservation_allowance.search_employee_new', compact('today' ,'department_type', 'sector_id', 'departement_id', 'sectors', 'get_departements', 'employees'));
     }
 
     public function search_employee(Request $request)
@@ -640,13 +644,14 @@ class ReservationAllowanceController extends Controller
         return Cache::get(auth()->user()->id);
     }
 
-    public function confirm_reservation_allowances()
+    public function confirm_reservation_allowances($date)
     {
         if(Cache::has(auth()->user()->id)){
 
             $user = auth()->user();
-            $to_day = Carbon::now()->format('Y-m-d');
-            $to_day_name = Carbon::now()->translatedFormat('l');
+            $to_day = $date;
+            //$to_day = Carbon::now()->format('Y-m-d');
+            $to_day_name = Carbon::parse($date)->translatedFormat('l');
             $get_employees = Cache::get(auth()->user()->id);
             $employee_amount = 0;
             $reservation_amout = 0;
