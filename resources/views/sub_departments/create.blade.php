@@ -148,7 +148,8 @@
                             </div>
                             <div class="form-group col-md-10 mx-md-2" id="manager">
                                 <label for="mangered">رقم هوية المدير</label>
-                                <input type="text" name="mangered" id="mangered" class="form-control" value="">
+                                <input type="text" name="mangered" id="mangered" class="form-control"
+                                    autocomplete="one-time-code" value="{{ old('mangered') }}">
 
                                 @error('mangered')
                                     <div class="alert alert-danger">{{ $message }}</div>
