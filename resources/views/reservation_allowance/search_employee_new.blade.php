@@ -356,7 +356,7 @@
         function confirm_reservation() {
             if (confirm("هل انت متاكد من انك تريد ان تضيف بدل حجز لهؤلاء الموظفين") == true) {
                 var reservation_date = document.getElementById('date').value;
-                var map_url = "{{ route('reservation_allowances.confirm_reservation_allowances', ['date']) }}";
+                var map_url = "{{ route('reservation_allowances.confirm_reservation_allowances','date') }}";
                 map_url = map_url.replace('date', reservation_date);
                 $.get(map_url, function(data) {
                     window.location.href = "{{route('reservation_allowances.index')}}";
