@@ -166,21 +166,15 @@
                         style="direction:rtl">
                         <thead>
                             <tr>
-                                <th>الرتيب</th>
-                                <th>الرتبة</th>
-                                <th>الاسم</th>
-                                <th>رقم الملف</th>
+                                <th rowspan="2"><p>الرتيب</p></th>
+                                <th rowspan="2"><p>الرتبة</p></th>
+                                <th rowspan="2"><p>الاسم</p></th>
+                                <th rowspan="2"><p>رقم الملف</p></th>
                                 <th>بدل الحجز</th>
                                 <!-- <th style="width:150px;">العمليات</th>-->
                             </tr>
-                        </thead>
-                        @if ($employees)
 
-                        <tr>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
+                            <tr>
                             <th>
                                 <div class="d-flex" style="justify-content: space-around !important">
                                     <div style="display: inline-flex; direction: ltr;">
@@ -205,11 +199,14 @@
                             <!-- <th style="width:150px;">العمليات</th>-->
                         </tr>
 
+                        </thead>
+                        @if ($employees)                       
+
                         @php($x=0)
                         @foreach ($employees as $k_employee=>$employee)
                         @php($x++)
                         <tr>
-                            <th>{{ $employee->id }}</th>
+                            <th>{{ $x }}</th>
                             <th>{{ $employee->name }}</th>
                             <th>{{ $employee->grade_id != null ? $employee->grade->name : 'لا يوجد رتبة' }}</th>
                             <th>{{ $employee->file_number != null ? $employee->file_number : 'لا يوجد رقم ملف' }}
@@ -292,26 +289,7 @@ $(document).ready(function() {
     });
 
 
-        function confirm_reservation() {
-            Swal.fire({
-                title: 'تحذير',
-                text: 'هل انت متاكد من انك تريد ان تضيف بدل حجز لهؤلاء الموظفين',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'نعم, نقل',
-                cancelButtonText: 'إلغاء',
-                confirmButtonColor: '#3085d6'
-            }).then((result) => {
-                if (result.isConfirmed) {  
-                    var reservation_date = document.getElementById('date').value;
-                    var map_url = "{{ route('reservation_allowances.confirm_reservation_allowances','date') }}";
-                    map_url = map_url.replace('date', reservation_date);
-                    window.location.href = map_url;
-                } else {
-
-                }
-            });
-        }
+        
 
 
         /*$(function() {
@@ -342,6 +320,13 @@ function check_all($type) {
     } else {
         var type_name = "no";
     }
+
+    for($i=1; $i<=employee_count; $i++){
+        department_type = document.getElementById('allowance_'+type_name+'_'+$i).checked = true;
+        var employee_id = document.getElementById('allowance_'+type_name+'_'+$i).value;
+        add_to_cache($type, employee_id);
+    }
+
 }
 
 
@@ -364,22 +349,43 @@ function check_all($type) {
 
             }
         });
-
     }
+
+    /*function confirm_reservation() {
+        Swal.fire({
+            title: 'تحذير',
+            text: 'هل انت متاكد من انك تريد ان تضيف بدل حجز لهؤلاء الموظفين',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'نعم, نقل',
+            cancelButtonText: 'إلغاء',
+            confirmButtonColor: '#3085d6'
+        }).then((result) => {
+            if (result.isConfirmed) {  
+                var reservation_date = document.getElementById('date').value;
+                var map_url = "{{ route('reservation_allowances.confirm_reservation_allowances','date') }}";
+                map_url = map_url.replace('date', reservation_date);
+                window.location.href = map_url;
+            } else {
+
+            }
+        });
+
+    }*/
 
 
     //add to chche
     $('.emlpoyee_allowance_radio:checked').each(function(i) {
-        var map_url =
-            "{{ route('reservation_allowances.add_reservation_allowances_employess', ['type', 'id']) }}";
+        var type = document.getElementById('allowance_all').value;
+        var map_url ="{{ route('reservation_allowances.add_reservation_allowances_employess', ['type', 'id']) }}";
         map_url = map_url.replace('id', $(this).val());
-        map_url = map_url.replace('type', $type);
+        map_url = map_url.replace('type', type);
         $.get(map_url, function(data) {});
     });
 
 
 
-function confirm_reservation() {
+/*function confirm_reservation() {
     if (confirm("هل انت متاكد من انك تريد ان تضيف بدل حجز لهؤلاء الموظفين") == true) {
         var reservation_date = document.getElementById('date').value;
         var map_url = "{{ route('reservation_allowances.confirm_reservation_allowances','date') }}";
@@ -388,7 +394,7 @@ function confirm_reservation() {
             window.location.href = "{{route('reservation_allowances.index')}}";
         });
     }
-}
+}*/
 
 
 /*$(function() {
