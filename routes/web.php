@@ -38,6 +38,7 @@ use App\Http\Controllers\ReserveSectorController;
 use App\Http\Controllers\SubDepartmentStatsController;
 use App\Http\Controllers\SubDepartmentReservationController;
 use App\Http\Controllers\PrisonersDetailsController;
+use App\Http\Controllers\SectorEmployeesDetailsController;
 
 
 
@@ -526,6 +527,10 @@ Route::middleware(['auth'])->group(function () {
         ->name('prisoners.details')
         ->middleware('check.permission:view Inspector');
 
+        //reservation statics per persons in selected sector
+        Route::get('/sector-employees/{sectorId}', [SectorEmployeesDetailsController::class, 'index'])->name('sectorEmployees.index');
+        Route::get('/sector-employees/data/{sectorId}', [SectorEmployeesDetailsController::class, 'getData'])->name('sectorEmployees.getData');
+        
 
     // Route to fetch data for prisoners' details DataTable
     Route::get('/subdepartment_statistics/{subDepartmentId}/prisoners/{date}/data', [PrisonersDetailsController::class, 'getData'])
