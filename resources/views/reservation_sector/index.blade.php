@@ -1,3 +1,14 @@
+<style>
+    /* Updated Styles */
+    .info-box {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 20px;
+        text-align: center;
+    }
+   
+</style>
 @extends('layout.main')
 
 @push('style')
@@ -31,7 +42,7 @@
                         </div>
                     @endif
                     <div>
-                        <table id="sectors-table"
+                        <table id="users-table"
                             class="display table table-responsive-sm table-bordered table-hover dataTable">
                             <thead>
                                 <tr>
@@ -60,7 +71,7 @@
         $(document).ready(function() {
             $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm';
 
-            $('#sectors-table').DataTable({
+            $('#users-table').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
@@ -72,24 +83,30 @@
                         data: 'sector', 
                         name: 'sector', 
                         render: function(data, type, row) {
-                            return '<a href="/statistics_department/' + row.id + '">' + data + '</a>';
+                            return '<a href="/statistics_department/' + row.id + '" style="color:blue !important;">' + data + '</a>';
                         }
                     },          
                   { data: 'main_departments_count', name: 'main_departments_count',
                     render: function(data, type, row) {
-                            return '<a href="/statistics_department/' + row.id + '">' + data + '</a>';
+                            return '<a href="/statistics_department/' + row.id + '" style="color:blue !important;">' + data + '</a>';
                         }
                    },
                     { data: 'sub_departments_count', name: 'sub_departments_count' },
                     { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' ,
                         render: function(data, type, row) {
-                            return '<a href="/statistics_department/' + row.id + '">' + data + '</a>';
+                            return '<a href="/statistics_department/' + row.id + '" style="color:blue !important;">' + data + '</a>';
                         }
                     },
                     { data: 'registered_amount', name: 'registered_amount' },
                     { data: 'remaining_amount', name: 'remaining_amount' },
-                    { data: 'employees_count', name: 'employees_count' },
-                    { data: 'received_allowance_count', name: 'received_allowance_count' },
+                    {
+                        data: 'employees_count',
+                        name: 'employees_count'
+                        
+                    },
+                    { data: 'received_allowance_count', name: 'received_allowance_count' , render: function (data, type, row) {
+                            return '<a href="/sector-employees/' + row.id + '" style="color:blue !important;">' + data + '</a>';
+                        }},
                     { data: 'did_not_receive_allowance_count', name: 'did_not_receive_allowance_count' }
                 ],
                 order: [[1, 'asc']],

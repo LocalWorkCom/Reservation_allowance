@@ -38,6 +38,7 @@ use App\Http\Controllers\ReserveSectorController;
 use App\Http\Controllers\SubDepartmentStatsController;
 use App\Http\Controllers\SubDepartmentReservationController;
 use App\Http\Controllers\PrisonersDetailsController;
+use App\Http\Controllers\SectorEmployeesDetailsController;
 
 
 
@@ -488,7 +489,7 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/reservation_allowances/search_employee_new', [ReservationAllowanceController::class, 'search_employee_new'])->name('reservation_allowances.search_employee_new')->middleware('check.permission:view Inspector');
     Route::any('/reservation_allowances/add_reservation_allowances_employess/{type}/{id}', [ReservationAllowanceController::class, 'add_reservation_allowances_employess'])->name('reservation_allowances.add_reservation_allowances_employess')->middleware('check.permission:view Inspector');
     Route::any('/reservation_allowances/view_reservation_allowances_employess', [ReservationAllowanceController::class, 'view_reservation_allowances_employess'])->name('reservation_allowances.view_reservation_allowances_employess')->middleware('check.permission:view Inspector');
-    Route::any('/reservation_allowances/confirm_reservation_allowances', [ReservationAllowanceController::class, 'confirm_reservation_allowances'])->name('reservation_allowances.confirm_reservation_allowances')->middleware('check.permission:view Inspector');
+    Route::any('/reservation_allowances/confirm_reservation_allowances/{date}', [ReservationAllowanceController::class, 'confirm_reservation_allowances'])->name('reservation_allowances.confirm_reservation_allowances')->middleware('check.permission:view Inspector');
     Route::any('/reservation_allowances/create_employee_new', [ReservationAllowanceController::class, 'create_employee_new'])->name('reservation_allowances.create_employee_new')->middleware('check.permission:view Inspector');
     Route::any('/reservation_allowances/create_employee_all', [ReservationAllowanceController::class, 'create_employee_all'])->name('reservation_allowances.create_employee_all')->middleware('check.permission:view Inspector');
 
@@ -526,6 +527,10 @@ Route::middleware(['auth'])->group(function () {
         ->name('prisoners.details')
         ->middleware('check.permission:view Inspector');
 
+        //reservation statics per persons in selected sector
+        Route::get('/sector-employees/{sectorId}', [SectorEmployeesDetailsController::class, 'index'])->name('sectorEmployees.index');
+        Route::get('/sector-employees/data/{sectorId}', [SectorEmployeesDetailsController::class, 'getData'])->name('sectorEmployees.getData');
+        
 
     // Route to fetch data for prisoners' details DataTable
     Route::get('/subdepartment_statistics/{subDepartmentId}/prisoners/{date}/data', [PrisonersDetailsController::class, 'getData'])
