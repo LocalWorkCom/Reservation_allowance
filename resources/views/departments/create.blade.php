@@ -125,7 +125,8 @@
                             </div>
                             <div class="form-group col-md-10 mx-md-2" id="manager">
                                 <label for="mangered">رقم هوية المدير</label>
-                                <input type="text" name="mangered" id="mangered" class="form-control" value="">
+                                <input type="text" name="mangered" id="mangered" class="form-control" autocomplete="off"
+                                    value="{{ old('mangered') }}">
 
 
                                 @error('mangered')
