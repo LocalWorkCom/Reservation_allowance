@@ -10,17 +10,19 @@ use Yajra\DataTables\Facades\DataTables;
 
 class SubDepartmentStatsController extends Controller
 {
-    //subdepartments details appear when press on a specific subdepartments
     public function index($department_id)
-    {
-        // Fetch the main department details
+{
+    if (auth()->check() && auth()->user()->rule_id == 2) {
         $mainDepartment = departements::find($department_id);
 
         return view('reservation_subdeparts.index', [
             'department_id' => $department_id,
             'main_department_name' => $mainDepartment ? $mainDepartment->name : 'Unknown Department',
         ]);
+    } else {
+        return abort(403, 'Unauthorized action.');
     }
+}
 
     public function getAll($department_id)
     {
