@@ -2,6 +2,8 @@
 node_modules/
 bootstrap/cache/
 /bootstrap/cache
+bootstrap/cache/config.php
+/bootstrap/cache/config.php
 # /public/build
 # /public/hot
 # /public/images
