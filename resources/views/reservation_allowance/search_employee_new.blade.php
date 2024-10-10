@@ -159,7 +159,10 @@
 <br>
 <div class="row">
     <div class="container  col-11 mt-3 p-0  pt-5 pb-4">
+<<<<<<< HEAD
+=======
 
+>>>>>>> d95b51738c0238599046dd4bf2382fe249956480
 
         <div class="col-lg-12">
             <div class="bg-white">
@@ -301,6 +304,34 @@ $(document).ready(function() {
     });
 
 
+<<<<<<< HEAD
+        function confirm_reservation() {
+            Swal.fire({
+                title: 'تحذير',
+                text: 'هل انت متاكد من انك تريد ان تضيف بدل حجز لهؤلاء الموظفين',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'نعم, نقل',
+                cancelButtonText: 'إلغاء',
+                confirmButtonColor: '#3085d6'
+            }).then((result) => {
+                if (result.isConfirmed) {  
+                    var reservation_date = document.getElementById('date').value;
+                    var map_url = "{{ route('reservation_allowances.confirm_reservation_allowances','date') }}";
+                    map_url = map_url.replace('date', reservation_date);
+                    window.location.href = map_url;
+                } else {
+
+                }
+            });
+        }
+
+
+        $(function() {
+            $(".select2").select2({
+                dir: "rtl"
+            });
+=======
     $(document).on("click", "#sector_id00", function() {
         var sectorid = this.value;
         var department_type = document.getElementById('department_type').value;
@@ -309,6 +340,7 @@ $(document).ready(function() {
         map_url = map_url.replace('type', department_type);
         $.get(map_url, function(data) {
             $("#departement_id").html(data);
+>>>>>>> d95b51738c0238599046dd4bf2382fe249956480
         });
     });
 
