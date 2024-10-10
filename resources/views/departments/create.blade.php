@@ -217,8 +217,6 @@
         });
 
         function fetchManagerDetails(managerId) {
-            console.log('Manager ID:', managerId);
-
             if (managerId) {
                 var sectorId = $('#sector').val();
 
@@ -258,11 +256,9 @@
                                 confirmButtonColor: '#3085d6'
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    // Populate manager details if no transfer is needed
-
                                     console.log('Transfer confirmed');
                                 } else {
-                                    // Handle cancel action: clear the manager input field
+                                    //clear the manager input field
                                     $('#mangered').val(''); // Clear the input field
                                     $('#manager_details').hide(); // Hide the manager details
                                     $('#password_field').hide();

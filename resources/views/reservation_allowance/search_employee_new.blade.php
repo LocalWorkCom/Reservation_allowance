@@ -273,6 +273,9 @@
 
 
 @endsection
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 @push('scripts')
 <script>
 $(document).ready(function() {
@@ -297,14 +300,32 @@ $(document).ready(function() {
     });
 
 
-    $(document).on("click", "#sector_id00", function() {
-        var sectorid = this.value;
-        var department_type = document.getElementById('department_type').value;
-        var map_url = "{{ route('reservation_allowances.get_departement', ['id', 'type']) }}";
-        map_url = map_url.replace('id', sectorid);
-        map_url = map_url.replace('type', department_type);
-        $.get(map_url, function(data) {
-            $("#departement_id").html(data);
+        function confirm_reservation() {
+            Swal.fire({
+                title: 'تحذير',
+                text: 'هل انت متاكد من انك تريد ان تضيف بدل حجز لهؤلاء الموظفين',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'نعم, نقل',
+                cancelButtonText: 'إلغاء',
+                confirmButtonColor: '#3085d6'
+            }).then((result) => {
+                if (result.isConfirmed) {  
+                    var reservation_date = document.getElementById('date').value;
+                    var map_url = "{{ route('reservation_allowances.confirm_reservation_allowances','date') }}";
+                    map_url = map_url.replace('date', reservation_date);
+                    window.location.href = map_url;
+                } else {
+
+                }
+            });
+        }
+
+
+        $(function() {
+            $(".select2").select2({
+                dir: "rtl"
+            });
         });
     });
 

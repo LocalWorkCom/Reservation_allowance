@@ -61,7 +61,7 @@
         </div>
         <div class="row ">
             <div class="container welcome col-11">
-                <p> تعديل أداره الرئيسيه </p>
+                <p> تعديل أداره فرعية </p>
             </div>
         </div>
         <br>
