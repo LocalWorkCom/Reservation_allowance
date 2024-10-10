@@ -41,7 +41,7 @@
                 <hr>
             </div>
             <div class="input-group mx-2">
-                <button type="button" id="search-btn" class="btn mt-4" data-mdb-ripple-init>
+            {{--     <button type="button" id="search-btn" class="btn mt-4" data-mdb-ripple-init>
                     <i class="fas fa-search"></i>
                 </button>
                 <div class="form-outline mt-4">
@@ -49,7 +49,7 @@
                         @isset($q)
                         value="{{ $q }}" @endisset />
                 </div>
-                <select name="search" id="search" class="mt-4" style="direction:rtl;">
+             --}} {{--    <select name="search" id="search" class="mt-4" style="direction:rtl;">
                     <option value="users"
                         @isset($search) @if ($search == 'users') selected @endif @endisset>
                         المستخدمين
@@ -68,7 +68,7 @@
                     </option>
                     <!--    <option value="export">الصادر</option>
                     <option value="import">الوارد</option> -->
-                </select>
+                </select> --}}
             </div>
         </div>
         <div class="first-section d-flex justify-content-between mt-1 ">
