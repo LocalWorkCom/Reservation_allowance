@@ -165,7 +165,7 @@
                 </tr>
             </thead>
         </table>
-        <p style="font-weight: bold; font-size: 18px; text-align: right;">
+        <p style=" font-weight: bold; font-size: 20px;color: #274373;margin-top: 10px;" class="mx-2">
     المجموع الكلي: <span id="total-amount">0.00</span>
 </p>
 
