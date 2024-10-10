@@ -114,7 +114,14 @@ class DepartmentController extends Controller
             if ($currentSector == request()->get('sector_id')) {
                 return response()->json([
                     'warning' => 'هذا المستخدم موجود بالفعل في إدارة أخرى في نفس القطاع. هل تريد نقله إلى هذه الإدارة؟',
-                    'transfer' => true
+                    'transfer' => true,
+                    'rank' => $user->grade_id ? $user->grade->name : 'لا يوجد رتبه',
+                    'seniority' => $user->joining_date ? Carbon::parse($user->joining_date)->diffInYears(Carbon::now()) : 'لا يوجد بيانات أقدميه',
+                    'job_title' => $user->job_title ?? 'لا يوجد مسمى وظيفى',
+                    'name' => $user->name,
+                    'phone' => $user->phone,
+                    'email' => $user->email,
+                    'isEmployee' => $user->flag == 'employee' ? true : false,
                 ]);
             }
 
@@ -122,7 +129,14 @@ class DepartmentController extends Controller
             if ($currentSector !== request()->get('sector_id')) {
                 return response()->json([
                     'warning' => 'هذا المستخدم موجود بالفعل في قطاع آخر. هل تريد نقله إلى هذا القطاع وهذه الإدارة؟',
-                    'transfer' => true
+                    'transfer' => true,
+                    'rank' => $user->grade_id ? $user->grade->name : 'لا يوجد رتبه',
+                    'seniority' => $user->joining_date ? Carbon::parse($user->joining_date)->diffInYears(Carbon::now()) : 'لا يوجد بيانات أقدميه',
+                    'job_title' => $user->job_title ?? 'لا يوجد مسمى وظيفى',
+                    'name' => $user->name,
+                    'phone' => $user->phone,
+                    'email' => $user->email,
+                    'isEmployee' => $user->flag == 'employee' ? true : false,
                 ]);
             }
         }
@@ -617,125 +631,106 @@ class DepartmentController extends Controller
      */
     public function update(Request $request, departements $department)
     {
-        //dd($request);
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
             'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
-
             'part.required' => 'نوع بدل الحجز مطلوب.',
-            // 'part.numeric' => 'نوع بدل الحجز يجب أن يكون رقمًا.',
-            // 'part.min' => 'نوع بدل الحجز يجب ألا يقل عن 0.01.',
-            // 'part.max' => 'نوع بدل الحجز يجب ألا يزيد عن 1000000.',
         ];
 
-        // Create a validator instance
+        // Validate input
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'budget' => 'required|numeric|min:0|max:1000000',
             'part' => 'required',
-
         ], $messages);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        $part = $request->input('part');
 
+        // Handle reservation allowance type logic
+        $part = $request->input('part');
         $reservation_allowance_type = null;
 
         if (in_array('1', $part) && in_array('2', $part)) {
-            // If both '1' and '2' are present, save 3
-            $reservation_allowance_type = 3;
+            $reservation_allowance_type = 3;  // Both '1' and '2' mean type 3 (both kinds of reservation)
         } elseif (in_array('1', $part)) {
-            // If only '1' is present, save 1
-            $reservation_allowance_type = 1;
+            $reservation_allowance_type = 1;  // Only '1' (full reservation)
         } elseif (in_array('2', $part)) {
-            // If only '2' is present, save 2
-            $reservation_allowance_type = 2;
+            $reservation_allowance_type = 2;  // Only '2' (partial reservation)
         }
+
+        // Update department details
         $departements = Departements::findOrFail($department->id);
         $departements->name = $request->name;
-        $departements->manger = $request->manger;
         $departements->sector_id  = $request->sector;
         $departements->description = $request->description;
-
         $departements->reservation_allowance_amount = $request->budget;
         $departements->reservation_allowance_type = $reservation_allowance_type;
-
-        // $departements->parent_id = Auth::user()->department_id;
         $departements->created_by = Auth::user()->id;
         $departements->save();
-        $oldManager = $department->manager;
-        //  dd($request->all() );
-        // Get all employees currently assigned to the department
-        if ($oldManager->id != $request->manger) {
-            // dd($request->manger ,$oldManager);
 
-            // Update old manager's sector to null
+        // Get the old manager and check if it needs to be updated
+        $oldManager = $department->manager;
+
+        if ($oldManager->id != $request->manger) {
+            // Remove the old manager's department and sector associations
             if ($oldManager) {
                 $oldManagerUser = User::find($oldManager);
                 if ($oldManagerUser) {
                     $oldManagerUser->sector = null;
-                    $oldManagerUser->flag = 'employee';
+                    $oldManagerUser->flag = 'employee'; // Demote to employee
                     $oldManagerUser->department_id = null;
-                    $oldManagerUser->password = null;
                     $oldManagerUser->save();
                 }
             }
-            // Update new manager's sector
-            if ($request->password) {
-                $newManager = User::find($request->manger);
-                if ($newManager) {
-                    $newManager->sector = $request->sector;
-                    $newManager->flag = 'user';
-                    $newManager->department_id = $departements->id;
-                    $newManager->rule_id = $request->rule;
-                    $newManager->password = Hash::make($request->password);
-                    $newManager->save();
-                } else {
-                    return redirect()->back()->with('خطأ', 'هذا المستخدم غير موجود');
+
+            // Update the new manager's details
+            $newManager = User::find($request->manger);
+            if ($newManager) {
+                $newManager->sector = $request->sector; // Assign to the new sector
+                $newManager->flag = 'user'; // Promote to manager
+                $newManager->department_id = $departements->id;
+                if ($request->password) {
+                    $newManager->password = Hash::make($request->password); // Only update password if provided
                 }
+                $newManager->rule_id = $request->rule;
+                $newManager->save();
+
+                // Send email notification to the new manager
+                Sendmail(
+                    'مدير ادارة',
+                    'تم أضافتك كمدير ادارة',
+                    $newManager->Civil_number,
+                    $request->password ? $request->password : null,
+                    $newManager->email
+                );
             } else {
-
-                $user = User::find($request->manger);
-                if ($user) {
-                    $user->sector = $request->sector;
-                    $user->department_id = $departements->id;
-                    $user->save();
-
-                    Sendmail(
-                        'مدير ادارة',  // Email subject
-                        'تم أضافتك كمدير ادارة',  // Email body
-                        $user->Civil_number,
-                        $request->password ? $request->password : null,
-                        $user->email
-                    );
-                } else {
-                    return redirect()->back()->with('خطأ', 'هذا المستخدم غير موجود');
-                }
+                return redirect()->back()->with('error', 'هذا المستخدم غير موجود');
             }
         }
 
-        // Handle employee Civil_number updates
+        // Handle employee updates
         $currentEmployees = User::where('sector', $request->sector)
-            ->where('department_id', null)
+            ->where('department_id', $department->id)
             ->pluck('Civil_number')
             ->toArray();
 
         $Civil_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->Civil_number);
-        $Civil_numbers = array_filter(explode(',,', $Civil_numbers));
+        $Civil_numbers = array_filter(explode(',', $Civil_numbers)); // Adjust separator if needed
 
-        $employeesToRemove = array_diff($currentEmployees, $Civil_numbers);
+        $employeesToRemove = array_diff($currentEmployees, $Civil_numbers); // Employees to remove
+        $employeesToAdd = array_diff($Civil_numbers, $currentEmployees); // Employees to add
 
-        $employeesToAdd = array_diff($Civil_numbers, $currentEmployees);
-
+        // Remove employees no longer in the list
         if (!empty($employeesToRemove)) {
             User::whereIn('Civil_number', $employeesToRemove)->update(['sector' => null, 'department_id' => null]);
         }
 
+        // Add new employees or update existing ones
         foreach ($employeesToAdd as $Civil_number) {
             $employee = User::where('Civil_number', $Civil_number)->first();
             if ($employee && $employee->grade_id != null) {
@@ -744,9 +739,10 @@ class DepartmentController extends Controller
                 $employee->save();
             }
         }
+
         return redirect()->route('departments.index', ['id' => $request->sector])->with('success', 'Department updated successfully.');
-        // return response()->json($department);
     }
+
 
     public function update_1(Request $request, departements $department)
     {
@@ -794,7 +790,6 @@ class DepartmentController extends Controller
         $departements->sector_id  = $request->sector_id;
         $departements->description = $request->description;
         $departements->parent_id = $department->parent_id;
-
         $departements->reservation_allowance_amount = $request->budget;
         $departements->reservation_allowance_type = $reservation_allowance_type;
 
