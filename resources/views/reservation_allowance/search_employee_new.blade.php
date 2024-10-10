@@ -120,7 +120,11 @@
                                     </select>
                                 </div>
 
-                                <div class="">
+                                <div class="form-group col-md-3 mx-3">
+                                    <input class="form-control" type="date" name="date" id="date" max="{{$today}}" value="{{$today}}" required>
+                                </div>
+
+                                <div class="d-flex mx-2">
                                     <label for="Civil_number">
                                         <button class="btn-all py-2 px-2" type="submit" style="color:green;">
                                             <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
@@ -258,13 +262,9 @@
                     </div>
 
                     <div class="" style="margin-top:20px">
-                        <label for="Civil_number">
-                            <a class="btn-all py-2 px-2" style="color:green;"
-                                href="{{ route('reservation_allowances.confirm_reservation_allowances') }}"
-                                onclick="if(confirm('هل انت متاكد من انك تريد ان تضيف بدل حجز لهؤلاء الموظفين')){event.preventDefault();window.location.href = $(this).attr('href');}else{event.preventDefault();}"
-                                class="menu-link px-3">
+                            <button class="btn-all py-2 px-2" style="color:green;" onclick="confirm_reservation()" class="menu-link px-3">
                                 <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                اضف بدل حجز</a>
+                                اضف بدل حجز</button>
                     </div>
 
                 </div>
@@ -353,6 +353,16 @@
         }
 
 
+        function confirm_reservation() {
+            if (confirm("هل انت متاكد من انك تريد ان تضيف بدل حجز لهؤلاء الموظفين") == true) {
+                var reservation_date = document.getElementById('date').value;
+                var map_url = "{{ route('reservation_allowances.confirm_reservation_allowances', ['date']) }}";
+                map_url = map_url.replace('date', reservation_date);
+                $.get(map_url, function(data) {
+                    window.location.href = "{{route('reservation_allowances.index')}}";
+                });
+            }
+        }
 
 
         $(function() {

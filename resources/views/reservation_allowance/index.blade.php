@@ -114,7 +114,7 @@
                                 </div>
 
                                 <div class="form-group col-md-2 mx-2">
-                                    <input class="form-control" type="date" name="date" id="date" required>
+                                    <input class="form-control" type="date" name="date" id="date" max="{{$to_day}}" value="{{$to_day}}" required>
                                 </div>
 
                                 <div class="">
