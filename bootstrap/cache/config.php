@@ -1,5 +1,5 @@
 <?php return array (
-  'app' =>
+  'app' => 
   array (
     'name' => 'Laravel',
     'env' => 'local',
@@ -12,11 +12,11 @@
     'faker_locale' => 'en_US',
     'key' => 'base64:fPMwRGYtSfYc793M5ItiqPcc+7nbsiGV2FGT643hHpI=',
     'cipher' => 'AES-256-CBC',
-    'maintenance' =>
+    'maintenance' => 
     array (
       'driver' => 'file',
     ),
-    'providers' =>
+    'providers' => 
     array (
       0 => 'Maatwebsite\\Excel\\ExcelServiceProvider',
       1 => 'Illuminate\\Auth\\AuthServiceProvider',
@@ -48,7 +48,7 @@
       27 => 'Yajra\\DataTables\\DataTablesServiceProvider',
       28 => 'Intervention\\Image\\ImageServiceProvider',
     ),
-    'aliases' =>
+    'aliases' => 
     array (
       'App' => 'Illuminate\\Support\\Facades\\App',
       'Arr' => 'Illuminate\\Support\\Arr',
@@ -96,42 +96,42 @@
       'Image' => 'Intervention\\Image\\Facades\\Image',
     ),
   ),
-  'auth' =>
+  'auth' => 
   array (
-    'defaults' =>
+    'defaults' => 
     array (
       'guard' => 'web',
       'passwords' => 'users',
     ),
-    'guards' =>
+    'guards' => 
     array (
-      'web' =>
+      'web' => 
       array (
         'driver' => 'session',
         'provider' => 'users',
       ),
-      'api' =>
+      'api' => 
       array (
         'driver' => 'passport',
         'provider' => 'users',
       ),
-      'sanctum' =>
+      'sanctum' => 
       array (
         'driver' => 'sanctum',
         'provider' => NULL,
       ),
     ),
-    'providers' =>
+    'providers' => 
     array (
-      'users' =>
+      'users' => 
       array (
         'driver' => 'eloquent',
         'model' => 'App\\Models\\User',
       ),
     ),
-    'passwords' =>
+    'passwords' => 
     array (
-      'users' =>
+      'users' => 
       array (
         'provider' => 'users',
         'table' => 'password_reset_tokens',
@@ -141,18 +141,18 @@
     ),
     'password_timeout' => 10800,
   ),
-  'broadcasting' =>
+  'broadcasting' => 
   array (
     'default' => 'log',
-    'connections' =>
+    'connections' => 
     array (
-      'pusher' =>
+      'pusher' => 
       array (
         'driver' => 'pusher',
         'key' => '',
         'secret' => '',
         'app_id' => '',
-        'options' =>
+        'options' => 
         array (
           'host' => 'api-mt1.pusher.com',
           'port' => '443',
@@ -160,75 +160,71 @@
           'encrypted' => true,
           'useTLS' => true,
         ),
-        'client_options' =>
+        'client_options' => 
         array (
         ),
       ),
-      'ably' =>
+      'ably' => 
       array (
         'driver' => 'ably',
         'key' => NULL,
       ),
-      'redis' =>
+      'redis' => 
       array (
         'driver' => 'redis',
         'connection' => 'default',
       ),
-      'log' =>
+      'log' => 
       array (
         'driver' => 'log',
       ),
-      'null' =>
+      'null' => 
       array (
         'driver' => 'null',
       ),
     ),
   ),
-  'cache' =>
+  'cache' => 
   array (
     'default' => 'file',
-    'stores' =>
+    'stores' => 
     array (
-      'apc' =>
+      'apc' => 
       array (
         'driver' => 'apc',
       ),
-      'array' =>
+      'array' => 
       array (
         'driver' => 'array',
         'serialize' => false,
       ),
-      'database' =>
+      'database' => 
       array (
         'driver' => 'database',
         'table' => 'cache',
         'connection' => NULL,
         'lock_connection' => NULL,
       ),
-      'file' =>
+      'file' => 
       array (
         'driver' => 'file',
-<<<<<<< HEAD
         'path' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\framework/cache/data',
-=======
-        'path' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\framework/cache/data',
->>>>>>> be04f22cda2ad76bdd814b4196b1f7034ca279df
       ),
-      'memcached' =>
+      'memcached' => 
       array (
         'driver' => 'memcached',
         'persistent_id' => NULL,
-        'sasl' =>
+        'sasl' => 
         array (
           0 => NULL,
           1 => NULL,
         ),
-        'options' =>
+        'options' => 
         array (
         ),
-        'servers' =>
+        'servers' => 
         array (
-          0 =>
+          0 => 
           array (
             'host' => '127.0.0.1',
             'port' => 11211,
@@ -236,13 +232,13 @@
           ),
         ),
       ),
-      'redis' =>
+      'redis' => 
       array (
         'driver' => 'redis',
         'connection' => 'cache',
         'lock_connection' => 'default',
       ),
-      'dynamodb' =>
+      'dynamodb' => 
       array (
         'driver' => 'dynamodb',
         'key' => '',
@@ -251,61 +247,61 @@
         'table' => 'cache',
         'endpoint' => NULL,
       ),
-      'octane' =>
+      'octane' => 
       array (
         'driver' => 'octane',
       ),
     ),
     'prefix' => 'laravel_cache_',
   ),
-  'cors' =>
+  'cors' => 
   array (
-    'paths' =>
+    'paths' => 
     array (
       0 => 'api/*',
       1 => 'sanctum/csrf-cookie',
     ),
-    'allowed_methods' =>
+    'allowed_methods' => 
     array (
       0 => '*',
     ),
-    'allowed_origins' =>
+    'allowed_origins' => 
     array (
       0 => '*',
     ),
-    'allowed_origins_patterns' =>
+    'allowed_origins_patterns' => 
     array (
     ),
-    'allowed_headers' =>
+    'allowed_headers' => 
     array (
       0 => '*',
     ),
-    'exposed_headers' =>
+    'exposed_headers' => 
     array (
     ),
     'max_age' => 0,
     'supports_credentials' => false,
   ),
-  'database' =>
+  'database' => 
   array (
     'default' => 'mysql',
-    'connections' =>
+    'connections' => 
     array (
-      'sqlite' =>
+      'sqlite' => 
       array (
         'driver' => 'sqlite',
         'url' => NULL,
-        'database' => 'alqwa',
+        'database' => '7agz',
         'prefix' => '',
         'foreign_key_constraints' => true,
       ),
-      'mysql' =>
+      'mysql' => 
       array (
         'driver' => 'mysql',
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'alqwa',
+        'database' => '7agz',
         'username' => 'root',
         'password' => '92211996',
         'unix_socket' => '',
@@ -315,21 +311,17 @@
         'prefix_indexes' => true,
         'strict' => true,
         'engine' => NULL,
-        'options' =>
+        'options' => 
         array (
         ),
       ),
-      'pgsql' =>
+      'pgsql' => 
       array (
         'driver' => 'pgsql',
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-<<<<<<< HEAD
         'database' => '7agz',
-=======
-        'database' => 'alqwa',
->>>>>>> be04f22cda2ad76bdd814b4196b1f7034ca279df
         'username' => 'root',
         'password' => '92211996',
         'charset' => 'utf8',
@@ -338,17 +330,13 @@
         'search_path' => 'public',
         'sslmode' => 'prefer',
       ),
-      'sqlsrv' =>
+      'sqlsrv' => 
       array (
         'driver' => 'sqlsrv',
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-<<<<<<< HEAD
         'database' => '7agz',
-=======
-        'database' => 'alqwa',
->>>>>>> be04f22cda2ad76bdd814b4196b1f7034ca279df
         'username' => 'root',
         'password' => '92211996',
         'charset' => 'utf8',
@@ -357,15 +345,15 @@
       ),
     ),
     'migrations' => 'migrations',
-    'redis' =>
+    'redis' => 
     array (
       'client' => 'phpredis',
-      'options' =>
+      'options' => 
       array (
         'cluster' => 'redis',
         'prefix' => 'laravel_database_',
       ),
-      'default' =>
+      'default' => 
       array (
         'url' => NULL,
         'host' => '127.0.0.1',
@@ -374,7 +362,7 @@
         'port' => '6379',
         'database' => '0',
       ),
-      'cache' =>
+      'cache' => 
       array (
         'url' => NULL,
         'host' => '127.0.0.1',
@@ -385,9 +373,9 @@
       ),
     ),
   ),
-  'datatables' =>
+  'datatables' => 
   array (
-    'search' =>
+    'search' => 
     array (
       'smart' => true,
       'multi_term' => true,
@@ -396,71 +384,71 @@
       'starts_with' => false,
     ),
     'index_column' => 'DT_RowIndex',
-    'engines' =>
+    'engines' => 
     array (
       'eloquent' => 'Yajra\\DataTables\\EloquentDataTable',
       'query' => 'Yajra\\DataTables\\QueryDataTable',
       'collection' => 'Yajra\\DataTables\\CollectionDataTable',
       'resource' => 'Yajra\\DataTables\\ApiResourceDataTable',
     ),
-    'builders' =>
+    'builders' => 
     array (
     ),
     'nulls_last_sql' => ':column :direction NULLS LAST',
     'error' => NULL,
-    'columns' =>
+    'columns' => 
     array (
-      'excess' =>
+      'excess' => 
       array (
         0 => 'rn',
         1 => 'row_num',
       ),
       'escape' => '*',
-      'raw' =>
+      'raw' => 
       array (
         0 => 'action',
       ),
-      'blacklist' =>
+      'blacklist' => 
       array (
         0 => 'password',
         1 => 'remember_token',
       ),
       'whitelist' => '*',
     ),
-    'json' =>
+    'json' => 
     array (
-      'header' =>
+      'header' => 
       array (
       ),
       'options' => 0,
     ),
-    'callback' =>
+    'callback' => 
     array (
       0 => '$',
       1 => '$.',
       2 => 'function',
     ),
   ),
-  'filesystems' =>
+  'filesystems' => 
   array (
     'default' => 'local',
-    'disks' =>
+    'disks' => 
     array (
-      'local' =>
+      'local' => 
       array (
         'driver' => 'local',
-        'root' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\app',
+        'root' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\app',
         'throw' => false,
       ),
-      'public' =>
+      'public' => 
       array (
         'driver' => 'local',
-        'root' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\app/public',
+        'root' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\app/public',
         'url' => 'http://localhost/storage',
         'visibility' => 'public',
         'throw' => false,
       ),
-      's3' =>
+      's3' => 
       array (
         'driver' => 's3',
         'key' => '',
@@ -473,58 +461,58 @@
         'throw' => false,
       ),
     ),
-    'links' =>
+    'links' => 
     array (
-      'D:\\laragon\\www\\Reservation_allowance\\public\\storage' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\app/public',
+      'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\public\\storage' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\app/public',
     ),
   ),
-  'hashing' =>
+  'hashing' => 
   array (
     'driver' => 'bcrypt',
-    'bcrypt' =>
+    'bcrypt' => 
     array (
       'rounds' => 10,
     ),
-    'argon' =>
+    'argon' => 
     array (
       'memory' => 65536,
       'threads' => 1,
       'time' => 4,
     ),
   ),
-  'logging' =>
+  'logging' => 
   array (
     'default' => 'stack',
-    'deprecations' =>
+    'deprecations' => 
     array (
       'channel' => NULL,
       'trace' => false,
     ),
-    'channels' =>
+    'channels' => 
     array (
-      'stack' =>
+      'stack' => 
       array (
         'driver' => 'stack',
-        'channels' =>
+        'channels' => 
         array (
           0 => 'single',
         ),
         'ignore_exceptions' => false,
       ),
-      'single' =>
+      'single' => 
       array (
         'driver' => 'single',
-        'path' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\logs/laravel.log',
+        'path' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\logs/laravel.log',
         'level' => 'debug',
       ),
-      'daily' =>
+      'daily' => 
       array (
         'driver' => 'daily',
-        'path' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\logs/laravel.log',
+        'path' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\logs/laravel.log',
         'level' => 'debug',
         'days' => 14,
       ),
-      'slack' =>
+      'slack' => 
       array (
         'driver' => 'slack',
         'url' => NULL,
@@ -532,136 +520,136 @@
         'emoji' => ':boom:',
         'level' => 'debug',
       ),
-      'papertrail' =>
+      'papertrail' => 
       array (
         'driver' => 'monolog',
         'level' => 'debug',
         'handler' => 'Monolog\\Handler\\SyslogUdpHandler',
-        'handler_with' =>
+        'handler_with' => 
         array (
           'host' => NULL,
           'port' => NULL,
           'connectionString' => 'tls://:',
         ),
       ),
-      'stderr' =>
+      'stderr' => 
       array (
         'driver' => 'monolog',
         'level' => 'debug',
         'handler' => 'Monolog\\Handler\\StreamHandler',
         'formatter' => NULL,
-        'with' =>
+        'with' => 
         array (
           'stream' => 'php://stderr',
         ),
       ),
-      'syslog' =>
+      'syslog' => 
       array (
         'driver' => 'syslog',
         'level' => 'debug',
       ),
-      'errorlog' =>
+      'errorlog' => 
       array (
         'driver' => 'errorlog',
         'level' => 'debug',
       ),
-      'null' =>
+      'null' => 
       array (
         'driver' => 'monolog',
         'handler' => 'Monolog\\Handler\\NullHandler',
       ),
-      'emergency' =>
+      'emergency' => 
       array (
-        'path' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\logs/laravel.log',
+        'path' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\logs/laravel.log',
       ),
     ),
   ),
-  'mail' =>
+  'mail' => 
   array (
     'default' => 'smtp',
-    'mailers' =>
+    'mailers' => 
     array (
-      'smtp' =>
+      'smtp' => 
       array (
         'transport' => 'smtp',
-        'host' => 'smtp.gmail.com',
-        'port' => '587',
+        'host' => 'mail.testdomain100.online',
+        'port' => '465',
         'encryption' => 'tls',
-        'username' => 'eng.rasha.shalan@gmail.com',
-        'password' => 'En9Rosha@2022',
+        'username' => 'info@testdomain100.online',
+        'password' => '![Z!_(gy3,le',
         'timeout' => NULL,
         'local_domain' => NULL,
       ),
-      'ses' =>
+      'ses' => 
       array (
         'transport' => 'ses',
       ),
-      'mailgun' =>
+      'mailgun' => 
       array (
         'transport' => 'mailgun',
       ),
-      'postmark' =>
+      'postmark' => 
       array (
         'transport' => 'postmark',
       ),
-      'sendmail' =>
+      'sendmail' => 
       array (
         'transport' => 'sendmail',
         'path' => '/usr/sbin/sendmail -bs -i',
       ),
-      'log' =>
+      'log' => 
       array (
         'transport' => 'log',
         'channel' => NULL,
       ),
-      'array' =>
+      'array' => 
       array (
         'transport' => 'array',
       ),
-      'failover' =>
+      'failover' => 
       array (
         'transport' => 'failover',
-        'mailers' =>
+        'mailers' => 
         array (
           0 => 'smtp',
           1 => 'log',
         ),
       ),
     ),
-    'from' =>
+    'from' => 
     array (
-      'address' => 'eng.rasha.shalan@gmail.com',
+      'address' => 'info@testdomain100.online',
       'name' => 'Laravel',
     ),
-    'markdown' =>
+    'markdown' => 
     array (
       'theme' => 'default',
-      'paths' =>
+      'paths' => 
       array (
-        0 => 'D:\\laragon\\www\\Reservation_allowance\\resources\\views/vendor/mail',
+        0 => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\resources\\views/vendor/mail',
       ),
     ),
   ),
-  'passport' =>
+  'passport' => 
   array (
     'guard' => 'web',
     'private_key' => NULL,
     'public_key' => NULL,
     'client_uuids' => false,
-    'personal_access_client' =>
+    'personal_access_client' => 
     array (
       'id' => NULL,
       'secret' => NULL,
     ),
   ),
-  'permission' =>
+  'permission' => 
   array (
-    'models' =>
+    'models' => 
     array (
       'permission' => 'Spatie\\Permission\\Models\\Permission',
       'role' => 'Spatie\\Permission\\Models\\Role',
     ),
-    'table_names' =>
+    'table_names' => 
     array (
       'roles' => 'roles',
       'permissions' => 'permissions',
@@ -669,7 +657,7 @@
       'model_has_roles' => 'model_has_roles',
       'role_has_permissions' => 'role_has_permissions',
     ),
-    'column_names' =>
+    'column_names' => 
     array (
       'role_pivot_key' => NULL,
       'permission_pivot_key' => NULL,
@@ -683,9 +671,9 @@
     'display_permission_in_exception' => false,
     'display_role_in_exception' => false,
     'enable_wildcard_permission' => false,
-    'cache' =>
+    'cache' => 
     array (
-      'expiration_time' =>
+      'expiration_time' => 
       \DateInterval::__set_state(array(
          'from_string' => true,
          'date_string' => '24 hours',
@@ -694,16 +682,16 @@
       'store' => 'default',
     ),
   ),
-  'queue' =>
+  'queue' => 
   array (
     'default' => 'sync',
-    'connections' =>
+    'connections' => 
     array (
-      'sync' =>
+      'sync' => 
       array (
         'driver' => 'sync',
       ),
-      'database' =>
+      'database' => 
       array (
         'driver' => 'database',
         'table' => 'jobs',
@@ -711,7 +699,7 @@
         'retry_after' => 90,
         'after_commit' => false,
       ),
-      'beanstalkd' =>
+      'beanstalkd' => 
       array (
         'driver' => 'beanstalkd',
         'host' => 'localhost',
@@ -720,7 +708,7 @@
         'block_for' => 0,
         'after_commit' => false,
       ),
-      'sqs' =>
+      'sqs' => 
       array (
         'driver' => 'sqs',
         'key' => '',
@@ -731,7 +719,7 @@
         'region' => 'us-east-1',
         'after_commit' => false,
       ),
-      'redis' =>
+      'redis' => 
       array (
         'driver' => 'redis',
         'connection' => 'default',
@@ -741,16 +729,16 @@
         'after_commit' => false,
       ),
     ),
-    'failed' =>
+    'failed' => 
     array (
       'driver' => 'database-uuids',
       'database' => 'mysql',
       'table' => 'failed_jobs',
     ),
   ),
-  'sanctum' =>
+  'sanctum' => 
   array (
-    'stateful' =>
+    'stateful' => 
     array (
       0 => 'localhost',
       1 => 'localhost:3000',
@@ -759,49 +747,49 @@
       4 => '::1',
       5 => 'localhost',
     ),
-    'guard' =>
+    'guard' => 
     array (
       0 => 'web',
     ),
     'expiration' => NULL,
     'token_prefix' => '',
-    'middleware' =>
+    'middleware' => 
     array (
       'verify_csrf_token' => 'App\\Http\\Middleware\\VerifyCsrfToken',
       'encrypt_cookies' => 'App\\Http\\Middleware\\EncryptCookies',
     ),
   ),
-  'services' =>
+  'services' => 
   array (
-    'mailgun' =>
+    'mailgun' => 
     array (
       'domain' => NULL,
       'secret' => NULL,
       'endpoint' => 'api.mailgun.net',
       'scheme' => 'https',
     ),
-    'postmark' =>
+    'postmark' => 
     array (
       'token' => NULL,
     ),
-    'ses' =>
+    'ses' => 
     array (
       'key' => '',
       'secret' => '',
       'region' => 'us-east-1',
     ),
   ),
-  'session' =>
+  'session' => 
   array (
     'driver' => 'file',
     'lifetime' => '120',
     'expire_on_close' => false,
     'encrypt' => false,
-    'files' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\framework/sessions',
+    'files' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\framework/sessions',
     'connection' => NULL,
     'table' => 'sessions',
     'store' => NULL,
-    'lottery' =>
+    'lottery' => 
     array (
       0 => 2,
       1 => 100,
@@ -813,26 +801,26 @@
     'http_only' => true,
     'same_site' => 'lax',
   ),
-  'view' =>
+  'view' => 
   array (
-    'paths' =>
+    'paths' => 
     array (
-      0 => 'D:\\laragon\\www\\Reservation_allowance\\resources\\views',
+      0 => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\resources\\views',
     ),
-    'compiled' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\framework\\views',
+    'compiled' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\framework\\views',
   ),
-  'image' =>
+  'image' => 
   array (
     'driver' => 'gd',
   ),
-  'excel' =>
+  'excel' => 
   array (
-    'exports' =>
+    'exports' => 
     array (
       'chunk_size' => 1000,
       'pre_calculate_formulas' => false,
       'strict_null_comparison' => false,
-      'csv' =>
+      'csv' => 
       array (
         'delimiter' => ',',
         'enclosure' => '"',
@@ -844,7 +832,7 @@
         'output_encoding' => '',
         'test_auto_detect' => true,
       ),
-      'properties' =>
+      'properties' => 
       array (
         'creator' => '',
         'lastModifiedBy' => '',
@@ -857,15 +845,15 @@
         'company' => '',
       ),
     ),
-    'imports' =>
+    'imports' => 
     array (
       'read_only' => true,
       'ignore_empty' => false,
-      'heading_row' =>
+      'heading_row' => 
       array (
         'formatter' => 'slug',
       ),
-      'csv' =>
+      'csv' => 
       array (
         'delimiter' => NULL,
         'enclosure' => '"',
@@ -873,7 +861,7 @@
         'contiguous' => false,
         'input_encoding' => 'guess',
       ),
-      'properties' =>
+      'properties' => 
       array (
         'creator' => '',
         'lastModifiedBy' => '',
@@ -885,14 +873,14 @@
         'manager' => '',
         'company' => '',
       ),
-      'cells' =>
+      'cells' => 
       array (
-        'middleware' =>
+        'middleware' => 
         array (
         ),
       ),
     ),
-    'extension_detector' =>
+    'extension_detector' => 
     array (
       'xlsx' => 'Xlsx',
       'xlsm' => 'Xlsx',
@@ -911,35 +899,35 @@
       'tsv' => 'Csv',
       'pdf' => 'Dompdf',
     ),
-    'value_binder' =>
+    'value_binder' => 
     array (
       'default' => 'Maatwebsite\\Excel\\DefaultValueBinder',
     ),
-    'cache' =>
+    'cache' => 
     array (
       'driver' => 'memory',
-      'batch' =>
+      'batch' => 
       array (
         'memory_limit' => 60000,
       ),
-      'illuminate' =>
+      'illuminate' => 
       array (
         'store' => NULL,
       ),
       'default_ttl' => 10800,
     ),
-    'transactions' =>
+    'transactions' => 
     array (
       'handler' => 'db',
-      'db' =>
+      'db' => 
       array (
         'connection' => NULL,
       ),
     ),
-    'temporary_files' =>
+    'temporary_files' => 
     array (
-      'local_path' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\framework/cache/laravel-excel',
-      'local_permissions' =>
+      'local_path' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\framework/cache/laravel-excel',
+      'local_permissions' => 
       array (
       ),
       'remote_disk' => NULL,
@@ -947,10 +935,10 @@
       'force_resync_remote' => NULL,
     ),
   ),
-  'flare' =>
+  'flare' => 
   array (
     'key' => NULL,
-    'flare_middleware' =>
+    'flare_middleware' => 
     array (
       0 => 'Spatie\\FlareClient\\FlareMiddleware\\RemoveRequestIp',
       1 => 'Spatie\\FlareClient\\FlareMiddleware\\AddGitInformation',
@@ -958,32 +946,32 @@
       3 => 'Spatie\\LaravelIgnition\\FlareMiddleware\\AddEnvironmentInformation',
       4 => 'Spatie\\LaravelIgnition\\FlareMiddleware\\AddExceptionInformation',
       5 => 'Spatie\\LaravelIgnition\\FlareMiddleware\\AddDumps',
-      'Spatie\\LaravelIgnition\\FlareMiddleware\\AddLogs' =>
+      'Spatie\\LaravelIgnition\\FlareMiddleware\\AddLogs' => 
       array (
         'maximum_number_of_collected_logs' => 200,
       ),
-      'Spatie\\LaravelIgnition\\FlareMiddleware\\AddQueries' =>
+      'Spatie\\LaravelIgnition\\FlareMiddleware\\AddQueries' => 
       array (
         'maximum_number_of_collected_queries' => 200,
         'report_query_bindings' => true,
       ),
-      'Spatie\\LaravelIgnition\\FlareMiddleware\\AddJobs' =>
+      'Spatie\\LaravelIgnition\\FlareMiddleware\\AddJobs' => 
       array (
         'max_chained_job_reporting_depth' => 5,
       ),
       6 => 'Spatie\\LaravelIgnition\\FlareMiddleware\\AddContext',
       7 => 'Spatie\\LaravelIgnition\\FlareMiddleware\\AddExceptionHandledStatus',
-      'Spatie\\FlareClient\\FlareMiddleware\\CensorRequestBodyFields' =>
+      'Spatie\\FlareClient\\FlareMiddleware\\CensorRequestBodyFields' => 
       array (
-        'censor_fields' =>
+        'censor_fields' => 
         array (
           0 => 'password',
           1 => 'password_confirmation',
         ),
       ),
-      'Spatie\\FlareClient\\FlareMiddleware\\CensorRequestHeaders' =>
+      'Spatie\\FlareClient\\FlareMiddleware\\CensorRequestHeaders' => 
       array (
-        'headers' =>
+        'headers' => 
         array (
           0 => 'API-KEY',
           1 => 'Authorization',
@@ -996,13 +984,13 @@
     ),
     'send_logs_as_events' => true,
   ),
-  'ignition' =>
+  'ignition' => 
   array (
     'editor' => 'phpstorm',
     'theme' => 'auto',
     'enable_share_button' => true,
     'register_commands' => false,
-    'solution_providers' =>
+    'solution_providers' => 
     array (
       0 => 'Spatie\\Ignition\\Solutions\\SolutionProviders\\BadMethodCallSolutionProvider',
       1 => 'Spatie\\Ignition\\Solutions\\SolutionProviders\\MergeConflictSolutionProvider',
@@ -1027,15 +1015,15 @@
       20 => 'Spatie\\LaravelIgnition\\Solutions\\SolutionProviders\\UnknownMysql8CollationSolutionProvider',
       21 => 'Spatie\\LaravelIgnition\\Solutions\\SolutionProviders\\UnknownMariadbCollationSolutionProvider',
     ),
-    'ignored_solution_providers' =>
+    'ignored_solution_providers' => 
     array (
     ),
     'enable_runnable_solutions' => NULL,
-    'remote_sites_path' => 'D:\\laragon\\www\\Reservation_allowance',
+    'remote_sites_path' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance',
     'local_sites_path' => '',
     'housekeeping_endpoint_prefix' => '_ignition',
     'settings_file_path' => '',
-    'recorders' =>
+    'recorders' => 
     array (
       0 => 'Spatie\\LaravelIgnition\\Recorders\\DumpRecorder\\DumpRecorder',
       1 => 'Spatie\\LaravelIgnition\\Recorders\\JobRecorder\\JobRecorder',
@@ -1044,7 +1032,7 @@
     ),
     'open_ai_key' => NULL,
     'with_stack_frame_arguments' => true,
-    'argument_reducers' =>
+    'argument_reducers' => 
     array (
       0 => 'Spatie\\Backtrace\\Arguments\\Reducers\\BaseTypeArgumentReducer',
       1 => 'Spatie\\Backtrace\\Arguments\\Reducers\\ArrayArgumentReducer',
@@ -1059,17 +1047,17 @@
       10 => 'Spatie\\Backtrace\\Arguments\\Reducers\\StringableArgumentReducer',
     ),
   ),
-  'datatables-buttons' =>
+  'datatables-buttons' => 
   array (
-    'namespace' =>
+    'namespace' => 
     array (
       'base' => 'DataTables',
       'model' => 'App\\Models',
     ),
     'pdf_generator' => 'snappy',
-    'snappy' =>
+    'snappy' => 
     array (
-      'options' =>
+      'options' => 
       array (
         'no-outline' => true,
         'margin-left' => '0',
@@ -1079,18 +1067,18 @@
       ),
       'orientation' => 'landscape',
     ),
-    'parameters' =>
+    'parameters' => 
     array (
       'dom' => 'Bfrtip',
-      'order' =>
+      'order' => 
       array (
-        0 =>
+        0 => 
         array (
           0 => 0,
           1 => 'desc',
         ),
       ),
-      'buttons' =>
+      'buttons' => 
       array (
         0 => 'excel',
         1 => 'csv',
@@ -1100,17 +1088,17 @@
         5 => 'reload',
       ),
     ),
-    'generator' =>
+    'generator' => 
     array (
       'columns' => 'id,add your columns,created_at,updated_at',
       'buttons' => 'excel,csv,pdf,print,reset,reload',
       'dom' => 'Bfrtip',
     ),
   ),
-  'datatables-html' =>
+  'datatables-html' => 
   array (
     'namespace' => 'LaravelDataTables',
-    'table' =>
+    'table' => 
     array (
       'class' => 'table',
       'id' => 'dataTableBuilder',
@@ -1118,20 +1106,20 @@
     'script' => 'datatables::script',
     'editor' => 'datatables::editor',
   ),
-  'datatables-fractal' =>
+  'datatables-fractal' => 
   array (
     'includes' => 'include',
     'serializer' => 'League\\Fractal\\Serializer\\DataArraySerializer',
   ),
-  'tinker' =>
+  'tinker' => 
   array (
-    'commands' =>
+    'commands' => 
     array (
     ),
-    'alias' =>
+    'alias' => 
     array (
     ),
-    'dont_alias' =>
+    'dont_alias' => 
     array (
       0 => 'App\\Nova',
     ),
