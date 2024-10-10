@@ -160,6 +160,7 @@
 <div class="row">
     <div class="container  col-11 mt-3 p-0  pt-5 pb-4">
 
+
         <div class="col-lg-12">
             <div class="bg-white">
                 @if (session()->has('message'))
@@ -273,6 +274,9 @@
 
 
 @endsection
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 @push('scripts')
 <script>
 $(document).ready(function() {
@@ -330,9 +334,27 @@ function check_all($type) {
         var type_name = "no";
     }
 
-    if (employee_count > 0) {
-        for ($i = 1; $i <= employee_count; $i++) {
-            document.getElementById('allowance_' + type_name + '_' + $i).checked = true;
+
+        function confirm_reservation() {
+            Swal.fire({
+                title: 'تحذير',
+                text: 'هل انت متاكد من انك تريد ان تضيف بدل حجز لهؤلاء الموظفين',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'نعم, نقل',
+                cancelButtonText: 'إلغاء',
+                confirmButtonColor: '#3085d6'
+            }).then((result) => {
+                if (result.isConfirmed) {  
+                    var reservation_date = document.getElementById('date').value;
+                    var map_url = "{{ route('reservation_allowances.confirm_reservation_allowances','date') }}";
+                    map_url = map_url.replace('date', reservation_date);
+                    window.location.href = map_url;
+                } else {
+
+                }
+            });
+
         }
     }
 

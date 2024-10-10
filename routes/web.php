@@ -496,47 +496,27 @@ Route::middleware(['auth'])->group(function () {
 
 
     //reservation statics per sector
-    Route::get('/statistics_department/{sector_id}', [ReservationStaticsController::class, 'static'])
-        ->name('Reserv_statistic_department.index')
-        ->middleware('check.permission:view Inspector');
-
-    Route::get('/statistics_department/getAll/{sector_id}', [ReservationStaticsController::class, 'getAll'])
-        ->name('Reserv_statistic.getAll')
-        ->middleware('check.permission:view Inspector');
+    Route::get('/statistics_department/{sector_id}', [ReservationStaticsController::class, 'static'])->name('Reserv_statistic_department.index')->middleware('check.permission:view Inspector');
+    Route::get('/statistics_department/getAll/{sector_id}', [ReservationStaticsController::class, 'getAll'])->name('Reserv_statistic.getAll')->middleware('check.permission:view Inspector');
 
     //reservation statics per department
-    Route::get('/statistics_subdepartments/{department_id}', [SubDepartmentStatsController::class, 'index'])
-        ->name('statistics_subdepartments.index')
-        ->middleware('check.permission:view Inspector');
-    Route::get('/statistics_subdepartments/getAll/{department_id}', [SubDepartmentStatsController::class, 'getAll'])
-        ->name('statistics_subdepartments.getAll')
-        ->middleware('check.permission:view Inspector');
+    Route::get('/statistics_subdepartments/{department_id}', [SubDepartmentStatsController::class, 'index'])->name('statistics_subdepartments.index')->middleware('check.permission:view Inspector');
+    Route::get('/statistics_subdepartments/getAll/{department_id}', [SubDepartmentStatsController::class, 'getAll'])->name('statistics_subdepartments.getAll')->middleware('check.permission:view Inspector');
 
     // reservation statics per subdepartment
+    Route::get('/subdepartment_statistics/{subDepartmentId}', [SubDepartmentReservationController::class, 'static'])->name('subdepartment_reservation.index')->middleware('check.permission:view Inspector');
+    Route::get('/subdepartment_statistics/getAll/{subDepartmentId}', [SubDepartmentReservationController::class, 'getAll'])->name('subdepartment_reservation.getAll')->middleware('check.permission:view Inspector');
 
-    Route::get('/subdepartment_statistics/{subDepartmentId}', [SubDepartmentReservationController::class, 'static'])
-        ->name('subdepartment_reservation.index')
-        ->middleware('check.permission:view Inspector');
+    //reservation statics per persons in selected sector
+    Route::get('/sector-employees/{sectorId}', [SectorEmployeesDetailsController::class, 'index'])->name('sectorEmployees.index');
+    Route::get('/sector-employees/data/{sectorId}', [SectorEmployeesDetailsController::class, 'getData'])->name('sectorEmployees.getData');
+    Route::get('/sector/{sectorId}/printReport', [SectorEmployeesDetailsController::class, 'printReport'])->name('sectorEmployees.printReport');
 
-    Route::get('/subdepartment_statistics/getAll/{subDepartmentId}', [SubDepartmentReservationController::class, 'getAll'])
-        ->name('subdepartment_reservation.getAll')
-        ->middleware('check.permission:view Inspector');
-
-    //reservation statics per persons
-    Route::get('/subdepartment_statistics/{subDepartmentId}/prisoners/{date}', [PrisonersDetailsController::class, 'getDetails'])
-        ->name('prisoners.details')
-        ->middleware('check.permission:view Inspector');
-
-        //reservation statics per persons in selected sector
-        Route::get('/sector-employees/{sectorId}', [SectorEmployeesDetailsController::class, 'index'])->name('sectorEmployees.index');
-        Route::get('/sector-employees/data/{sectorId}', [SectorEmployeesDetailsController::class, 'getData'])->name('sectorEmployees.getData');
-        
 
     // Route to fetch data for prisoners' details DataTable
-    Route::get('/subdepartment_statistics/{subDepartmentId}/prisoners/{date}/data', [PrisonersDetailsController::class, 'getData'])
-        ->name('prisoners.details.data')
-        ->middleware('check.permission:view Inspector');
-
+    Route::get('/subdepartment_statistics/{subDepartmentId}/prisoners/{date}/data', [PrisonersDetailsController::class, 'getData'])->name('prisoners.details.data')->middleware('check.permission:view Inspector');
+    //reservation statics per persons
+    Route::get('/subdepartment_statistics/{subDepartmentId}/prisoners/{date}', [PrisonersDetailsController::class, 'getDetails'])->name('prisoners.details')->middleware('check.permission:view Inspector');
 
     //reservation statics for sectors
     Route::get('/statistics_sector', [ReserveSectorController::class, 'static'])->name('Reserv_statistic_sector.index')->middleware('check.permission:view Inspector');

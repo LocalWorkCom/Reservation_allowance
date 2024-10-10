@@ -27,7 +27,7 @@ class PrisonersDetailsController extends Controller
 
         return DataTables::of($prisonersData)
             ->addColumn('name', fn($row) => $row->user->name ?? 'N/A')
-            ->addColumn('amount', fn($row) => number_format($row->amount, 2))
+            ->addColumn('amount', fn($row) => number_format($row->amount, 2) . " د.ك")
             ->addColumn('date', fn($row) => Carbon::parse($row->date)->format('Y-m-d'))
             ->addColumn('day', fn($row) => Carbon::parse($row->date)->translatedFormat('l'))
             ->addColumn('type', fn($row) => $row->type == 1 ? 'كلي' : 'جزئي')

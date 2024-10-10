@@ -251,8 +251,8 @@
                         }
                     },
                     columns: [{
-                            data: 'id',
-                            name: 'id'
+                            data: null,
+                            name: 'order', orderable: false, searchable: false
                         },
                         {
                             data: 'employee_grade',
@@ -314,6 +314,9 @@
                             //$('.dataTables_paginate').hide();//css('visiblity','hidden');
                             $('.dataTables_paginate').css('visibility', 'hidden'); // to hide
                         }
+                    },
+                    createdRow: function(row, data, dataIndex) {
+                        $('td', row).eq(0).html(dataIndex + 1); // Automatic numbering in the first column
                     }
                 });
                 $('.btn-filter').on('click', function() {
