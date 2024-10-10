@@ -264,7 +264,7 @@
                         console.log(error);
                         Swal.fire({
                             title: 'تحذير',
-                            text: 'ززعفوا هذا المستخدم غير موجود',
+                            text: 'عفوا هذا المستخدم غير موجود',
                             icon: 'warning',
                             confirmButtonText: 'إلغاء',
                             confirmButtonColor: '#3085d6'
