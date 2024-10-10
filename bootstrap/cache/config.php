@@ -10,7 +10,7 @@
     'locale' => 'ar',
     'fallback_locale' => 'ar',
     'faker_locale' => 'en_US',
-    'key' => 'base64:fPMwRGYtSfYc793M5ItiqPcc+7nbsiGV2FGT643hHpI=',
+    'key' => 'base64:eyL7oeJk21lz1oQ1PkEtwU77ta1TUc0G6+4KEwA38Nw=',
     'cipher' => 'AES-256-CBC',
     'maintenance' => 
     array (
@@ -208,7 +208,7 @@
       'file' => 
       array (
         'driver' => 'file',
-        'path' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\framework/cache/data',
+        'path' => 'C:\\Users\\pc\\Desktop\\badl-7agz\\Reservation_allowance\\storage\\framework/cache/data',
       ),
       'memcached' => 
       array (
@@ -291,7 +291,7 @@
       array (
         'driver' => 'sqlite',
         'url' => NULL,
-        'database' => '7agz',
+        'database' => 'reserve',
         'prefix' => '',
         'foreign_key_constraints' => true,
       ),
@@ -301,9 +301,9 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => '7agz',
+        'database' => 'reserve',
         'username' => 'root',
-        'password' => '92211996',
+        'password' => '',
         'unix_socket' => '',
         'charset' => 'utf8mb4',
         'collation' => 'utf8mb4_unicode_ci',
@@ -321,9 +321,9 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => '7agz',
+        'database' => 'reserve',
         'username' => 'root',
-        'password' => '92211996',
+        'password' => '',
         'charset' => 'utf8',
         'prefix' => '',
         'prefix_indexes' => true,
@@ -336,9 +336,9 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => '7agz',
+        'database' => 'reserve',
         'username' => 'root',
-        'password' => '92211996',
+        'password' => '',
         'charset' => 'utf8',
         'prefix' => '',
         'prefix_indexes' => true,
@@ -437,13 +437,13 @@
       'local' => 
       array (
         'driver' => 'local',
-        'root' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\app',
+        'root' => 'C:\\Users\\pc\\Desktop\\badl-7agz\\Reservation_allowance\\storage\\app',
         'throw' => false,
       ),
       'public' => 
       array (
         'driver' => 'local',
-        'root' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\app/public',
+        'root' => 'C:\\Users\\pc\\Desktop\\badl-7agz\\Reservation_allowance\\storage\\app/public',
         'url' => 'http://localhost/storage',
         'visibility' => 'public',
         'throw' => false,
@@ -463,7 +463,7 @@
     ),
     'links' => 
     array (
-      'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\public\\storage' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\app/public',
+      'C:\\Users\\pc\\Desktop\\badl-7agz\\Reservation_allowance\\public\\storage' => 'C:\\Users\\pc\\Desktop\\badl-7agz\\Reservation_allowance\\storage\\app/public',
     ),
   ),
   'hashing' => 
@@ -502,13 +502,13 @@
       'single' => 
       array (
         'driver' => 'single',
-        'path' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\logs/laravel.log',
+        'path' => 'C:\\Users\\pc\\Desktop\\badl-7agz\\Reservation_allowance\\storage\\logs/laravel.log',
         'level' => 'debug',
       ),
       'daily' => 
       array (
         'driver' => 'daily',
-        'path' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\logs/laravel.log',
+        'path' => 'C:\\Users\\pc\\Desktop\\badl-7agz\\Reservation_allowance\\storage\\logs/laravel.log',
         'level' => 'debug',
         'days' => 14,
       ),
@@ -560,7 +560,7 @@
       ),
       'emergency' => 
       array (
-        'path' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\logs/laravel.log',
+        'path' => 'C:\\Users\\pc\\Desktop\\badl-7agz\\Reservation_allowance\\storage\\logs/laravel.log',
       ),
     ),
   ),
@@ -572,11 +572,11 @@
       'smtp' => 
       array (
         'transport' => 'smtp',
-        'host' => 'mail.testdomain100.online',
-        'port' => '465',
-        'encryption' => 'tls',
-        'username' => 'info@testdomain100.online',
-        'password' => '![Z!_(gy3,le',
+        'host' => 'mailpit',
+        'port' => '1025',
+        'encryption' => NULL,
+        'username' => NULL,
+        'password' => NULL,
         'timeout' => NULL,
         'local_domain' => NULL,
       ),
@@ -618,7 +618,7 @@
     ),
     'from' => 
     array (
-      'address' => 'info@testdomain100.online',
+      'address' => 'hello@example.com',
       'name' => 'Laravel',
     ),
     'markdown' => 
@@ -626,7 +626,7 @@
       'theme' => 'default',
       'paths' => 
       array (
-        0 => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\resources\\views/vendor/mail',
+        0 => 'C:\\Users\\pc\\Desktop\\badl-7agz\\Reservation_allowance\\resources\\views/vendor/mail',
       ),
     ),
   ),
@@ -785,7 +785,7 @@
     'lifetime' => '120',
     'expire_on_close' => false,
     'encrypt' => false,
-    'files' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\framework/sessions',
+    'files' => 'C:\\Users\\pc\\Desktop\\badl-7agz\\Reservation_allowance\\storage\\framework/sessions',
     'connection' => NULL,
     'table' => 'sessions',
     'store' => NULL,
@@ -805,9 +805,9 @@
   array (
     'paths' => 
     array (
-      0 => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\resources\\views',
+      0 => 'C:\\Users\\pc\\Desktop\\badl-7agz\\Reservation_allowance\\resources\\views',
     ),
-    'compiled' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\framework\\views',
+    'compiled' => 'C:\\Users\\pc\\Desktop\\badl-7agz\\Reservation_allowance\\storage\\framework\\views',
   ),
   'image' => 
   array (
@@ -926,7 +926,7 @@
     ),
     'temporary_files' => 
     array (
-      'local_path' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\framework/cache/laravel-excel',
+      'local_path' => 'C:\\Users\\pc\\Desktop\\badl-7agz\\Reservation_allowance\\storage\\framework/cache/laravel-excel',
       'local_permissions' => 
       array (
       ),
@@ -1019,7 +1019,7 @@
     array (
     ),
     'enable_runnable_solutions' => NULL,
-    'remote_sites_path' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance',
+    'remote_sites_path' => 'C:\\Users\\pc\\Desktop\\badl-7agz\\Reservation_allowance',
     'local_sites_path' => '',
     'housekeeping_endpoint_prefix' => '_ignition',
     'settings_file_path' => '',
