@@ -1,5 +1,7 @@
 /node_modules
 node_modules/
+bootstrap/cache/
+/bootstrap/cache
 # /public/build
 # /public/hot
 # /public/images

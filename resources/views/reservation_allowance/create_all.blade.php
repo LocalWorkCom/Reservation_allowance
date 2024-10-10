@@ -85,8 +85,7 @@
                                 <div class="d-flex">
                                     {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                     <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
-                                    <select class="custom-select custom-select-lg select2" name="sector_id" id="sector_id"
-                                        required>
+                                    <select class="custom-select custom-select-lg select2" name="sector_id" id="sector_id" required>
                                         <option value="0" selected>اختار القطاع</option>
                                         @foreach ($sectors as $sector)
                                             <option value="{{ $sector->id }}">
@@ -95,11 +94,10 @@
                                     </select>
                                 </div>
 
-                                <div class="d-flex mx-2" id="departement_div">
+                                <div class="d-flex mx-2">
                                     {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                     <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
-                                    <select class="custom-select custom-select-lg select2" name="departement_id"
-                                        id="departement_id">
+                                    <select class="custom-select custom-select-lg select2" name="departement_id" id="departement_id">
                                         <option value="0" selected>اختار الادارة</option>
                                     </select>
                                 </div>

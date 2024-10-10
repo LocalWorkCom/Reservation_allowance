@@ -85,8 +85,7 @@
                             <p> بدل الحجز</p>
                         </div>
                         
-                        <form class="" action="{{ route('reservation_allowances.search_employee_new') }}"
-                            method="post">
+                        <form class="" id="search_employee_allowances">
                             @csrf
                             <div class="row d-flex flex-wrap justify-content-between">
                                 <!-- 1 for sector , 2 for department -->
@@ -96,8 +95,7 @@
                                 <div class="d-flex">
                                     {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                     <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
-                                    <select class="custom-select custom-select-lg select2" name="sector_id" id="sector_id"
-                                        required>
+                                    <select class="custom-select custom-select-lg select2" name="sector_id" id="sector_id" required>
                                         <option value="0" selected>اختار القطاع</option>
                                         @foreach ($sectors as $sector)
                                             <option value="{{ $sector->id }}">
@@ -115,11 +113,15 @@
                                     </select>
                                 </div>
 
+                                <div class="form-group col-md-2 mx-2">
+                                    <input class="form-control" type="date" name="date" id="date" required>
+                                </div>
+
                                 <div class="">
                                     <label for="Civil_number">
                                         <button class="btn-all py-2 px-2" type="submit" style="color:green;">
                                             <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                            اضافة بدل حجز اختياري </button>
+                                            عرض موظفين بدل حجز </button>
                                 </div>
                             </div>
                         </form>
@@ -133,14 +135,7 @@
                                     </a>
                                     {{-- @endif --}}
                                 </div> -->
-                        <div class="">{{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                            <a class="btn-all py-2 px-2" href="{{ route('reservation_allowances.create.all') }}"
-                                style="color: #0D992C;">
-                                <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                اضافة بدل حجز جماعى بالهويات
-                            </a>
-                            {{-- @endif --}}
-                        </div>
+                        
                     </div>
                     <!-- show_reservation_allowances_info -->
                     <div id="show_reservation_allowances_info" class="col-12"></div>
@@ -217,29 +212,13 @@
 
 @endsection
 @push('scripts')
-    <script>
-        $(document).ready(function() {
-            $(document).on("change", "#sector_id", function() {
-                var sectorid = this.value;
-                var department_type = document.getElementById('department_type').value;
-                var map_url = "{{ route('reservation_allowances.get_departement', ['id', 'type']) }}";
-                map_url = map_url.replace('id', sectorid);
-                map_url = map_url.replace('type', department_type);
-                $.get(map_url, function(data) {
-                    $("#departement_id").html(data);
-                });
-            });
-        });
-
-
-        //$(function() {
-
-        //});
-    </script>
 
     <script>
 
+
         $(document).ready(function() {
+            var table = "";
+
             // Check if there are errors
             @if ($errors->any())
                 // Check if it's an add or edit operation
@@ -249,105 +228,117 @@
                     $('#edit').modal('show');
                 @endif
             @endif
-        });
 
-        $(document).ready(function() {
+            $('#search_employee_allowances').on('submit', function(e) {
+                var form = $(this);
+                e.preventDefault();
+                
+                var filter = 'all'; // Default filter
+                var sector_id = document.getElementById('sector_id').value;
+                var departement_id = document.getElementById('departement_id').value;
+                var date = document.getElementById('date').value;
 
-            //call datatable
-            $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
-            var filter = 'all'; // Default filter
-            const table = $('#users-table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: '{{ route('reservation_allowances.getAll') }}',
-                    data: function(d) {
-                        d.filter = filter; // Use the global filter variable
-                    }
-                },
-                columns: [{
-                        data: 'id',
-                        name: 'id'
+                table = $('#users-table').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: "{{ route('reservation_allowances.getAll') }}",
+                        data: function(d) {
+                            d.filter = filter; // Use the global filter variable
+                            d.sector_id = sector_id;
+                            d.departement_id = departement_id;
+                            d.date = date;
+                        }
                     },
-                    {
-                        data: 'employee_grade',
-                        name: 'employee_grade'
-                    },
-                    {
-                        data: 'employee_name',
-                        name: 'employee_name'
-                    },
-                    {
-                        data: 'employee_file_num',
-                        name: 'employee_file_num'
-                    },
-                    {
-                        data: 'type',
-                        name: 'type'
-                    },
-                    {
-                        data: 'employee_allowance_type_btn',
-                        name: 'employee_allowance_type_btn'
-                    },
-                    {
-                        data: 'employee_allowance_amount',
-                        name: 'employee_allowance_amount'
-                    } 
-                ],
-                "order": [0, 'asc'],
+                    columns: [{
+                            data: 'id',
+                            name: 'id'
+                        },
+                        {
+                            data: 'employee_grade',
+                            name: 'employee_grade'
+                        },
+                        {
+                            data: 'employee_name',
+                            name: 'employee_name'
+                        },
+                        {
+                            data: 'employee_file_num',
+                            name: 'employee_file_num'
+                        },
+                        {
+                            data: 'type',
+                            name: 'type'
+                        },
+                        {
+                            data: 'employee_allowance_type_btn',
+                            name: 'employee_allowance_type_btn'
+                        },
+                        {
+                            data: 'employee_allowance_amount',
+                            name: 'employee_allowance_amount'
+                        } 
+                    ],
+                    order: [0, 'asc'],
 
-                "oLanguage": {
-                    "sSearch": "",
-                    "sSearchPlaceholder": "بحث",
-                    "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
-                    "sInfoEmpty": 'لا توجد بيانات متاحه',
-                    "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
-                    "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
-                    "sZeroRecords": 'نأسف لا توجد نتيجة',
-                    "oPaginate": {
-                        "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
-                        "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
-                        "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
-                        "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
-                    }
-                },
-                layout: {
+                    oLanguage: {
+                        "sSearch": "",
+                        "sSearchPlaceholder": "بحث",
+                        "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
+                        "sInfoEmpty": 'لا توجد بيانات متاحه',
+                        "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
+                        "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
+                        "sZeroRecords": 'نأسف لا توجد نتيجة',
+                        "oPaginate": {
+                            "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
+                            "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
+                            "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
+                            "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
+                        }
+                    },
+                    layout: {
 
-                    bottomEnd: {
-                        paging: {
-                            firstLast: false
+                        bottomEnd: {
+                            paging: {
+                                firstLast: false
+                            }
+                        }
+                    },
+                    pagingType: "full_numbers",
+                    bDestroy: true,
+                    fnDrawCallback: function(oSettings) {
+                        console.log('Page ' + this.api().page.info().pages)
+                        var page = this.api().page.info().pages;
+                        console.log($('#users-table tr').length);
+                        if (page <= 1) {
+                            //$('.dataTables_paginate').hide();//css('visiblity','hidden');
+                            $('.dataTables_paginate').css('visibility', 'hidden'); // to hide
                         }
                     }
-                },
-                "pagingType": "full_numbers",
-                "fnDrawCallback": function(oSettings) {
+                });
+                $('.btn-filter').on('click', function() {
+                    filter = $(this).data('filter'); // Get the filter value from the clicked button
+                    table.ajax.reload(); // Reload the DataTable with the new filter
+                });
+                // Filter buttons click event
+                $('.btn-filter').click(function() {
+                    filter = $(this).data('filter'); // Update filter
+                    $('.btn-filter').removeClass('btn-active'); // Remove active class from all
+                    $(this).addClass('btn-active'); // Add active class to clicked button
 
-                    
-                    console.log('Page ' + this.api().page.info().pages)
-                    var page = this.api().page.info().pages;
-                    console.log($('#users-table tr').length);
-                    if (page <= 1) {
-                        //$('.dataTables_paginate').hide();//css('visiblity','hidden');
-                        $('.dataTables_paginate').css('visibility', 'hidden'); // to hide
-                    }
-                }
+                    table.page(0).draw(false); // Reset to first page and redraw the table
+                });
+                //end of call datatable
+
             });
-            $('.btn-filter').on('click', function() {
-                filter = $(this).data('filter'); // Get the filter value from the clicked button
-                table.ajax.reload(); // Reload the DataTable with the new filter
-            });
-            // Filter buttons click event
-            $('.btn-filter').click(function() {
-                filter = $(this).data('filter'); // Update filter
-                $('.btn-filter').removeClass('btn-active'); // Remove active class from all
-                $(this).addClass('btn-active'); // Add active class to clicked button
 
-                table.page(0).draw(false); // Reset to first page and redraw the table
-            });
-            //end of call datatable
-
-
-
+            function call_table(data_url)
+            {
+                //call datatable
+                //$.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
+                
+ 
+            }
 
 
         });

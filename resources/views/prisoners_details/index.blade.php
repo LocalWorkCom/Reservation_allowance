@@ -24,13 +24,13 @@
 <div class="row">
         <div class="container welcome col-11">
         <div class="d-flex justify-content-between">
-                  <h3>تفاصيل الحاصلين على بدل حجز</h3>
+        <h3>تفاصيل المحجوزين ليوم {{ $date }}</h3>
             </div>
         </div>
     </div>
 
     <br>
-        <h3>تفاصيل المحجوزين ليوم {{ $date }}</h3>
+       
         <div class="row">
         <div class="container col-11 mt-3 p-0 pt-5 pb-4">
             <div class="col-lg-12">

@@ -129,13 +129,15 @@
                                         class="{{ request()->routeIs('reservation_allowances.create') ? 'active' : '' }}">
                                         <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
                                             style="margin-left: 7px;">
-                                        <a href="{{ route('reservation_allowances.search_employee_new') }}">اضافة بدل حجز اختيارى</a>
+                                        <a href="{{ route('reservation_allowances.search_employee_new') }}">اضافة بدل
+                                            حجز اختيارى</a>
                                     </li>
                                     <li
                                         class="{{ request()->routeIs('reservation_allowances.create') ? 'active' : '' }}">
                                         <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
                                             style="margin-left: 7px;">
-                                        <a href="{{ route('reservation_allowances.create.all') }}">اضافة بدل حجز جماعى بالهويات</a>
+                                        <a href="{{ route('reservation_allowances.create.all') }}">اضافة بدل حجز
+                                            بالهويات</a>
                                     </li>
                                     <li
                                         class="{{ request()->routeIs('reservation_allowances.create') ? 'active' : '' }}">
@@ -143,7 +145,7 @@
                                             style="margin-left: 7px;">
                                         <a href="{{ route('reservation_allowances.index') }}">عرض موظفين بدل الحجز</a>
                                     </li>
-                                  
+
 
                                     <li class="{{ request()->routeIs('reservation_fetch.index') ? 'active' : '' }}">
                                         <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
