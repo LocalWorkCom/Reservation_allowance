@@ -17,15 +17,20 @@ use Illuminate\Support\Facades\Log;
 
 class SectorEmployeesDetailsController extends Controller
 {
-    //when click on no of reserved employee in sectors static
+        // When clicking on "no of reserved employee" in sectors static
     public function index($sectorId)
-{
-    $sector = Sector::find($sectorId);
-    return view('sector_employees.index', [
-        'sectorId' => $sectorId,
-        'sectorName' => $sector->name
-    ]);
-}
+    {
+        if (auth()->check() && auth()->user()->rule_id == 2) {
+            $sector = Sector::find($sectorId);
+
+            return view('sector_employees.index', [
+                'sectorId' => $sectorId,
+                'sectorName' => $sector ? $sector->name : 'Unknown Sector'
+            ]);
+        } else {
+            return abort(403, 'Unauthorized action.');
+        }
+    }
 public function getData($sectorId)
 {
     // Get unique users from ReservationAllowance based on sector ID

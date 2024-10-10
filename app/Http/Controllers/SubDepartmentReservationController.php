@@ -13,33 +13,39 @@ class SubDepartmentReservationController extends Controller
 {
     public function static($subDepartmentId)
     {
-        $subDepartment = departements::find($subDepartmentId);
-        
-        if ($subDepartment) {
-            $sector = $subDepartment->sector->name ?? 'N/A';
-            $mainDepartment = $subDepartment->parent->name ?? 'N/A';
-            $today = Carbon::now()->translatedFormat('l');
-            $currentMonth = Carbon::now()->translatedFormat('F Y');
-
-            $reservationAllowanceBudget = $subDepartment->reservation_allowance_amount;
-            $recordedAmounts = ReservationAllowance::where('departement_id', $subDepartmentId)->sum('amount');
-            $remainingAmount = $reservationAllowanceBudget - $recordedAmounts;
-
-            return view('subdepartment_reservation.index', [
-                'sector' => $sector,
-                'mainDepartment' => $mainDepartment,
-                'subDepartment' => $subDepartment->name,
-                'today' => $today,
-                'currentMonth' => $currentMonth,
-                'reservationAllowanceBudget' => $reservationAllowanceBudget,
-                'recordedAmounts' => $recordedAmounts,
-                'remainingAmount' => $remainingAmount,
-                'subDepartmentId' => $subDepartmentId // Pass this variable to the view
-            ]);
+        if (auth()->check() && auth()->user()->rule_id == 2) {
+            $subDepartment = departements::find($subDepartmentId);
+            
+            if ($subDepartment) {
+                $sector = $subDepartment->sector->name ?? 'N/A';
+                $mainDepartment = $subDepartment->parent->name ?? 'N/A';
+                $today = Carbon::now()->translatedFormat('l');
+                $currentMonth = Carbon::now()->translatedFormat('F Y');
+    
+                $reservationAllowanceBudget = $subDepartment->reservation_allowance_amount;
+                $recordedAmounts = ReservationAllowance::where('departement_id', $subDepartmentId)->sum('amount');
+                $remainingAmount = $reservationAllowanceBudget - $recordedAmounts;
+    
+                return view('subdepartment_reservation.index', [
+                    'sector' => $sector,
+                    'mainDepartment' => $mainDepartment,
+                    'subDepartment' => $subDepartment->name,
+                    'today' => $today,
+                    'currentMonth' => $currentMonth,
+                    'reservationAllowanceBudget' => $reservationAllowanceBudget,
+                    'recordedAmounts' => $recordedAmounts,
+                    'remainingAmount' => $remainingAmount,
+                    'subDepartmentId' => $subDepartmentId // Pass this variable to the view
+                ]);
+            } else {
+                return abort(404, 'Sub-department not found');
+            }
         } else {
-            return abort(404, 'Sub-department not found');
+            // Abort with a 403 error if the user is unauthorized
+            return abort(403, 'Unauthorized action.');
         }
     }
+    
     
     public function getAll($subDepartmentId)
     {

@@ -17,12 +17,9 @@ use Illuminate\Support\Facades\Log;
 
 class ReserveSectorController extends Controller
 {
-    public function static()
+    public function static() 
     {
-        // Verify that the user is authorized
-        $user = Auth::user();
-
-        if ($user && $user->rule_id == 2) {
+        if (auth()->check() && auth()->user()->rule_id == 2) {
             return view('reservation_sector.index');
         } else {
             return abort(403, 'Unauthorized action.');
