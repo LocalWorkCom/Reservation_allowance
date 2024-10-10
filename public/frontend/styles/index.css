@@ -197,22 +197,20 @@ ul {
     overflow-y: auto;
     font-size: 18px;
 }
-
-
 .dropdown-menu4 {
     display: none;
     position: absolute;
     top: 100%;
-    left: -140px;
+    left: -90px;
     background-color: white;
     border: 1px solid #ccc;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     z-index: 1000;
     overflow-y: auto;
-    padding-inline: 10px;
+    padding-inline: 1px;
     font-size: 23px;
     height: 200px;
-    width: 395px !important;
+    width: 375px !important;
 }
 .dropdown-menu5 {
     display: none;
@@ -224,10 +222,10 @@ ul {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     z-index: 1000;
     overflow-y: auto;
-    padding-inline: 10px;
+    padding-inline: 2px;
     font-size: 23px;
     height: 200px;
-    width: 240px !important;
+    width: 270px !important;
 }
 .dropdown-menu6 {
     display: none;
