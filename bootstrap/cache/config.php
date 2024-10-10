@@ -10,7 +10,7 @@
     'locale' => 'ar',
     'fallback_locale' => 'ar',
     'faker_locale' => 'en_US',
-    'key' => 'base64:n4MLhJY283XrWy3IF2VnjRuTIHOTpgdC5Gn1ybvCYRs=',
+    'key' => 'base64:fPMwRGYtSfYc793M5ItiqPcc+7nbsiGV2FGT643hHpI=',
     'cipher' => 'AES-256-CBC',
     'maintenance' => 
     array (
@@ -208,7 +208,7 @@
       'file' => 
       array (
         'driver' => 'file',
-        'path' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\framework/cache/data',
+        'path' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\framework/cache/data',
       ),
       'memcached' => 
       array (
@@ -291,7 +291,7 @@
       array (
         'driver' => 'sqlite',
         'url' => NULL,
-        'database' => 'alqwa',
+        'database' => '7agz',
         'prefix' => '',
         'foreign_key_constraints' => true,
       ),
@@ -301,9 +301,9 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'alqwa',
+        'database' => '7agz',
         'username' => 'root',
-        'password' => '',
+        'password' => '92211996',
         'unix_socket' => '',
         'charset' => 'utf8mb4',
         'collation' => 'utf8mb4_unicode_ci',
@@ -321,9 +321,9 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'alqwa',
+        'database' => '7agz',
         'username' => 'root',
-        'password' => '',
+        'password' => '92211996',
         'charset' => 'utf8',
         'prefix' => '',
         'prefix_indexes' => true,
@@ -336,9 +336,9 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'alqwa',
+        'database' => '7agz',
         'username' => 'root',
-        'password' => '',
+        'password' => '92211996',
         'charset' => 'utf8',
         'prefix' => '',
         'prefix_indexes' => true,
@@ -437,13 +437,13 @@
       'local' => 
       array (
         'driver' => 'local',
-        'root' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\app',
+        'root' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\app',
         'throw' => false,
       ),
       'public' => 
       array (
         'driver' => 'local',
-        'root' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\app/public',
+        'root' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\app/public',
         'url' => 'http://localhost/storage',
         'visibility' => 'public',
         'throw' => false,
@@ -463,7 +463,7 @@
     ),
     'links' => 
     array (
-      'D:\\laragon\\www\\Reservation_allowance\\public\\storage' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\app/public',
+      'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\public\\storage' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\app/public',
     ),
   ),
   'hashing' => 
@@ -502,13 +502,13 @@
       'single' => 
       array (
         'driver' => 'single',
-        'path' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\logs/laravel.log',
+        'path' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\logs/laravel.log',
         'level' => 'debug',
       ),
       'daily' => 
       array (
         'driver' => 'daily',
-        'path' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\logs/laravel.log',
+        'path' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\logs/laravel.log',
         'level' => 'debug',
         'days' => 14,
       ),
@@ -560,7 +560,7 @@
       ),
       'emergency' => 
       array (
-        'path' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\logs/laravel.log',
+        'path' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\logs/laravel.log',
       ),
     ),
   ),
@@ -572,11 +572,11 @@
       'smtp' => 
       array (
         'transport' => 'smtp',
-        'host' => 'smtp.gmail.com',
-        'port' => '587',
+        'host' => 'mail.testdomain100.online',
+        'port' => '465',
         'encryption' => 'tls',
-        'username' => 'eng.rasha.shalan@gmail.com',
-        'password' => 'En9Rosha@2022',
+        'username' => 'info@testdomain100.online',
+        'password' => '![Z!_(gy3,le',
         'timeout' => NULL,
         'local_domain' => NULL,
       ),
@@ -618,7 +618,7 @@
     ),
     'from' => 
     array (
-      'address' => 'eng.rasha.shalan@gmail.com',
+      'address' => 'info@testdomain100.online',
       'name' => 'Laravel',
     ),
     'markdown' => 
@@ -626,7 +626,7 @@
       'theme' => 'default',
       'paths' => 
       array (
-        0 => 'D:\\laragon\\www\\Reservation_allowance\\resources\\views/vendor/mail',
+        0 => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\resources\\views/vendor/mail',
       ),
     ),
   ),
@@ -785,7 +785,7 @@
     'lifetime' => '120',
     'expire_on_close' => false,
     'encrypt' => false,
-    'files' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\framework/sessions',
+    'files' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\framework/sessions',
     'connection' => NULL,
     'table' => 'sessions',
     'store' => NULL,
@@ -805,9 +805,9 @@
   array (
     'paths' => 
     array (
-      0 => 'D:\\laragon\\www\\Reservation_allowance\\resources\\views',
+      0 => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\resources\\views',
     ),
-    'compiled' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\framework\\views',
+    'compiled' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\framework\\views',
   ),
   'image' => 
   array (
@@ -926,7 +926,7 @@
     ),
     'temporary_files' => 
     array (
-      'local_path' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\framework/cache/laravel-excel',
+      'local_path' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance\\storage\\framework/cache/laravel-excel',
       'local_permissions' => 
       array (
       ),
@@ -1019,7 +1019,7 @@
     array (
     ),
     'enable_runnable_solutions' => NULL,
-    'remote_sites_path' => 'D:\\laragon\\www\\Reservation_allowance',
+    'remote_sites_path' => 'D:\\xampp\\htdocs\\my work\\Reservation_allowance',
     'local_sites_path' => '',
     'housekeeping_endpoint_prefix' => '_ignition',
     'settings_file_path' => '',
