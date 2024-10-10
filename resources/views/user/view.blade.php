@@ -30,11 +30,9 @@
                         </button>
                         <a href="{{ route('export-users') }}" class="btn btn-primary"
                             style="border-radius: 5px;">تصدير</a>
-                        <button type="button" class="btn btn-success" id="print-table"
+                        <button type="button" class="btn btn-success" onclick="window.print()"
                             style="background-color: #274373; color:white;">طباعة الجدول</button>
-                        {{-- 
-                        <button type="button" class="btn " onclick="printPDF()"
-                            style="background-color: #274373; color:white;">طباعة</button> --}}
+                     
                         <a href="{{ route('download-template') }}" class="btn "
                             style="border-radius: 5px;background-color: #274373; border-color: #274373; color:white; border-radius:10px;">تحميل
                             القالب</a>
