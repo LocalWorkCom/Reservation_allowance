@@ -173,21 +173,16 @@
                             style="direction:rtl">
                             <thead>
                                 <tr>
-                                    <th>الرتيب</th>
-                                    <th>الرتبة</th>
-                                    <th>الاسم</th>
-                                    <th>رقم الملف</th>
+                                    <th rowspan="2">الرتيب</th>
+                                    <th rowspan="2">الرتبة</th>
+                                    <th rowspan="2">الاسم</th>
+                                    <th rowspan="2">رقم الملف</th>
                                     <th>بدل الحجز</th>
                                     <!-- <th style="width:150px;">العمليات</th>-->
                                 </tr>
-                            </thead>
-                            @if ($employees)
 
                                 <tr>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
+
                                     <th>
                                         <div class="d-flex" style="justify-content: space-around !important">
                                             <div style="display: inline-flex; direction: ltr;">
@@ -217,12 +212,14 @@
                                     </th>
                                     <!-- <th style="width:150px;">العمليات</th>-->
                                 </tr>
+                            </thead>
+                            @if ($employees)
 
                                 @php($x=0)
                                 @foreach ($employees as $k_employee=>$employee)
                                 @php($x++)
                                     <tr>
-                                        <th>{{ $employee->id }}</th>
+                                        <th>{{ $x }}</th>
                                         <th>{{ $employee->name }}</th>
                                         <th>{{ $employee->grade_id != null ? $employee->grade->name : 'لا يوجد رتبة' }}</th>
                                         <th>{{ $employee->file_number != null ? $employee->file_number : 'لا يوجد رقم ملف' }}
@@ -279,6 +276,9 @@
 
 
 @endsection
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 @push('scripts')
     <script>
         $(document).ready(function() {
@@ -354,14 +354,24 @@
 
 
         function confirm_reservation() {
-            if (confirm("هل انت متاكد من انك تريد ان تضيف بدل حجز لهؤلاء الموظفين") == true) {
-                var reservation_date = document.getElementById('date').value;
-                var map_url = "{{ route('reservation_allowances.confirm_reservation_allowances','date') }}";
-                map_url = map_url.replace('date', reservation_date);
-                $.get(map_url, function(data) {
-                    window.location.href = "{{route('reservation_allowances.index')}}";
-                });
-            }
+            Swal.fire({
+                title: 'تحذير',
+                text: 'هل انت متاكد من انك تريد ان تضيف بدل حجز لهؤلاء الموظفين',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'نعم, نقل',
+                cancelButtonText: 'إلغاء',
+                confirmButtonColor: '#3085d6'
+            }).then((result) => {
+                if (result.isConfirmed) {  
+                    var reservation_date = document.getElementById('date').value;
+                    var map_url = "{{ route('reservation_allowances.confirm_reservation_allowances','date') }}";
+                    map_url = map_url.replace('date', reservation_date);
+                    window.location.href = map_url;
+                } else {
+
+                }
+            });
         }
 
 

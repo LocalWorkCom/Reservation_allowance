@@ -310,20 +310,34 @@ class ReservationAllowanceController extends Controller
                             $grade_value = $employee->grade->value_part;
                         }
 
+                        $check_sector = 1;
+                        if($employee->sector != $request->sector_id){
+                            $check_sector = 0;
+                        }
+
+                        if($employee->department_id != 0){
+                            if($employee->department_id != $request->departement_id){
+                                $check_sector = 0;
+                            }
+                        }
+
+
                         $check_reservation_allowance = ReservationAllowance::where(['user_id' => $employee->id, 'date' => $to_day])->first();
                         if(!$check_reservation_allowance){
-                            //return redirect()->back()->with('error','عفوا تم اضافة بدل لحجز '.$employee->name.' فى هذا اليوم من قبل');
-                            $add_reservation_allowance = new ReservationAllowance();
-                            $add_reservation_allowance->user_id = $employee->id;
-                            $add_reservation_allowance->type = $request->type;
-                            $add_reservation_allowance->amount = $grade_value;
-                            $add_reservation_allowance->date = $to_day;
-                            $add_reservation_allowance->day = $to_day_name;
-                            $add_reservation_allowance->sector_id = $employee->sector;
-                            $add_reservation_allowance->departement_id = $employee->department_id;
-                            $add_reservation_allowance->grade_id = $employee->grade_id;
-                            $add_reservation_allowance->created_by = $user->id;
-                            $add_reservation_allowance->save();
+                            if($check_sector == 1){
+                                //return redirect()->back()->with('error','عفوا تم اضافة بدل لحجز '.$employee->name.' فى هذا اليوم من قبل');
+                                $add_reservation_allowance = new ReservationAllowance();
+                                $add_reservation_allowance->user_id = $employee->id;
+                                $add_reservation_allowance->type = $request->type;
+                                $add_reservation_allowance->amount = $grade_value;
+                                $add_reservation_allowance->date = $to_day;
+                                $add_reservation_allowance->day = $to_day_name;
+                                $add_reservation_allowance->sector_id = $employee->sector;
+                                $add_reservation_allowance->departement_id = $employee->department_id;
+                                $add_reservation_allowance->grade_id = $employee->grade_id;
+                                $add_reservation_allowance->created_by = $user->id;
+                                $add_reservation_allowance->save();
+                            }                            
                         }
                     }
                 }
