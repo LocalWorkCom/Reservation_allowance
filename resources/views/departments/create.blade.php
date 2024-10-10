@@ -125,7 +125,7 @@
                             </div>
                             <div class="form-group col-md-10 mx-md-2" id="manager">
                                 <label for="mangered">رقم هوية المدير</label>
-                                <input type="text" name="mangered" id="mangered" class="form-control"
+                                <input type="text" name="mangered" id="mangered" class="form-control" autocomplete="off"
                                     value="{{ old('mangered') }}">
 
 
@@ -265,7 +265,7 @@
                         console.log(error);
                         Swal.fire({
                             title: 'تحذير',
-                            text: 'ززعفوا هذا المستخدم غير موجود',
+                            text: 'عفوا هذا المستخدم غير موجود',
                             icon: 'warning',
                             confirmButtonText: 'إلغاء',
                             confirmButtonColor: '#3085d6'
@@ -283,7 +283,7 @@
         $('#manager_details').hide();
         $('#password_field').hide();
         $('#rule_field').hide();
-        $('#mangered').on('input', function() {
+        $('#mangered').on('blur', function() {
             var managerId = $(this).val();
             $('#password').val('');
             $('#rule').val('');

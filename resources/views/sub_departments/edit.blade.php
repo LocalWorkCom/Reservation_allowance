@@ -278,7 +278,7 @@
         $('#manager_details').hide();
         $('#password_field').hide();
         $('#rule_field').hide();
-        $('#mangered').on('input', function() {
+        $('#mangered').on('blur', function() {
             var managerId = $(this).val();
             $('#password').val('');
             $('#rule').val('');
