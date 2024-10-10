@@ -208,7 +208,7 @@
       'file' => 
       array (
         'driver' => 'file',
-        'path' => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\storage\\framework/cache/data',
+        'path' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\framework/cache/data',
       ),
       'memcached' => 
       array (
@@ -291,7 +291,7 @@
       array (
         'driver' => 'sqlite',
         'url' => NULL,
-        'database' => 'reserve',
+        'database' => 'alqwa',
         'prefix' => '',
         'foreign_key_constraints' => true,
       ),
@@ -301,7 +301,7 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'reserve',
+        'database' => 'alqwa',
         'username' => 'root',
         'password' => '',
         'unix_socket' => '',
@@ -321,7 +321,7 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'reserve',
+        'database' => 'alqwa',
         'username' => 'root',
         'password' => '',
         'charset' => 'utf8',
@@ -336,7 +336,7 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'reserve',
+        'database' => 'alqwa',
         'username' => 'root',
         'password' => '',
         'charset' => 'utf8',
@@ -437,13 +437,13 @@
       'local' => 
       array (
         'driver' => 'local',
-        'root' => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\storage\\app',
+        'root' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\app',
         'throw' => false,
       ),
       'public' => 
       array (
         'driver' => 'local',
-        'root' => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\storage\\app/public',
+        'root' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\app/public',
         'url' => 'http://localhost/storage',
         'visibility' => 'public',
         'throw' => false,
@@ -463,7 +463,7 @@
     ),
     'links' => 
     array (
-      'C:\\Users\\PC\\Desktop\\Reservation_allowance\\public\\storage' => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\storage\\app/public',
+      'D:\\laragon\\www\\Reservation_allowance\\public\\storage' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\app/public',
     ),
   ),
   'hashing' => 
@@ -502,13 +502,13 @@
       'single' => 
       array (
         'driver' => 'single',
-        'path' => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\storage\\logs/laravel.log',
+        'path' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\logs/laravel.log',
         'level' => 'debug',
       ),
       'daily' => 
       array (
         'driver' => 'daily',
-        'path' => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\storage\\logs/laravel.log',
+        'path' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\logs/laravel.log',
         'level' => 'debug',
         'days' => 14,
       ),
@@ -560,7 +560,7 @@
       ),
       'emergency' => 
       array (
-        'path' => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\storage\\logs/laravel.log',
+        'path' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\logs/laravel.log',
       ),
     ),
   ),
@@ -572,11 +572,11 @@
       'smtp' => 
       array (
         'transport' => 'smtp',
-        'host' => 'mail.testdomain100.online',
-        'port' => '465',
+        'host' => 'smtp.gmail.com',
+        'port' => '587',
         'encryption' => 'tls',
-        'username' => 'info@testdomain100.online',
-        'password' => '![Z!_(gy3,le',
+        'username' => 'eng.rasha.shalan@gmail.com',
+        'password' => 'En9Rosha@2022',
         'timeout' => NULL,
         'local_domain' => NULL,
       ),
@@ -618,7 +618,7 @@
     ),
     'from' => 
     array (
-      'address' => 'info@testdomain100.online',
+      'address' => 'eng.rasha.shalan@gmail.com',
       'name' => 'Laravel',
     ),
     'markdown' => 
@@ -626,7 +626,7 @@
       'theme' => 'default',
       'paths' => 
       array (
-        0 => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\resources\\views/vendor/mail',
+        0 => 'D:\\laragon\\www\\Reservation_allowance\\resources\\views/vendor/mail',
       ),
     ),
   ),
@@ -785,7 +785,7 @@
     'lifetime' => '120',
     'expire_on_close' => false,
     'encrypt' => false,
-    'files' => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\storage\\framework/sessions',
+    'files' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\framework/sessions',
     'connection' => NULL,
     'table' => 'sessions',
     'store' => NULL,
@@ -805,9 +805,9 @@
   array (
     'paths' => 
     array (
-      0 => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\resources\\views',
+      0 => 'D:\\laragon\\www\\Reservation_allowance\\resources\\views',
     ),
-    'compiled' => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\storage\\framework\\views',
+    'compiled' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\framework\\views',
   ),
   'image' => 
   array (
@@ -926,7 +926,7 @@
     ),
     'temporary_files' => 
     array (
-      'local_path' => 'C:\\Users\\PC\\Desktop\\Reservation_allowance\\storage\\framework/cache/laravel-excel',
+      'local_path' => 'D:\\laragon\\www\\Reservation_allowance\\storage\\framework/cache/laravel-excel',
       'local_permissions' => 
       array (
       ),
@@ -1019,7 +1019,7 @@
     array (
     ),
     'enable_runnable_solutions' => NULL,
-    'remote_sites_path' => 'C:\\Users\\PC\\Desktop\\Reservation_allowance',
+    'remote_sites_path' => 'D:\\laragon\\www\\Reservation_allowance',
     'local_sites_path' => '',
     'housekeeping_endpoint_prefix' => '_ignition',
     'settings_file_path' => '',
