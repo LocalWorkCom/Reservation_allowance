@@ -17,15 +17,18 @@ class ReservationStaticsController extends Controller
 {
     public function static($sector_id)
     {
-      
+        if (auth()->check() && auth()->user()->rule_id == 2) {
             $sector = Sector::find($sector_id);
-
+    
             return view('reservation_statics.index', [
                 'sector_id' => $sector_id,
                 'sector_name' => $sector ? $sector->name : 'Unknown Sector'
             ]);
-       
+        } else {
+            return abort(403, 'Unauthorized action.');
+        }
     }
+    
 
     public function getAll($sector_id)
     {
