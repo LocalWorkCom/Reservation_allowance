@@ -78,10 +78,10 @@
             <!-- General Search Form -->
             <form id="search-form" class="d-flex align-items-center me-3" method="get"
                 action="{{ route('reservation_fetch.getAll') }}">
-                <label for="civil_number" class="form-label mx-2">رقم الهوية</label>
+                <label for="civil_number" class="form-label mx-2 col-3">رقم الهوية</label>
                 <input type="text" id="civil_number" name="civil_number" class="form-control" required>
-                <button type="submit" class="btn btn-primary mx-2"
-                    style="background-color: #274373; color:white;">بحث</button>
+                <button type="submit" class="btn  mx-2"
+                    style="    background-color: #b9bcc0; color: #0f0e0e;border-radius: 10px; border: none; font-weight: 700; ">بحث</button>
             </form>
 
             <!-- Buttons Group -->
@@ -89,7 +89,7 @@
                 <!-- Last Month Search Form -->
                 <form id="last-month-form" method="get" action="{{ route('reservation_fetch.getLastMonth') }}">
                     <input type="hidden" name="civil_number" id="last_month_civil_number">
-                    <button type="submit" class="btn btn-secondary" style="background-color: #274373; color:white;">الشهر
+                    <button type="submit" class="btn  mx-1" style="background-color: #3c7327; color:white; border-radius:10px;">الشهر
                         الماضي</button>
                 </form>
 
@@ -97,49 +97,54 @@
                 <form id="last-three-month-form" method="get"
                     action="{{ route('reservation_fetch.getLastThreeMonths') }}">
                     <input type="hidden" name="civil_number" id="last_three_month_civil_number">
-                    <button type="submit" class="btn btn-secondary" style="background-color: #274373; color:white;">آخر 3
+                    <button type="submit" class="btn  mx-1" style="background-color: #d06702; color:white; border-radius:10px;">آخر 3
                         شهور</button>
                 </form>
 
                 <!-- Last 6 Months Search Form -->
                 <form id="last-six-months-form" method="get" action="{{ route('reservation_fetch.getLastSixMonths') }}">
                     <input type="hidden" name="civil_number" id="last_six_months_civil_number">
-                    <button type="submit" class="btn btn-secondary" style="background-color: #274373; color:white;">آخر ستة
+                    <button type="submit" class="btn  mx-1" style="background-color:#2c9e9f; color:white; border-radius:10px;">آخر ستة
                         أشهر</button>
                 </form>
 
                 <!-- Last Year Search Form -->
                 <form id="last-year-form" method="get" action="{{ route('reservation_fetch.getLastYear') }}">
                     <input type="hidden" name="civil_number" id="last_year_civil_number">
-                    <button type="submit" class="btn btn-secondary" style="background-color: #274373; color:white;">السنة
+                    <button type="submit" class="btn  mx-1" style="background-color: #c9b22c; color:white; border-radius:10px;">السنة
                         الماضية</button>
                 </form>
                 <!-- Other Dates Button -->
-                <button id="other-dates-button" class="btn btn-info" style="background-color: #274373; color:white;">تواريخ
-                    أخرى</button>
+                <button id="other-dates-button" class="btn" style="background-color: #c47900; color:white; border-radius:10px;">تواريخ
+
+                    أخرى ...</button>
             </div>
-            <!-- Date Range Picker (Initially Hidden) -->
-            <div id="date-picker-container" class="row col-12 mt-3" style="display: none;">
+         
+        </div> 
+
+
+    </div>
+   
+   <!-- Date Range Picker (Initially Hidden) -->
+   <div id="date-picker-container" class="row col-12 mt-3" style="display: none;">
+   <div class="container welcome col-11 my-4" dir="rtl">
                 <form id="custom-date-form" class="d-flex align-items-center">
-                    <label for="start_date" class="form-label mx-2">من</label>
-                    <input type="date" id="start_date" name="start_date" class="form-control mx-2">
-                    <label for="end_date" class="form-label mx-2">إلى</label>
-                    <input type="date" id="end_date" name="end_date" class="form-control mx-2">
-                    <button type="submit" class="btn btn-success mx-2" style="background-color: #274373; color:white;">بحث
+             
+                    <label for="start_date" class="form-label mx-2" style="    font-weight: 700;">من</label>
+                    <input type="date" id="start_date" name="start_date" class="form-control mx-2" style="background-color: #f5f6fa; !important;     " >
+                    <label for="end_date" class="form-label mx-2" style="    font-weight: 700;">إلى</label>
+                    <input type="date" id="end_date" name="end_date" class="form-control mx-2" style="background-color: #f5f6fa; !important; " >
+                    <button type="submit" class="btn btn-success mx-2" style="    background-color: #b9bcc0; color: #0f0e0e;border-radius: 10px; border: none;font-weight: 700;  ">بحث
                         بالتواريخ</button>
-                </form>
-            </div>
-        </div>
-
-
-    </div>
-
-    </div>
+                      
+                </form>  </div>
+            </div>    
+    <!-- </div> -->
 
 
 <!-- Results Table -->
-<div class="container col-11">
-    <div class="table-box">
+<div class="container col-11 pb-4" >
+    <div class="" >
         <h3 style="font-weight: 700; display: flex; justify-content: flex-end; padding-top: 20px; font-size: 25px;">نتائج البحث</h3>
         <div class="col-md-2 mb-2">
             <button type="button" class="btn" onclick="printPDF()" style="background-color: #274373; color:white;">طباعة</button>
