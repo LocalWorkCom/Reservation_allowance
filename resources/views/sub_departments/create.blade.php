@@ -268,16 +268,30 @@
                             }
                         }
                     },
-                    error: function(xhr, status, error) {
-                        console.log(xhr.responseText);
-                        console.log(status);
-                        console.log(error);
+                    error: function(xhr) {
+                        console.log(xhr);
                         Swal.fire({
                             title: 'تحذير',
-                            text: 'عفوا هذا المستخدم غير موجود',
+                            text: xhr.responseJSON.error || 'عفوا هذا المستخدم غير موجود',
                             icon: 'warning',
-                            confirmButtonText: 'إلغاء',
-                            confirmButtonColor: '#3085d6'
+                            showCancelButton: true,
+                            confirmButtonText: 'نعم, استمر',
+                            cancelButtonText: 'لا',
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // User confirmed
+                                // You may want to handle confirmation logic here
+                            } else {
+                                // User clicked "إلغاء", clear the input field
+                                $('#mangered').val('');
+                                $('#manager_details').hide();
+                                $('#password_field').hide();
+                                $('#rule_field').hide();
+                                $('#password').val('');
+                                $('#rule').val('');
+                            }
                         });
                     }
                 });

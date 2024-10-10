@@ -94,7 +94,7 @@ class DepartmentController extends Controller
         // Fetch manager data from the database
         $user = User::where('Civil_number', $id)->first();
         if (!$user) {
-            return response()->json(['error' => '11عفوا هذا المستخدم غير موجود'], 404);
+            return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 404);
         }
 
         // Check if the user is a sector manager
