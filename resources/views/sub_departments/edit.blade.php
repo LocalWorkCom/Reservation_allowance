@@ -100,14 +100,15 @@
                             </div>
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="name">أسم الأداره الرئيسية</label>
-                                <input type="text" name="name" class="form-control" value="{{ $department->name }}">
+                                <input type="text" name="name" class="form-control" autocomplete="one-time-code"
+                                    value="{{ $department->name }}">
                                 @error('name')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="budget">ميزانية بدل حجز</label>
-                                <input type="text" name="budget" class="form-control"
+                                <input type="text" name="budget" class="form-control" autocomplete="one-time-code"
                                     value="{{ $department->reservation_allowance_amount }}">
                                 @error('budget')
                                     <div class="alert alert-danger">{{ $message }}</div>
@@ -170,7 +171,7 @@
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="description">الوصف </label>
                                 <input type="text" name="description" class="form-control"
-                                    value="{{ $department->description }}">
+                                    autocomplete="one-time-code" value="{{ $department->description }}">
                                 @error('description')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
