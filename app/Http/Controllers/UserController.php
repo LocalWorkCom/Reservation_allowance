@@ -126,7 +126,7 @@ class UserController extends Controller
         }
 
         // Finally, fetch the results
-        $data = $data->orderby('grade_id')->get();
+        $data = $data->orderby('grade_id','asc')->get();
 
         return DataTables::of($data)->addColumn('action', function ($row) {
             return $row;
