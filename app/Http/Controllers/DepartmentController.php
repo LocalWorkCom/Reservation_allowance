@@ -92,7 +92,8 @@ class DepartmentController extends Controller
     public function getManagerDetails($id)
     {
         // Fetch manager data from the database
-        $user = User::where('Civil_number', $id)->first();
+       // $user = User::where('Civil_number', $id)->first();
+       $user = User::where('file_number', $id)->first();
         if (!$user) {
             return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 404);
         }
@@ -340,7 +341,8 @@ class DepartmentController extends Controller
         $reservation_allowance_type = (in_array('1', $part) && in_array('2', $part)) ? 3 : (in_array('1', $part) ? 1 : 2);
 
         // Retrieve the user by Civil_number and set the manager
-        $manager = $request->mangered ? User::where('Civil_number', $request->mangered)->first() : null;
+       // $manager = $request->mangered ? User::where('Civil_number', $request->mangered)->first() : null;
+        $manager = $request->mangered ? User::where('file_number', $request->mangered)->first() : null;
 
         if ($manager) {
             // Create a new department
@@ -396,8 +398,9 @@ class DepartmentController extends Controller
 
         // Handle employee assignment
         $failed_civil_numbers = [];
-        foreach ($Civil_numbers as $Civil_number) {
-            $employee = User::where('Civil_number', $Civil_number)->first();
+        foreach ($Civil_numbers as $Civil_number) {//file_number
+          //  $employee = User::where('Civil_number', $Civil_number)->first();
+          $employee = User::where('file_number', $Civil_number)->first();
             if ($employee) {
                 if ($employee->department_id && !$request->has('confirm_transfer')) {
                     $failed_civil_numbers[] = $Civil_number; // Add to failed list if transfer not confirmed
@@ -452,7 +455,8 @@ class DepartmentController extends Controller
         $reservation_allowance_type = (in_array('1', $part) && in_array('2', $part)) ? 3 : (in_array('1', $part) ? 1 : 2);
 
         // Retrieve the user by Civil_number and set the manager for sub-department
-        $manager = $request->mangered ? User::where('Civil_number', $request->mangered)->first() : null;
+       // $manager = $request->mangered ? User::where('Civil_number', $request->mangered)->first() : null;
+        $manager = $request->mangered ? User::where('file_number', $request->mangered)->first() : null;
 
         if ($manager) {
             // Create a new sub-department
@@ -509,8 +513,10 @@ class DepartmentController extends Controller
 
         // Handle employee assignment
         $failed_civil_numbers = [];
-        foreach ($Civil_numbers as $Civil_number) {
-            $employee = User::where('Civil_number', $Civil_number)->first();
+        foreach ($Civil_numbers as $Civil_number) {//file_number
+           // $employee = User::where('Civil_number', $Civil_number)->first();
+           $employee = User::where('file_number', $Civil_number)->first();
+
             if ($employee) {
                 if ($employee->department_id && !$request->has('confirm_transfer')) {
                     $failed_civil_numbers[] = $Civil_number; // Add to failed list if transfer not confirmed
@@ -619,8 +625,9 @@ class DepartmentController extends Controller
         }
 
         // Retrieve the old manager before updating
-        $oldManager = $department->manger;
-        $manager = $request->mangered ? User::where('Civil_number', $request->mangered)->value('id') : null;
+        $oldManager = $department->manger;//file_number
+       // $manager = $request->mangered ? User::where('Civil_number', $request->mangered)->value('id') : null;
+        $manager = $request->mangered ? User::where('file_number', $request->mangered)->value('id') : null;
 
 
         // Handle reservation allowance type
@@ -714,14 +721,20 @@ class DepartmentController extends Controller
         $employeesToRemove = array_diff($currentEmployees, $Civil_numbers);
         $employeesToAdd = array_diff($Civil_numbers, $currentEmployees);
 
-        if (!empty($employeesToRemove)) {
+      /*   if (!empty($employeesToRemove)) {//file_number
             User::whereIn('Civil_number', $employeesToRemove)
+                ->update(['sector' => null, 'department_id' => null]);
+        } */
+        if (!empty($employeesToRemove)) {//file_number
+            User::whereIn('file_number', $employeesToRemove)
                 ->update(['sector' => null, 'department_id' => null]);
         }
 
         // Add new employees to the department
         foreach ($employeesToAdd as $Civil_number) {
-            $employee = User::where('Civil_number', $Civil_number)->first();
+          //  $employee = User::where('Civil_number', $Civil_number)->first();
+
+          $employee = User::where('file_number', $Civil_number)->first();
             if ($employee && $employee->grade_id != null) {
                 $employee->sector = $request->sector;
                 $employee->department_id = $department->id;
@@ -763,9 +776,9 @@ class DepartmentController extends Controller
         }
 
         // Retrieve old manager before updating
-        $oldManager = $department->manger;
-        $manager = $request->mangered ? User::where('Civil_number', $request->mangered)->value('id') : null;
-
+        $oldManager = $department->manger;//file_number
+       // $manager = $request->mangered ? User::where('Civil_number', $request->mangered)->value('id') : null;
+        $manager = $request->mangered ? User::where('file_number', $request->mangered)->value('id') : null;
         // Handle reservation allowance type
         $part = $request->input('part');
         $reservation_allowance_type = null;
@@ -847,19 +860,23 @@ class DepartmentController extends Controller
         // Handle employee updates in the sub-department
         $Civil_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->Civil_number);
         $Civil_numbers = array_filter(explode(',', $Civil_numbers)); // Convert to array of Civil Numbers
+//file_number
+       // $currentEmployees = User::where('department_id', $department->id)->pluck('Civil_number')->toArray();
+       $currentEmployees = User::where('department_id', $department->id)->pluck('file_number')->toArray();
 
-        $currentEmployees = User::where('department_id', $department->id)->pluck('Civil_number')->toArray();
         $employeesToRemove = array_diff($currentEmployees, $Civil_numbers);
         $employeesToAdd = array_diff($Civil_numbers, $currentEmployees);
 
         // Remove employees that are no longer in this sub-department
         if (!empty($employeesToRemove)) {
-            User::whereIn('Civil_number', $employeesToRemove)->update(['department_id' => null, 'sector' => null]);
+          //  User::whereIn('Civil_number', $employeesToRemove)->update(['department_id' => null, 'sector' => null]);
+          User::whereIn('file_number', $employeesToRemove)->update(['department_id' => null, 'sector' => null]);
         }
 
         // Add new employees to the sub-department
         foreach ($employeesToAdd as $Civil_number) {
-            $employee = User::where('Civil_number', $Civil_number)->first();
+          //  $employee = User::where('Civil_number', $Civil_number)->first();
+          $employee = User::where('file_number', $Civil_number)->first();
             if ($employee) {
                 $employee->department_id = $department->id;
                 $employee->sector = $department->sector_id;

@@ -67,7 +67,7 @@ class ReservationAllowanceController extends Controller
                 $sectors[] = $user->sectors;
                 $get_departements = departements::with('children')->where('id', '!=', 1)->where('id', $user->department_id)->get();
             }
-        }        
+        }
 
         return view('reservation_allowance.index_data', compact('sectors', 'get_departements', 'employees', 'to_day', 'to_day_name', 'super_admin', 'sector_id', 'departement_id'));
     }
@@ -324,9 +324,10 @@ class ReservationAllowanceController extends Controller
             $Civil_numbers = str_replace(array("\r","\r\n","\n"),',',$request->Civil_number);
             $Civil_numbers = explode(',,',$Civil_numbers);
 
-            foreach($Civil_numbers as $Civil_number){
+            foreach($Civil_numbers as $Civil_number){//file_number
 
-                $employee = User::where('Civil_number', $Civil_number)->first();
+               // $employee = User::where('Civil_number', $Civil_number)->first();
+               $employee = User::where('file_number', $Civil_number)->first();
                 if($employee){// check if employee
                     if($employee->grade_id != null){ // check if employee has grade
                         if($request->type == 1){
@@ -362,7 +363,7 @@ class ReservationAllowanceController extends Controller
                                 $add_reservation_allowance->grade_id = $employee->grade_id;
                                 $add_reservation_allowance->created_by = $user->id;
                                 $add_reservation_allowance->save();
-                            }                            
+                            }
                         }
                     }
                 }
@@ -507,8 +508,10 @@ class ReservationAllowanceController extends Controller
 
         $check_sector = 0;
         $check_department = 0;
-        foreach($civil_numbers as $civil_number){
-            $employee = User::where('Civil_number', $civil_number)->first();
+        foreach($civil_numbers as $civil_number){//file_number
+           // $employee = User::where('Civil_number', $civil_number)->first();
+           $employee = User::where('file_number', $civil_number)->first();
+
             if($employee){// check if employee
                 if($employee->sector != $sector_id){
                     $check_sector++;
@@ -540,7 +543,7 @@ class ReservationAllowanceController extends Controller
         if($request->has('date')){
             $today = $request->date;
         }
-        
+
         $to_day_name = Carbon::now()->translatedFormat('l');
         $user = auth()->user();
         if($user->rule_id == 2)
@@ -575,7 +578,7 @@ class ReservationAllowanceController extends Controller
             return redirect()->back()->with('error','عفوا يجب اختيار اسم القطاع');
         }*/
 
-        
+
 
         $data = [];
 

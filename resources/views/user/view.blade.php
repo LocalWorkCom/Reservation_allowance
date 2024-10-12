@@ -32,7 +32,7 @@
                             style="border-radius: 5px;">تصدير</a>
                         <button type="button" class="btn btn-success" onclick="window.print()"
                             style="background-color: #274373; color:white;">طباعة الجدول</button>
-                     
+
                         <a href="{{ route('download-template') }}" class="btn "
                             style="border-radius: 5px;background-color: #274373; border-color: #274373; color:white; border-radius:10px;">تحميل
                             القالب</a>
@@ -110,8 +110,8 @@
                                     <th>رقم المسلسل</th>
                                     <th>الرتبه</th>
                                     <th>الاسم</th>
-                                    <th>رقم المدني</th>
-                                    <th>الرقم العسكري</th>
+                                    {{--    <th>رقم المدني</th>
+                                    <th>الرقم العسكري</th> --}}
                                     <th>رقم الملف</th>
                                     <th>الهاتف</th>
                                     <th>الادارة</th>
@@ -158,37 +158,37 @@
                                     if ($department_id) {
                                         //  $Dataurl .= '?department_id=' . $department_id;
                                         /*  if ($parms != '') {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        $parms .= '&';
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    } else {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        $parms = '?';
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    } */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            $parms .= '&';
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        } else {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            $parms = '?';
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        } */
                                         $parms['department_id'] = $department_id;
                                     }
                                     if ($parent_department_id) {
                                         //  $Dataurl .= '?department_id=' . $department_id;
                                         /*  if ($parms != '') {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        $parms .= '&';
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    } else {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        $parms = '?';
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    } */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            $parms .= '&';
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        } else {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            $parms = '?';
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        } */
                                         $parms['parent_department_id'] = $parent_department_id;
                                     }
 
                                     if ($sector_id) {
                                         /*   if ($parms != '') {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        $parms .= '&';
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    } else {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        $parms = '?';
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    }*/
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            $parms .= '&';
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        } else {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            $parms = '?';
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }*/
 
                                         $parms['sector_id'] = $sector_id;
                                     }
                                     if ($type) {
                                         /*  if ($parms != '') {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        $parms .= '&';
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    } else {
-                                                                                                                                                                                                                                                                                                                                                                                                                            $parms = '?';
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    }*/
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            $parms .= '&';
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        } else {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                $parms = '?';
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }*/
 
                                         $parms['type'] = $type;
                                     }
@@ -199,7 +199,7 @@
                                     // $Dataurl .= '?' . http_build_query($parms);
                                     // dd($url_data);
                                 @endphp
-                                /*   
+                                /*
                                   $('#users-table tfoot th').each(function (i) {
                                       var title = $('#users-table thead th')
                                           .eq($(this).index())
@@ -237,14 +237,14 @@
                                             data: 'name',
                                             name: 'name'
                                         },
-                                        {
-                                            data: 'Civil_number',
-                                            name: 'Civil_number'
-                                        },
-                                        {
-                                            data: 'military_number',
-                                            name: 'military_number'
-                                        },
+                                        /*     {
+                                                data: 'Civil_number',
+                                                name: 'Civil_number'
+                                            },
+                                            {
+                                                data: 'military_number',
+                                                name: 'military_number'
+                                            }, */
                                         {
                                             data: 'file_number',
                                             name: 'file_number'
@@ -292,9 +292,9 @@
                                         <a href="` + usershow + `"  class="btn btn-sm " style="background-color: #274373;"> <i class="fa fa-eye"></i>عرض  </a>
                                         <a href="` + useredit + `" class="btn btn-sm"  style="background-color: #F7AF15;"> <i class="fa fa-edit"></i> تعديل </a>
                                         {{-- <a href="${vacation}"  "   class="btn btn-sm" style=" background-color:#864824; "> <i class="fa-solid fa-mug-hot" ></i> </a> --}}
-                                    
-                                        <a href="${unsigned}" class="btn btn-sm ${visibility}" style="background-color: #28a39c;"> 
-                                            <i class="fa-solid fa-user-minus"></i> الغاء التعيين 
+
+                                        <a href="${unsigned}" class="btn btn-sm ${visibility}" style="background-color: #28a39c;">
+                                            <i class="fa-solid fa-user-minus"></i> الغاء التعيين
                                         </a>
 
                                         `;
