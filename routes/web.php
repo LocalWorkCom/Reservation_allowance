@@ -553,7 +553,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('reservation_report', [ReservationReportController::class, 'index'])->name('reserv_report.index');
     Route::get('reservation_report/getReportData', [ReservationReportController::class, 'getReportData'])->name('reservation_report.getReportData');
     Route::get('reservation_report/print', [ReservationReportController::class, 'printReport'])->name('reservation_report.print');
-
+    
     Route::get('/file-import', [UserController::class, 'importView'])->name('import-view');
     Route::post('/import', [UserController::class, 'import'])->name('import');
     Route::get('/export-users', [UserController::class, 'exportUsers'])->name('export-users');

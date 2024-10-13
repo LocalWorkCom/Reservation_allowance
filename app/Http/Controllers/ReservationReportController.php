@@ -7,15 +7,28 @@ use App\Models\departements;
 use App\Models\ReservationAllowance;
 use Yajra\DataTables\Facades\DataTables;
 use TCPDF;
-
 use Carbon\Carbon;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use App\Models\grade;
+use App\Models\Sector;
+use Illuminate\Support\Facades\Log;
 
 class ReservationReportController extends Controller
 {
     public function index()
     {
+
+        if ( auth()->user()->rule_id == 2) {
         return view('reserv_report.index');
+    } else {
+        return abort(403, 'Unauthorized action.');
     }
+    }
+
+   
 
    public function getReportData(Request $request)
 {
