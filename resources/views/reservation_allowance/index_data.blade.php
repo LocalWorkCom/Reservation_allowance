@@ -92,14 +92,13 @@
                                 <input name="department_type" id="department_type" type="hidden"
                                     value="{{ Auth::user()->department_id == null ? 1 : 2 }}">
 
-                                <div class="d-flex">
+                                <div class="d-flex mx-2">
                                     {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                     <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
                                     <select class="custom-select custom-select-lg select2" name="sector_id" id="sector_id" required>
                                         <option value="0" selected>اختار القطاع</option>
                                         @foreach ($sectors as $sector)
-                                            <option value="{{ $sector->id }}">
-                                                {{ $sector->name }}</option>
+                                            <option value="{{ $sector->id }}" {{$sector->id == $sector_id ? "selected" : ""}}> {{ $sector->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -107,9 +106,19 @@
                                 <div class="d-flex mx-2" id="departement_div">
                                     {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                     <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
-                                    <select class="custom-select custom-select-lg select2" name="departement_id"
-                                        id="departement_id">
-                                        <option value="0" selected>اختار الادارة</option>
+                                    <select class="custom-select custom-select-lg" name="departement_id" id="departement_id">
+                                        <option value="0" >اختار الادارة</option>
+                                        @if($get_departements)
+                                            @foreach($get_departements as $departement)
+                                            <option value="{{ $departement->id }}" {{$departement->id == $departement_id ? "selected" : ""}}> {{ $departement->name }}</option>
+                                                @if(count($departement->children))
+                                                    @include('reservation_allowance.manageChildren', [
+                                                    'children' => $departement->children,
+                                                    'parent_id' => $departement_id,
+                                                    ])
+                                                @endif
+                                            @endforeach
+                                        @endif
                                     </select>
                                 </div>
 
@@ -117,12 +126,11 @@
                                     <input class="form-control" type="date" name="date" id="date" max="{{$to_day}}" value="{{$to_day}}" required>
                                 </div>
 
-                                <div class="">
-                                    <label for="Civil_number">
+                                <!-- <div class="">
                                         <button class="btn-all py-2 px-2" type="submit" style="color:green;">
                                             <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
                                             عرض موظفين بدل حجز </button>
-                                </div>
+                                </div>-->
                             </div>
                         </form>
                         <!--  <div class="d-flex justify-content-between mt-2">
@@ -222,35 +230,11 @@
             var date = document.getElementById('date').value;
             var filter = 'all'; // Default filter
 
-            // Check if there are errors
-            @if ($errors->any())
-                // Check if it's an add or edit operation
-                @if (session('modal_type') === 'add')
-                    $('#addForm').modal('show');
-                @elseif (session('modal_type') === 'edit')
-                    $('#edit').modal('show');
-                @endif
-            @endif
-
-            $('#search_employee_allowances').on('submit', function(e) {
-                var form = $(this);
-                e.preventDefault();
-                get_table_data("{{ route('reservation_allowances.getAll') }}");
-            });
-
-
-            function get_table_data(data_url)
-            {    
-                var filter = 'all'; // Default filter
-                var sector_id = document.getElementById('sector_id').value;
-                var departement_id = document.getElementById('departement_id').value;
-                var date = document.getElementById('date').value;
-
                 table = $('#users-table').DataTable({
                     processing: true,
                     serverSide: true,
                     ajax: {
-                        url: data_url,
+                        url: "{{ route('reservation_allowances.getAll') }}",
                         data: function(d) {
                             d.filter = filter; // Use the global filter variable
                             d.sector_id = sector_id;
@@ -336,7 +320,7 @@
                     table.page(0).draw(false); // Reset to first page and redraw the table
                 });
                 //end of call datatable
-            }
+            
 
 
         });

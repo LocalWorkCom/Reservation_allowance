@@ -26,12 +26,13 @@
     </style>
 </head>
 <body>
-    
+
     <div class="header-box">
-        <img src="{{ asset('img/logo.png') }}" alt="Logo" width="50px"> 
+        <img src="{{ asset('img/logo.png') }}" alt="Logo" width="50px">
         <h2>تقرير الحجز</h2>
         <p>اسم المستخدم: {{ $user->name }}</p>
         <p>رقم الهوية: {{ $user->Civil_number }}</p>
+        <p>رقم الملف: {{ $user->file_number }}</p>
         <p>القطاع: {{ $sector }}</p>
         <p>الإدارة: {{ $department }}</p>
         <p>الرتبة: {{ $grade }}</p>

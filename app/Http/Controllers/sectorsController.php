@@ -26,8 +26,10 @@ class sectorsController extends Controller
     }
     public function getManagerSectorDetails($id,$sector)
     {
-        // Fetch manager data from the database
-        $manager = User::where('Civil_number', $id)->first();
+        // Fetch manager data from the database file_number
+       // $manager = User::where('Civil_number', $id)->first();
+       $manager = User::where('file_number', $id)->first();
+
         if ($sector === 'null') {
             $sector = null;
         }
@@ -134,8 +136,9 @@ class sectorsController extends Controller
     }
     public function getManagerDetails($id)
     {
-        // Fetch manager data from the database
-        $manager = User::where('Civil_number', $id)->first();
+        // Fetch manager data from the database//file_number
+       // $manager = User::where('Civil_number', $id)->first();
+       $manager = User::where('file_number', $id)->first();
 
         if (!$manager) {
             return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 404);
@@ -209,8 +212,9 @@ class sectorsController extends Controller
         $Civil_numbers = str_replace(["\r", "\r\n", "\n"], ',', $request->Civil_number);
         $Civil_numbers = explode(',,', $Civil_numbers);
 
-        // Find employees based on Civil_number
-        $employees = User::whereIn('Civil_number', $Civil_numbers)->pluck('id')->toArray();
+        // Find employees based on Civil_number   file_number
+       // $employees = User::whereIn('Civil_number', $Civil_numbers)->pluck('id')->toArray();
+        $employees = User::whereIn('file_number', $Civil_numbers)->pluck('id')->toArray();
 
         // Initialize manager variable
         $manager = null;
@@ -218,7 +222,8 @@ class sectorsController extends Controller
         // Handle the case if `mangered` is provided
         if ($request->mangered) {
             // Find manager based on Civil Number
-            $manager = User::where('Civil_number', $request->mangered)->value('id');
+           // $manager = User::where('Civil_number', $request->mangered)->value('id');
+            $manager = User::where('file_number', $request->mangered)->value('id');
 
             // Validate manager: must not be one of the employees
             if (in_array($manager, $employees)) {

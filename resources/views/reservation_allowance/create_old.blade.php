@@ -94,7 +94,7 @@
                                     <option selected disabled>اختار من القائمة</option>
                                     @foreach ($employees as $employee)
                                     <option value="{{ $employee->id }}" {{ old('Civil_number') == $employee->id ? 'selected' : '' }}>
-                                        {{ $employee->Civil_number }}</option>
+                                        {{ $employee->file_number }}</option>
                                     @endforeach
                                 </select>
                         </div>

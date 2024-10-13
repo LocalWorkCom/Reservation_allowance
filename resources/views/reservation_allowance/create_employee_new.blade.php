@@ -110,7 +110,7 @@
                                     <label for="Civil_number">
                                         <button class="btn-all py-2 px-2" type="submit" style="color:green;">
                                             <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                            اضافة بدل حجز اختياري                                      
+                                            اضافة بدل حجز اختياري
 
                                         </button>
                                 </div>
@@ -156,7 +156,7 @@
                                     @foreach ($employees as $employee)
                                         <option value="{{ $employee->id }}"
                                             {{ old('Civil_number') == $employee->id ? 'selected' : '' }}>
-                                            {{ $employee->Civil_number }}</option>
+                                            {{ $employee->file_number }}</option>
                                     @endforeach
                                 </select>
                             </div>
