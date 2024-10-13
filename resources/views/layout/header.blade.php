@@ -162,6 +162,13 @@
                                     </li>
                                     @endif
 
+                                    @if (auth()->check() && auth()->user()->rule_id == 2)
+                                    <li class="{{ request()->routeIs('reservation_report.index') ? 'active' : '' }}">
+                                        <img src="{{ asset('frontend/images/police.svg') }}" alt="logo" style="margin-left: 7px;">
+                                        <a href="{{ route('reserv_report.index') }}">تقارير بدل حجز</a>
+                                    </li>
+                                    @endif
+
                                 </div>
                             </div>
                         </ul>
