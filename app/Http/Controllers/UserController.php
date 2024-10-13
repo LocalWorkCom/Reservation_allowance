@@ -834,7 +834,12 @@ class UserController extends Controller
         // $selectedViolationType = old('type_military', $user->type_military); // Default to old input or user's current value
 
         // Fetch grades based on the selected violation type
-        $grades = Grade::where('type', $user->grade->type)->get();
+        if ($user->grade) {
+
+            $grades = Grade::where('type', $user->grade->type)->get();
+        } else {
+            $grades = [];
+        }
         if ($user->department_id == "NULL") {
             $department = departements::all();
         } else {
