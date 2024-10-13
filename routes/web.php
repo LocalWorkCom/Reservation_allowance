@@ -39,6 +39,8 @@ use App\Http\Controllers\SubDepartmentStatsController;
 use App\Http\Controllers\SubDepartmentReservationController;
 use App\Http\Controllers\PrisonersDetailsController;
 use App\Http\Controllers\SectorEmployeesDetailsController;
+use App\Http\Controllers\ReservationReportController;
+
 
 
 
@@ -546,7 +548,11 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/reservations/last-six-months', [ReserveFetchController::class, 'getLastSixMonths'])->name('reservation_fetch.getLastSixMonths')->middleware('check.permission:view Inspector');
     Route::any('/reservations/last-year', [ReserveFetchController::class, 'getLastYear'])->name('reservation_fetch.getLastYear')->middleware('check.permission:view Inspector');
     Route::any('/reservations/other-dates', [ReserveFetchController::class, 'getCustomDateRange'])->name('reservation_fetch.getCustomDateRange')->middleware('check.permission:view Inspector');
-
+    
+    //reservation report
+    Route::get('reservation_report', [ReservationReportController::class, 'index'])->name('reserv_report.index');
+    Route::get('reservation_report/getReportData', [ReservationReportController::class, 'getReportData'])->name('reservation_report.getReportData');
+    
     Route::get('/file-import', [UserController::class, 'importView'])->name('import-view');
     Route::post('/import', [UserController::class, 'import'])->name('import');
     Route::get('/export-users', [UserController::class, 'exportUsers'])->name('export-users');
