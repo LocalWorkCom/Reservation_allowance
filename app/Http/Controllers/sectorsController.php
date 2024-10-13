@@ -94,21 +94,17 @@ class sectorsController extends Controller
             ->addColumn('manager_name', function ($row) {
                 // Check if manager exists before accessing its attributes
                 $manager = User::find($row->manager);
-
                 if ($manager) {
                     // Check the flag to determine if the manager is an employee
                     $is_allow = $manager->flag == 'employee' ? 'لا يسمح بالدخول' : 'يسمح بالدخول';
-
                     // Return the manager's name along with the access permission status
                     return $manager->name . ' (' . $is_allow . ')';
                 }
                 return 'لا يوجد مدير';
             })
-
             ->addColumn('departments', function ($row) {
                 $num = departements::where('sector_id', $row->id)->count();
                 $btn = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('departments.index', ['id' => $row->id]) . '> ' . $num . '</a>';
-
                 return $btn;
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
@@ -131,7 +127,6 @@ class sectorsController extends Controller
             ->addColumn('employeesdep', function ($row) {
                 $emp_num = User::where('sector', $row->id)->whereNotNull('department_id')->count();
                 $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15p" href=' . route('user.employees', ['sector_id' => $row->id, 'type' => 1]) . '> ' . $emp_num . '</a>';
-
                 return $btn;
             })
             ->rawColumns(['action', 'departments', 'employees', 'employeesdep'])
