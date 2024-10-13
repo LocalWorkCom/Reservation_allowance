@@ -288,7 +288,7 @@ class sectorsController extends Controller
             }
 
             $user->save();
-            Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع ' . $request->name, $user->Civil_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $user->email);
+            Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع ' . $request->name, $user->file_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $user->email);
         }
 
         // Track Civil numbers that could not be added
@@ -296,7 +296,7 @@ class sectorsController extends Controller
 
         // Update employees in the sector
         foreach ($Civil_numbers as $Civil_number) {
-            $employee = User::where('Civil_number', $Civil_number)->first();
+            $employee = User::where('file_number', $Civil_number)->first();
             if ($employee && $employee->grade_id != null) {
                 $employee->sector = $sector->id;
                 $employee->department_id = null;
@@ -340,7 +340,7 @@ class sectorsController extends Controller
         $data = Sector::findOrFail($id);
         $users = User::where('department_id', null)->where('sector', null)->orWhere('sector', $id)->get();
         $employees =  User::where('department_id', null)->Where('sector', $id)->whereNot('id', $data->manager)->get();
-        $rules = Rule::whereNotIn('id', [1, 2])->get();
+        $rules = Rule::whereNotIn('id', [1, 2,3])->get();
         return view('sectors.edit', [
             'data' => $data,
             'users' => $users,
@@ -377,7 +377,7 @@ class sectorsController extends Controller
 
         // Retrieve the old manager before updating
         $oldManager = $sector->manager;
-        $manager = $request->mangered ? User::where('Civil_number', $request->mangered)->value('id') : null;
+        $manager = $request->mangered ? User::where('file_number', $request->mangered)->value('id') : null;
 
         // If a new manager is provided but not found in the system
         if ($request->mangered && $manager == null) {
@@ -455,7 +455,7 @@ class sectorsController extends Controller
         // Handle employee Civil_number updates
         $currentEmployees = User::where('sector', $sector->id)
             ->where('department_id', null)->whereNot('id', $manager)
-            ->pluck('Civil_number')
+            ->pluck('file_number')
             ->toArray();
 
         $Civil_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->Civil_number);
@@ -465,13 +465,13 @@ class sectorsController extends Controller
         $employeesToAdd = array_diff($Civil_numbers, $currentEmployees);
 
         if (!empty($employeesToRemove)) {
-            User::whereIn('Civil_number', $employeesToRemove)->update(['sector' => null, 'department_id' => null]);
+            User::whereIn('file_number', $employeesToRemove)->update(['sector' => null, 'department_id' => null]);
         }
 
         foreach ($employeesToAdd as $Civil_number) {
             $number = trim($Civil_number);
 
-            $employee = User::where('Civil_number', $number)->first();
+            $employee = User::where('file_number', $number)->first();
             if ($employee && $employee->grade_id != null) {
                 $employee->sector = $sector->id;
                 $employee->save();
