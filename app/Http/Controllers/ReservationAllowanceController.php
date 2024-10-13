@@ -299,14 +299,87 @@ class ReservationAllowanceController extends Controller
         return view('reservation_allowance.create_employee_all', compact('department_type', 'sector_id', 'departement_id', 'sectors', 'get_departements', 'employees', 'reservation_allowance_type'));
     }
 
+    public function check_store(Request $request)
+    {
+        $user = auth()->user();
+        $to_day = $request->date;
+        $to_day_name = Carbon::parse($to_day)->translatedFormat('l');
+        $type = $request->type;
+
+        $get_departements = []; 
+        $sector_id = 0;
+        $department_id = 0;
+        
+        $Civil_numbers = str_replace(array("\r","\r\n","\n"),',',$request->Civil_number);
+        $Civil_numbers = explode(',,',$Civil_numbers);
+
+        $cache_name = auth()->user()->id."_add_store_all";
+        Cache::put($cache_name, $Civil_numbers);
+        
+        $employee_not_found = array();
+        $employee_not_dept = array();
+        $employee_new_add = array();
+        foreach($Civil_numbers as $Civil_number){//file_number
+
+            // $employee = User::where('Civil_number', $Civil_number)->first();
+            $employee = User::where('file_number', $Civil_number)->first();
+            if($employee){// check if employee
+                if($employee->grade_id != null){ // check if employee has grade
+                    if($request->type == 1){
+                        $grade_value = $employee->grade->value_all;
+                    }else{
+                        $grade_value = $employee->grade->value_part;
+                    }
+
+                    $check_sector = 1;
+                    if($employee->sector != $request->sector_id){
+                        $check_sector = 0;
+                    }
+
+                    if($employee->department_id != 0){
+                        if($employee->department_id != $request->departement_id){
+                            $check_sector = 0;
+                        }
+                    }
+
+                    if($check_sector == 0){
+                        $employee_not_dept[] = $employee;
+                        //array_push($employee_not_dept, $employee_not_depts);
+                    }
+
+                    if($check_sector == 1){
+                        $sector_id = $employee->sector;
+                        $department_id = $employee->department_id;
+                        $employee_new_add[] = $employee;
+                        //array_push($employee_new_add, $employee_new_adds);
+                    } 
+                }
+            }else{
+                $employee_not_founds = array('Civil_number' => $Civil_number);
+                array_push($employee_not_found, $employee_not_founds);
+            }
+        }
+
+        $sectors = Sector::get();
+        if($department_id == 0){
+            $get_departements = departements::with('children')->where('id', '!=', 1)->where('sector_id', $sector_id)->where('parent_id', null)->get();
+        }else{
+            $get_departements = departements::with('children')->where('id', '!=', 1)->where('id', $department_id)->get();
+        }
+
+        //return $employee_not_found;
+          
+        return view('reservation_allowance.index_check_store', compact('type', 'sectors', 'get_departements', 'to_day', 'employee_not_found', 'employee_not_dept', 'employee_new_add', 'department_id', 'sector_id'));
+    }
+
     /**
      * Store a newly created resource in storage.
      */
     public function store_all(Request $request)
     {
         //try{
-            $messages = [
-                'Civil_number.required' => 'رقم الهوية مطلوب ولا يمكن تركه فارغاً.'
+            /*$messages = [
+                'Civil_number.required' => 'رقم الملف مطلوب ولا يمكن تركه فارغاً.'
             ];
 
             $validatedData = Validator::make($request->all(), [
@@ -315,15 +388,19 @@ class ReservationAllowanceController extends Controller
 
             if ($validatedData->fails()) {
                 return redirect()->back()->withErrors($validatedData)->withInput();
-            }
+            }*/
 
             $user = auth()->user();
             $to_day = $request->date;
             $to_day_name = Carbon::parse($to_day)->translatedFormat('l');
 
-            $Civil_numbers = str_replace(array("\r","\r\n","\n"),',',$request->Civil_number);
-            $Civil_numbers = explode(',,',$Civil_numbers);
+            /*$Civil_numbers = str_replace(array("\r","\r\n","\n"),',',$request->Civil_number);
+            $Civil_numbers = explode(',,',$Civil_numbers);*/
 
+            $cache_name = auth()->user()->id."_add_store_all";
+            $Civil_numbers = Cache::get($cache_name);
+    
+            $employee_not_add = array();
             foreach($Civil_numbers as $Civil_number){//file_number
 
                // $employee = User::where('Civil_number', $Civil_number)->first();
@@ -346,7 +423,6 @@ class ReservationAllowanceController extends Controller
                                 $check_sector = 0;
                             }
                         }
-
 
                         $check_reservation_allowance = ReservationAllowance::where(['user_id' => $employee->id, 'date' => $to_day])->first();
                         if(!$check_reservation_allowance){

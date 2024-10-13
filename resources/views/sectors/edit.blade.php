@@ -93,7 +93,7 @@
                 </div>
 
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager">
-                    <label for="mangered">رقم هوية المدير</label>
+                    <label for="mangered">رقم ملف المدير</label>
                     <input type="text" name="mangered" id="mangered"
                         class="form-control"
                         value="{{ old('mangered', $data->manager ? $data->manager_name->file_number : null) }}"
@@ -153,7 +153,7 @@
                 </div>
 
                 <div class="input-group moftsh px-md-4 px-3 pt-3">
-                    <label for="Civil_number" class="col-12"> أرقام الهوية</label>
+                    <label for="Civil_number" class="col-12"> أرقام الملفات</label>
                     <textarea class="form-control" name="Civil_number" id="Civil_number"
                         style="height: 100px">
                         @foreach ($employees as $employee)

@@ -17,18 +17,17 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use RealRashid\SweetAlert\Facades\Alert;
 
-
 class sectorsController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
     }
-    public function getManagerSectorDetails($id,$sector)
+    public function getManagerSectorDetails($id, $sector)
     {
         // Fetch manager data from the database file_number
-       // $manager = User::where('Civil_number', $id)->first();
-       $manager = User::where('file_number', $id)->first();
+        // $manager = User::where('Civil_number', $id)->first();
+        $manager = User::where('file_number', $id)->first();
 
         if ($sector === 'null') {
             $sector = null;
@@ -39,12 +38,11 @@ class sectorsController extends Controller
 
         // Allow this check only for input change, not for initial load
         $isDepartmentCheck = request()->has('check_department') && request()->get('check_department') == true;
-      // dd( $isDepartmentCheck , $sector ,$manager->sector,($manager->department_id != null || $manager->sector != null || $sector != $manager->sector ));
 
         // Ensure the manager is not assigned to another sector or department
-        if ($isDepartmentCheck && ($manager->department_id != null || $manager->sector != null || ($sector != $manager->sector && $manager->sector != null) )) {
+        if ($isDepartmentCheck && ($manager->department_id != null || $manager->sector != null || ($sector != $manager->sector && $manager->sector != null))) {
 
-            return response()->json(['error' =>'هذا المستخدم موجود فى قطاع مسبقا . هل تريد نقله ?'], 404);
+            return response()->json(['error' => 'هذا المستخدم موجود فى قطاع مسبقا . هل تريد نقله ?'], 404);
         }
 
         // Calculate seniority/years of service
@@ -63,7 +61,7 @@ class sectorsController extends Controller
             'name' => $manager->name,
             'phone' => $manager->phone,
             'email' => $manager->email,
-            'isEmployee' => $isEmployee,  // Include the employee flag
+            'isEmployee' => $isEmployee,
         ]);
     }
     public function index()
@@ -96,21 +94,17 @@ class sectorsController extends Controller
             ->addColumn('manager_name', function ($row) {
                 // Check if manager exists before accessing its attributes
                 $manager = User::find($row->manager);
-
                 if ($manager) {
                     // Check the flag to determine if the manager is an employee
                     $is_allow = $manager->flag == 'employee' ? 'لا يسمح بالدخول' : 'يسمح بالدخول';
-
                     // Return the manager's name along with the access permission status
                     return $manager->name . ' (' . $is_allow . ')';
                 }
                 return 'لا يوجد مدير';
             })
-
             ->addColumn('departments', function ($row) {
                 $num = departements::where('sector_id', $row->id)->count();
                 $btn = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('departments.index', ['id' => $row->id]) . '> ' . $num . '</a>';
-
                 return $btn;
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
@@ -133,7 +127,6 @@ class sectorsController extends Controller
             ->addColumn('employeesdep', function ($row) {
                 $emp_num = User::where('sector', $row->id)->whereNotNull('department_id')->count();
                 $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15p" href=' . route('user.employees', ['sector_id' => $row->id, 'type' => 1]) . '> ' . $emp_num . '</a>';
-
                 return $btn;
             })
             ->rawColumns(['action', 'departments', 'employees', 'employeesdep'])
@@ -142,8 +135,8 @@ class sectorsController extends Controller
     public function getManagerDetails($id)
     {
         // Fetch manager data from the database//file_number
-       // $manager = User::where('Civil_number', $id)->first();
-       $manager = User::where('file_number', $id)->first();
+        // $manager = User::where('Civil_number', $id)->first();
+        $manager = User::where('file_number', $id)->first();
 
         if (!$manager) {
             return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 404);
@@ -178,7 +171,6 @@ class sectorsController extends Controller
             'isEmployee' => $isEmployee,  // Include the employee flag
         ]);
     }
-
 
     public function create()
     {
@@ -218,7 +210,7 @@ class sectorsController extends Controller
         $Civil_numbers = explode(',,', $Civil_numbers);
 
         // Find employees based on Civil_number   file_number
-       // $employees = User::whereIn('Civil_number', $Civil_numbers)->pluck('id')->toArray();
+        // $employees = User::whereIn('Civil_number', $Civil_numbers)->pluck('id')->toArray();
         $employees = User::whereIn('file_number', $Civil_numbers)->pluck('id')->toArray();
 
         // Initialize manager variable
@@ -227,7 +219,7 @@ class sectorsController extends Controller
         // Handle the case if `mangered` is provided
         if ($request->mangered) {
             // Find manager based on Civil Number
-           // $manager = User::where('Civil_number', $request->mangered)->value('id');
+            // $manager = User::where('Civil_number', $request->mangered)->value('id');
             $manager = User::where('file_number', $request->mangered)->value('id');
 
             // Validate manager: must not be one of the employees
@@ -271,7 +263,7 @@ class sectorsController extends Controller
                 return redirect()->back()->with('error', 'هذا المستخدم غير موجود');
             }
 
-            if($user->sector != $sector->id || $user->sector != null) {
+            if ($user->sector != $sector->id || $user->sector != null) {
                 // dd($user->sector);
                 $old_sector = Sector::find($user->sector);
 
@@ -293,7 +285,7 @@ class sectorsController extends Controller
             }
 
             $user->save();
-            Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع ' . $request->name, $user->Civil_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $user->email);
+            Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع ' . $request->name, $user->file_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $user->email);
         }
 
         // Track Civil numbers that could not be added
@@ -301,7 +293,7 @@ class sectorsController extends Controller
 
         // Update employees in the sector
         foreach ($Civil_numbers as $Civil_number) {
-            $employee = User::where('Civil_number', $Civil_number)->first();
+            $employee = User::where('file_number', $Civil_number)->first();
             if ($employee && $employee->grade_id != null) {
                 $employee->sector = $sector->id;
                 $employee->department_id = null;
@@ -345,7 +337,7 @@ class sectorsController extends Controller
         $data = Sector::findOrFail($id);
         $users = User::where('department_id', null)->where('sector', null)->orWhere('sector', $id)->get();
         $employees =  User::where('department_id', null)->Where('sector', $id)->whereNot('id', $data->manager)->get();
-        $rules = Rule::whereNotIn('id', [1, 2])->get();
+        $rules = Rule::whereNotIn('id', [1, 2, 3])->get();
         return view('sectors.edit', [
             'data' => $data,
             'users' => $users,
@@ -382,7 +374,7 @@ class sectorsController extends Controller
 
         // Retrieve the old manager before updating
         $oldManager = $sector->manager;
-        $manager = $request->mangered ? User::where('Civil_number', $request->mangered)->value('id') : null;
+        $manager = $request->mangered ? User::where('file_number', $request->mangered)->value('id') : null;
 
         // If a new manager is provided but not found in the system
         if ($request->mangered && $manager == null) {
@@ -424,8 +416,7 @@ class sectorsController extends Controller
             // Update new manager's sector
             if ($manager) {
                 $newManager = User::find($manager);
-                // dd($newManager->sector ,$sector->id);
-                if($newManager->sector != $sector->id || $newManager->sector != null) {
+                if ($newManager->sector != $sector->id || $newManager->sector != null) {
                     $old_sector = Sector::find($newManager->sector);
                     if ($old_sector) {
                         $old_sector->manager = null;
@@ -442,7 +433,7 @@ class sectorsController extends Controller
                         $newManager->password = Hash::make($request->password);
                     }
                     $newManager->save();
-                    Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع'.$request->name, $newManager->Civil_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $newManager->email);
+                    Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $newManager->Civil_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $newManager->email);
                 }
             }
         } else {
@@ -453,14 +444,14 @@ class sectorsController extends Controller
                 $Manager->rule_id = $request->rule;
                 $Manager->password = Hash::make($request->password);
                 $Manager->save();
-                Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع'.$request->name, $Manager->Civil_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $Manager->email);
+                Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $Manager->Civil_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $Manager->email);
             }
         }
 
         // Handle employee Civil_number updates
         $currentEmployees = User::where('sector', $sector->id)
             ->where('department_id', null)->whereNot('id', $manager)
-            ->pluck('Civil_number')
+            ->pluck('file_number')
             ->toArray();
 
         $Civil_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->Civil_number);
@@ -470,13 +461,13 @@ class sectorsController extends Controller
         $employeesToAdd = array_diff($Civil_numbers, $currentEmployees);
 
         if (!empty($employeesToRemove)) {
-            User::whereIn('Civil_number', $employeesToRemove)->update(['sector' => null, 'department_id' => null]);
+            User::whereIn('file_number', $employeesToRemove)->update(['sector' => null, 'department_id' => null]);
         }
 
         foreach ($employeesToAdd as $Civil_number) {
             $number = trim($Civil_number);
 
-            $employee = User::where('Civil_number', $number)->first();
+            $employee = User::where('file_number', $number)->first();
             if ($employee && $employee->grade_id != null) {
                 $employee->sector = $sector->id;
                 $employee->save();
