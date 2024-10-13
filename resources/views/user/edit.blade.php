@@ -89,7 +89,7 @@
                                         <input type="radio" class="form-check-input" id="police_{{ $key }}"
                                             name="type_military" value="{{ $violation->id }}"
                                             style="height:20px; width:20px;"
-                                            @if ($violation->id == $user->grade->type) checked @endif>
+                                            @if ($user->grade && $violation->id == $user->grade->type) checked @endif>
                                         <label class="form-check-label mx-2" for="police_{{ $key }}"
                                             style="margin-left: 0.5rem;">{{ $violation->name }}</label>
                                     </div>
