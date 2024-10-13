@@ -174,7 +174,7 @@
                                 <label for="Civil_number" class="col-12"> أرقام الهوية</label>
                                 <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px">
                                             @foreach ($employees as $employee)
-{{ $employee->Civil_number }}
+{{ $employee->file_number }}
 @endforeach
                                         </textarea>
 
