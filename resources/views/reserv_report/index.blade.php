@@ -1,3 +1,15 @@
+<style>
+    /* Updated Styles */
+    .info-box {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+   
+</style>
 @extends('layout.main') 
 
 @push('style')
@@ -11,7 +23,7 @@
 @endsection
 
 @section('content')
-    <div class="row">
+    <div class="row"  style="direction: rtl">
         <div class="container welcome col-11">
             <div class="d-flex justify-content-between">
                 <h3>تقارير بدل حجز</h3>
@@ -19,8 +31,8 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="container col-11 mt-3">
+    <div class="row" style="direction: rtl">
+        <div class="container col-11 mt-3 p-0 pt-5 pb-4">
             <!-- Date Picker Section -->
             <div class="d-flex justify-content-end">
                 <label for="start-date" class="form-label mx-2">من تاريخ</label>
@@ -61,7 +73,7 @@
 
             <!-- Data Table for Detailed Report -->
             <div class="mt-4 bg-white">
-                <table id="report-table" class="display table table-bordered table-hover dataTable">
+                <table id="users-table" class="display table table-bordered table-hover dataTable">
                     <thead>
                         <tr>
                             <th>الترتيب</th>
@@ -79,7 +91,7 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            var reportTable = $('#report-table').DataTable({
+            var reportTable = $('#users-table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
@@ -99,32 +111,49 @@
                         }
                     },
                     { data: 'department_name', name: 'department_name' },
-                    { data: 'user_count', name: 'user_count', searchable: false },
+                    {
+                        data: 'user_count',
+                        name: 'user_count',
+                        render: function(data, type, row) {
+                            return `<a href="/reservation_report/department/${row.departement_id}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:blue !important;">${data}</a>`;
+                        }
+                    },
                     { data: 'total_amount', name: 'total_amount', searchable: false }
                 ],
                 order: [[1, 'asc']],
                 "oLanguage": {
-                    "sSearch": "",
-                    "sSearchPlaceholder": "بحث",
-                    "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
-                    "sInfoEmpty": 'لا توجد بيانات متاحه',
-                    "sInfoFiltered": '(تم تصفية من _MAX_ اجمالى البيانات)',
-                    "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
-                    "sZeroRecords": 'نأسف لا توجد نتيجة',
-                    "oPaginate": {
-                        "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
-                        "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
-                        "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
-                        "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
-                    }
-                },
-                pagingType: "full_numbers",
-                fnDrawCallback: function(oSettings) {
-                    var page = this.api().page.info().pages;
-                    if (page == 1) {
-                        $('.dataTables_paginate').css('visibility', 'hidden');
+                "sSearch": "",
+                "sSearchPlaceholder": "بحث",
+                "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
+                "sInfoEmpty": 'لا توجد بيانات متاحه',
+                "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
+                "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
+                "sZeroRecords": 'نأسف لا توجد نتيجة',
+                "oPaginate": {
+                    "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
+                    "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
+                    "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
+                    "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
+                }
+            },
+            layout: {
+                bottomEnd: {
+                    paging: {
+                        firstLast: false
                     }
                 }
+            },
+            "pagingType": "full_numbers",
+            "fnDrawCallback": function(oSettings) {
+                console.log('Page ' + this.api().page.info().pages)
+                var page = this.api().page.info().pages;
+                console.log($('#users-table tr').length);
+                if (page <= 1) {
+                    //   $('.dataTables_paginate').hide();//css('visiblity','hidden');
+                    $('.dataTables_paginate').css('visibility', 'hidden'); // to hide
+
+                }
+            }
             });
 
             // Fetch report data on button click
@@ -144,16 +173,16 @@
                 }
             });
             $('#print-report').click(function() {
-    const startDate = $('#start-date').val();
-    const endDate = $('#end-date').val();
-    
-    if (startDate && endDate) {
-        const url = `{{ route('reservation_report.print') }}?start_date=${startDate}&end_date=${endDate}`;
-        window.open(url, '_blank');
-    } else {
-        alert('يرجى اختيار نطاق تاريخ صحيح');
-    }
-});
+            const startDate = $('#start-date').val();
+            const endDate = $('#end-date').val();
+            
+            if (startDate && endDate) {
+                const url = `{{ route('reservation_report.print') }}?start_date=${startDate}&end_date=${endDate}`;
+                window.open(url, '_blank');
+            } else {
+                alert('يرجى اختيار نطاق تاريخ صحيح');
+            }
+        });
         });
     </script>
 @endpush
