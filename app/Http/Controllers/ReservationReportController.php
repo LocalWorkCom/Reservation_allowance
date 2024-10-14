@@ -128,26 +128,20 @@ public function getDepartmentDetailsData(Request $request, $departmentId)
 
     $reservations = ReservationAllowance::where('departement_id', $departmentId)
         ->whereBetween('date', [$startDate, $endDate])
-        ->with('user') // Make sure 'user' relationship is loaded
+        ->with('user') // Ensure 'user' relationship is loaded
         ->get();
 
-    // Log the data structure for debugging
-    if ($reservations->isEmpty()) {
-        Log::info("No data found for department {$departmentId} in the specified date range.");
-    } else {
-        Log::info("Fetched reservations for department {$departmentId}:", $reservations->toArray());
-    }
-
     return DataTables::of($reservations)
+        ->addIndexColumn() // This auto-generates the row number
         ->addColumn('day', fn($row) => Carbon::parse($row->date)->translatedFormat('l'))
         ->addColumn('date', fn($row) => Carbon::parse($row->date)->format('Y-m-d'))
-        ->addColumn('name', fn($row) => optional($row->user)->name ?? 'Unknown')  // Use optional() to handle null cases
+        ->addColumn('name', fn($row) => optional($row->user)->name ?? 'Unknown') 
         ->addColumn('department', fn($row) => optional($row->user->department)->name ?? 'N/A')
-        ->addColumn('type', fn($row) => $row->type == 1 ? 'حجز كلي' : 'حجز جزئي'?? 'N/A')
-        ->addColumn('amount', fn($row) => number_format($row->amount, 2) . ' د ك'?? 'N/A')
-        ->addIndexColumn()
+        ->addColumn('type', fn($row) => $row->type == 1 ? 'حجز كلي' : 'حجز جزئي')
+        ->addColumn('amount', fn($row) => number_format($row->amount, 2) . ' د ك')
         ->make(true);
 }
+
 
     
 }
