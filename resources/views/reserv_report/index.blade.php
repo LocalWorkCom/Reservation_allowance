@@ -89,90 +89,91 @@
 @endsection
 
 @push('scripts')
-    <script>
-        $(document).ready(function() {
-            var reportTable = $('#users-table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: '{{ route('reservation_report.getReportData') }}',
-                    data: function(d) {
-                        d.start_date = $('#start-date').val();
-                        d.end_date = $('#end-date').val();
+<script>
+    $(document).ready(function() {
+        var reportTable = $('#users-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: '{{ route('reservation_report.getReportData') }}',
+                data: function(d) {
+                    d.start_date = $('#start-date').val();
+                    d.end_date = $('#end-date').val();
+                }
+            },
+            columns: [
+                { 
+                    data: null, 
+                    orderable: false, 
+                    searchable: false,
+                    render: function(data, type, row, meta) {
+                        return meta.row + 1; // Display row number
                     }
                 },
-                columns: [
-                    { 
-                        data: null, 
-                        orderable: false, 
-                        searchable: false,
-                        render: function(data, type, row, meta) {
-                            return meta.row + 1;
-                        }
-                    },
-                    { data: 'department_name', name: 'department_name' },
-                    {
-                        data: 'user_count',
-                        name: 'user_count',
-                        render: function(data, type, row) {
-                            return `<a href="/reservation_report/department/${row.departement_id}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:blue !important;">${data}</a>`;
-                        }
-                    },
-                    { data: 'total_amount', name: 'total_amount', searchable: false }
-                ],
-                order: [[1, 'asc']],
-                "oLanguage": {
-                "sSearch": "",
-                "sSearchPlaceholder": "بحث",
-                "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
-                "sInfoEmpty": 'لا توجد بيانات متاحه',
-                "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
-                "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
-                "sZeroRecords": 'نأسف لا توجد نتيجة',
-                "oPaginate": {
-                    "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
-                    "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
-                    "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
-                    "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
-                }
-            },
-            layout: {
-                bottomEnd: {
-                    paging: {
-                        firstLast: false
+                { 
+                    data: 'department_name', 
+                    name: 'department_name', 
+                    searchable: true 
+                },
+                {
+                    data: 'user_count',
+                    name: 'user_count',
+                    searchable: false,
+                    render: function(data, type, row) {
+                        return `<a href="/reservation_report/department/${row.departement_id}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:blue !important;">${data}</a>`;
                     }
+                },
+                { 
+                    data: 'total_amount', 
+                    name: 'total_amount', 
+                    searchable: false 
+                }
+            ],
+            order: [[1, 'asc']],
+            language: {
+                sSearch: "",
+                sSearchPlaceholder: "بحث",
+                sInfo: 'اظهار صفحة _PAGE_ من _PAGES_',
+                sInfoEmpty: 'لا توجد بيانات متاحه',
+                sInfoFiltered: '(تم تصفية  من _MAX_ اجمالى البيانات)',
+                sLengthMenu: 'اظهار _MENU_ عنصر لكل صفحة',
+                sZeroRecords: 'نأسف لا توجد نتيجة',
+                paginate: {
+                    sFirst: '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
+                    sPrevious: '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
+                    sNext: '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
+                    sLast: '<i class="fa fa-step-forward" aria-hidden="true"></i>'
                 }
             },
-            "pagingType": "full_numbers",
-            "fnDrawCallback": function(oSettings) {
-                console.log('Page ' + this.api().page.info().pages)
+            pagingType: "full_numbers",
+            fnDrawCallback: function(oSettings) {
                 var page = this.api().page.info().pages;
-                console.log($('#users-table tr').length);
                 if (page <= 1) {
-                    //   $('.dataTables_paginate').hide();//css('visiblity','hidden');
-                    $('.dataTables_paginate').css('visibility', 'hidden'); // to hide
-
+                    $('.dataTables_paginate').css('visibility', 'hidden');
+                } else {
+                    $('.dataTables_paginate').css('visibility', 'visible');
                 }
             }
-            });
+        });
 
-            // Fetch report data on button click
-            $('#fetch-report').click(function() {
-                reportTable.ajax.reload();
-                const startDate = $('#start-date').val();
-                const endDate = $('#end-date').val();
-                $('#selected-dates').text('من' + startDate + ' إلى   ' + endDate);
-            });
+        // Fetch report data on button click
+        $('#fetch-report').click(function() {
+            reportTable.ajax.reload();
+            const startDate = $('#start-date').val();
+            const endDate = $('#end-date').val();
+            $('#selected-dates').text('من ' + startDate + ' إلى ' + endDate);
+        });
 
-            // Update summary boxes on table data load
-            reportTable.on('xhr.dt', function(e, settings, json) {
-                if (json) {
-                    $('#total-departments').text(json.totalDepartments);
-                    $('#total-users').text(json.totalUsers);
-                    $('#total-amount').text(json.totalAmount + ' د.ك');
-                }
-            });
-            $('#print-report').click(function() {
+        // Update summary boxes on table data load
+        reportTable.on('xhr.dt', function(e, settings, json) {
+            if (json) {
+                $('#total-departments').text(json.totalDepartments);
+                $('#total-users').text(json.totalUsers);
+                $('#total-amount').text(json.totalAmount + ' د.ك');
+            }
+        });
+
+        $('#print-report').click(function() {
             const startDate = $('#start-date').val();
             const endDate = $('#end-date').val();
             
@@ -183,6 +184,7 @@
                 alert('يرجى اختيار نطاق تاريخ صحيح');
             }
         });
-        });
-    </script>
+    });
+</script>
+
 @endpush

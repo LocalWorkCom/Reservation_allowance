@@ -142,6 +142,31 @@ public function getDepartmentDetailsData(Request $request, $departmentId)
         ->make(true);
 }
 
+public function printDepartmentDetails(Request $request, $departmentId)
+{
+    $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
+    $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
 
+    // Fetch data for the selected department and date range
+    $department = departements::find($departmentId);
+    $reservations = ReservationAllowance::where('departement_id', $departmentId)
+        ->whereBetween('date', [$startDate, $endDate])
+        ->with('user')
+        ->get();
+
+    // Prepare the PDF data
+    $pdf = new TCPDF();
+    $pdf->SetCreator('Your App');
+    $pdf->SetTitle("تفاصيل بدل حجز لموظفي إدارة {$department->name}");
+    $pdf->AddPage();
+    $pdf->setRTL(true);
+    $pdf->SetFont('dejavusans', '', 12);
+
+    // Pass the data to a view and render it as HTML for the PDF
+    $html = view('reserv_report.department_details_pdf', compact('reservations', 'department', 'startDate', 'endDate'))->render();
+    $pdf->writeHTML($html, true, false, true, false, '');
+
+    return $pdf->Output("department_details_report_{$department->name}.pdf", 'I');
+}
     
 }
