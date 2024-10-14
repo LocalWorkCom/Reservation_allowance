@@ -1,3 +1,14 @@
+<style>
+    /* Updated Styles */
+    .info-box {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 20px;
+        text-align: center;
+    }
+   
+</style>
 @extends('layout.main') 
 
 @push('style')
@@ -11,7 +22,7 @@
 @endsection
 
 @section('content')
-    <div class="row">
+    <div class="row" style="direction: rtl">
         <div class="container welcome col-11">
             <div class="d-flex justify-content-between">
                 <h3>تقارير بدل حجز</h3>
@@ -19,8 +30,8 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="container col-11 mt-3">
+    <div class="row" style="direction: rtl">
+        <div class="container col-11 mt-3 p-0 pt-5 pb-4">
             <!-- Date Picker Section -->
             <div class="d-flex justify-content-end">
                 <label for="start-date" class="form-label mx-2">من تاريخ</label>
@@ -99,7 +110,13 @@
                         }
                     },
                     { data: 'department_name', name: 'department_name' },
-                    { data: 'user_count', name: 'user_count', searchable: false },
+                    {
+                        data: 'user_count',
+                        name: 'user_count',
+                        render: function(data, type, row) {
+                            return `<a href="/reservation_report/department/${row.departement_id}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:blue;">${data}</a>`;
+                        }
+                    },
                     { data: 'total_amount', name: 'total_amount', searchable: false }
                 ],
                 order: [[1, 'asc']],
