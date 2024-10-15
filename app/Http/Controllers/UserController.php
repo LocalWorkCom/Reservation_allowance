@@ -241,7 +241,7 @@ class UserController extends Controller
         $password = $request->password;
 
         // Check if the user exists
-        $user = User::where('military_number', $number)->orwhere('Civil_number', $number)->first();
+        $user = User::where('military_number', $number)->orwhere('Civil_number', $number)->orwhere('file_number', $number)->first();
         if (!$user) {
             return back()->with('error', 'الرقم العسكري / الرقم المدنى لا يتطابق مع سجلاتنا')->withInput();
         }
@@ -257,6 +257,8 @@ class UserController extends Controller
         // Use a custom login function
         if ($user->military_number === $number) {
             $credentials['military_number'] = $number;
+        }elseif ($user->file_number === $number) {
+            $credentials['file_number'] = $number;
         } else {
             $credentials['civil_number'] = $number;
         }
@@ -266,6 +268,10 @@ class UserController extends Controller
             // to not send code
             if ($user->token == 'logined') {
                 Auth::login($user); // Log the user in
+                $update=Users::find($user->id);
+                $update->last_login=now();
+                $update->save();
+                //
                 return redirect()->route('home');
             }
             //end code

@@ -100,7 +100,7 @@
                 </div>
 
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager">
-                    <label class="pb-3" for="mangered">رقم هوية المدير</label>
+                    <label class="pb-3" for="mangered">رقم ملف المدير</label>
                     <input type="text" name="mangered" id="mangered" class="form-control" autocomplete="one-time-code">
                     @error('mangered')
                         <div class="alert alert-danger">{{ $message }}</div>
@@ -146,7 +146,7 @@
                 <div class="form-row mx-2 d-flex justify-content-center">
 
                     <div class="input-group moftsh px-md-4 px-3 pt-3">
-                        <label for="Civil_number" class="col-12"> أرقام الهوية</label>
+                        <label for="Civil_number" class="col-12"> أرقام الملفات</label>
                         <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px"></textarea>
                     </div>
                 </div>
