@@ -67,7 +67,8 @@
                                 <tr>
                                     <th>رقم التعريف</th>
                                     <th>الاسم</th>
-                                    <th>المدير</th>
+                                    <th>مدير الادارة</th>
+                                    <th>بيانات الدخول</th>
                                     {{-- <th>الاقسام</th> --}}
                                     <th>ميزانية البدل</th>
                                     <th>صلاحيه الحجز</th>
@@ -86,7 +87,8 @@
 </section>
 <script>
     $(document).ready(function() {
-        $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
+        $.fn.dataTable.ext.classes.sPageButton =
+            'btn-pagination btn-sm'; // Change Pagination Button Class
         @php
             $Dataurl = url('api/department') . '/' . $id;
 
@@ -118,6 +120,10 @@
                     name: 'manager_name'
                 },
                 {
+                    data: 'login_info',
+                    name: 'login_info'
+                },
+                {
                     data: 'reservation_allowance_amount',
                     name: 'reservation_allowance_amount'
                 },
@@ -130,7 +136,8 @@
                     name: 'subDepartment',
                     render: function(data, type, row) {
                         return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showSubDepartments(' +
-                            row.id + ')">' + data + '</button>';
+                            row.id + ')">' + data +
+                            '</button>';
 
 
                     }
@@ -140,7 +147,8 @@
                     name: 'num_managers',
                     render: function(data, type, row) {
                         return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showUsers(' +
-                            row.id + ')">' + data + '</button>';
+                            row.id + ')">' + data +
+                            '</button>';
                     }
                 },
                 {
@@ -148,7 +156,8 @@
                     name: 'num_subdepartment_managers',
                     render: function(data, type, row) {
                         return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showSubUsers(' +
-                            row.id + ')">' + data + '</button>';
+                            row.id + ')">' + data +
+                            '</button>';
                     }
                 },
                 {
@@ -163,16 +172,22 @@
                 targets: -1,
                 render: function(data, type, row) {
                     console.log(row);
-                    var departmentEdit = '{{ route('departments.edit', ':id') }}';
-                    departmentEdit = departmentEdit.replace(':id', row.id);
-                    var subdepartment = '{{ route('sub_departments.create', ':id') }}';
-                    subdepartment = subdepartment.replace(':id', row.id);
-                    var departmentShow = '{{ route('departments.show', ':id') }}';
-                    departmentShow = departmentShow.replace(':id', row.id);
-                    var addReservation =
-                        '{{ route('reservation_allowances.search_employee_new', 'sector_id=:sector&departement_id=:id') }}';
-                    addReservation = addReservation.replace(':id', row.id);
-                    addReservation = addReservation.replace(':sector', row.sector_id);
+                    var departmentEdit =
+                        '{{ route('departments.edit', ':id') }}';
+                    departmentEdit = departmentEdit
+                        .replace(':id', row.id);
+                    var subdepartment =
+                        '{{ route('sub_departments.create', ':id') }}';
+                    subdepartment = subdepartment
+                        .replace(':id', row.id);
+                    var departmentShow =
+                        '{{ route('departments.show', ':id') }}';
+                    departmentShow = departmentShow
+                        .replace(':id', row.id);
+                    /*  var addReservation =
+                         '{{ route('reservation_allowances.search_employee_new', 'sector_id=:sector&departement_id=:id') }}';
+                     addReservation = addReservation.replace(':id', row.id);
+                     addReservation = addReservation.replace(':sector', row.sector_id); */
 
                     // Get the authenticated user's department ID from Blade
                     // var authDepartmentId = {{ Auth::user()->department_id }};
@@ -187,9 +202,11 @@
                     // if (row.id === authDepartmentId) {
                     buttons += `
                 <a href="${departmentEdit}" class="btn btn-sm" style="background-color: #F7AF15;"> <i class="fa fa-edit"></i> تعديل</a>
-                <a href="${addReservation}" class="btn btn-sm" style="background-color: #274373;"> <i class="fa fa-edit"></i> اضافة بدل حجز</a>
+
 
             `;
+
+                    /*    <a href="${addReservation}" class="btn btn-sm" style="background-color: #274373;"> <i class="fa fa-edit"></i> اضافة بدل حجز</a> */
                     // }
 
                     return buttons; // Return the constructed buttons
@@ -219,12 +236,14 @@
             },
             "pagingType": "full_numbers",
             "fnDrawCallback": function(oSettings) {
-                console.log('Page ' + this.api().page.info().pages)
+                console.log('Page ' + this.api().page.info()
+                    .pages)
                 var page = this.api().page.info().pages;
                 console.log($('#users-table tr').length);
                 if (page <= 1) {
                     //   $('.dataTables_paginate').hide();//css('visiblity','hidden');
-                    $('.dataTables_paginate').css('visibility', 'hidden'); // to hide
+                    $('.dataTables_paginate').css(
+                        'visibility', 'hidden'); // to hide
 
                 }
             }
@@ -263,7 +282,8 @@
     }
 
     function showSubUsers(parentDepartmentId) {
-        window.location.href = '/employees?parent_department_id=' + parentDepartmentId;
+        window.location.href = '/employees?parent_department_id=' +
+            parentDepartmentId;
     }
 </script>
 

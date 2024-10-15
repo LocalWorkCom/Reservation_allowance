@@ -268,7 +268,7 @@ class UserController extends Controller
             // to not send code
             if ($user->token == 'logined') {
                 Auth::login($user); // Log the user in
-                $update=Users::find($user->id);
+                $update=User::find($user->id);
                 $update->last_login=now();
                 $update->save();
                 //
@@ -295,6 +295,9 @@ class UserController extends Controller
             // }
 
             Auth::login($user); // Log the user in
+            $update=User::find($user->id);
+            $update->last_login=now();
+            $update->save();
             return redirect()->route('home');
         }
 

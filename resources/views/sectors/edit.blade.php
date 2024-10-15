@@ -205,9 +205,7 @@
             if (managerId) {
                 $.ajax({
                     url: '/get-manager-sector-details/' + managerId + '/' +
-                        sector + (skipDepartmentCheck ?
-                            '?check_department=false' :
-                            ''),
+                        sector +  '?skipDepartmentCheck=' + skipDepartmentCheck,
                     type: 'GET',
                     success: function(data) {
                         // Show the manager details div
@@ -246,17 +244,20 @@
                                 cancelButtonColor: '#d33'
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    // Show the password, rule, and manager details if user confirms
-                                    $('#manager_details').show();
-                                    // Populate manager details
-                                    $('#manager_details').find('span').eq(0).text(data.rank);
-                                    $('#manager_details').find('span').eq(1).text(data.seniority);
-                                    $('#manager_details').find('span').eq(2).text(data.job_title);
-                                    $('#manager_details').find('span').eq(3).text(data.name);
-                                    $('#manager_details').find('span').eq(4).text(data.phone);
-                                    $('#manager_details').find('span').eq(5).text(data.email);
-                                    $('#password_field').show();
-                                    $('#rule_field').show();
+                                    fetchManagerDetails(managerId, false);
+                                $('#password_field').show();
+                                $('#rule_field').show();
+                                $('#password').show();
+                                $('#rule').show();
+                                $('#manager_details').show();
+                                // Populate manager details
+                                $('#manager_details').find('span').eq(0).text(result.rank);
+                                $('#manager_details').find('span').eq(1).text(result.seniority);
+                                $('#manager_details').find('span').eq(2).text(result.job_title);
+                                $('#manager_details').find('span').eq(3).text(result.name);
+                                $('#manager_details').find('span').eq(4).text(result.phone);
+                                $('#manager_details').find('span').eq(5).text(result.email);
+
                                 } else {
                                     // Hide details if user cancels
                                     $('#mangered').val(''); // Clear manager input field
@@ -270,11 +271,12 @@
                         } else {
                             Swal.fire({
                                 title: 'خطأ',
-                                text: 'حدث خطأ، حاول مرة أخرى.',
+                                text: 'هذا الموظف غير موجود و يرجى أدخال رقم ملف صحيح',
                                 icon: 'error',
                                 confirmButtonText: 'إلغاء',
                                 confirmButtonColor: '#3085d6'
                             });
+                            $('#mangered').val('');
                         }
                     }
                 });

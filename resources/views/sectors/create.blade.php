@@ -63,7 +63,7 @@
     </div> --}}
     {{-- {{ dd($governments) }} --}}
     <br>
-    <form class="edit-grade-form" id="Qta3-form" action=" {{ route('sectors.store') }}" method="POST" >
+    <form class="edit-grade-form" id="Qta3-form" action=" {{ route('sectors.store') }}" method="POST">
         @csrf
         <div class="row" dir="rtl">
             <div id="first-container" class="container moftsh col-11 mt-3 p-0 pb-3">
@@ -86,14 +86,15 @@
                     <div class="input-group moftsh px-md-5 px-3 pt-3">
                         <label class="pb-3" for="name">ادخل اسم القطاع</label>
                         <input type="text" id="name" name="name" class="form-control" placeholder="قطاع واحد"
-                            required autocomplete="one-time-code"/>
+                            required autocomplete="one-time-code" />
                         <span class="text-danger span-error" id="name-error"></span>
 
                     </div>
                 </div>
                 <div class="input-group moftsh px-md-5 px-3 pt-3">
                     <label class="pb-3" for="budget">ميزانية بدل حجز</label>
-                    <input type="text" name="budget" class="form-control" value="{{ old('budget') }}"autocomplete="one-time-code">
+                    <input type="text" name="budget" class="form-control"
+                        value="{{ old('budget') }}"autocomplete="one-time-code">
                     @error('budget')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
@@ -116,9 +117,9 @@
                 </div>
 
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="rule_field" style="display: none;">
-                    <label class="pb-3" for="rule">القانون</label>
+                    <label class="pb-3" for="rule">الصلاحيات</label>
                     <select name="rule" id="rule" class="form-control">
-                        <option value="">اختار القانون</option>
+                        <option value="">اختار الصلاحيات</option>
                         @foreach ($rules as $rule)
                             <option value="{{ $rule->id }}">{{ $rule->name }}</option>
                         @endforeach
@@ -187,10 +188,10 @@
         function fetchManagerDetails(managerId, skipDepartmentCheck = true) {
             if (managerId) {
                 sector = null;
+                console.log(skipDepartmentCheck);
                 $.ajax({
-                    url: '/get-manager-sector-details/' + managerId + '/' + sector + (skipDepartmentCheck ?
-                        '?check_department=false' :
-                        ''),
+                    url: '/get-manager-sector-details/' + managerId + '/' + sector + '?skipDepartmentCheck=' +
+                        skipDepartmentCheck,
                     type: 'GET',
                     success: function(data) {
                         $('#manager_details').find('span').eq(0).text(data.rank);
@@ -222,8 +223,20 @@
                             cancelButtonColor: '#d33'
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                // User confirmed
-                                // You may want to handle confirmation logic here
+                                fetchManagerDetails(managerId, false);
+                                $('#password_field').show();
+                                $('#rule_field').show();
+                                $('#password').show();
+                                $('#rule').show();
+                                $('#manager_details').show();
+                                // Populate manager details
+                                $('#manager_details').find('span').eq(0).text(result.rank);
+                                $('#manager_details').find('span').eq(1).text(result.seniority);
+                                $('#manager_details').find('span').eq(2).text(result.job_title);
+                                $('#manager_details').find('span').eq(3).text(result.name);
+                                $('#manager_details').find('span').eq(4).text(result.phone);
+                                $('#manager_details').find('span').eq(5).text(result.email);
+
                             } else {
                                 // User clicked "إلغاء", clear the input field
                                 $('#mangered').val('');
