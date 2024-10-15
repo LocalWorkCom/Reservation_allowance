@@ -426,19 +426,18 @@ class ReservationAllowanceController extends Controller
                         }else{
                             $grade_value = $employee->grade->value_part;
                         }
-
                         $employee_amount += $grade_value;
-
-                        $type_departement = 1;
-                        $reservation_amout = departements::where('id', $request->departement_id)->first()->reservation_allowance_amount;
-                        if($employee->department_id == null){
-                            $type_departement = 2;
-                            $reservation_amout = departements::where('id', $request->sector_id)->first()->reservation_allowance_amount;
-                        }
-
                     }
                 }
             }
+
+            $type_departement = 1;
+            $reservation_amout = sector::where('id', $request->sector_id)->first()->reservation_allowance_amount;
+            if($request->departement_id != 0){
+                $type_departement = 2;
+                $reservation_amout = departements::where('id', $request->departement_id)->first()->reservation_allowance_amount;
+            }
+
 
             $first_day = date('Y-m-01');
             $last_day = date('Y-m-t');
@@ -449,6 +448,7 @@ class ReservationAllowanceController extends Controller
             if($request->sector_id != 0){
                 $get_all_employee_amount = $get_all_employee_amount->where('sector_id', $request->sector_id);
             }
+
             $get_all_employee_amount = $get_all_employee_amount->whereBetween('date',[$first_day, $last_day])->sum('amount');
             $reservation_amout = $reservation_amout - $get_all_employee_amount;
 
@@ -867,12 +867,20 @@ class ReservationAllowanceController extends Controller
 
                         $employee_amount += $grade_value;
 
-                        $type_departement = 1;
+                        /*$type_departement = 1;
                         $reservation_amout = departements::where('id', $employee->department_id)->first()->reservation_allowance_amount;
                         if($employee->department_id == null){
                             $type_departement = 2;
                             $reservation_amout = departements::where('id', $employee->sector)->first()->reservation_allowance_amount;
+                        }*/
+
+                        $type_departement = 1;
+                            $reservation_amout = sector::where('id', $employee->sector)->first()->reservation_allowance_amount;
+                        if($employee->department_id != 0){
+                            $type_departement = 2;
+                            $reservation_amout = departements::where('id', $employee->department_id)->first()->reservation_allowance_amount;
                         }
+                        
 
                     }
                 }
@@ -895,6 +903,7 @@ class ReservationAllowanceController extends Controller
             if($reservation_amout <= $employee_amount){
                 return redirect()->back()->with('error','عفوا لقد تجاوزت ملبغ بدل الحجز');
             }
+
 
             //add ReservationAllowance
             foreach($get_employees as $get_employee){

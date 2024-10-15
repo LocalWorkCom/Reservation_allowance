@@ -142,8 +142,8 @@ class DepartmentController extends Controller
                     'seniority' => $user->joining_date ? Carbon::parse($user->joining_date)->diffInYears(Carbon::now()) : 'لا يوجد بيانات أقدميه',
                     'job_title' => $user->job_title ?? 'لا يوجد مسمى وظيفى',
                     'name' => $user->name,
-                    'phone' => $user->phone,
-                    'email' => $user->email,
+                    'phone' => $user->phone ?? 'لا يوجد رقم هاتف',
+                    'email' => $user->email ?? 'لا يوجد بريد الكتروني',
                     'isEmployee' => $user->flag == 'employee' ? true : false,
                 ]);
             }
@@ -157,8 +157,8 @@ class DepartmentController extends Controller
                     'seniority' => $user->joining_date ? Carbon::parse($user->joining_date)->diffInYears(Carbon::now()) : 'لا يوجد بيانات أقدميه',
                     'job_title' => $user->job_title ?? 'لا يوجد مسمى وظيفى',
                     'name' => $user->name,
-                    'phone' => $user->phone,
-                    'email' => $user->email,
+                    'phone' => $user->phone ?? 'لا يوجد رقم هاتف',
+                    'email' => $user->email ?? 'لا يوجد بريد الكتروني',
                     'isEmployee' => $user->flag == 'employee' ? true : false,
                 ]);
             }
