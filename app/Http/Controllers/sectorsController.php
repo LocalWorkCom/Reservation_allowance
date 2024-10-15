@@ -308,7 +308,10 @@ class sectorsController extends Controller
             }
 
             $user->save();
-            Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع ' . $request->name, $user->file_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $user->email);
+            if($user->email){
+                Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع ' . $request->name, $user->file_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $user->email);
+
+            }
         }
 
         // Track Civil numbers that could not be added
@@ -460,7 +463,10 @@ class sectorsController extends Controller
                         $newManager->password = Hash::make($request->password);
                     }
                     $newManager->save();
-                    Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $newManager->Civil_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $newManager->email);
+                    if($newManager->email){
+                        Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $newManager->Civil_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $newManager->email);
+
+                    }
                 }
             }
         } else {
@@ -471,7 +477,10 @@ class sectorsController extends Controller
                 $Manager->rule_id = $request->rule;
                 $Manager->password = Hash::make($request->password);
                 $Manager->save();
-                Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $Manager->Civil_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $Manager->email);
+                if($Manager->email){
+                    Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $Manager->Civil_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $Manager->email);
+
+                }
             }
         }
 
