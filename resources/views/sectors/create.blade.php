@@ -116,9 +116,9 @@
                 </div>
 
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="rule_field" style="display: none;">
-                    <label class="pb-3" for="rule">القانون</label>
+                    <label class="pb-3" for="rule">الصلاحيات</label>
                     <select name="rule" id="rule" class="form-control">
-                        <option value="">اختار القانون</option>
+                        <option value="">اختار الصلاحيات</option>
                         @foreach ($rules as $rule)
                             <option value="{{ $rule->id }}">{{ $rule->name }}</option>
                         @endforeach

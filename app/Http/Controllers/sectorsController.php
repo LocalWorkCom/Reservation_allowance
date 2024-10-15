@@ -110,7 +110,8 @@ class sectorsController extends Controller
                     $is_allow = $LoginInfo->flag == 'employee' ? 'لا يسمح بالدخول' : $LoginInfo->file_number;
                     // Return the manager's name along with the access permission status
                    // $p='<p>'. $is_allow .'</p><p>اخر تسجيل دخول '.$LoginInfo->last_login.'</p>';
-                   $p='<p>اسم المستخدم :'.$is_allow.'</p>';
+                   $p='اسم المستخدم :'.$is_allow.' ــــــــــ ';
+                   $p.='اخر تسجيل دخول '.$LoginInfo->last_login.'';
                     return $p ;
                 }
                 return 'لا توجد بيانات دخول ';
