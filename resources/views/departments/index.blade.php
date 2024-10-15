@@ -1,8 +1,11 @@
 @extends('layout.main')
 
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
-<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
+<link rel="stylesheet" type="text/css"
+    href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
+<script type="text/javascript" charset="utf8"
+    src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
+<script type="text/javascript" charset="utf8"
+    src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
 </script>
 
 @section('content')
@@ -13,10 +16,13 @@
     <div class="container  col-11" style="background-color:transparent;">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item "><a href="{{ route('home') }}">الرئيسيه</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('sectors.index', ['id' => $sectors->id]) }}">القطاعات</a>
+                <li class="breadcrumb-item "><a
+                        href="{{ route('home') }}">الرئيسيه</a></li>
+                <li class="breadcrumb-item"><a
+                        href="{{ route('sectors.index', ['id' => $sectors->id]) }}">القطاعات</a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page"> <a href="">
+                <li class="breadcrumb-item active" aria-current="page"> <a
+                        href="">
                         الادارات الرئيسية</a></li>
             </ol>
         </nav>
@@ -31,12 +37,15 @@
                     @php
                         $id = Request::segment(2);
                     @endphp
-                    @if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2 || Auth::user()->rule->id == 4)
+                    @if (Auth::user()->rule->id == 1 ||
+                            Auth::user()->rule->id == 2 ||
+                            Auth::user()->rule->id == 4)
                         <button type="button" class="wide-btn "
                             onclick="window.location.href='{{ route('department.create', ['id' => $id]) }}'"
                             style="    color: #0D992C;">
                             اضافة جديد
-                            <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                            <img src="{{ asset('frontend/images/add-btn.svg') }}"
+                                alt="img">
                         </button>
                     @endif
                     @if (Auth::user()->hasPermission('create Postman'))
@@ -86,7 +95,8 @@
 </section>
 <script>
     $(document).ready(function() {
-        $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
+        $.fn.dataTable.ext.classes.sPageButton =
+            'btn-pagination btn-sm'; // Change Pagination Button Class
         @php
             $Dataurl = url('api/department') . '/' . $id;
 
@@ -130,7 +140,8 @@
                     name: 'subDepartment',
                     render: function(data, type, row) {
                         return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showSubDepartments(' +
-                            row.id + ')">' + data + '</button>';
+                            row.id + ')">' + data +
+                            '</button>';
 
 
                     }
@@ -140,7 +151,8 @@
                     name: 'num_managers',
                     render: function(data, type, row) {
                         return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showUsers(' +
-                            row.id + ')">' + data + '</button>';
+                            row.id + ')">' + data +
+                            '</button>';
                     }
                 },
                 {
@@ -148,7 +160,8 @@
                     name: 'num_subdepartment_managers',
                     render: function(data, type, row) {
                         return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showSubUsers(' +
-                            row.id + ')">' + data + '</button>';
+                            row.id + ')">' + data +
+                            '</button>';
                     }
                 },
                 {
@@ -163,16 +176,22 @@
                 targets: -1,
                 render: function(data, type, row) {
                     console.log(row);
-                    var departmentEdit = '{{ route('departments.edit', ':id') }}';
-                    departmentEdit = departmentEdit.replace(':id', row.id);
-                    var subdepartment = '{{ route('sub_departments.create', ':id') }}';
-                    subdepartment = subdepartment.replace(':id', row.id);
-                    var departmentShow = '{{ route('departments.show', ':id') }}';
-                    departmentShow = departmentShow.replace(':id', row.id);
-                    var addReservation =
-                        '{{ route('reservation_allowances.search_employee_new', 'sector_id=:sector&departement_id=:id') }}';
-                    addReservation = addReservation.replace(':id', row.id);
-                    addReservation = addReservation.replace(':sector', row.sector_id);
+                    var departmentEdit =
+                        '{{ route('departments.edit', ':id') }}';
+                    departmentEdit = departmentEdit
+                        .replace(':id', row.id);
+                    var subdepartment =
+                        '{{ route('sub_departments.create', ':id') }}';
+                    subdepartment = subdepartment
+                        .replace(':id', row.id);
+                    var departmentShow =
+                        '{{ route('departments.show', ':id') }}';
+                    departmentShow = departmentShow
+                        .replace(':id', row.id);
+                    /*  var addReservation =
+                         '{{ route('reservation_allowances.search_employee_new', 'sector_id=:sector&departement_id=:id') }}';
+                     addReservation = addReservation.replace(':id', row.id);
+                     addReservation = addReservation.replace(':sector', row.sector_id); */
 
                     // Get the authenticated user's department ID from Blade
                     // var authDepartmentId = {{ Auth::user()->department_id }};
@@ -187,9 +206,11 @@
                     // if (row.id === authDepartmentId) {
                     buttons += `
                 <a href="${departmentEdit}" class="btn btn-sm" style="background-color: #F7AF15;"> <i class="fa fa-edit"></i> تعديل</a>
-                <a href="${addReservation}" class="btn btn-sm" style="background-color: #274373;"> <i class="fa fa-edit"></i> اضافة بدل حجز</a>
+
 
             `;
+
+                    /*    <a href="${addReservation}" class="btn btn-sm" style="background-color: #274373;"> <i class="fa fa-edit"></i> اضافة بدل حجز</a> */
                     // }
 
                     return buttons; // Return the constructed buttons
@@ -219,12 +240,14 @@
             },
             "pagingType": "full_numbers",
             "fnDrawCallback": function(oSettings) {
-                console.log('Page ' + this.api().page.info().pages)
+                console.log('Page ' + this.api().page.info()
+                    .pages)
                 var page = this.api().page.info().pages;
                 console.log($('#users-table tr').length);
                 if (page <= 1) {
                     //   $('.dataTables_paginate').hide();//css('visiblity','hidden');
-                    $('.dataTables_paginate').css('visibility', 'hidden'); // to hide
+                    $('.dataTables_paginate').css(
+                        'visibility', 'hidden'); // to hide
 
                 }
             }
@@ -263,7 +286,8 @@
     }
 
     function showSubUsers(parentDepartmentId) {
-        window.location.href = '/employees?parent_department_id=' + parentDepartmentId;
+        window.location.href = '/employees?parent_department_id=' +
+            parentDepartmentId;
     }
 </script>
 
