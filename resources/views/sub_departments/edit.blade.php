@@ -130,7 +130,7 @@
                             </div>
                             {{-- {{ dd($department->manager) }} --}}
                             <div class="form-group col-md-10 mx-md-2" id="manager">
-                                <label for="mangered">رقم هوية المدير</label>
+                                <label for="mangered">رقم ملف المدير</label>
                                 <input type="text" name="mangered" id="mangered" class="form-control"
                                     autocomplete="one-time-code" value="{{ $department->manger }}">
 
@@ -178,8 +178,8 @@
                             </div>
 
                             <div class="input-group moftsh col-md-10 mx-md-2">
-                                <label for="Civil_number" class="col-12"> أرقام الهوية</label>
-                                <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px">
+                                <label for="file_number" class="col-12"> أرقام الملفات</label>
+                                <textarea class="form-control" name="file_number" id="file_number" style="height: 100px">
                                             @foreach ($employees as $employee)
 {{ $employee->file_number }}
 @endforeach
