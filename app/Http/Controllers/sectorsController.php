@@ -89,7 +89,7 @@ class sectorsController extends Controller
                 $show_permission = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('sectors.show', $row->id) . '> <i class="fa fa-eye"></i>عرض</a>';
                 // $addbadal_permission = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('sectors.show', $row->id) . '> <i class="fa fa-plus"></i>أضافه بدل</a>';
 
-                return $show_permission . ' ' . $edit_permission . '' . $add_permission . ' ' . $reservationAllowence;
+                return $show_permission . ' ' . $edit_permission . '' . $add_permission ;//$reservationAllowence;
             })
             ->addColumn('manager_name', function ($row) {
                 // Check if manager exists before accessing its attributes
@@ -104,14 +104,16 @@ class sectorsController extends Controller
             })//login_info
             ->addColumn('login_info', function ($row) {
                 // Check if manager exists before accessing its attributes
-                $manager = User::find($row->manager);
-                if ($manager) {
+                $LoginInfo = User::find($row->manager);
+                if ($LoginInfo) {
                     // Check the flag to determine if the manager is an employee
-                    $is_allow = $manager->flag == 'employee' ? 'لا يسمح بالدخول' : $manager->file_number;
+                    $is_allow = $LoginInfo->flag == 'employee' ? 'لا يسمح بالدخول' : $LoginInfo->file_number;
                     // Return the manager's name along with the access permission status
-                    return   $is_allow ."<br /><hr /> اخر تسجيل دخول ".$manger->last_login;
+                   // $p='<p>'. $is_allow .'</p><p>اخر تسجيل دخول '.$LoginInfo->last_login.'</p>';
+                   $p='<p>اسم المستخدم :'.$is_allow.'</p>';
+                    return $p ;
                 }
-                return 'لا يوجد مدير';
+                return 'لا توجد بيانات دخول ';
             })
             ->addColumn('departments', function ($row) {
                 $num = departements::where('sector_id', $row->id)->count();
