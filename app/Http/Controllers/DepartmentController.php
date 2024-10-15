@@ -78,19 +78,27 @@ class DepartmentController extends Controller
                 return $row->manager ? $row->manager->name : 'لايوجد مدير للأداره';
             })
             ->addColumn('login_info', function ($row) {
-                // Check if manager exists before accessing its attributes
-                $LoginInfo = User::find($row->manager);
-                if ($LoginInfo) {
-                    // Check the flag to determine if the manager is an employee
-                    $is_allow = $LoginInfo->flag == 'employee' ? 'لا يسمح بالدخول' : $LoginInfo->file_number;
-                    // Return the manager's name along with the access permission status
-                    // $p='<p>'. $is_allow .'</p><p>اخر تسجيل دخول '.$LoginInfo->last_login.'</p>';
-                    $p = 'اسم المستخدم :' . $is_allow . ' ــــــــــ ';
-                    $p .= 'اخر تسجيل دخول ' . $LoginInfo->last_login . '';
-                    return $p;
+                // Retrieve the manager (if exists)
+                $LoginInfo = User::where('id', $row->manger)->first();
+
+                // If there's no manager assigned
+                if (!$LoginInfo) {
+                    return 'لا يوجد مدير';
                 }
-                return 'لا توجد بيانات دخول ';
+
+                // If the manager exists and is flagged as 'employee'
+                if ($LoginInfo->flag == 'employee') {
+                    return 'لا يسمح له بالدخول';
+                }
+
+                // If the manager is a user (not an employee)
+                $is_allow = $LoginInfo->file_number; // Display file number
+                $p = 'اسم المستخدم :' . $is_allow . '<br>';
+                $p .= 'اخر تسجيل دخول: ' . $LoginInfo->last_login;
+
+                return $p;
             })
+
             ->addColumn('num_managers', function ($row) {
                 return User::where('department_id', $row->id)
                     ->count();
@@ -100,7 +108,7 @@ class DepartmentController extends Controller
                 return User::whereIn('department_id', $subdepartment_ids)
                     ->count();
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['action', 'login_info'])
             ->make(true);
     }
     public function getManagerDetails($id)
@@ -240,19 +248,27 @@ class DepartmentController extends Controller
                 return $row->manager ? $row->manager->name : 'لايوجد مدير للأداره';
             })
             ->addColumn('login_info', function ($row) {
-                // Check if manager exists before accessing its attributes
-                $LoginInfo = User::find($row->manager);
-                if ($LoginInfo) {
-                    // Check the flag to determine if the manager is an employee
-                    $is_allow = $LoginInfo->flag == 'employee' ? 'لا يسمح بالدخول' : $LoginInfo->file_number;
-                    // Return the manager's name along with the access permission status
-                    // $p='<p>'. $is_allow .'</p><p>اخر تسجيل دخول '.$LoginInfo->last_login.'</p>';
-                    $p = 'اسم المستخدم :' . $is_allow . ' ــــــــــ ';
-                    $p .= 'اخر تسجيل دخول ' . $LoginInfo->last_login . '';
-                    return $p;
+                // Retrieve the manager (if exists)
+                $LoginInfo = User::where('id', $row->manger)->first();
+
+                // If there's no manager assigned
+                if (!$LoginInfo) {
+                    return 'لا يوجد مدير';
                 }
-                return 'لا توجد بيانات دخول ';
+
+                // If the manager exists and is flagged as 'employee'
+                if ($LoginInfo->flag == 'employee') {
+                    return 'لا يسمح له بالدخول';
+                }
+
+                // If the manager is a user (not an employee)
+                $is_allow = $LoginInfo->file_number; // Display file number
+                $p = 'اسم المستخدم :' . $is_allow . '<br>';
+                $p .= 'اخر تسجيل دخول: ' . $LoginInfo->last_login;
+
+                return $p;
             })
+
             ->addColumn('num_managers', function ($row) {
                 return User::where('department_id', $row->id)
                     ->count();
@@ -263,7 +279,7 @@ class DepartmentController extends Controller
                     ->count();
             })
 
-            ->rawColumns(['action', 'subDepartment'])
+            ->rawColumns(['action', 'subDepartment', 'login_info'])
             ->make(true);
     }
 
@@ -404,13 +420,18 @@ class DepartmentController extends Controller
             $manager->save();
 
             // Send email to new manager
-            Sendmail(
-                'مدير ادارة',
-                'تم أضافتك كمدير ادارة',
-                $manager->file_number,
-                $request->password ? $request->password : null,
-                $manager->email
-            );
+            if ($manager->email) {
+                // Send email to the new manager
+                Sendmail(
+                    'مدير ادارة',
+                    'تم أضافتك كمدير ادارة',
+                    $manager->file_number,
+                    $request->password ? $request->password : null,
+                    $manager->email
+                );
+            } else {
+                return redirect()->route('departments.index', ['id' => $request->sector]);
+            }
         } else {
             return redirect()->back()->withErrors('هذا المدير غير موجود')->withInput();
         }
@@ -518,14 +539,18 @@ class DepartmentController extends Controller
             }
             $manager->save();
 
-            // Send email to the new manager
-            Sendmail(
-                'مدير ادارة فرعية',
-                'تم أضافتك كمدير ادارة فرعية',
-                $manager->file_number,
-                $request->password ? $request->password : null,
-                $manager->email
-            );
+            if ($manager->email) {
+                // Send email to the new manager
+                Sendmail(
+                    'مدير ادارة فرعية',
+                    'تم أضافتك كمدير ادارة فرعية',
+                    $manager->file_number,
+                    $request->password ? $request->password : null,
+                    $manager->email
+                );
+            } else {
+                return redirect()->route('sub_departments.index', ['id' => $request->sector]);
+            }
         } else {
             return redirect()->back()->withErrors('هذا المدير غير موجود')->withInput();
         }
@@ -704,14 +729,18 @@ class DepartmentController extends Controller
                     }
                     $newManager->save();
 
-                    // Send email notification to the new manager
-                    Sendmail(
-                        'مدير ادارة', // Subject
-                        'تم أضافتك كمدير ادارة', // Email body
-                        $newManager->file_number,
-                        $request->password ? $request->password : null,
-                        $newManager->email
-                    );
+                    if ($manager->email) {
+                        // Send email to the new manager
+                        Sendmail(
+                            'مدير ادارة', // Subject
+                            'تم أضافتك كمدير ادارة', // Email body
+                            $newManager->file_number,
+                            $request->password ? $request->password : null,
+                            $newManager->email
+                        );
+                    } else {
+                        return redirect()->route('departments.index', ['id' => $request->sector]);
+                    }
                 }
             }
         } else {
@@ -723,7 +752,12 @@ class DepartmentController extends Controller
                 $Manager->rule_id = $request->rule;
                 $Manager->password = Hash::make($request->password);
                 $Manager->save();
-                Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, $request->password ? $request->password : null, $Manager->email);
+                if ($manager->email) {
+                    // Send email to the new manager
+                    Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, $request->password ? $request->password : null, $Manager->email);
+                } else {
+                    return redirect()->route('departments.index', ['id' => $request->sector]);
+                }
             }
         }
 
@@ -851,15 +885,18 @@ class DepartmentController extends Controller
                         $newManager->password = Hash::make($request->password);
                     }
                     $newManager->save();
-
-                    // Send email notification to the new manager
-                    Sendmail(
-                        'مدير ادارة فرعية', // Subject
-                        'تم أضافتك كمدير ادارة فرعية', // Email body
-                        $newManager->file_number,
-                        $request->password ? $request->password : null,
-                        $newManager->email
-                    );
+                    if ($manager->email) {
+                        // Send email notification to the new manager
+                        Sendmail(
+                            'مدير ادارة فرعية', // Subject
+                            'تم أضافتك كمدير ادارة فرعية', // Email body
+                            $newManager->file_number,
+                            $request->password ? $request->password : null,
+                            $newManager->email
+                        );
+                    } else {
+                        return redirect()->route('sub_departments.index', ['id' => $request->sector]);
+                    }
                 }
             }
         } else {
@@ -871,8 +908,11 @@ class DepartmentController extends Controller
                 $Manager->rule_id = $request->rule;
                 $Manager->password = Hash::make($request->password);
                 $Manager->save();
-
-                Sendmail('مدير ادارة فرعية', 'تم أضافتك كمدير ادارة فرعية ' . $request->name, $Manager->file_number, $request->password ? $request->password : null, $Manager->email);
+                if ($manager->email) {
+                    Sendmail('مدير ادارة فرعية', 'تم أضافتك كمدير ادارة فرعية ' . $request->name, $Manager->file_number, $request->password ? $request->password : null, $Manager->email);
+                } else {
+                    return redirect()->route('sub_departments.index', ['id' => $request->sector]);
+                }
             }
         }
 

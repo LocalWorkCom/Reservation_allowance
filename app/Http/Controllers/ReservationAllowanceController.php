@@ -54,19 +54,26 @@ class ReservationAllowanceController extends Controller
         $super_admin = User::where('department_id', 1)->first();
         $employees = [];
         $get_departements = [];
+        $sectors = Sector::get();
 
-        if($user->rule_id == 2)
+        /*if($user->rule_id == 2)
         {
             $sectors = Sector::get();
             $departements = [];
         }else{
-            if($user->department_id == null){
+            if($departement_id == null){
                 $sectors[] = $user->sectors;
                 $get_departements = departements::with('children')->where('id', '!=', 1)->where('sector_id', $sector_id)->where('parent_id', null)->get();
             }else{
                 $sectors[] = $user->sectors;
-                $get_departements = departements::with('children')->where('id', '!=', 1)->where('id', $user->department_id)->get();
+                $get_departements = departements::with('children')->where('id', '!=', 1)->where('id', $departement_id)->get();
             }
+        }*/
+
+        if($departement_id == null){
+            $get_departements = departements::with('children')->where('id', '!=', 1)->where('sector_id', $sector_id)->where('parent_id', null)->get();
+        }else{
+            $get_departements = departements::with('children')->where('id', '!=', 1)->where('id', $departement_id)->get();
         }
 
         return view('reservation_allowance.index_data', compact('sectors', 'get_departements', 'employees', 'to_day', 'to_day_name', 'super_admin', 'sector_id', 'departement_id'));
@@ -336,7 +343,13 @@ class ReservationAllowanceController extends Controller
                         $check_sector = 0;
                     }
 
-                    if($employee->department_id != 0){
+                    if($employee->department_id != null){
+                        if($employee->department_id != $request->departement_id){
+                            $check_sector = 0;
+                        }
+                    }
+
+                    if($employee->department_id == null && $request->departement_id != 0){
                         if($employee->department_id != $request->departement_id){
                             $check_sector = 0;
                         }
@@ -348,8 +361,8 @@ class ReservationAllowanceController extends Controller
                     }
 
                     if($check_sector == 1){
-                        $sector_id = $employee->sector;
-                        $department_id = $employee->department_id;
+                        $sector_id = $request->sector_id;
+                        $department_id = $request->departement_id;
                         $employee_new_add[] = $employee;
                         //array_push($employee_new_add, $employee_new_adds);
                     } 
@@ -650,9 +663,14 @@ class ReservationAllowanceController extends Controller
             }
         }
 
-        /*if($sector_id == 0){
-            return redirect()->back()->with('error','عفوا يجب اختيار اسم القطاع');
-        }*/
+        $reservation_allowance_type = 0;
+        if($sector_id != 0){
+            if($departement_id != 0){
+                $reservation_allowance_type = departements::where('id', $departement_id)->first()->reservation_allowance_type;
+            }else{
+                $reservation_allowance_type = Sector::where('id', $sector_id)->first()->reservation_allowance_type;
+            }
+        }
 
 
 
@@ -670,7 +688,7 @@ class ReservationAllowanceController extends Controller
 
         $employees = $data;
 
-        return view('reservation_allowance.search_employee_new', compact('today' ,'department_type', 'sector_id', 'departement_id', 'sectors', 'get_departements', 'employees'));
+        return view('reservation_allowance.search_employee_new', compact('today' ,'department_type', 'reservation_allowance_type', 'sector_id', 'departement_id', 'sectors', 'get_departements', 'employees'));
     }
 
     public function search_employee(Request $request)

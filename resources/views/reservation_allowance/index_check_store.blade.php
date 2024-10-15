@@ -166,75 +166,83 @@
                         </div>
                     @endif
 
+                    @if($employee_new_add)
                     <div class="row" style="direction:rtl">
                         <div class="col-lg-4">
                             <h4 style="text-align:center">الموظفين الذين سيتم اضافتهم</h4>
                             <table class="display table table-responsive-sm  table-bordered table-hover dataTable">
                                 <thead>
                                     <tr>
+                                        <th>الترتيب</th>
                                         <th>الاسم</th>
                                         <th>رقم الملف</th>
                                     </tr>
                                 </thead>
-                                    @if($employee_new_add)
-                                        @foreach($employee_new_add as $employee_newadd)
+                                        @foreach($employee_new_add as $K_employee_newadd=>$employee_newadd)
                                         <tr>
+                                            <td>{{$K_employee_newadd+1}}</td>
                                             <td>{{$employee_newadd->name}}</td>
                                             <td>{{$employee_newadd->file_number}}</td>
                                         </tr>
                                         @endforeach
-                                    @endif
                             </table>   
                         </div>
+                        @endif
 
+                        @if($employee_not_dept)
                         <div class="col-lg-4">
                             <h4 style="text-align:center">الموظفين غير مسجلين فى الادارة او القطاع</h4>
                             <table class="display table table-responsive-sm  table-bordered table-hover dataTable">
                                 <thead>
                                     <tr>
+                                        <th>الترتيب</th>
                                         <th>الاسم</th>
                                         <th>رقم الملف</th>
                                     </tr>
                                 </thead>
-                                    @if($employee_not_dept)
-                                        @foreach($employee_not_dept as $employee_notdept)
+                                        @foreach($employee_not_dept as $K_employee_notdept=>$employee_notdept)
                                         <tr>
+                                            <td>{{$K_employee_notdept+1}}</td>
                                             <td>{{$employee_notdept->name}}</td>
                                             <td>{{$employee_notdept->file_number}}</td>                                        
                                         </tr>
                                         @endforeach
-                                    @endif
                             </table>   
                         </div>
+                        @endif
 
+                        @if($employee_not_found)
                         <div class="col-lg-4">
                             <h4 style="text-align:center">الموظفين ارقام الملفات خطاء</h4>
                             <table class="display table table-responsive-sm  table-bordered table-hover dataTable">
                                 <thead>
                                     <tr>
+                                        <th>الترتيب</th>
                                         <th>رقم الملف</th>
                                     </tr>
                                 </thead>
-                                @if($employee_not_found)
-                                    @foreach($employee_not_found as $employee_notfound)
+                                    @foreach($employee_not_found as $K_employee_notfound=>$employee_notfound)
                                     <tr>
-                                        <td>{{$employee_notfound['Civil_number']}}</td>
+                                    <td>{{$K_employee_notfound+1}}</td>
+                                    <td>{{$employee_notfound['Civil_number']}}</td>
                                     </tr>
                                     @endforeach
-                                @endif
                             </table>   
                         </div>
+                        @endif
 
 
-                        <form method="post" action="{{ route('reservation_allowances.store.all') }}">
-                            @csrf
-                            <input type="hidden" name="date" value="{{$to_day}}">
-                            <input type="hidden" name="type" value="{{$type}}">
-                            <input type="hidden" name="sector_id" value="{{$sector_id}}">
-                            <input type="hidden" name="departement_id" value="{{$department_id}}">
-                            <button class="btn-all py-2 px-2" type="submit" style="color: #0D992C;">اضف بدل حجز</button>
-                            <button class="btn-all py-2 px-2" type="button" onclick="history.back()" style="color: #0D992C;">الغاء</button>
-                        </from>
+                        <div class="col-lg-12" style="text-align: right">
+                            <form method="post" action="{{ route('reservation_allowances.store.all') }}">
+                                @csrf
+                                <input type="hidden" name="date" value="{{$to_day}}">
+                                <input type="hidden" name="type" value="{{$type}}">
+                                <input type="hidden" name="sector_id" value="{{$sector_id}}">
+                                <input type="hidden" name="departement_id" value="{{$department_id}}">
+                                <button class="btn-all py-2 px-2" type="submit" style="color: #0D992C;">اضف بدل حجز</button>
+                                <button class="btn-all py-2 px-2" type="button" onclick="history.back()" style="color: #0D992C;">الغاء</button>
+                            </from>
+                        </div>
                     </div>
                 </div>
             </div>
