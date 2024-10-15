@@ -190,40 +190,41 @@
                 sector = null;
                 console.log(skipDepartmentCheck);
                 $.ajax({
-                    url: '/get-manager-sector-details/' + managerId + '/' + sector + '?skipDepartmentCheck=' +
-                        skipDepartmentCheck,
-                    type: 'GET',
-                    success: function(data) {
-                        $('#manager_details').find('span').eq(0).text(data.rank);
-                        $('#manager_details').find('span').eq(1).text(data.seniority);
-                        $('#manager_details').find('span').eq(2).text(data.job_title);
-                        $('#manager_details').find('span').eq(3).text(data.name);
-                        $('#manager_details').find('span').eq(4).text(data.phone);
-                        $('#manager_details').show();
-                        if (data.isEmployee) {
-                            $('#password_field').show();
-                            $('#rule_field').show();
-                        } else {
-                            $('#password_field').hide();
-                            $('#rule_field').hide();
-                            $('#password').val('');
-                            $('#rule').val('');
-                        }
-                    },
-                    error: function(xhr) {
-                        console.log(xhr);
-                        Swal.fire({
-                            title: 'تحذير',
-                            text: xhr.responseJSON.error || 'عفوا هذا المستخدم غير موجود',
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonText: 'نعم, استمر',
-                            cancelButtonText: 'لا',
-                            confirmButtonColor: '#3085d6',
-                            cancelButtonColor: '#d33'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                fetchManagerDetails(managerId, false);
+                        url: '/get-manager-sector-details/' + managerId + '/' + sector + '?skipDepartmentCheck=' +
+                            skipDepartmentCheck,
+                        type: 'GET',
+                        success: function(data) {
+                            $('#manager_details').find('span').eq(0).text(data.rank);
+                            $('#manager_details').find('span').eq(1).text(data.seniority);
+                            $('#manager_details').find('span').eq(2).text(data.job_title);
+                            $('#manager_details').find('span').eq(3).text(data.name);
+                            $('#manager_details').find('span').eq(4).text(data.phone);
+                            $('#manager_details').show();
+                            if (data.isEmployee) {
+                                $('#password_field').show();
+                                $('#rule_field').show();
+                            } else {
+                                $('#password_field').hide();
+                                $('#rule_field').hide();
+                                $('#password').val('');
+                                $('#rule').val('');
+                            }
+                        },
+                        error: function(xhr) {
+                        // Handle different error responses
+                        if (xhr.status === 404) {
+                            Swal.fire({
+                                title: 'تحذير',
+                                text: xhr.responseJSON.error || 'عفوا هذا المستخدم غير موجود',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: 'نعم, استمر',
+                                cancelButtonText: 'لا',
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    fetchManagerDetails(managerId, false);
                                 $('#password_field').show();
                                 $('#rule_field').show();
                                 $('#password').show();
@@ -237,38 +238,48 @@
                                 $('#manager_details').find('span').eq(4).text(result.phone);
                                 $('#manager_details').find('span').eq(5).text(result.email);
 
-                            } else {
-                                // User clicked "إلغاء", clear the input field
-                                $('#mangered').val('');
-                                $('#manager_details').hide();
-                                $('#password_field').hide();
-                                $('#rule_field').hide();
-                                $('#password').val('');
-                                $('#rule').val('');
-                            }
-                        });
-                    }
-                });
-            } else {
-                $('#manager_details').hide();
-                $('#password_field').hide();
-                $('#rule_field').hide();
+                                } else {
+                                    // Hide details if user cancels
+                                    $('#mangered').val(''); // Clear manager input field
+                                    $('#manager_details').hide();
+                                    $('#password_field').hide();
+                                    $('#rule_field').hide();
+                                    $('#password').val(''); // Clear password field
+                                    $('#rule').val(''); // Clear rule field
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'خطأ',
+                                text: 'هذا الموظف غير موجود و يرجى أدخال رقم ملف صحيح',
+                                icon: 'error',
+                                confirmButtonText: 'إلغاء',
+                                confirmButtonColor: '#3085d6'
+                            });
+                            $('#mangered').val('');
+                        }
+                    }   });
+                }
+                else {
+                    $('#manager_details').hide();
+                    $('#password_field').hide();
+                    $('#rule_field').hide();
+                    $('#password').val('');
+                    $('#rule').val('');
+                }
+            }
+            $('#manager_details').hide();
+            $('#password_field').hide();
+            $('#rule_field').hide();
+            $('#mangered').bind('blur', function() {
+                var managerId = $(this).val();
                 $('#password').val('');
                 $('#rule').val('');
+                fetchManagerDetails(managerId, true);
+            });
+            var selectedManagerId = $('#mangered').val();
+            if (selectedManagerId) {
+                fetchManagerDetails(selectedManagerId, true);
             }
-        }
-        $('#manager_details').hide();
-        $('#password_field').hide();
-        $('#rule_field').hide();
-        $('#mangered').bind('blur', function() {
-            var managerId = $(this).val();
-            $('#password').val('');
-            $('#rule').val('');
-            fetchManagerDetails(managerId, true);
-        });
-        var selectedManagerId = $('#mangered').val();
-        if (selectedManagerId) {
-            fetchManagerDetails(selectedManagerId, true);
-        }
     </script>
 @endsection

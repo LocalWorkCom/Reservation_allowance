@@ -13,7 +13,7 @@
     <div class="form-group col-md-12 mx-2">
         <label for="Civil_number"> <i class="fa-solid fa-asterisk"
                 style="color:red; font-size:10px;"></i>
-            رقم الملف</label>
+            ادخل ارقام ملفات مستحقى بدل حجز لهذا اليوم</label>
         <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 200px !important"></textarea>
     </div>
 
