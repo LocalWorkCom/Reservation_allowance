@@ -39,6 +39,8 @@ use App\Http\Controllers\SubDepartmentStatsController;
 use App\Http\Controllers\SubDepartmentReservationController;
 use App\Http\Controllers\PrisonersDetailsController;
 use App\Http\Controllers\SectorEmployeesDetailsController;
+use App\Http\Controllers\ReservationReportController;
+
 
 
 
@@ -477,6 +479,8 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/reservation_allowances/get_crate_all_form/{sector}/{department}', [ReservationAllowanceController::class, 'get_crate_all_form'])->name('reservation_allowances.get_crate_all_form')->middleware('check.permission:view Inspector');
     Route::any('/reservation_allowances/get_check_sector_department/{sector}/{department}/{civilNumber}', [ReservationAllowanceController::class, 'get_check_sector_department'])->name('reservation_allowances.get_check_sector_department')->middleware('check.permission:view Inspector');
     Route::any('/reservation_allowances/index_data/{sector}/{departement}/{date}', [ReservationAllowanceController::class, 'index_data'])->name('reservation_allowances.index_data')->middleware('check.permission:view Inspector');
+    Route::any('/reservation_allowances/check_store', [ReservationAllowanceController::class, 'check_store'])->name('reservation_allowances.check_store')->middleware('check.permission:create Inspector');
+
 
 
     Route::any('/reservation_allowances/store_all', [ReservationAllowanceController::class, 'store_all'])->name('reservation_allowances.store.all')->middleware('check.permission:create Inspector');
@@ -544,6 +548,13 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/reservations/last-six-months', [ReserveFetchController::class, 'getLastSixMonths'])->name('reservation_fetch.getLastSixMonths')->middleware('check.permission:view Inspector');
     Route::any('/reservations/last-year', [ReserveFetchController::class, 'getLastYear'])->name('reservation_fetch.getLastYear')->middleware('check.permission:view Inspector');
     Route::any('/reservations/other-dates', [ReserveFetchController::class, 'getCustomDateRange'])->name('reservation_fetch.getCustomDateRange')->middleware('check.permission:view Inspector');
+    
+    //reservation report
+    Route::get('reservation_report', [ReservationReportController::class, 'index'])->name('reserv_report.index');
+    Route::get('reservation_report/getReportData', [ReservationReportController::class, 'getReportData'])->name('reservation_report.getReportData');
+    Route::get('reservation_report/print', [ReservationReportController::class, 'printReport'])->name('reservation_report.print');
+Route::get('reservation_report/department/{departmentId}/details_data', [ReservationReportController::class, 'getDepartmentDetailsData'])->name('reservation_report.department_details_data');
+Route::get('reservation_report/department/{departmentId}/details', [ReservationReportController::class, 'showDepartmentDetails'])->name('reservation_report.department_details');
 
     Route::get('/file-import', [UserController::class, 'importView'])->name('import-view');
     Route::post('/import', [UserController::class, 'import'])->name('import');

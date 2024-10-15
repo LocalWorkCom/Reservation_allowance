@@ -1,4 +1,4 @@
-<form action="{{ route('reservation_allowances.store.all') }}" id="add_create_all" method="post" class="text-right" enctype="multipart/form-data">
+<form action="{{ route('reservation_allowances.check_store') }}" id="add_create_all" method="post" class="text-right" enctype="multipart/form-data">
     @csrf
 
     <input type="hidden" name="sector_id" value="{{ $sector_id }}">
@@ -13,7 +13,7 @@
     <div class="form-group col-md-12 mx-2">
         <label for="Civil_number"> <i class="fa-solid fa-asterisk"
                 style="color:red; font-size:10px;"></i>
-            رقم الهوية</label>
+            رقم الملف</label>
         <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 200px !important"></textarea>
     </div>
 
@@ -40,7 +40,7 @@
 
     <div class="container col-12 mt-3 mb-3 ">
         <div class="form-row col-10 " dir="ltr">
-            <button class="btn-blue " type="button" id="get_check_sector_department">
+            <button class="btn-blue" type="submit">
                 اضافة </button>
         </div>
     </div>

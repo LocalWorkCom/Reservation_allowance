@@ -204,7 +204,7 @@
                 });
             });
 
-            $(document).on("click", "#get_check_sector_department", function() {
+            /*$(document).on("click", "#get_check_sector_department", function() {
                 var sector_id = document.getElementById('sector_id').value;
                 var departement_id = document.getElementById('departement_id').value;
                 var Civil_number = document.getElementById('Civil_number').value;
@@ -218,7 +218,7 @@
                 $.get(map_url, function(data) {
                     $("#view_alert_crate_all").html(data);
                 });
-            });
+            });*/
 
         });
 
