@@ -126,8 +126,7 @@
                                     value="{{ $user->name }}" dir="rtl">
                             </div>
                             <div class="form-group col-md-5 mx-2">
-                                <label for="input2"><i class="fa-solid fa-asterisk"
-                                        style="color:red; font-size:10px;"></i>
+                                <label for="input2">
                                     {{-- @if ($user->flag == 'user')
                                         <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>
                                     @endif --}}
@@ -218,7 +217,7 @@
                         <div class="form-row mx-2 d-flex justify-content-center flex-row-reverse">
                             <div class="form-group col-md-10">
                                 <label for="input13">هل يمكن لهذا الموظف أن يكون مستخدم؟</label>
-                                <select id="input13" name="flag" class="form-control select2">
+                                <select id="input13" name="flag" class="form-control">
                                     <!-- Dynamically set the selected option based on the user's flag value -->
                                     <option value="user" {{ $user->flag == 'user' ? 'selected' : '' }}>نعم</option>
                                     <option value="employee" {{ $user->flag == 'employee' ? 'selected' : '' }}>لا
@@ -265,8 +264,7 @@
 
                         <div class="form-row mx-md-2  d-flex justify-content-center flex-row-reverse">
                             <div class="form-group col-md-5 mx-2">
-                                <label for="sector"> <i class="fa-solid fa-asterisk"
-                                        style="color:red; font-size:10px;"></i>
+                                <label for="sector">
                                     القطاع </label>
                                 <select id="sector" name="sector" class="form-control " placeholder="القطاع">
                                     <option value="{{ null }}" selected>
@@ -282,7 +280,7 @@
 
                             <div class="form-group col-md-5 mx-2">
                                 <label for="department_id">
-                                    <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>
+                                   
                                     الادارة
                                 </label>
                                 <select id="department_id" name="public_administration" class="form-control select2"

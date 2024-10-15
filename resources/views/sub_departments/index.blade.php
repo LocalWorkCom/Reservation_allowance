@@ -1,11 +1,8 @@
 @extends('layout.main')
 
-<link rel="stylesheet" type="text/css"
-    href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
-<script type="text/javascript" charset="utf8"
-    src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
-<script type="text/javascript" charset="utf8"
-    src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
 </script>
 
 @section('content')
@@ -17,30 +14,26 @@
         <div class="container col-11" style="background-color:transparent;">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a
-                            href="{{ route('home') }}">الرئيسيه</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('home') }}">الرئيسيه</a></li>
                     <li class="breadcrumb-item"><a
                             href="{{ route('departments.index', ['id' => $sectors->id]) }}">الادارات</a>
                     </li>
 
                     @foreach ($breadcrumbs as $breadcrumb)
                         @if ($loop->last)
-                            <li class="breadcrumb-item active"
-                                aria-current="page">
+                            <li class="breadcrumb-item active" aria-current="page">
                                 <a href="">{{ $breadcrumb->name }}</a>
                             </li>
                         @else
                             @if ($breadcrumb->parent_id)
                                 <li class="breadcrumb-item">
-                                    <a
-                                        href="{{ route('sub_departments.index', ['id' => $breadcrumb->id]) }}">
+                                    <a href="{{ route('sub_departments.index', ['id' => $breadcrumb->id]) }}">
                                         {{ $breadcrumb->name }}
                                     </a>
                                 </li>
                             @else
                                 <li class="breadcrumb-item">
-                                    <a
-                                        href="{{ route('sub_departments.index', ['id' => $breadcrumb->id]) }}">
+                                    <a href="{{ route('sub_departments.index', ['id' => $breadcrumb->id]) }}">
                                         {{ $breadcrumb->name }}
                                     </a>
                                 </li>
@@ -57,14 +50,12 @@
             <div class="d-flex justify-content-between">
                 <p> الأدارات الفرعيه - {{ $parentDepartment->name }} </p>
                 <div class="form-group">
-                    @if (Auth::user()->rule->id == 3 ||
-                            Auth::user()->department_id == $parentDepartment->id)
+                    @if (Auth::user()->rule->id == 3 || Auth::user()->department_id == $parentDepartment->id)
                         <button type="button" class="wide-btn "
                             onclick="window.location.href='{{ route('sub_departments.create', ['id' => $parentDepartment->id]) }}'"
                             style="    color: #0D992C;">
                             اضافة جديد
-                            <img src="{{ asset('frontend/images/add-btn.svg') }}"
-                                alt="img">
+                            <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
                         </button>
                     @endif
                     @if (Auth::user()->hasPermission('create Postman'))
@@ -95,6 +86,7 @@
                                     <th>رقم التعريف</th>
                                     <th>الاسم</th>
                                     <th>المدير</th>
+                                    <th>بيانات الدخول</th>
                                     {{-- <th>الاقسام</th> --}}
                                     <th>ميزانية البدل</th>
                                     <th>صلاحيه الحجز</th>
@@ -142,6 +134,10 @@
                 //     data: 'children_count',
                 //     name: 'children_count'
                 // },
+                {
+                    data: 'login_info',
+                    name: 'login_info'
+                },
                 {
                     data: 'reservation_allowance_amount',
                     name: 'reservation_allowance_amount'

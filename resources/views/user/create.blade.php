@@ -132,8 +132,7 @@
                                     value="{{ old('name') }}">
                             </div>
                             <div class="form-group col-md-5 mx-2">
-                                <label for="input2"> <i class="fa-solid fa-asterisk"
-                                        style="color:red; font-size:10px;"></i>
+                                <label for="input2">
                                     البريد الالكتروني</label>
                                 <input type="text" id="input2" name="email" class="form-control"
                                     placeholder=" البريد الالكترونى" value="{{ old('email') }}">
@@ -220,14 +219,18 @@
                                     placeholder="رقم الملف" value="{{ old('file_number') }}">
                             </div>
                             <div class="form-group col-md-10 mx-2">
-                                <label for="input13">هل يمكن لهذا الموظف أن يكون مستخدم؟ </label>
+                                <label for="input13"> <i class="fa-solid fa-asterisk"
+                                        style="color:red; font-size:10px;"></i> هل يمكن لهذا الموظف أن يكون مستخدم؟
+                                </label>
                                 <select id="input13" name="flag" class="form-control">
-                                    <option value="user">نعم</option>
-                                    <option value="employee" selected>لا</option>
+                                    <option value="">اختر النوع</option>
+                                    <option value="user" @if (old('flag') == 'user') selected @endif>نعم</option>
+                                    <option value="employee" @if (old('flag') == 'employee') selected @endif>لا</option>
                                 </select>
                             </div>
                             <div class="form-row mx-md-3 d-flex justify-content-center flex-row-reverse col-12"
-                                id="additionalFields" style="visibility: hidden;">
+                                id="additionalFields"
+                                style="visibility: {{ old('flag') == 'user' ? 'visible' : 'hidden' }}">
                                 <div class="form-group col-md-5 mx-2">
                                     <label for="input66">
                                         <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i> الباسورد
@@ -249,7 +252,7 @@
                                         <option selected disabled>اختار من القائمة</option>
                                         @foreach ($rule as $item)
                                             <option value="{{ $item->id }}"
-                                                {{ old('name') == $item->id ? 'selected' : '' }}>
+                                                {{ old('rule_id') == $item->id ? 'selected' : '' }}>
                                                 {{ $item->name }}
                                             </option>
                                         @endforeach
@@ -271,7 +274,7 @@
                                         لا يوجد قسم محدد</option>
                                     @foreach ($sectors as $sector)
                                         <option value="{{ $sector->id }}"
-                                            {{ old('name') == $sector->id ? 'selected' : '' }}>
+                                            {{ old('sector') == $sector->id ? 'selected' : '' }}>
                                             {{ $sector->name }}</option>
                                     @endforeach
 
