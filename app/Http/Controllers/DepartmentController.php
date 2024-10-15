@@ -420,13 +420,18 @@ class DepartmentController extends Controller
             $manager->save();
 
             // Send email to new manager
-            Sendmail(
-                'مدير ادارة',
-                'تم أضافتك كمدير ادارة',
-                $manager->file_number,
-                $request->password ? $request->password : null,
-                $manager->email
-            );
+            if ($manager->email) {
+                // Send email to the new manager
+                Sendmail(
+                    'مدير ادارة',
+                    'تم أضافتك كمدير ادارة',
+                    $manager->file_number,
+                    $request->password ? $request->password : null,
+                    $manager->email
+                );
+            } else {
+                return redirect()->route('departments.index', ['id' => $request->sector]);
+            }
         } else {
             return redirect()->back()->withErrors('هذا المدير غير موجود')->withInput();
         }
@@ -534,14 +539,18 @@ class DepartmentController extends Controller
             }
             $manager->save();
 
-            // Send email to the new manager
-            Sendmail(
-                'مدير ادارة فرعية',
-                'تم أضافتك كمدير ادارة فرعية',
-                $manager->file_number,
-                $request->password ? $request->password : null,
-                $manager->email
-            );
+            if ($manager->email) {
+                // Send email to the new manager
+                Sendmail(
+                    'مدير ادارة فرعية',
+                    'تم أضافتك كمدير ادارة فرعية',
+                    $manager->file_number,
+                    $request->password ? $request->password : null,
+                    $manager->email
+                );
+            } else {
+                return redirect()->route('sub_departments.index', ['id' => $request->sector]);
+            }
         } else {
             return redirect()->back()->withErrors('هذا المدير غير موجود')->withInput();
         }
@@ -720,14 +729,18 @@ class DepartmentController extends Controller
                     }
                     $newManager->save();
 
-                    // Send email notification to the new manager
-                    Sendmail(
-                        'مدير ادارة', // Subject
-                        'تم أضافتك كمدير ادارة', // Email body
-                        $newManager->file_number,
-                        $request->password ? $request->password : null,
-                        $newManager->email
-                    );
+                    if ($manager->email) {
+                        // Send email to the new manager
+                        Sendmail(
+                            'مدير ادارة', // Subject
+                            'تم أضافتك كمدير ادارة', // Email body
+                            $newManager->file_number,
+                            $request->password ? $request->password : null,
+                            $newManager->email
+                        );
+                    } else {
+                        return redirect()->route('departments.index', ['id' => $request->sector]);
+                    }
                 }
             }
         } else {
@@ -739,7 +752,12 @@ class DepartmentController extends Controller
                 $Manager->rule_id = $request->rule;
                 $Manager->password = Hash::make($request->password);
                 $Manager->save();
-                Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, $request->password ? $request->password : null, $Manager->email);
+                if ($manager->email) {
+                    // Send email to the new manager
+                    Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, $request->password ? $request->password : null, $Manager->email);
+                } else {
+                    return redirect()->route('departments.index', ['id' => $request->sector]);
+                }
             }
         }
 
@@ -867,15 +885,18 @@ class DepartmentController extends Controller
                         $newManager->password = Hash::make($request->password);
                     }
                     $newManager->save();
-
-                    // Send email notification to the new manager
-                    Sendmail(
-                        'مدير ادارة فرعية', // Subject
-                        'تم أضافتك كمدير ادارة فرعية', // Email body
-                        $newManager->file_number,
-                        $request->password ? $request->password : null,
-                        $newManager->email
-                    );
+                    if ($manager->email) {
+                        // Send email notification to the new manager
+                        Sendmail(
+                            'مدير ادارة فرعية', // Subject
+                            'تم أضافتك كمدير ادارة فرعية', // Email body
+                            $newManager->file_number,
+                            $request->password ? $request->password : null,
+                            $newManager->email
+                        );
+                    } else {
+                        return redirect()->route('sub_departments.index', ['id' => $request->sector]);
+                    }
                 }
             }
         } else {
@@ -887,8 +908,11 @@ class DepartmentController extends Controller
                 $Manager->rule_id = $request->rule;
                 $Manager->password = Hash::make($request->password);
                 $Manager->save();
-
-                Sendmail('مدير ادارة فرعية', 'تم أضافتك كمدير ادارة فرعية ' . $request->name, $Manager->file_number, $request->password ? $request->password : null, $Manager->email);
+                if ($manager->email) {
+                    Sendmail('مدير ادارة فرعية', 'تم أضافتك كمدير ادارة فرعية ' . $request->name, $Manager->file_number, $request->password ? $request->password : null, $Manager->email);
+                } else {
+                    return redirect()->route('sub_departments.index', ['id' => $request->sector]);
+                }
             }
         }
 
