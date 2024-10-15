@@ -228,6 +228,7 @@
                         $('#manager_details').find('span').eq(2).text(data.job_title);
                         $('#manager_details').find('span').eq(3).text(data.name);
                         $('#manager_details').find('span').eq(4).text(data.phone);
+                        $('#manager_details').find('span').eq(5).text(data.email);
                         $('#manager_details').show();
 
                         // Show password and rule fields for employees
