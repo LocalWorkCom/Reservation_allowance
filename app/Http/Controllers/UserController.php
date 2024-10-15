@@ -868,6 +868,7 @@ class UserController extends Controller
             'grade_id.required' => 'يجب اختيار رتبة.',
             'file_number.required' => 'رقم الملف مطلوب ولا يمكن تركه فارغاً.',
             'Civil_number.required' => 'رقم المدني مطلوب ولا يمكن تركه فارغاً.',
+            'Civil_number.max' => 'رقم المدني يجب الا يتخطي ال 12 رقم',
             'email.email' => 'البريد الإلكتروني يجب أن يحتوي على @ و .com.',
             'email.unique' => 'البريد الإلكتروني الذي أدخلته موجود بالفعل.',
         ];
