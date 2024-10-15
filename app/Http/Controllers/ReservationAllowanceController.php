@@ -412,6 +412,50 @@ class ReservationAllowanceController extends Controller
 
             $cache_name = auth()->user()->id."_add_store_all";
             $Civil_numbers = Cache::get($cache_name);
+
+
+            $employee_amount = 0;
+            $reservation_amout = 0;
+
+            foreach($Civil_numbers as $Civil_number){//file_number
+                $employee = User::where('file_number', $Civil_number)->first(); 
+                if($employee){// check if employee
+                    if($employee->grade_id != null){ // check if employee has grade
+                        if($request->type == 1){
+                            $grade_value = $employee->grade->value_all;
+                        }else{
+                            $grade_value = $employee->grade->value_part;
+                        }
+
+                        $employee_amount += $grade_value;
+
+                        $type_departement = 1;
+                        $reservation_amout = departements::where('id', $request->departement_id)->first()->reservation_allowance_amount;
+                        if($employee->department_id == null){
+                            $type_departement = 2;
+                            $reservation_amout = departements::where('id', $request->sector_id)->first()->reservation_allowance_amount;
+                        }
+
+                    }
+                }
+            }
+
+            $first_day = date('Y-m-01');
+            $last_day = date('Y-m-t');
+            $get_all_employee_amount = ReservationAllowance::Query();
+            if($request->departement_id != 0){
+                $get_all_employee_amount = $get_all_employee_amount->where('departement_id', $request->departement_id);
+            }
+            if($request->sector_id != 0){
+                $get_all_employee_amount = $get_all_employee_amount->where('sector_id', $request->sector_id);
+            }
+            $get_all_employee_amount = $get_all_employee_amount->whereBetween('date',[$first_day, $last_day])->sum('amount');
+            $reservation_amout = $reservation_amout - $get_all_employee_amount;
+
+            if($reservation_amout <= $employee_amount){
+                return redirect()->route('reservation_allowances.create.all')->with('error','عفوا لقد تجاوزت ملبغ بدل الحجز');
+            }
+
     
             $employee_not_add = array();
             foreach($Civil_numbers as $Civil_number){//file_number
@@ -820,6 +864,7 @@ class ReservationAllowanceController extends Controller
                         }else{
                             $grade_value = $employee->grade->value_part;
                         }
+
                         $employee_amount += $grade_value;
 
                         $type_departement = 1;
@@ -832,6 +877,20 @@ class ReservationAllowanceController extends Controller
                     }
                 }
             }
+
+            $first_day = date('Y-m-01');
+            $last_day = date('Y-m-t');
+            
+            $get_all_employee_amount = ReservationAllowance::Query();
+            if($departement_id != 0){
+                $get_all_employee_amount = $get_all_employee_amount->where('departement_id', $departement_id);
+            }
+            if($sector_id != 0){
+                $get_all_employee_amount = $get_all_employee_amount->where('sector_id', $sector_id);
+            }
+            $get_all_employee_amount = $get_all_employee_amount->whereBetween('date',[$first_day, $last_day])->sum('amount');
+
+            $reservation_amout = $reservation_amout - $get_all_employee_amount;
 
             if($reservation_amout <= $employee_amount){
                 return redirect()->back()->with('error','عفوا لقد تجاوزت ملبغ بدل الحجز');
