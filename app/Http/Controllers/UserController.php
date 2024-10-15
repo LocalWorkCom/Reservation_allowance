@@ -25,9 +25,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Console\View\Components\Alert;
 use Illuminate\Validation\Rule as ValidationRule;
+use Illuminate\Support\Facades\Validator;
 use App\helper; // Adjust this namespace as per your helper file location
 
 use Maatwebsite\Excel\Facades\Excel;
@@ -126,7 +126,7 @@ class UserController extends Controller
         }
 
         // Finally, fetch the results
-        $data = $data->orderby('grade_id','asc')->get();
+        $data = $data->orderby('grade_id', 'asc')->get();
 
         return DataTables::of($data)->addColumn('action', function ($row) {
             return $row;
@@ -257,7 +257,7 @@ class UserController extends Controller
         // Use a custom login function
         if ($user->military_number === $number) {
             $credentials['military_number'] = $number;
-        }elseif ($user->file_number === $number) {
+        } elseif ($user->file_number === $number) {
             $credentials['file_number'] = $number;
         } else {
             $credentials['civil_number'] = $number;
@@ -268,8 +268,8 @@ class UserController extends Controller
             // to not send code
             if ($user->token == 'logined') {
                 Auth::login($user); // Log the user in
-                $update=User::find($user->id);
-                $update->last_login=now();
+                $update = User::find($user->id);
+                $update->last_login = now();
                 $update->save();
                 //
                 return redirect()->route('home');
@@ -609,9 +609,9 @@ class UserController extends Controller
             'file_number.unique' => 'رقم الملف الذي أدخلته موجود بالفعل.',
             'phone.required' => 'رقم الهاتف مطلوب ولا يمكن تركه فارغاً.',
             'phone.unique' => 'رقم الهاتف الذي أدخلته موجود بالفعل.',
-            'phone.max' => 'رقم الهاتف اقل من 6 اراقام',
-            'email.required' => 'البريد الالكتروني  مطلوب ولا يمكن تركه فارغاً.',
-            'email.unique' => 'البريد الالكتروني  الذي أدخلته موجود بالفعل.',
+            'phone.regex' => 'رقم الهاتف يجب ان يكون مكون من 8 اراقام',
+            'flag.required' => 'يجب عليك اختيار نوع المستخدم',
+            // 'email.required' => 'البريد الالكتروني  مطلوب ولا يمكن تركه فارغاً.',
             'grade_id.required' => 'يجب اختيار رتبه',
             'file_number.required' => 'رقم الملف مطلوب ولا يمكن تركه فارغاً.',
             'Civil_number.required' => 'رقم المدنى مطلوب ولا يمكن تركه فارغاً   .',
@@ -622,13 +622,10 @@ class UserController extends Controller
         $rules = [
             'phone' => [
                 'required',
-                'max:8',
+                'regex:/^[0-9]{8}$/',  // Ensures exactly 8 numeric digits
                 ValidationRule::unique('users', 'phone'),
             ],
-            'email' => [
-                'required',
-                ValidationRule::unique('users', 'email'),
-            ],
+            'flag' => 'required',
             'name' => 'required|string',
             // 'department_id' => 'required',
             'Civil_number' => [
@@ -643,12 +640,15 @@ class UserController extends Controller
             'grade_id' => [
                 'required',
             ],
-
-
             /*   'military_number' => [
                    'required_if:type_military,police',
                 ], */
         ];
+        if ($request->filled('email')) {
+            $rules['email'] = [ValidationRule::unique('users', 'email'), 'email'];
+            $messages['email.email'] = 'البريد الالكتروني يجب ان يكون يحتوي علي @ .com';
+            $messages['email.unique'] = 'البريد الالكتروني الذي أدخلته موجود بالفعل.';
+        }
         // if ($request->has('type_military') && $request->type_military == "police") {
         //     // dd("dd");
         //     if ($request->has('military_number')) {
@@ -698,27 +698,22 @@ class UserController extends Controller
             return redirect()->back()->withErrors($validatedData)->withInput();
         }
 
-
-        // if ($request->type == "0") {
-        //     $newUser = User::find($request->name);
-        //     // if ($newUser->department_id == null) {
-        //     //     return redirect()->back()->withErrors(['يجب اختيار ادارة للمستخدم اولا'])->withInput();
-        //     // }
-        //     $newUser->department_id = 1;
-        //     $newUser->password = Hash::make($request->password);
-        //     $newUser->flag = "user";
-        //     $newUser->rule_id = $request->rule_id;
-        //     $newUser->save();
-        //     $id = $request->type;
-
-        //     Sendmail('بيانات دخولك على نظام القوة المطور', 'هذه بيانات دخولك على نظام القوة المطور',  $request->Civil_number, $request->password, $request->email);
-
-        //     return redirect()->route('user.index', ['id' => $id]);
-        // } else {
-
-
         $newUser = new User();
         $newUser->name = $request->name;
+        if ($request->flag == 'user') {
+            if (!$request->email) {
+                return redirect()->back()->withErrors(['email' => 'البريد الالكتروني  مطلوب ولا يمكن تركه فارغاً.'])->withInput();
+            }
+            if (!$request->rule_id) {
+                return redirect()->back()->withErrors(['rule_id' => 'المهام مطلوبة ولا يمكن تركها فارغة'])->withInput();
+            }
+            if (!$request->password) {
+                return redirect()->back()->withErrors(['password' => 'كلمة المرور ولا يمكن تركها فارغة'])->withInput();
+            }
+            if (!$request->sector && !$request->department_id) {
+                return redirect()->back()->withErrors(['department_id' => 'يجب عليك اختيار قطاع او ادارة علي الاقل'])->withInput();
+            }
+        }
         $newUser->email = $request->email;
         $newUser->type = $request->gender;
         $newUser->address1 = $request->address_1;
@@ -741,17 +736,18 @@ class UserController extends Controller
         $newUser->length_of_service = $request->end_of_service;
         $newUser->description = $request->description;
         $newUser->file_number = $request->file_number;
-        // $newUser->type_military = $request->type_military;
-        //
-        // $newUser->employee_type = $request->solderORcivil;
-        $newUser->flag = "employee";
+        if ($request->flag == 'user') {
+            $newUser->rule_id = $request->rule_id;
+            $newUser->password = Hash::make($request->password);
+        }
+
+        $newUser->flag = $request->flag;
         $newUser->grade_id = $request->grade_id;
         if ($request->has('job')) {
             $newUser->job_id = $request->job;
         }
 
         $newUser->save();
-        // dd($newUser);
 
         if ($request->hasFile('image')) {
             $file = $request->image;
@@ -761,26 +757,13 @@ class UserController extends Controller
         }
 
         session()->flash('success', 'تم الحفظ بنجاح.');
-        Sendmail('بيانات دخولك على نظام القوة المطور', 'هذه بيانات دخولك على نظام القوة المطور',  $request->Civil_number, $request->password, $request->email);
+        if ($request->email) {
+
+            Sendmail('بيانات دخولك على نظام القوة المطور', 'هذه بيانات دخولك على نظام القوة المطور',  $request->Civil_number, $request->password, $request->email);
+        }
 
         $id = $request->type;
-        return redirect()->route('user.employees', ['id' => $id]);
-        // }
-
-
-        // if($user->flag == "user")
-        // {
-        //     $department = departements::where('id',$user->department_id)->orwhere('parent_id',$user->department_id)->get();
-        // }
-        // else
-        // {
-        //     $department = departements::where('id',$user->public_administration)->orwhere('parent_id',$user->public_administration)->get();
-        // }
-        // // $department = departements::all();
-        // $hisdepartment = $user->createdDepartments;
-
-        // return response()->json($newUser);
-
+        return redirect()->route('user.employees');
     }
 
     /**
@@ -863,69 +846,78 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
+
     public function update(Request $request, $id)
     {
-        $user = User::find($id);
+        $user = User::findOrFail($id);  // Ensure user is found or throw error
+        $military_number = $request->military_number;
 
-        $military_number =  $request->military_number;
-
+        // Define validation messages
         $messages = [
-            'military_number' => 'رقم العسكري مطلوب ولا يمكن تركه فارغاً.',
+            'name.required' => 'الاسم مطلوب ولا يمكن تركه فارغاً.',
+            'name.string' => 'الاسم يجب أن يكون نصاً.',
+            'Civil_number.unique' => 'رقم المدني الذي أدخلته موجود بالفعل.',
+            'file_number.unique' => 'رقم الملف الذي أدخلته موجود بالفعل.',
             'phone.required' => 'رقم الهاتف مطلوب ولا يمكن تركه فارغاً.',
-            'grade_id.required' => 'الرتبة مطلوبة ولا يمكن تركه فارغا',
-            // 'file_number.required' => 'رقم الملف مطلوب ولا يمكن تركه فارغاً.',
-            'email.required' => 'البريد الالكتروني  مطلوب ولا يمكن تركه فارغاً.',
-            'email.unique' => 'البريد الالكتروني  الذي أدخلته موجود بالفعل.',
-            'email.email' => 'البريد الالكتروني يجب ان يكون يحتوي علي @ .com',
-
-            'Civil_number.required' => 'رقم المدنى مطلوب ولا يمكن تركه فارغاً.',
+            'phone.unique' => 'رقم الهاتف الذي أدخلته موجود بالفعل.',
+            'phone.regex' => 'رقم الهاتف يجب أن يتكون من 8 أرقام.',
+            'flag.required' => 'يجب عليك اختيار نوع المستخدم.',
+            'grade_id.required' => 'يجب اختيار رتبة.',
+            'file_number.required' => 'رقم الملف مطلوب ولا يمكن تركه فارغاً.',
+            'Civil_number.required' => 'رقم المدني مطلوب ولا يمكن تركه فارغاً.',
+            'email.email' => 'البريد الإلكتروني يجب أن يحتوي على @ و .com.',
+            'email.unique' => 'البريد الإلكتروني الذي أدخلته موجود بالفعل.',
         ];
-
-        if ($user->flag == 'user') {
-            $messages['email.required'] = 'الايميل مطلوب';
-        }
-
 
         // Define validation rules
         $rules = [
-            'military_number' => [
-                'max:255',
-                new UniqueNumberInUser($user),
-            ],
-            // 'email' => [
-            //     'required',
-            //     ValidationRule::unique('users', 'email'),
-            // ],
-            'email' => ['required', 'email', ValidationRule::unique('users')->ignore($user->id)],
-
+            'name' => 'required|string',
             'phone' => [
                 'required',
-                new UniqueNumberInUser($user),
+                'regex:/^[0-9]{8}$/',  // Exactly 8 digits
+                ValidationRule::unique('users', 'phone')->ignore($user->id), // Ignore unique check for current user
             ],
-            'grade_id' => ['required'],
-            // 'public_administration' => 'required',
+            'flag' => 'required',
             'Civil_number' => [
                 'required',
-                new UniqueNumberInUser($user),
+                'max:12',
+                ValidationRule::unique('users', 'Civil_number')->ignore($user->id),
             ],
-        ];
-        if ($user->flag == 'user') {
-            $role['email'] = [
+            'file_number' => [
                 'required',
-                new UniqueNumberInUser($user),
+                ValidationRule::unique('users', 'file_number')->ignore($user->id),
+            ],
+            'grade_id' => 'required',
+        ];
+
+        // Add conditional email validation if email is present
+        if ($request->filled('email')) {
+            $rules['email'] = [
+                'email',
+                ValidationRule::unique('users', 'email')->ignore($user->id),
             ];
         }
 
-
         // Apply validation
         $validatedData = Validator::make($request->all(), $rules, $messages);
-        // }
 
         // Handle validation failure
         if ($validatedData->fails()) {
             return redirect()->back()->withErrors($validatedData)->withInput();
         }
 
+        // Additional checks for 'user' flag
+        if ($request->flag == 'user') {
+            if (!$request->filled('email')) {
+                return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني مطلوب ولا يمكن تركه فارغاً.'])->withInput();
+            }
+            if (!$request->filled('rule_id')) {
+                return redirect()->back()->withErrors(['rule_id' => 'المهام مطلوبة ولا يمكن تركها فارغة.'])->withInput();
+            }
+            if (!$request->filled('password') && !$user->password) {
+                return redirect()->back()->withErrors(['password' => 'كلمة المرور مطلوبة ولا يمكن تركها فارغة.'])->withInput();
+            }
+        }
 
         // Update user attributes
         $user->name = $request->name;
@@ -939,7 +931,6 @@ class UserController extends Controller
         $user->Civil_number = $request->Civil_number;
         $user->file_number = $request->file_number;
         $user->flag = $request->flag;
-        $user->job_id = $request->job;
         $user->seniority = $request->seniority;
         $user->Provinces = $request->Provinces;
         $user->sector = $request->sector;
@@ -950,47 +941,35 @@ class UserController extends Controller
         $user->qualification = $request->qualification;
         $user->date_of_birth = $request->date_of_birth;
         $user->joining_date = $request->joining_date;
-        // $user->employee_type = $request->solderORcivil;
-        // $user->type_military = $request->type_military;
         $user->type = $request->gender;
 
+        // Calculate age and service length
         $user->age = Carbon::parse($request->input('date_of_birth'))->age;
-
-        $joining_dateDate = Carbon::parse($request->input('joining_date'));
-        $end_of_serviceDate = Carbon::parse($request->input('end_of_service'));
-        // $user->length_of_service = $end_of_serviceDate->year - $joining_dateDate->year;
         $user->length_of_service = $request->input('end_of_service');
+
+        // Update grade if present
         if ($request->has('grade_id')) {
             $user->grade_id = $request->grade_id;
         }
 
+        // Handle image upload if provided
         if ($request->hasFile('image')) {
             $file = $request->image;
             $path = 'users/user_profile';
             UploadFilesWithoutReal($path, 'image', $user, $file);
         }
 
-        if ($user->flag == "user") {
+        // Set rule_id and password if flag is 'user'
+        if ($request->flag == 'user') {
             $user->rule_id = $request->rule_id;
-            if ($request->password && !Hash::check($request->password, $user->password)) {
-                $user->password = Hash::make($request->password);
-                $user->token = null; // Set token to null before saving
-                $user->save();
-
-                if (auth()->user()->id == $user->id) {
-                    Auth::logout();
-                    session()->flash('success', 'تم تغيير كلمة المرور. يرجى تسجيل الدخول مرة أخرى.');
-                    return redirect('/login');
-                }
-            }
+            $user->password = Hash::make($request->password);
         }
 
+        // Save user data
         $user->save();
 
-        // $id = $user->flag == "user" ? "0" : "1";
-        $id = $request->type;
         session()->flash('success', 'تم الحفظ بنجاح.');
-        return redirect()->route('user.employees', ['id' => $id]);
+        return redirect()->route('user.employees');
     }
 
     public function getGoverment($id)
