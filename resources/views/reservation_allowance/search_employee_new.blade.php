@@ -177,18 +177,22 @@
                             <tr>
                             <th>
                                 <div class="d-flex" style="justify-content: space-around !important">
+                                    @if ($reservation_allowance_type == 1 || $reservation_allowance_type == 3)
                                     <div style="display: inline-flex; direction: ltr;">
                                         <label for=""> حجز كلى</label>
                                         <input type="radio" name="allowance_all" id="allowance_all"
                                             onclick="check_all(1)" value="1" class="form-control">
                                     </div>
                                     <span>|</span>
+                                    @endif
+                                    @if ($reservation_allowance_type == 2 || $reservation_allowance_type == 3)
                                     <div style="display: inline-flex; direction: ltr;">
                                         <label for=""> حجز جزئى</label>
                                         <input type="radio" name="allowance_all" id="allowance_all"
                                             onclick="check_all(2)" value="2" class="form-control">
                                     </div>
                                     <span>|</span>
+                                    @endif
                                     <div style="display: inline-flex; direction: ltr;">
                                         <label for=""> لا يوجد</label>
                                         <input type="radio" name="allowance_all" id="allowance_all"
@@ -213,6 +217,7 @@
                             </th>
                             <th>
                                 <div class="d-flex" style="justify-content: space-around !important">
+                                    @if ($reservation_allowance_type == 1 || $reservation_allowance_type == 3)
                                     <div style="display: inline-flex; direction: ltr;">
                                         <label for=""> حجز كلى</label>
                                         <input type="radio" name="allowance[][{{ $employee->id }}]"
@@ -220,6 +225,8 @@
                                             value="{{ $employee->id }}" class="form-control emlpoyee_allowance_radio">
                                     </div>
                                     <span>|</span>
+                                    @endif
+                                    @if ($reservation_allowance_type == 2 || $reservation_allowance_type == 3)
                                     <div style="display: inline-flex; direction: ltr;">
                                         <label for=""> حجز جزئى</label>
                                         <input type="radio" name="allowance[][{{ $employee->id }}]"
@@ -227,6 +234,7 @@
                                             value="{{ $employee->id }}" class="form-control emlpoyee_allowance_radio">
                                     </div>
                                     <span>|</span>
+                                    @endif
                                     <div style="display: inline-flex; direction: ltr;">
                                         <label for=""> لا يوجد</label>
                                         <input type="radio" name="allowance[][{{ $employee->id }}]"
