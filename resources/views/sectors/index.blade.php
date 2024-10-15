@@ -1,8 +1,11 @@
 @extends('layout.main')
 @push('style')
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
-    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
+    <script type="text/javascript" charset="utf8"
+        src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
     </script>
 @endpush
 @section('title')
@@ -15,10 +18,13 @@
             <div class="d-flex justify-content-between">
                 <p> القطاعـــات</p>
                 @if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2)
-                    <button type="button" class="btn-all  " onclick="window.location.href='{{ route('sectors.create') }}'"
+                    <button type="button" class="btn-all  "
+                        onclick="window.location.href='{{ route('sectors.create') }}'"
                         style="color: #0D992C;">
 
-                        اضافة قطاع جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                        اضافة قطاع جديد <img
+                            src="{{ asset('frontend/images/add-btn.svg') }}"
+                            alt="img">
                     </button>
                 @endif
             </div>
@@ -45,6 +51,7 @@
                                 <tr>
                                     <th>الاسم</th>
                                     <th>مدير القطاع</th>
+                                    <th>بيانات المستخدم</th>
                                     <th>عدد الأدارات التابعه </th>
                                     <th>ميزانية البدل</th>
                                     <th>صلاحيه الحجز</th>
@@ -65,7 +72,8 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm';
+            $.fn.dataTable.ext.classes.sPageButton =
+            'btn-pagination btn-sm';
             var table = $('#users-table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -79,6 +87,10 @@
                     {
                         data: 'manager_name',
                         name: 'manager_name'
+                    },
+                    {
+                        data: 'login_info',
+                        name: 'login_info'
                     },
                     {
                         data: 'departments',
@@ -136,11 +148,13 @@
                 },
                 "pagingType": "full_numbers",
                 "fnDrawCallback": function(oSettings) {
-                    console.log('Page ' + this.api().page.info().pages)
+                    console.log('Page ' + this.api().page.info()
+                        .pages)
                     var page = this.api().page.info().pages;
                     console.log($('#users-table tr').length);
                     if (page == 1) {
-                        $('.dataTables_paginate').css('visibility', 'hidden');
+                        $('.dataTables_paginate').css(
+                            'visibility', 'hidden');
                     }
                 }
             });
