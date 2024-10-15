@@ -555,6 +555,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('reservation_report/print', [ReservationReportController::class, 'printReport'])->name('reservation_report.print');
 Route::get('reservation_report/department/{departmentId}/details_data', [ReservationReportController::class, 'getDepartmentDetailsData'])->name('reservation_report.department_details_data');
 Route::get('reservation_report/department/{departmentId}/details', [ReservationReportController::class, 'showDepartmentDetails'])->name('reservation_report.department_details');
+Route::get('reservation_report/department/{departmentId}/print', [ReservationReportController::class, 'printDepartmentDetails'])->name('reservation_report.department_details_print');
 
     Route::get('/file-import', [UserController::class, 'importView'])->name('import-view');
     Route::post('/import', [UserController::class, 'import'])->name('import');

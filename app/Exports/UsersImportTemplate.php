@@ -3,7 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Country;
-use App\Models\Departements; // Make sure to import your Departements model
+use App\Models\departements; // Make sure to import your Departements model
 use App\Models\Rule;
 use App\Models\ViolationTypes;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -25,7 +25,7 @@ class UsersImportTemplate implements FromCollection, WithHeadings, WithEvents
     public function __construct()
     {
         // Get the allowed departments from the database
-        $this->allowedDepartments = Departements::pluck('name')->toArray(); // Assuming 'name' is the field you want
+        $this->allowedDepartments = departements::pluck('name')->toArray(); // Assuming 'name' is the field you want
         $this->allowedRules = Rule::whereNotIn('id', [1, 2])->pluck('name')->toArray(); // Assuming 'name' is the field you want
         $this->allowedFlag = ['موظف', 'مستخدم'];
         $this->allowedTypeMilitary = ViolationTypes::whereJsonContains('type_id', 0)->pluck('name')->toArray();
