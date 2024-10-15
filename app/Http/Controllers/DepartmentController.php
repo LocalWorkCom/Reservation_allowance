@@ -79,17 +79,16 @@ class DepartmentController extends Controller
             })
             ->addColumn('login_info', function ($row) {
                 // Check if manager exists before accessing its attributes
-                $LoginInfo = User::find($row->manager);
+                $LoginInfo = User::where('id', $row->manger)->first();
                 if ($LoginInfo) {
-                    // Check the flag to determine if the manager is an employee
-                    $is_allow = $LoginInfo->flag == 'employee' ? 'لا يسمح بالدخول' : $LoginInfo->file_number;
+                    $is_allow = $LoginInfo->flag == 'employee' ? '(لا يسمح بالدخول)' : $LoginInfo->file_number;
                     // Return the manager's name along with the access permission status
                     // $p='<p>'. $is_allow .'</p><p>اخر تسجيل دخول '.$LoginInfo->last_login.'</p>';
                     $p = 'اسم المستخدم :' . $is_allow . ' ــــــــــ ';
-                    $p .= 'اخر تسجيل دخول ' . $LoginInfo->last_login . '';
+                    $p .= 'اخر تسجيل دخول: ' . $LoginInfo->last_login . '';
                     return $p;
                 }
-                return 'لا توجد بيانات دخول ';
+                return 'لا يسمح له بالدخول ';
             })
             ->addColumn('num_managers', function ($row) {
                 return User::where('department_id', $row->id)
@@ -241,14 +240,13 @@ class DepartmentController extends Controller
             })
             ->addColumn('login_info', function ($row) {
                 // Check if manager exists before accessing its attributes
-                $LoginInfo = User::find($row->manager);
+                $LoginInfo = User::where('id', $row->manger)->first();
                 if ($LoginInfo) {
-                    // Check the flag to determine if the manager is an employee
-                    $is_allow = $LoginInfo->flag == 'employee' ? 'لا يسمح بالدخول' : $LoginInfo->file_number;
+                    $is_allow = $LoginInfo->flag == 'employee' ? '(لا يسمح بالدخول)' : $LoginInfo->file_number;
                     // Return the manager's name along with the access permission status
                     // $p='<p>'. $is_allow .'</p><p>اخر تسجيل دخول '.$LoginInfo->last_login.'</p>';
-                    $p = 'اسم المستخدم :' . $is_allow . ' ــــــــــ ';
-                    $p .= 'اخر تسجيل دخول ' . $LoginInfo->last_login . '';
+                    $p = 'اسم المستخدم :' . $LoginInfo->name . $is_allow . ' ــــــــــ ';
+                    $p .= 'اخر تسجيل دخول: ' . $LoginInfo->last_login . '';
                     return $p;
                 }
                 return 'لا توجد بيانات دخول ';
