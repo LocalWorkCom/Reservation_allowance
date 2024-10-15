@@ -101,6 +101,17 @@ class sectorsController extends Controller
                     return $manager->name . ' (' . $is_allow . ')';
                 }
                 return 'لا يوجد مدير';
+            })//login_info
+            ->addColumn('login_info', function ($row) {
+                // Check if manager exists before accessing its attributes
+                $manager = User::find($row->manager);
+                if ($manager) {
+                    // Check the flag to determine if the manager is an employee
+                    $is_allow = $manager->flag == 'employee' ? 'لا يسمح بالدخول' : $manager->file_number;
+                    // Return the manager's name along with the access permission status
+                    return   $is_allow ."<br /><hr /> اخر تسجيل دخول ".$manger->last_login;
+                }
+                return 'لا يوجد مدير';
             })
             ->addColumn('departments', function ($row) {
                 $num = departements::where('sector_id', $row->id)->count();
