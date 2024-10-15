@@ -30,7 +30,7 @@
         <div class="container welcome col-11">
             <div class="d-flex justify-content-between">
             <div class="mt-4 bg-white"  style="direction: rtl">
-            <p>تفاصيل بدل حجز لموظفي إدارة {{ $department->name }}</p>
+            <p>تفاصيل بدل حجز لموظفي إدارة {{ $department->name }}   الفترة من: {{ $startDate->format('Y-m-d') }} إلى: {{ $endDate->format('Y-m-d') }}</p>
 
     </div>
     </div>
@@ -39,9 +39,10 @@
 
    <div class="mt-4 bg-white"  style="direction: rtl">
 
-   <h3 style="direction: rtl">الفترة من: {{ $startDate->format('Y-m-d') }} إلى: {{ $endDate->format('Y-m-d') }}</h3>
    <br>
     <br>
+    <button id="print-report" class="btn btn-secondary mx-2">طباعة</button>
+
                 <table id="users-table" class="display table table-bordered table-hover dataTable">
             <thead>
                 <tr>
@@ -114,6 +115,11 @@
             }
         }
     });
+     // Print Report button action
+     $('#print-report').click(function() {
+            const url = `{{ route('reservation_report.department_details_print', ['departmentId' => $department->id]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}`;
+            window.open(url, '_blank');
+        });
 });
 
 </script>
