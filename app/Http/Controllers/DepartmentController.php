@@ -78,18 +78,27 @@ class DepartmentController extends Controller
                 return $row->manager ? $row->manager->name : 'لايوجد مدير للأداره';
             })
             ->addColumn('login_info', function ($row) {
-                // Check if manager exists before accessing its attributes
+                // Retrieve the manager (if exists)
                 $LoginInfo = User::where('id', $row->manger)->first();
-                if ($LoginInfo) {
-                    $is_allow = $LoginInfo->flag == 'employee' ? '(لا يسمح بالدخول)' : $LoginInfo->file_number;
-                    // Return the manager's name along with the access permission status
-                    // $p='<p>'. $is_allow .'</p><p>اخر تسجيل دخول '.$LoginInfo->last_login.'</p>';
-                    $p = 'اسم المستخدم :' . $is_allow . ' ــــــــــ ';
-                    $p .= 'اخر تسجيل دخول: ' . $LoginInfo->last_login . '';
-                    return $p;
+
+                // If there's no manager assigned
+                if (!$LoginInfo) {
+                    return 'لا يوجد مدير';
                 }
-                return 'لا يسمح له بالدخول ';
+
+                // If the manager exists and is flagged as 'employee'
+                if ($LoginInfo->flag == 'employee') {
+                    return 'لا يسمح له بالدخول';
+                }
+
+                // If the manager is a user (not an employee)
+                $is_allow = $LoginInfo->file_number; // Display file number
+                $p = 'اسم المستخدم :' . $is_allow . '<br>';
+                $p .= 'اخر تسجيل دخول: ' . $LoginInfo->last_login;
+
+                return $p;
             })
+
             ->addColumn('num_managers', function ($row) {
                 return User::where('department_id', $row->id)
                     ->count();
@@ -99,7 +108,7 @@ class DepartmentController extends Controller
                 return User::whereIn('department_id', $subdepartment_ids)
                     ->count();
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['action', 'login_info'])
             ->make(true);
     }
     public function getManagerDetails($id)
@@ -239,18 +248,27 @@ class DepartmentController extends Controller
                 return $row->manager ? $row->manager->name : 'لايوجد مدير للأداره';
             })
             ->addColumn('login_info', function ($row) {
-                // Check if manager exists before accessing its attributes
+                // Retrieve the manager (if exists)
                 $LoginInfo = User::where('id', $row->manger)->first();
-                if ($LoginInfo) {
-                    $is_allow = $LoginInfo->flag == 'employee' ? '(لا يسمح بالدخول)' : $LoginInfo->file_number;
-                    // Return the manager's name along with the access permission status
-                    // $p='<p>'. $is_allow .'</p><p>اخر تسجيل دخول '.$LoginInfo->last_login.'</p>';
-                    $p = 'اسم المستخدم :' . $LoginInfo->name . $is_allow . ' ــــــــــ ';
-                    $p .= 'اخر تسجيل دخول: ' . $LoginInfo->last_login . '';
-                    return $p;
+
+                // If there's no manager assigned
+                if (!$LoginInfo) {
+                    return 'لا يوجد مدير';
                 }
-                return 'لا توجد بيانات دخول ';
+
+                // If the manager exists and is flagged as 'employee'
+                if ($LoginInfo->flag == 'employee') {
+                    return 'لا يسمح له بالدخول';
+                }
+
+                // If the manager is a user (not an employee)
+                $is_allow = $LoginInfo->file_number; // Display file number
+                $p = 'اسم المستخدم :' . $is_allow . '<br>';
+                $p .= 'اخر تسجيل دخول: ' . $LoginInfo->last_login;
+
+                return $p;
             })
+
             ->addColumn('num_managers', function ($row) {
                 return User::where('department_id', $row->id)
                     ->count();
@@ -261,7 +279,7 @@ class DepartmentController extends Controller
                     ->count();
             })
 
-            ->rawColumns(['action', 'subDepartment'])
+            ->rawColumns(['action', 'subDepartment', 'login_info'])
             ->make(true);
     }
 
