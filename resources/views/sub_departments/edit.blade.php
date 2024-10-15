@@ -132,7 +132,7 @@
                             <div class="form-group col-md-10 mx-md-2" id="manager">
                                 <label for="mangered">رقم ملف المدير</label>
                                 <input type="text" name="mangered" id="mangered" class="form-control"
-                                    autocomplete="one-time-code" value="{{ $department->manger }}">
+                                    autocomplete="one-time-code">
 
                                 @error('mangered')
                                     <div class="alert alert-danger">{{ $message }}</div>
