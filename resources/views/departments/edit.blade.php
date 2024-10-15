@@ -137,6 +137,18 @@
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             </div>
+                            <div class="form-group col-md-10 mx-md-2" id="rule_field" style="display: none;">
+                                <label for="rule">الصلاحيات</label>
+                                <select name="rule" id="rule" class="form-control">
+                                    <option value="">اختار الصلاحية</option>
+                                    @foreach ($rules as $rule)
+                                        <option value="{{ $rule->id }}">{{ $rule->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('rule')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
 
                             <div class="form-group col-md-10 mx-md-2" id="manager_details">
                                 <div class="col-12 div-info d-flex justify-content-between" style="direction: rtl">
