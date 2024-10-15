@@ -104,9 +104,9 @@
                 </div>
 
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="rule_field" style="display: none;">
-                    <label class="pb-3" for="rule">القانون</label>
+                    <label class="pb-3" for="rule">الصلاحيات</label>
                     <select name="rule" id="rule" class="form-control">
-                        <option value="">اختار القانون</option>
+                        <option value="">اختار الصلاحية</option>
                         @foreach ($rules as $rule)
                             <option value="{{ $rule->id }}" {{ old('rule') == $rule->id ? 'selected' : '' }}>
                                 {{ $rule->name }}</option>
@@ -190,8 +190,8 @@
             if (selectedManagerId) {
                 $('#password_field').show();
                 $('#rule_field').show();
-                 console.log(selectedManagerId);
-                fetchManagerDetails(selectedManagerId,false); // Pass true to skip the department check
+                console.log(selectedManagerId);
+                fetchManagerDetails(selectedManagerId, false); // Pass true to skip the department check
             } else {
                 $('#manager_details').hide();
                 $('#password_field').hide();
@@ -205,7 +205,7 @@
             if (managerId) {
                 $.ajax({
                     url: '/get-manager-sector-details/' + managerId + '/' +
-                        sector +  '?skipDepartmentCheck=' + skipDepartmentCheck,
+                        sector + '?skipDepartmentCheck=' + skipDepartmentCheck,
                     type: 'GET',
                     success: function(data) {
                         // Show the manager details div
@@ -245,18 +245,18 @@
                             }).then((result) => {
                                 if (result.isConfirmed) {
                                     fetchManagerDetails(managerId, false);
-                                $('#password_field').show();
-                                $('#rule_field').show();
-                                $('#password').show();
-                                $('#rule').show();
-                                $('#manager_details').show();
-                                // Populate manager details
-                                $('#manager_details').find('span').eq(0).text(result.rank);
-                                $('#manager_details').find('span').eq(1).text(result.seniority);
-                                $('#manager_details').find('span').eq(2).text(result.job_title);
-                                $('#manager_details').find('span').eq(3).text(result.name);
-                                $('#manager_details').find('span').eq(4).text(result.phone);
-                                $('#manager_details').find('span').eq(5).text(result.email);
+                                    $('#password_field').show();
+                                    $('#rule_field').show();
+                                    $('#password').show();
+                                    $('#rule').show();
+                                    $('#manager_details').show();
+                                    // Populate manager details
+                                    $('#manager_details').find('span').eq(0).text(result.rank);
+                                    $('#manager_details').find('span').eq(1).text(result.seniority);
+                                    $('#manager_details').find('span').eq(2).text(result.job_title);
+                                    $('#manager_details').find('span').eq(3).text(result.name);
+                                    $('#manager_details').find('span').eq(4).text(result.phone);
+                                    $('#manager_details').find('span').eq(5).text(result.email);
 
                                 } else {
                                     // Hide details if user cancels

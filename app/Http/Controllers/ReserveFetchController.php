@@ -21,9 +21,9 @@ class ReserveFetchController extends Controller
     }
 
     // Fetch user by civil number
-    private function fetchUser($civilNumber)
+    private function fetchUser($fileNumber)
     {
-        return User::where('Civil_number', $civilNumber)->first();
+        return User::where('file_number', $fileNumber)->first();
     }
 
     // Get all sub-department IDs for a department
@@ -106,9 +106,9 @@ class ReserveFetchController extends Controller
 
     public function getAll(Request $request)
     {
-        $civilNumber = $request->input('civil_number');
-        $employee = $this->fetchUser($civilNumber);
-
+        $fileNumber = $request->input('file_number'); // Change to 'file_number'
+        $employee = $this->fetchUser($fileNumber);
+    
         if ($employee && $this->canAccessEmployeeData(Auth::user(), $employee)) {
             $reservations = ReservationAllowance::where('user_id', $employee->id)->get();
             return $this->handleReservationData($employee, $reservations);
@@ -119,9 +119,9 @@ class ReserveFetchController extends Controller
     // Handle reservation data for date ranges
     private function getReservationsWithinDays(Request $request, $days)
     {
-        $civilNumber = $request->input('civil_number');
-        $employee = $this->fetchUser($civilNumber);
-
+        $fileNumber = $request->input('file_number'); // Change to 'file_number'
+        $employee = $this->fetchUser($fileNumber);
+    
         if ($employee && $this->canAccessEmployeeData(Auth::user(), $employee)) {
             $startDate = Carbon::now()->subDays($days)->startOfDay();
             $endDate = Carbon::now()->endOfDay();
@@ -153,16 +153,17 @@ class ReserveFetchController extends Controller
 
     public function getCustomDateRange(Request $request)
     {
-        $user = $this->fetchUser($request->input('civil_number'));
+        $user = $this->fetchUser($request->input('file_number')); // Change to 'file_number'
         $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
         $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
-
+    
         if ($user && $this->canAccessEmployeeData(Auth::user(), $user) && $startDate && $endDate) {
             $reservations = $this->fetchReservations($user->id, $startDate, $endDate);
             return $this->handleReservationData($user, $reservations);
         }
         return $this->userNotFoundOrUnauthorizedResponse();
     }
+    
 
     // Custom response for user not found or unauthorized access
     private function userNotFoundOrUnauthorizedResponse()
@@ -177,11 +178,11 @@ class ReserveFetchController extends Controller
 
     public function printReport(Request $request)
     {
-        $user = $this->fetchUser($request->input('civil_number'));
+        $user = $this->fetchUser($request->input('file_number')); // Change to 'file_number'
         if (!$user || !$this->canAccessEmployeeData(Auth::user(), $user)) {
-            return redirect()->back()->with('error', 'No user found with this Civil Number');
+            return redirect()->back()->with('error', 'No user found with this File Number');
         }
-
+    
         $reservations = ReservationAllowance::where('user_id', $user->id)->with('departements')->get();
         $totalAmount = $reservations->sum('amount');
         $data = [
@@ -195,12 +196,12 @@ class ReserveFetchController extends Controller
             'totalFullReservation' => $reservations->where('type', 1)->sum('amount'),
             'totalPartialReservation' => $reservations->where('type', 2)->sum('amount'),
         ];
-
+    
         // Generate PDF
         $pdf = $this->generatePDF($data);
         return $pdf->Output('reservation_report.pdf', 'I');
     }
-
+    
     // Generate PDF with given data
     private function generatePDF($data)
     {

@@ -78,8 +78,9 @@
             <!-- General Search Form -->
             <form id="search-form" class="d-flex align-items-center me-3" method="get"
                 action="{{ route('reservation_fetch.getAll') }}">
-                <label for="civil_number" class="form-label mx-2 col-3">رقم الهوية</label>
-                <input type="text" id="civil_number" name="civil_number" class="form-control" required>
+                <label for="file_number" class="form-label mx-2 col-3">رقم الملف</label>
+                <input type="text" id="file_number" name="file_number" class="form-control" required>
+
                 <button type="submit" class="btn  mx-2"
                     style="    background-color: #b9bcc0; color: #0f0e0e;border-radius: 10px; border: none; font-weight: 700; ">بحث</button>
             </form>
@@ -88,7 +89,7 @@
             <div class="d-flex gap-2 flex-wrap">
                 <!-- Last Month Search Form -->
                 <form id="last-month-form" method="get" action="{{ route('reservation_fetch.getLastMonth') }}">
-                    <input type="hidden" name="civil_number" id="last_month_civil_number">
+                    <input type="hidden" name="file_number" id="last_month_file_number">
                     <button type="submit" class="btn  mx-1" style="background-color: #3c7327; color:white; border-radius:10px;">الشهر
                         الماضي</button>
                 </form>
@@ -96,21 +97,21 @@
                 <!-- Last 3 Months Search Form -->
                 <form id="last-three-month-form" method="get"
                     action="{{ route('reservation_fetch.getLastThreeMonths') }}">
-                    <input type="hidden" name="civil_number" id="last_three_month_civil_number">
+                    <input type="hidden" name="file_number" id="last_three_month_file_number">
                     <button type="submit" class="btn  mx-1" style="background-color: #d06702; color:white; border-radius:10px;">آخر 3
                         شهور</button>
                 </form>
 
                 <!-- Last 6 Months Search Form -->
                 <form id="last-six-months-form" method="get" action="{{ route('reservation_fetch.getLastSixMonths') }}">
-                    <input type="hidden" name="civil_number" id="last_six_months_civil_number">
+                    <input type="hidden" name="file_number" id="last_six_months_file_number">
                     <button type="submit" class="btn  mx-1" style="background-color:#2c9e9f; color:white; border-radius:10px;">آخر ستة
                         أشهر</button>
                 </form>
 
                 <!-- Last Year Search Form -->
                 <form id="last-year-form" method="get" action="{{ route('reservation_fetch.getLastYear') }}">
-                    <input type="hidden" name="civil_number" id="last_year_civil_number">
+                    <input type="hidden" name="file_number" id="last_year_file_number">
                     <button type="submit" class="btn  mx-1" style="background-color: #c9b22c; color:white; border-radius:10px;">السنة
                         الماضية</button>
                 </form>
@@ -187,7 +188,7 @@
             ajax: {
             url: url,
             data: function(d) {
-                d.civil_number = $('#civil_number').val().trim();
+                d.file_number = $('#file_number').val().trim();
                 d.start_date = $('#start_date').val();
                 d.end_date = $('#end_date').val();
             },
@@ -256,42 +257,42 @@
 
             // Trigger the table reload on search form submission
             $('#search-form').on('submit', function(e) {
-                e.preventDefault();
-                var civil_number = $('#civil_number').val().trim();
+    e.preventDefault();
+    var file_number = $('#file_number').val().trim();
 
-                if (civil_number !== '') {
-                    if (table === null) {
-                        initializeTable('{{ route('reservation_fetch.getAll') }}');
-                    } else {
-                        table.ajax.url('{{ route('reservation_fetch.getAll') }}').load();
-                    }
-                } else {
-                    alert('Please enter a valid Civil Number');
-                }
-            });
+    if (file_number !== '') {
+        if (table === null) {
+            initializeTable('{{ route('reservation_fetch.getAll') }}');
+        } else {
+            table.ajax.url('{{ route('reservation_fetch.getAll') }}').load();
+        }
+    } else {
+        alert('Please enter a valid File Number');
+    }
+});
 
             // Set the civil number for the last month form submission
             $('#last-month-form').on('submit', function(e) {
                 e.preventDefault();
-                $('#last_month_civil_number').val($('#civil_number').val().trim());
+                $('#last_month_file_number').val($('#file_number').val().trim());
                 submitDataTableForm('{{ route('reservation_fetch.getLastMonth') }}');
             });
 
             $('#last-three-month-form').on('submit', function(e) {
                 e.preventDefault();
-                $('#last_three_month_civil_number').val($('#civil_number').val().trim());
+                $('#last_three_month_file_number').val($('#file_number').val().trim());
                 submitDataTableForm('{{ route('reservation_fetch.getLastThreeMonths') }}');
             });
 
             $('#last-six-months-form').on('submit', function(e) {
                 e.preventDefault();
-                $('#last_six_months_civil_number').val($('#civil_number').val().trim());
+                $('#last_six_months_file_number').val($('#file_number').val().trim());
                 submitDataTableForm('{{ route('reservation_fetch.getLastSixMonths') }}');
             });
 
             $('#last-year-form').on('submit', function(e) {
                 e.preventDefault();
-                $('#last_year_civil_number').val($('#civil_number').val().trim());
+                $('#last_year_file_number').val($('#file_number').val().trim());
                 submitDataTableForm('{{ route('reservation_fetch.getLastYear') }}');
             });
             // Show/hide the date range picker when clicking "Other Dates"
@@ -303,11 +304,11 @@
             $('#custom-date-form').on('submit', function(e) {
                 e.preventDefault();
 
-                var civil_number = $('#civil_number').val().trim();
+                var file_number = $('#file_number').val().trim();
                 var start_date = $('#start_date').val();
                 var end_date = $('#end_date').val();
 
-                if (civil_number !== '' && start_date !== '' && end_date !== '') {
+                if (file_number !== '' && start_date !== '' && end_date !== '') {
                     if (table === null) {
                         initializeTable('{{ route('reservation_fetch.getCustomDateRange') }}');
                     } else {
@@ -319,8 +320,8 @@
             });
 
             function submitDataTableForm(url) {
-                var civil_number = $('#civil_number').val().trim();
-                if (civil_number !== '') {
+                var file_number = $('#file_number').val().trim();
+                if (file_number !== '') {
                     if (table === null) {
                         initializeTable(url);
                     } else {
@@ -333,8 +334,8 @@
         });
 
         function printPDF() {
-            let civil_number = $('#civil_number').val();
-            window.open('{{ route('reservation_fetch.print') }}' + '?civil_number=' + civil_number, '_blank');
+            let file_number = $('#file_number').val();
+            window.open('{{ route('reservation_fetch.print') }}' + '?file_number=' + file_number, '_blank');
         }
     </script>
 @endpush

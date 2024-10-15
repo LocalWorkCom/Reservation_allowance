@@ -41,16 +41,15 @@ class sectorsController extends Controller
         // Check for the 'skipDepartmentCheck' flag to perform department/sector validation
         $isDepartmentCheck = request()->has('skipDepartmentCheck') && request()->get('skipDepartmentCheck') === 'true';
         if ($isDepartmentCheck && ($manager->department_id != null || $manager->sector != null || ($sector != $manager->sector && $manager->sector != null))) {
-                return response()->json([
-                    'error' => 'هذا المستخدم موجود فى قطاع مسبقا . هل تريد نقله ?'
-                ], 404);
-
+            return response()->json([
+                'error' => 'هذا المستخدم موجود فى قطاع مسبقا . هل تريد نقله ?'
+            ], 404);
         }
 
         // Calculate seniority (years of service)
         $joiningDate = $manager->joining_date ? Carbon::parse($manager->joining_date) : Carbon::parse($manager->created_at);
         $today = Carbon::now();
-        $yearsOfService = $joiningDate->diffInYears($today);
+        $yearsOfService = $joiningDate->diffInYears($today) ?? 'لا يوجد بيانات أقدميه';
 
         // Check if the manager is an employee (based on the 'employee' flag)
         $isEmployee = $manager->flag === 'employee';
@@ -61,8 +60,8 @@ class sectorsController extends Controller
             'job_title' => $manager->job_title ?? 'لا يوجد مسمى وظيفى',
             'seniority' => $yearsOfService,
             'name' => $manager->name,
-            'phone' => $manager->phone,
-            'email' => $manager->email,
+            'phone' => $user->phone ?? 'لا يوجد رقم هاتف',
+            'email' => $user->email ?? 'لا يوجد بريد الكتروني',
             'isEmployee' => $isEmployee,
         ]);
     }
@@ -308,9 +307,8 @@ class sectorsController extends Controller
             }
 
             $user->save();
-            if($user->email){
+            if ($user->email) {
                 Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع ' . $request->name, $user->file_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $user->email);
-
             }
         }
 
@@ -463,9 +461,8 @@ class sectorsController extends Controller
                         $newManager->password = Hash::make($request->password);
                     }
                     $newManager->save();
-                    if($newManager->email){
+                    if ($newManager->email) {
                         Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $newManager->Civil_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $newManager->email);
-
                     }
                 }
             }
@@ -477,9 +474,8 @@ class sectorsController extends Controller
                 $Manager->rule_id = $request->rule;
                 $Manager->password = Hash::make($request->password);
                 $Manager->save();
-                if($Manager->email){
+                if ($Manager->email) {
                     Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $Manager->Civil_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $Manager->email);
-
                 }
             }
         }
@@ -505,7 +501,7 @@ class sectorsController extends Controller
             $number = trim($Civil_number);
 
             $employee = User::where('file_number', $number)->first();
-            $is_manager= Sector::where('manager',$employee->id)->exists();
+            $is_manager = Sector::where('manager', $employee->id)->exists();
             if ($employee && $employee->grade_id != null && !$is_manager) {
                 $employee->sector = $sector->id;
                 $employee->save();
