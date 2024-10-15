@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('reservation_allowances', function (Blueprint $table) {
-            $table->unsignedBigInteger('grade_id')->nullable();
-            $table->foreign('grade_id')->references('id')->on('grades')->onUpdate('cascade');
-        });
+        // Schema::table('reservation_allowances', function (Blueprint $table) {
+        //     $table->unsignedBigInteger('grade_id')->nullable();
+        //     $table->foreign('grade_id')->references('id')->on('grades')->onUpdate('cascade');
+        // });
     }
 
     /**
@@ -22,8 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('reservation_allowances', function (Blueprint $table) {
-            //
-        });
+        // Schema::table('reservation_allowances', function (Blueprint $table) {
+        //     //
+        // });
     }
 };
