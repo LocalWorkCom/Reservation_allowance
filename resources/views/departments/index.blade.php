@@ -1,11 +1,8 @@
 @extends('layout.main')
 
-<link rel="stylesheet" type="text/css"
-    href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
-<script type="text/javascript" charset="utf8"
-    src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
-<script type="text/javascript" charset="utf8"
-    src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
 </script>
 
 @section('content')
@@ -16,13 +13,10 @@
     <div class="container  col-11" style="background-color:transparent;">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item "><a
-                        href="{{ route('home') }}">الرئيسيه</a></li>
-                <li class="breadcrumb-item"><a
-                        href="{{ route('sectors.index', ['id' => $sectors->id]) }}">القطاعات</a>
+                <li class="breadcrumb-item "><a href="{{ route('home') }}">الرئيسيه</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('sectors.index', ['id' => $sectors->id]) }}">القطاعات</a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page"> <a
-                        href="">
+                <li class="breadcrumb-item active" aria-current="page"> <a href="">
                         الادارات الرئيسية</a></li>
             </ol>
         </nav>
@@ -37,15 +31,12 @@
                     @php
                         $id = Request::segment(2);
                     @endphp
-                    @if (Auth::user()->rule->id == 1 ||
-                            Auth::user()->rule->id == 2 ||
-                            Auth::user()->rule->id == 4)
+                    @if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2 || Auth::user()->rule->id == 4)
                         <button type="button" class="wide-btn "
                             onclick="window.location.href='{{ route('department.create', ['id' => $id]) }}'"
                             style="    color: #0D992C;">
                             اضافة جديد
-                            <img src="{{ asset('frontend/images/add-btn.svg') }}"
-                                alt="img">
+                            <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
                         </button>
                     @endif
                     @if (Auth::user()->hasPermission('create Postman'))
@@ -76,7 +67,8 @@
                                 <tr>
                                     <th>رقم التعريف</th>
                                     <th>الاسم</th>
-                                    <th>المدير</th>
+                                    <th>مدير الادارة</th>
+                                    <th>بيانات الدخول</th>
                                     {{-- <th>الاقسام</th> --}}
                                     <th>ميزانية البدل</th>
                                     <th>صلاحيه الحجز</th>
@@ -126,6 +118,10 @@
                 {
                     data: 'manager_name',
                     name: 'manager_name'
+                },
+                {
+                    data: 'login_info',
+                    name: 'login_info'
                 },
                 {
                     data: 'reservation_allowance_amount',
