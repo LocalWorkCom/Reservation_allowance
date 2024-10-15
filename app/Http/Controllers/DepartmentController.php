@@ -729,7 +729,7 @@ class DepartmentController extends Controller
                     }
                     $newManager->save();
 
-                    if ($manager->email) {
+                    if ($newManager->email) {
                         // Send email to the new manager
                         Sendmail(
                             'مدير ادارة', // Subject
@@ -752,7 +752,7 @@ class DepartmentController extends Controller
                 $Manager->rule_id = $request->rule;
                 $Manager->password = Hash::make($request->password);
                 $Manager->save();
-                if ($manager->email) {
+                if ($Manager->email) {
                     // Send email to the new manager
                     Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, $request->password ? $request->password : null, $Manager->email);
                 } else {
@@ -885,7 +885,7 @@ class DepartmentController extends Controller
                         $newManager->password = Hash::make($request->password);
                     }
                     $newManager->save();
-                    if ($manager->email) {
+                    if ($newManager->email) {
                         // Send email notification to the new manager
                         Sendmail(
                             'مدير ادارة فرعية', // Subject
