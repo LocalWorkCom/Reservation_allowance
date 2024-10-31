@@ -213,7 +213,6 @@
                             }
                         },
                         error: function(xhr) {
-                        // Handle different error responses
                         if (xhr.status === 404) {
                             Swal.fire({
                                 title: 'تحذير',
