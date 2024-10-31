@@ -146,12 +146,13 @@
                                         <a href="{{ route('reservation_allowances.index') }}">عرض موظفين بدل الحجز</a>
                                     </li>
 
-                                 
+                                    @if (auth()->check() && auth()->user()->rule_id == 2)
                                     <li class="{{ request()->routeIs('reservation_fetch.index') ? 'active' : '' }}">
                                         <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
                                             style="margin-left: 7px;">
                                         <a href="{{ route('reservation_fetch.index') }}">بحث بدل حجز</a>
                                     </li>
+                                    @endif
                                     
 
                                     @if (auth()->check() && auth()->user()->rule_id == 2)

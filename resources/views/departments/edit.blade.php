@@ -50,7 +50,9 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/">الرئيسيه</a></li>
                         <li class="breadcrumb-item"><a
-                                href="{{ route('departments.index', ['id' => $department->id]) }}">{{ $department->name }}</a>
+                                href="{{ route('departments.index', ['id' => $department->sector_id]) }}">
+                                {{-- {{ $department->name }} --}} الأدارات
+                            </a>
                         </li>
                         <li class="breadcrumb-item active" aria-current="page"><a href=""> تعديل ادارة</a></li>
                     </ol>
@@ -110,15 +112,18 @@
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="">صلاحيه الحجز</label>
                                 <div class="d-flex mt-3 " dir="rtl">
-                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"
+                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="1"  id="fullBooking"
                                         @if ($department->reservation_allowance_type == 1 || $department->reservation_allowance_type == 3) checked @endif name="part[]">
-                                    <label for="part"> حجز كلى</label><input type="checkbox"
-                                        class="toggle-radio-buttons mx-2" value="2" id="part" name="part[]"
+                                    <label for="fullBooking"> حجز كلى</label>
+                                    <input type="checkbox"  class="toggle-radio-buttons mx-2" value="2"  name="part[]" id="partialBooking"
                                         @if ($department->reservation_allowance_type == 2 || $department->reservation_allowance_type == 3) checked @endif>
-                                    <label for="part">حجز جزئى</label>
-                                    @error('budget')
+                                    <label for="partialBooking">حجز جزئى</label>
+                                    <input type="checkbox"  class="toggle-radio-buttons mx-2" value="3" name="part[]" id="noBooking"
+                                    @if ( $department->reservation_allowance_type == 4) checked @endif>
+                                <label for="noBooking">لا يوجد حجز</label>
+                                    {{-- @error('budget')
                                         <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
+                                    @enderror --}}
                                 </div>
                             </div>
                             <div class="form-group col-md-10 mx-md-2" id="manager">
@@ -134,6 +139,18 @@
                                 <label for="password">كلمة المرور</label>
                                 <input type="password" name="password" id="password" class="form-control">
                                 @error('password')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="form-group col-md-10 mx-md-2" id="rule_field" style="display: none;">
+                                <label for="rule">الصلاحيات</label>
+                                <select name="rule" id="rule" class="form-control">
+                                    <option value="">اختار الصلاحية</option>
+                                    @foreach ($rules as $rule)
+                                        <option value="{{ $rule->id }}">{{ $rule->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('rule')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -192,18 +209,10 @@
             </div>
 
         </div>
-
         <br>
-
         </form>
         </div>
-
-
-
         </div>
-
-
-
         </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -214,7 +223,6 @@
         });
 
         function fetchManagerDetails(managerId) {
-            console.log('Manager ID:', managerId);
 
             if (managerId) {
                 var sectorId = $('#sector').val();
@@ -231,6 +239,7 @@
                         $('#manager_details').find('span').eq(2).text(data.job_title);
                         $('#manager_details').find('span').eq(3).text(data.name);
                         $('#manager_details').find('span').eq(4).text(data.phone);
+                        $('#manager_details').find('span').eq(5).text(data.email);
                         $('#manager_details').show();
 
                         // Show password and rule fields for employees
@@ -255,9 +264,7 @@
                                 confirmButtonColor: '#3085d6'
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    // Populate manager details if no transfer is needed
 
-                                    console.log('Transfer confirmed');
                                 } else {
                                     // Handle cancel action: clear the manager input field
                                     $('#mangered').val(''); // Clear the input field
@@ -271,7 +278,6 @@
                     error: function(xhr, status, error) {
                         // Display error or warning message based on the response
                         var response = JSON.parse(xhr.responseText);
-
                         // Handle error message
                         if (response.error) {
                             Swal.fire({
@@ -318,5 +324,27 @@
         if (selectedManagerId) {
             fetchManagerDetails(selectedManagerId);
         }
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const noBookingCheckbox = document.getElementById('noBooking');
+            const fullBookingCheckbox = document.getElementById('fullBooking');
+            const partialBookingCheckbox = document.getElementById('partialBooking');
+
+            noBookingCheckbox.addEventListener('change', function () {
+                if (this.checked) {
+                    fullBookingCheckbox.checked = false;
+                    partialBookingCheckbox.checked = false;
+                }
+            });
+
+            [fullBookingCheckbox, partialBookingCheckbox].forEach(checkbox => {
+                checkbox.addEventListener('change', function () {
+                    if (this.checked) {
+                        noBookingCheckbox.checked = false;
+                    }
+                });
+            });
+        });
     </script>
 @endsection
