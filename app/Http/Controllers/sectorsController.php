@@ -130,14 +130,16 @@ class sectorsController extends Controller
                 return $btn;
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
-                return $row->reservation_allowance_amount;
+                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount ;
             })
             ->addColumn('reservation_allowance', function ($row) {
                 if ($row->reservation_allowance_type == 1) {
                     return 'حجز كلى';
                 } elseif ($row->reservation_allowance_type == 2) {
                     return 'حجز جزئى';
-                } else {
+                } elseif ($row->reservation_allowance_type == 4){
+                    return 'لا يوجد حجز';
+                }else {
                     return 'حجز كلى و حجز جزئى';
                 }
             })
@@ -209,18 +211,18 @@ class sectorsController extends Controller
         // Custom error messages for validation
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            'budget.required' => 'مبلغ بدل الحجز مطلوب.',
+            // 'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.00.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
-            'part.required' => 'نوع بدل الحجز مطلوب.',
+            // 'part.required' => 'نوع بدل الحجز مطلوب.',
         ];
 
         // Validation rules
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'budget' => 'required|numeric|min:0.00|max:1000000',
-            'part' => 'required',
+            'budget' => 'nullable|numeric|min:0.00|max:1000000',
+            'part' => 'nullable',
         ], $messages);
 
         if ($validator->fails()) {
@@ -265,13 +267,15 @@ class sectorsController extends Controller
             $reservation_allowance_type = 1;
         } elseif (in_array('2', $part)) {
             $reservation_allowance_type = 2;
+        } elseif (in_array('3', $part)) {
+            $reservation_allowance_type = 4;
         }
 
         // Create and save new sector
         $sector = new Sector();
         $sector->name = $request->name;
         $sector->reservation_allowance_type = $reservation_allowance_type;
-        $sector->reservation_allowance_amount = $request->budget;
+        $sector->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget ;
         $sector->manager = $manager;
         $sector->created_by = Auth::id();
         $sector->updated_by = Auth::id();
@@ -378,18 +382,18 @@ class sectorsController extends Controller
         $sector = Sector::find($request->id);
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            'budget.required' => 'مبلغ بدل الحجز مطلوب.',
+            // 'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.00.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
-            'part.required' => 'نوع بدل الحجز مطلوب.',
+            // 'part.required' => 'نوع بدل الحجز مطلوب.',
         ];
 
         // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'budget' => 'required|numeric|min:0.00|max:1000000',
-            'part' => 'required',
+            'budget' => 'nullable|numeric|min:0.00|max:1000000',
+            'part' => 'nullable',
         ], $messages);
 
         if ($validator->fails()) {
@@ -414,12 +418,14 @@ class sectorsController extends Controller
             $reservation_allowance_type = 1;
         } elseif (in_array('2', $part)) {
             $reservation_allowance_type = 2;
+        } elseif (in_array('3', $part)) {
+            $reservation_allowance_type = 4;
         }
 
         // Update sector details
         $sector->name = $request->name;
         $sector->reservation_allowance_type = $reservation_allowance_type;
-        $sector->reservation_allowance_amount = $request->budget;
+        $sector->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget ;
         $sector->manager = $manager;
         $sector->updated_by = Auth::id();
         $sector->save();

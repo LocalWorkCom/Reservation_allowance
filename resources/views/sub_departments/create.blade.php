@@ -51,14 +51,14 @@
                         <li class="breadcrumb-item "><a href="{{ route('home') }}">الرئيسيه</a></li>
                         @if ($department->parent_id)
                             <li class="breadcrumb-item"><a
-                                    href="{{ route('sub_departments.index', ['id' => $department->parent_id]) }}">
-                                    {{ $department->name }}
+                                href="{{ route('sub_departments.index', ['id' => $department->parent_id]) }}">
+                                {{-- {{ $department->name }} --}} الأدارات
                                 </a></li>
                         @else
                             <li class="breadcrumb-item"><a
-                                    href="{{ route('departments.index', ['id' => $department->id]) }}">
-                                    {{ $department->name }}
-                                </a></li>
+                                    href="{{ route('departments.index', ['id' => $department->sector_id]) }}">
+                                {{-- {{ $department->name }} --}} الأدارات
+                            </a></li>
                         @endif
                         <li class="breadcrumb-item active" aria-current="page"> <a href="">
                                 اضافة ادارة فرعية</a></li>
@@ -138,14 +138,17 @@
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="">صلاحيه الحجز</label>
                                 <div class="d-flex mt-3 " dir="rtl">
-                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"
+                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="fullBooking"
                                         name="part[]">
                                     <label for="part"> حجز كلى</label><input type="checkbox"
-                                        class="toggle-radio-buttons mx-2" value="2" id="part" name="part[]">
+                                        class="toggle-radio-buttons mx-2" value="2" id="partialBooking" name="part[]">
                                     <label for="part">حجز جزئى</label>
-                                    @error('part')
+                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="2" id="noBooking"
+                                        name="part[]">
+                                    <label for="noBooking">لا يوجد حجز</label>
+                                    {{-- @error('part')
                                         <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
+                                    @enderror --}}
                                 </div>
                             </div>
                             <div class="form-group col-md-10 mx-md-2" id="manager">
@@ -333,5 +336,33 @@
         if (selectedManagerId) {
             fetchManagerDetails(selectedManagerId);
         }
+    </script>
+    <script>
+        // Select the checkboxes by their IDs
+        const fullBooking = document.getElementById("fullBooking");
+        const partialBooking = document.getElementById("partialBooking");
+        const noBooking = document.getElementById("noBooking");
+
+        // Add an onchange event listener for the "noBooking" checkbox
+        noBooking.addEventListener("change", function() {
+            if (noBooking.checked) {
+                // Uncheck the other checkboxes if "noBooking" is checked
+                fullBooking.checked = false;
+                partialBooking.checked = false;
+            }
+        });
+
+        // Add event listeners for "fullBooking" and "partialBooking" to uncheck "noBooking" if either is checked
+        fullBooking.addEventListener("change", function() {
+            if (fullBooking.checked) {
+                noBooking.checked = false;
+            }
+        });
+
+        partialBooking.addEventListener("change", function() {
+            if (partialBooking.checked) {
+                noBooking.checked = false;
+            }
+        });
     </script>
 @endsection

@@ -142,21 +142,32 @@
                     <label for="Civil_number" class="col-12"> أرقام الملفات</label>
                     <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px">
                         @foreach ($employees as $employee)
-{{ $employee->file_number }}
-@endforeach
+                             {{ $employee->file_number }}
+                        @endforeach
                     </textarea>
                 </div>
 
                 <div class="input-group moftsh px-md-5 px-3 pt-3">
                     <label for="" class="col-12">صلاحيه الحجز</label>
                     <div class="d-flex mt-3" dir="rtl">
-                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"
-                            style="height:30px;" @if ($data->reservation_allowance_type == 1 || $data->reservation_allowance_type == 3) checked @endif name="part[]">
-                        <label for="part" class="col-12"> حجز كلى</label>
+                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="fullBooking"
+                               style="height:30px;"
+                               @if ($data->reservation_allowance_type == 1 || $data->reservation_allowance_type == 3) checked @endif
+                               name="part[]">
+                        <label for="fullBooking" class="col-12"> حجز كلى</label>
+
                         <input type="checkbox" class="toggle-radio-buttons mx-2" style="height:30px;"
-                            @if ($data->reservation_allowance_type == 2 || $data->reservation_allowance_type == 3) checked @endif value="2" id="part"
-                            name="part[]">
-                        <label for="part" class="col-12">حجز جزئى</label>
+                               value="2" id="partialBooking"
+                               @if ($data->reservation_allowance_type == 2 || $data->reservation_allowance_type == 3) checked @endif
+                               name="part[]">
+                        <label for="partialBooking" class="col-12">حجز جزئى</label>
+
+                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="3" id="noBooking"
+                               style="height:30px;"
+                               @if ($data->reservation_allowance_type == 4) checked @endif
+                               name="part[]">
+                        <label for="noBooking" class="col-12">لا يوجد حجز</label>
+
                         @error('part')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
@@ -190,7 +201,6 @@
             if (selectedManagerId) {
                 $('#password_field').show();
                 $('#rule_field').show();
-                console.log(selectedManagerId);
                 fetchManagerDetails(selectedManagerId, false); // Pass true to skip the department check
             } else {
                 $('#manager_details').hide();
@@ -296,6 +306,28 @@
             $('#password').val(''); // Clear previous input
             $('#rule').val(''); // Clear previous input
             fetchManagerDetails(managerId, true); // Fetch new details
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const noBookingCheckbox = document.getElementById('noBooking');
+            const fullBookingCheckbox = document.getElementById('fullBooking');
+            const partialBookingCheckbox = document.getElementById('partialBooking');
+
+            noBookingCheckbox.addEventListener('change', function () {
+                if (this.checked) {
+                    fullBookingCheckbox.checked = false;
+                    partialBookingCheckbox.checked = false;
+                }
+            });
+
+            [fullBookingCheckbox, partialBookingCheckbox].forEach(checkbox => {
+                checkbox.addEventListener('change', function () {
+                    if (this.checked) {
+                        noBookingCheckbox.checked = false;
+                    }
+                });
+            });
         });
     </script>
 @endsection

@@ -51,7 +51,8 @@
                         <li class="breadcrumb-item "><a href="{{ route('home') }}">الرئيسيه</a></li>
                         <li class="breadcrumb-item"><a
                                 href="{{ route('sub_departments.index', ['id' => $department->parent_id]) }}">
-                                {{ $department->name }} </a>
+                                {{-- {{ $department->name }} --}} الأدارات
+                            </a>
                         </li>
                         <li class="breadcrumb-item active" aria-current="page"> <a href="">
                                 تعديل {{ $department->name }}</a></li>
@@ -89,7 +90,8 @@
                                 <input type="hidden" name="parent"
                                     value="{{ $department->sector_id ? $department->sector_id : $sect->sector_id }}">
 
-
+                                    <input type="hidden" name="parent" value="{{ $department->id }}">
+                                    <input type="hidden" name="sector" value="{{ $department->sector_id }}">
                                 <input type="hidden" class="form-control" name="sector_id"
                                     value="{{ $department->sector_id ? $department->sectors->name : $sect->sectors->name }}"
                                     disabled>
@@ -117,15 +119,18 @@
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="">صلاحيه الحجز</label>
                                 <div class="d-flex mt-3 " dir="rtl">
-                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"
+                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="fullBooking"
                                         @if ($department->reservation_allowance_type == 1 || $department->reservation_allowance_type == 3) checked @endif name="part[]">
-                                    <label for="part"> حجز كلى</label><input type="checkbox"
-                                        class="toggle-radio-buttons mx-2" value="2" id="part" name="part[]"
+                                    <label for="fullBooking"> حجز كلى</label>
+                                    <input type="checkbox"  class="toggle-radio-buttons mx-2" value="2" id="partialBooking" name="part[]"
                                         @if ($department->reservation_allowance_type == 2 || $department->reservation_allowance_type == 3) checked @endif>
-                                    <label for="part">حجز جزئى</label>
-                                    @error('part')
+                                    <label for="partialBooking">حجز جزئى</label>
+                                    <input type="checkbox"  class="toggle-radio-buttons mx-2" value="3" id="noBooking" name="part[]"
+                                        @if ($department->reservation_allowance_type == 4) checked @endif>
+                                    <label for="noBooking">لا يوجد حجز </label>
+                                    {{-- @error('part')
                                         <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
+                                    @enderror --}}
                                 </div>
                             </div>
                             {{-- {{ dd($department->manager) }} --}}
@@ -328,5 +333,27 @@
         if (selectedManagerId) {
             fetchManagerDetails(selectedManagerId);
         }
+    </script>
+     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const noBookingCheckbox = document.getElementById('noBooking');
+            const fullBookingCheckbox = document.getElementById('fullBooking');
+            const partialBookingCheckbox = document.getElementById('partialBooking');
+
+            noBookingCheckbox.addEventListener('change', function () {
+                if (this.checked) {
+                    fullBookingCheckbox.checked = false;
+                    partialBookingCheckbox.checked = false;
+                }
+            });
+
+            [fullBookingCheckbox, partialBookingCheckbox].forEach(checkbox => {
+                checkbox.addEventListener('change', function () {
+                    if (this.checked) {
+                        noBookingCheckbox.checked = false;
+                    }
+                });
+            });
+        });
     </script>
 @endsection
