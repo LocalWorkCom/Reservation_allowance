@@ -34,14 +34,21 @@
                         value="2" required>
                 </div>
             @endif
+            @if ($reservation_allowance_type == 4)
+                <div class="d-flex justify-content-end mx-4">
+                    <label for=""> لا يوجد بدل حجز</label>
+                </div>
+            @endif
         </div>
         <span class="text-danger span-error" id="type-error" dir="rtl"></span>
     </div>
 
+    @if ($reservation_allowance_type != 4)
     <div class="container col-12 mt-3 mb-3 ">
         <div class="form-row col-10 " dir="ltr">
             <button class="btn-blue" type="submit">
                 اضافة </button>
         </div>
     </div>
+    @endif
 </from>
