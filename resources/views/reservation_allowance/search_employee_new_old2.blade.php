@@ -251,14 +251,12 @@
                     </table>
                 </div>
 
-                @if ($reservation_allowance_type != 4)
                 <div class="" style="margin-top:20px">
                     <button class="btn-all py-2 px-2" style="color:#ffffff; background-color:#274373 !important;" onclick="confirm_reservation()"
                         class="menu-link px-3">
                      
                         اضف بدل حجز</button>
                 </div>
-                @endif
 
             </div>
         </div>
@@ -358,6 +356,7 @@ function check_all($type) {
                 map_url = map_url.replace('date', reservation_date);
                 map_url = map_url.replace('sector', reservation_sector_id);
                 map_url = map_url.replace('departement', reservation_departement_id);
+                alert(map_url);
                 window.location.href = map_url;
             } else {
 
@@ -365,18 +364,50 @@ function check_all($type) {
         });
     }
 
+    /*function confirm_reservation() {
+        Swal.fire({
+            title: 'تحذير',
+            text: 'هل انت متاكد من انك تريد ان تضيف بدل حجز لهؤلاء الموظفين',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'نعم, نقل',
+            cancelButtonText: 'إلغاء',
+            confirmButtonColor: '#3085d6'
+        }).then((result) => {
+            if (result.isConfirmed) {  
+                var reservation_date = document.getElementById('date').value;
+                var map_url = "{{ route('reservation_allowances.confirm_reservation_allowances','date') }}";
+                map_url = map_url.replace('date', reservation_date);
+                window.location.href = map_url;
+            } else {
+
+            }
+        });
+
+    }*/
+
+
     //add to chche
-    /*$('.emlpoyee_allowance_radio:checked').each(function(i) {
+    $('.emlpoyee_allowance_radio:checked').each(function(i) {
         var type = document.getElementById('allowance_all').value;
         var map_url ="{{ route('reservation_allowances.add_reservation_allowances_employess', ['type', 'id']) }}";
         map_url = map_url.replace('id', $(this).val());
         map_url = map_url.replace('type', type);
         $.get(map_url, function(data) {});
-    });*/
+    });
 
 
 
-
+/*function confirm_reservation() {
+    if (confirm("هل انت متاكد من انك تريد ان تضيف بدل حجز لهؤلاء الموظفين") == true) {
+        var reservation_date = document.getElementById('date').value;
+        var map_url = "{{ route('reservation_allowances.confirm_reservation_allowances','date') }}";
+        map_url = map_url.replace('date', reservation_date);
+        $.get(map_url, function(data) {
+            window.location.href = "{{route('reservation_allowances.index')}}";
+        });
+    }
+}*/
 
 
 /*$(function() {
