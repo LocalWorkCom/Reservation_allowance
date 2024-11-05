@@ -49,6 +49,7 @@ class employee_vacation extends Command
                             ->first();
 
                         // Update the InspectorMission record with the vacation ID
+
                         $inspectorMission->vacation_id = $EmployeeeVacation->id;
                         $inspectorMission->save();
                     }
