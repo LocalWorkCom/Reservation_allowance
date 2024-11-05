@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\history_allawonce;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Groups;
@@ -257,11 +258,11 @@ function showUserDepartment()
         if ($user->sectors && ! $user->department) {
             $name = $user->sectors != null ? ($user->sectors->name != null ? $user->sectors->name : 'القسم الرئيسي') : '';
         } else {
-    
+
             $name = $user->department != null ? ($user->department->name != null ? $user->department->name : 'القسم الرئيسي') : '';
-        }    
+        }
     }
-    
+
     return $name;
 }
 function CheckUploadIoFiles($id)
@@ -523,4 +524,15 @@ if (!function_exists('send_push_notification')) {
         $err = curl_error($ch);
         curl_close($ch);
     }
+}
+
+ function saveHistory($amount, $sectorId, $departmentId)
+{
+    $history_allowance = new history_allawonce();
+    $history_allowance->sector_id = $sectorId;
+    $history_allowance->department_id =  $departmentId ?? null;
+    $history_allowance->amount = $amount;
+    $history_allowance->date = now();
+    $history_allowance->save();
+
 }

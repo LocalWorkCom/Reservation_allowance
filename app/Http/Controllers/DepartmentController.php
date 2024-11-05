@@ -377,13 +377,13 @@ class DepartmentController extends Controller
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
-            // 'part.required' => 'نوع بدل الحجز مطلوب.',
+            'part.required' => 'نوع بدل الحجز مطلوب.',
         ];
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'budget' => 'nullable|numeric|min:0|max:1000000',
-            'part' => 'nullable',
+            'part' => 'required',
         ], $messages);
 
         if ($validator->fails()) {
@@ -422,6 +422,8 @@ class DepartmentController extends Controller
             $departements->reservation_allowance_type = $reservation_allowance_type;
             $departements->created_by = Auth::user()->id;
             $departements->save();
+            saveHistory($departements->reservation_allowance_amount, $departements->sector_id, $departements->id);
+
             if ($manager){
             // Handle manager assignment
             if ($manager->department_id != $departements->id || $manager->department_id != null) {
@@ -566,6 +568,7 @@ class DepartmentController extends Controller
         }
 
         $departements->save();
+        saveHistory($departements->reservation_allowance_amount, $departements->sector_id, $departements->id);
 
         // } else {
         //     return redirect()->back()->withErrors('هذا المدير غير موجود')->withInput();
@@ -660,13 +663,13 @@ class DepartmentController extends Controller
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
-            // 'part.required' => 'نوع بدل الحجز مطلوب.',
+            'part.required' => 'نوع بدل الحجز مطلوب.',
         ];
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'budget' => 'nullable|numeric|min:0|max:1000000',
-            'part' => 'nullable',
+            'part' => 'required',
         ], $messages);
 
         if ($validator->fails()) {
@@ -706,6 +709,7 @@ class DepartmentController extends Controller
         $department->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget;
         $department->created_by = Auth::user()->id;
         $department->save();
+        saveHistory($department->reservation_allowance_amount, $department->sector_id, $department->id);
 
         // Handle old and new manager updates
         if ($oldManager != $manager) {
@@ -827,13 +831,13 @@ class DepartmentController extends Controller
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
-            // 'part.required' => 'نوع بدل الحجز مطلوب.',
+            'part.required' => 'نوع بدل الحجز مطلوب.',
         ];
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'budget' => 'nullable|numeric|min:0|max:1000000',
-            'part' => 'nullable',
+            'part' => 'required',
         ], $messages);
 
         if ($validator->fails()) {
@@ -871,6 +875,7 @@ class DepartmentController extends Controller
         $department->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget;
         $department->created_by = Auth::user()->id;
         $department->save();
+        saveHistory($department->reservation_allowance_amount, $department->sector_id, $department->id);
 
         // Handle old and new manager updates for sub-department
         if ($oldManager != $manager) {

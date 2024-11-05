@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\departements;
 use App\Models\Government;
+use App\Models\history_allawonce;
 use App\Models\ReservationAllowance;
 use App\Models\Rule;
 use App\Models\Sector;
@@ -144,16 +145,16 @@ class sectorsController extends Controller
                 return $btn;
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
-                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount ;
+                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount;
             })
             ->addColumn('reservation_allowance', function ($row) {
                 if ($row->reservation_allowance_type == 1) {
                     return 'حجز كلى';
                 } elseif ($row->reservation_allowance_type == 2) {
                     return 'حجز جزئى';
-                } elseif ($row->reservation_allowance_type == 4){
+                } elseif ($row->reservation_allowance_type == 4) {
                     return 'لا يوجد حجز';
-                }else {
+                } else {
                     return 'حجز كلى و حجز جزئى';
                 }
             })
@@ -179,9 +180,7 @@ class sectorsController extends Controller
         return view('sectors.create', compact('users', 'rules'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(Request $request)
     {
         // Custom error messages for validation
@@ -191,14 +190,14 @@ class sectorsController extends Controller
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.00.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
-            // 'part.required' => 'نوع بدل الحجز مطلوب.',
+             'part.required' => 'نوع بدل الحجز مطلوب.',
         ];
 
         // Validation rules
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'budget' => 'nullable|numeric|min:0.00|max:1000000',
-            'part' => 'nullable',
+            'part' => 'required',
         ], $messages);
 
         if ($validator->fails()) {
@@ -251,11 +250,12 @@ class sectorsController extends Controller
         $sector = new Sector();
         $sector->name = $request->name;
         $sector->reservation_allowance_type = $reservation_allowance_type;
-        $sector->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget ;
+        $sector->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget;
         $sector->manager = $manager;
         $sector->created_by = Auth::id();
         $sector->updated_by = Auth::id();
         $sector->save();
+        saveHistory($sector->reservation_allowance_amount, $sector->id, $request->department_id);
 
         // Handle updating the manager, if present
         if ($manager) {
@@ -350,9 +350,7 @@ class sectorsController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+
     public function update(Request $request)
     {
         $sector = Sector::find($request->id);
@@ -362,14 +360,14 @@ class sectorsController extends Controller
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.00.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
-            // 'part.required' => 'نوع بدل الحجز مطلوب.',
+            'part.required' => 'نوع بدل الحجز مطلوب.',
         ];
 
         // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'budget' => 'nullable|numeric|min:0.00|max:1000000',
-            'part' => 'nullable',
+            'part' => 'required',
         ], $messages);
 
         if ($validator->fails()) {
@@ -406,10 +404,12 @@ class sectorsController extends Controller
         // Update sector details
         $sector->name = $request->name;
         $sector->reservation_allowance_type = $reservation_allowance_type;
-        $sector->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget ;
+        $sector->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget;
         $sector->manager = $manager;
         $sector->updated_by = Auth::id();
         $sector->save();
+        saveHistory($sector->reservation_allowance_amount, $sector->id, $request->department_id);
+
         // Handle old and new manager updates
         if ($oldManager != $manager) {
             // Update old manager's sector to null
