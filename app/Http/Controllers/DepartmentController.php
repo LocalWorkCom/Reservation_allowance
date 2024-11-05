@@ -13,6 +13,7 @@ use App\DataTables\DepartmentDataTable;
 use Illuminate\Support\Facades\Validator;
 use App\DataTables\subDepartmentsDataTable;
 use App\Http\Requests\StoreDepartmentRequest;
+use App\Models\ReservationAllowance;
 use App\Models\Rule;
 use App\Models\Sector;
 use Carbon\Carbon;
@@ -38,7 +39,25 @@ class DepartmentController extends Controller
 
         return view('departments.index', compact('departments', 'sectors'));
     }
+    public function getAllowancedepart($amount, $departement_id)
+    {
+        $startDate = now()->startOfMonth()->toDateString();
+        $endDate = now()->toDateString();
 
+        $employees = ReservationAllowance::where('sector_id', $departement_id)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->get();
+
+        // Calculate total amount for the specified sector and date range
+        $totalAmount = $employees->sum('amount');
+        $is_allow = $totalAmount < $amount;
+
+        // Return total amount and is_allow status
+        return response()->json([
+            'total' => $totalAmount,
+            'is_allow' => $is_allow
+        ]);
+    }
 
     public function getDepartment($id)
     {
@@ -371,6 +390,7 @@ class DepartmentController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+
         // Process file Numbers for employees
         $file_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->file_number);
         $file_numbers = array_filter(explode(',', $file_numbers)); // Ensure it's an array of valid numbers
@@ -474,9 +494,6 @@ class DepartmentController extends Controller
         return redirect()->route('departments.index', ['id' => $request->sector])->with('message', $message);
     }
 
-
-
-
     public function store_1(Request $request)
     {
         $messages = [
@@ -579,21 +596,11 @@ class DepartmentController extends Controller
 
         return redirect()->route('sub_departments.index', ['id' => $request->parent])->with('message', $message);
     }
-
-
-
-    /**
-     * Display the specified resource.
-     */
     public function show($id)
     {
         $department = departements::with(['manager', 'managerAssistant', 'children', 'parent'])->findOrFail($id);
         return view('departments.show', compact('department'));
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(departements $department)
     {
         // dd($department);
@@ -616,7 +623,6 @@ class DepartmentController extends Controller
         // dd($employee);
         // return view('departments.edit', compact('department', 'users', 'employee'));
     }
-
     public function edit_1(departements $department)
     {
         $sect = departements::with(['sectors'])->findOrFail($department->parent_id);
@@ -664,6 +670,12 @@ class DepartmentController extends Controller
         ], $messages);
 
         if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+        $allowance = $this->getAllowancedepart($request->budget, $department->id);
+
+        if (!$allowance->original['is_allow']) {
+            $validator->errors()->add('budget', 'قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total']);
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
@@ -825,6 +837,11 @@ class DepartmentController extends Controller
         ], $messages);
 
         if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+        $allowance = $this->getAllowancedepart($request->budget, $department->id);
+        if (!$allowance->original['is_allow']) {
+            $validator->errors()->add('budget', 'قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total']);
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
