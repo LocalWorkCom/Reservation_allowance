@@ -169,7 +169,7 @@
                             style="direction:rtl">
                             <thead>
                                 <tr>
-                                    <th>الرتيب</th>
+                                    <th>الترتيب</th>
                                     <th>الرتبة</th>
                                     <th>الاسم</th>
                                     <th>رقم الملف</th>

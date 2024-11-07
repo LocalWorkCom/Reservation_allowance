@@ -166,7 +166,7 @@
                         style="direction:rtl">
                         <thead>
                             <tr>
-                                <th rowspan="2"><p>الرتيب</p></th>
+                                <th rowspan="2"><p>الترتيب</p></th>
                                 <th rowspan="2"><p>الرتبة</p></th>
                                 <th rowspan="2"><p>الاسم</p></th>
                                 <th rowspan="2"><p>رقم الملف</p></th>
