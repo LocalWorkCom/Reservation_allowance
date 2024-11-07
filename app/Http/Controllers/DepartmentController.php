@@ -13,6 +13,7 @@ use App\DataTables\DepartmentDataTable;
 use Illuminate\Support\Facades\Validator;
 use App\DataTables\subDepartmentsDataTable;
 use App\Http\Requests\StoreDepartmentRequest;
+use App\Models\ReservationAllowance;
 use App\Models\Rule;
 use App\Models\Sector;
 use Carbon\Carbon;
@@ -38,7 +39,25 @@ class DepartmentController extends Controller
 
         return view('departments.index', compact('departments', 'sectors'));
     }
+    public function getAllowancedepart($amount, $departement_id)
+    {
+        $startDate = now()->startOfMonth()->toDateString();
+        $endDate = now()->toDateString();
 
+        $employees = ReservationAllowance::where('sector_id', $departement_id)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->get();
+
+        // Calculate total amount for the specified sector and date range
+        $totalAmount = $employees->sum('amount');
+        $is_allow = $totalAmount < $amount;
+
+        // Return total amount and is_allow status
+        return response()->json([
+            'total' => $totalAmount,
+            'is_allow' => $is_allow
+        ]);
+    }
 
     public function getDepartment($id)
     {
@@ -66,6 +85,8 @@ class DepartmentController extends Controller
                         return 'حجز كلى';
                     case 2:
                         return 'حجز جزئى';
+                    case 4:
+                        return 'لا يوجد حجز';
                     default:
                         return 'حجز كلى و حجز جزئى';
                 }
@@ -237,10 +258,12 @@ class DepartmentController extends Controller
                 return '<button class="btn btn-primary btn-sm">Edit</button>';
             })
             ->addColumn('reservation_allowance', function ($row) {
-                return match ($row->reservation_allowance_type) {
+                return match ((int) $row->reservation_allowance_type) {
                     1 => 'حجز كلى',
                     2 => 'حجز جزئى',
-                    default => 'حجز كلى و حجز جزئى',
+                    4 => 'لا يوجد حجز',
+                    3 => 'حجز كلى و حجز جزئى',
+                    default => 'غير معروف',
                 };
             })
             ->addColumn('subDepartment', function ($row) {
@@ -356,7 +379,7 @@ class DepartmentController extends Controller
     {
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            'budget.required' => 'مبلغ بدل الحجز مطلوب.',
+            // 'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
@@ -365,7 +388,7 @@ class DepartmentController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'budget' => 'required|numeric|min:0|max:1000000',
+            'budget' => 'nullable|numeric|min:0|max:1000000',
             'part' => 'required',
         ], $messages);
 
@@ -373,30 +396,41 @@ class DepartmentController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+
         // Process file Numbers for employees
         $file_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->file_number);
         $file_numbers = array_filter(explode(',', $file_numbers)); // Ensure it's an array of valid numbers
 
         // Handle reservation allowance type
         $part = $request->input('part');
-        $reservation_allowance_type = (in_array('1', $part) && in_array('2', $part)) ? 3 : (in_array('1', $part) ? 1 : 2);
+        if (in_array('1', $part) && in_array('2', $part)) {
+            $reservation_allowance_type = 3; // Both '1' and '2' selected
+        } elseif (in_array('1', $part)) {
+            $reservation_allowance_type = 1; // Only '1' selected
+        } elseif (in_array('2', $part)) {
+            $reservation_allowance_type = 2; // Only '2' selected
+        } elseif (in_array('3', $part)) {
+            $reservation_allowance_type = 4; // Only '3' selected
+        }
 
         // Retrieve the user by file_number and set the manager
         // $manager = $request->mangered ? User::where('Civil_number', $request->mangered)->first() : null;
         $manager = $request->mangered ? User::where('file_number', $request->mangered)->first() : null;
 
-        if ($manager) {
+        // if ($manager) {
             // Create a new department
             $departements = new Departements();
             $departements->name = $request->name;
-            $departements->manger = $manager->id; // Assign the user's ID as manager
+            $departements->manger = $manager? $manager->id : null; // Assign the user's ID as manager
             $departements->sector_id = $request->sector;
             $departements->description = $request->description;
-            $departements->reservation_allowance_amount = $request->budget;
+            $departements->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget;
             $departements->reservation_allowance_type = $reservation_allowance_type;
             $departements->created_by = Auth::user()->id;
             $departements->save();
+            saveHistory($departements->reservation_allowance_amount, $departements->sector_id, $departements->id);
 
+            if ($manager){
             // Handle manager assignment
             if ($manager->department_id != $departements->id || $manager->department_id != null) {
                 $old_department = Departements::find($manager->department_id);
@@ -438,9 +472,10 @@ class DepartmentController extends Controller
             } else {
                 return redirect()->route('departments.index', ['id' => $request->sector]);
             }
-        } else {
-            return redirect()->back()->withErrors('هذا المدير غير موجود')->withInput();
         }
+        // } else {
+        //     return redirect()->back()->withErrors('هذا المدير غير موجود')->withInput();
+        // }
 
         // Handle employee assignment
         $failed_file_numbers = [];
@@ -467,14 +502,11 @@ class DepartmentController extends Controller
         return redirect()->route('departments.index', ['id' => $request->sector])->with('message', $message);
     }
 
-
-
-
     public function store_1(Request $request)
     {
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            'budget.required' => 'مبلغ بدل الحجز مطلوب.',
+            // 'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
@@ -484,7 +516,7 @@ class DepartmentController extends Controller
         // Validate the input fields
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'budget' => 'required|numeric|min:0|max:1000000',
+            'budget' => 'nullable|numeric|min:0|max:1000000',
             'part' => 'required',
         ], $messages);
 
@@ -492,48 +524,43 @@ class DepartmentController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        // Process file Numbers for employees
-        $file_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->file_number);
-        $file_numbers = array_filter(explode(',', $file_numbers)); // Ensure it's an array of valid numbers
-
-        // Handle reservation allowance type
         $part = $request->input('part');
-        $reservation_allowance_type = (in_array('1', $part) && in_array('2', $part)) ? 3 : (in_array('1', $part) ? 1 : 2);
-
-        // Retrieve the user by file_number and set the manager for sub-department
-        // $manager = $request->mangered ? User::where('Civil_number', $request->mangered)->first() : null;
+        if (in_array('1', $part) && in_array('2', $part)) {
+            $reservation_allowance_type = 3; // Both '1' and '2' selected
+        } elseif (in_array('1', $part)) {
+            $reservation_allowance_type = 1; // Only '1' selected
+        } elseif (in_array('2', $part)) {
+            $reservation_allowance_type = 2; // Only '2' selected
+        } elseif (in_array('3', $part)) {
+            $reservation_allowance_type = 4; // Only '3' selected
+        }        $file_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->file_number);
+        $file_numbers = array_filter(explode(',', $file_numbers)); // Ensure it's an array of valid numbers
         $manager = $request->mangered ? User::where('file_number', $request->mangered)->first() : null;
 
+        // Create a new sub-department
+        $departements = new Departements();
+        $departements->name = $request->name;
+        $departements->sector_id = $request->sector;
+        $departements->parent_id = $request->parent;
+        $departements->description = $request->description;
+        $departements->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget;
+        $departements->reservation_allowance_type = $reservation_allowance_type;
+        $departements->created_by = Auth::user()->id;
+
         if ($manager) {
-            // Create a new sub-department
-            $departements = new Departements();
-            $departements->name = $request->name;
-            $departements->manger = $manager->id; // Assign the user's ID as manager
-            $departements->sector_id = $request->sector;
-            $departements->parent_id = $request->parent; // Link this as a sub-department to its parent department
-            $departements->description = $request->description;
-            $departements->reservation_allowance_amount = $request->budget;
-            $departements->reservation_allowance_type = $reservation_allowance_type;
-            $departements->created_by = Auth::user()->id;
-            $departements->save();
+            // Assign the manager and handle the previous department/sector association
+            $departements->manger = $manager->id;
 
-            // Handle manager transfer logic for sub-department
-            if ($manager->department_id != $departements->id || $manager->department_id != null) {
-                $old_department = Departements::find($manager->department_id);
-
-                if ($old_department) {
-                    $old_department->manger = null;
-                    $old_department->save();
-                }
+            $old_department = Departements::find($manager->department_id);
+            if ($old_department) {
+                $old_department->manger = null;
+                $old_department->save();
             }
 
-            if ($manager->sector != $departements->sector_id || $manager->sector != null) {
-                $old_sector = Sector::find($manager->sector);
-
-                if ($old_sector) {
-                    $old_sector->manager = null;
-                    $old_sector->save();
-                }
+            $old_sector = Sector::find($manager->sector);
+            if ($old_sector) {
+                $old_sector->manager = null;
+                $old_sector->save();
             }
 
             $manager->sector = $request->sector;
@@ -544,22 +571,14 @@ class DepartmentController extends Controller
                 $manager->password = Hash::make($request->password);
             }
             $manager->save();
-
-            if ($manager->email) {
-                // Send email to the new manager
-                Sendmail(
-                    'مدير ادارة فرعية',
-                    'تم أضافتك كمدير ادارة فرعية',
-                    $manager->file_number,
-                    $request->password ? $request->password : null,
-                    $manager->email
-                );
-            } else {
-                return redirect()->route('sub_departments.index', ['id' => $request->sector]);
-            }
-        } else {
-            return redirect()->back()->withErrors('هذا المدير غير موجود')->withInput();
         }
+
+        $departements->save();
+        saveHistory($departements->reservation_allowance_amount, $departements->sector_id, $departements->id);
+
+        // } else {
+        //     return redirect()->back()->withErrors('هذا المدير غير موجود')->withInput();
+        // }
 
         // Handle employee assignment
         $failed_file_numbers = [];
@@ -586,22 +605,12 @@ class DepartmentController extends Controller
 
         return redirect()->route('sub_departments.index', ['id' => $request->parent])->with('message', $message);
     }
-
-
-
-    /**
-     * Display the specified resource.
-     */
     public function show($id)
     {
         // $department = get_by_md5_id_relation($id, 'sectors', array('manager', 'managerAssistant', 'children', 'parent'));
         $department = departements::with(['manager', 'managerAssistant', 'children', 'parent'])->findOrFail($id);
         return view('departments.show', compact('department'));
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(departements $department)
     {
         $id = $department->sector_id;
@@ -623,7 +632,6 @@ class DepartmentController extends Controller
         // dd($employee);
         // return view('departments.edit', compact('department', 'users', 'employee'));
     }
-
     public function edit_1(departements $department)
     {
         // $department = get_by_md5_id_relation($department->parent_id, 'departments', array('sectors'));
@@ -644,8 +652,9 @@ class DepartmentController extends Controller
             $employees = User::where('flag', 'employee')->where('department_id', $department->id)->whereNot('id', $department->manager)->get();
             $managers = User::where('department_id', 1)->get();
         }
+        $rules = Rule::where('id', 3)->get();
 
-        return view('sub_departments.edit', compact('department', 'managers', 'employees', 'sect'));
+        return view('sub_departments.edit', compact('department', 'managers', 'employees', 'sect','rules'));
     }
 
     /**
@@ -659,7 +668,6 @@ class DepartmentController extends Controller
         // Define validation rules and messages
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
@@ -668,11 +676,17 @@ class DepartmentController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'budget' => 'required|numeric|min:0|max:1000000',
+            'budget' => 'nullable|numeric|min:0|max:1000000',
             'part' => 'required',
         ], $messages);
 
         if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+        $allowance = $this->getAllowancedepart($request->budget, $department->id);
+
+        if (!$allowance->original['is_allow']) {
+            $validator->errors()->add('budget', 'قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total']);
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
@@ -691,17 +705,19 @@ class DepartmentController extends Controller
             $reservation_allowance_type = 1; // Only '1' selected
         } elseif (in_array('2', $part)) {
             $reservation_allowance_type = 2; // Only '2' selected
+        } elseif (in_array('3', $part)) {
+            $reservation_allowance_type = 4; // Only '3' selected
         }
-
         // Handle updating department details
         $department->name = $request->name;
         $department->sector_id = $request->sector;
         $department->description = $request->description;
         $department->manger = $manager;
         $department->reservation_allowance_type = $reservation_allowance_type;
-        $department->reservation_allowance_amount = $request->budget;
+        $department->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget;
         $department->created_by = Auth::user()->id;
         $department->save();
+        saveHistory($department->reservation_allowance_amount, $department->sector_id, $department->id);
 
         // Handle old and new manager updates
         if ($oldManager != $manager) {
@@ -819,7 +835,7 @@ class DepartmentController extends Controller
         // Validation rules and error messages
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            'budget.required' => 'مبلغ بدل الحجز مطلوب.',
+            // 'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
@@ -828,11 +844,16 @@ class DepartmentController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'budget' => 'required|numeric|min:0|max:1000000',
+            'budget' => 'nullable|numeric|min:0|max:1000000',
             'part' => 'required',
         ], $messages);
 
         if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+        $allowance = $this->getAllowancedepart($request->budget, $department->id);
+        if (!$allowance->original['is_allow']) {
+            $validator->errors()->add('budget', 'قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total']);
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
@@ -849,17 +870,20 @@ class DepartmentController extends Controller
             $reservation_allowance_type = 1; // Only '1' selected
         } elseif (in_array('2', $part)) {
             $reservation_allowance_type = 2; // Only '2' selected
+        } elseif (in_array('3', $part)) {
+            $reservation_allowance_type = 4; // Only '2' selected
         }
 
         // Handle updating sub-department details
         $department->name = $request->name;
-        $department->sector_id = $request->sector_id;
+        $department->sector_id = $request->sector;
         $department->description = $request->description;
         $department->manger = $manager;
         $department->reservation_allowance_type = $reservation_allowance_type;
-        $department->reservation_allowance_amount = $request->budget;
+        $department->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget;
         $department->created_by = Auth::user()->id;
         $department->save();
+        saveHistory($department->reservation_allowance_amount, $department->sector_id, $department->id);
 
         // Handle old and new manager updates for sub-department
         if ($oldManager != $manager) {

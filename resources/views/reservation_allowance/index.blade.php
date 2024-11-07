@@ -84,7 +84,7 @@
                         <div class="col-2">
                             <p> بدل الحجز</p>
                         </div>
-                        
+
                         <form class="" id="search_employee_allowances">
                             @csrf
                             <div class="row d-flex flex-wrap justify-content-between">
@@ -135,7 +135,7 @@
                                     </a>
                                     {{-- @endif --}}
                                 </div> -->
-                        
+
                     </div>
                     <!-- show_reservation_allowances_info -->
                     <div id="show_reservation_allowances_info" class="col-12"></div>
@@ -162,7 +162,7 @@
                         <table id="users-table" class="display table table-responsive-sm  table-bordered table-hover dataTable">
                             <thead>
                                 <tr>
-                                    <th>الرتيب</th>
+                                    <th>الترتيب</th>
                                     <th>الرتبة</th>
                                     <th>الاسم</th>
                                     <th>رقم الملف</th>
@@ -240,7 +240,7 @@
 
 
             function get_table_data(data_url)
-            {    
+            {
                 var filter = 'all'; // Default filter
                 var sector_id = document.getElementById('sector_id').value;
                 var departement_id = document.getElementById('departement_id').value;
@@ -281,7 +281,7 @@
                         {
                             data: 'employee_allowance_amount',
                             name: 'employee_allowance_amount'
-                        } 
+                        }
                     ],
                     order: [0, 'asc'],
 

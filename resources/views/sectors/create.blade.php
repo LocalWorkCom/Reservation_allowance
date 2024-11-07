@@ -56,12 +56,6 @@
             </nav>
         </div>
     </div>
-    {{-- <div class="row ">
-        <div class="container welcome col-11">
-            <p> القطــــاعات </p>
-        </div>
-    </div> --}}
-    {{-- {{ dd($governments) }} --}}
     <br>
     <form class="edit-grade-form" id="Qta3-form" action=" {{ route('sectors.store') }}" method="POST">
         @csrf
@@ -153,29 +147,35 @@
                 </div>
                 <div class="input-group moftsh px-md-5 px-3 pt-3 ">
                     <label for="" class="col-12">صلاحيه الحجز</label>
-                    <div class="d-flex mt-3 " dir="rtl">
-                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"
+                    <div class="d-flex mt-3" dir="rtl">
+                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="fullBooking"
                             name="part[]" style="height:30px;">
-                        <label for="part" class="col-12"> حجز كلى</label>
-                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="2" id="part"
+                        <label for="fullBooking" class="col-12">حجز كلى</label>
+
+                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="2" id="partialBooking"
                             name="part[]" style="height:30px;">
-                        <label for="part" class="col-12">حجز جزئى</label>
-                        {{-- @error('part')
+                        <label for="partialBooking" class="col-12">حجز جزئى</label>
+
+                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="3" id="noBooking"
+                            name="part[]" style="height:30px;">
+                        <label for="noBooking" class="col-12">لا يوجد حجز</label>
+                    </div>
+                    {{-- @error('part')
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror --}}
-                    </div>
                 </div>
-                <div class="container col-11">
-                    <div class="form-row d-flex justify-content-end mt-4 mb-3">
-                        <button type="submit" class="btn-blue">
-                            <img src="{{ asset('frontend/images/white-add.svg') }}" alt="img" height="20px"
-                                width="20px">
-                            اضافة
-                        </button>
-                    </div>
-                </div>
-
             </div>
+            <div class="container col-11">
+                <div class="form-row d-flex justify-content-end mt-4 mb-3">
+                    <button type="submit" class="btn-blue">
+                        <img src="{{ asset('frontend/images/white-add.svg') }}" alt="img" height="20px"
+                            width="20px">
+                        اضافة
+                    </button>
+                </div>
+            </div>
+
+        </div>
         </div>
     </form>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -188,32 +188,30 @@
         function fetchManagerDetails(managerId, skipDepartmentCheck = true) {
             if (managerId) {
                 sector = null;
-                console.log(skipDepartmentCheck);
                 $.ajax({
-                        url: '/get-manager-sector-details/' + managerId + '/' + sector + '?skipDepartmentCheck=' +
-                            skipDepartmentCheck,
-                        type: 'GET',
-                        success: function(data) {
-                            $('#manager_details').find('span').eq(0).text(data.rank);
-                            $('#manager_details').find('span').eq(1).text(data.seniority);
-                            $('#manager_details').find('span').eq(2).text(data.job_title);
-                            $('#manager_details').find('span').eq(3).text(data.name);
-                            $('#manager_details').find('span').eq(4).text(data.phone);
-                            $('#manager_details').find('span').eq(5).text(data.email);
+                    url: '/get-manager-sector-details/' + managerId + '/' + sector + '?skipDepartmentCheck=' +
+                        skipDepartmentCheck,
+                    type: 'GET',
+                    success: function(data) {
+                        $('#manager_details').find('span').eq(0).text(data.rank);
+                        $('#manager_details').find('span').eq(1).text(data.seniority);
+                        $('#manager_details').find('span').eq(2).text(data.job_title);
+                        $('#manager_details').find('span').eq(3).text(data.name);
+                        $('#manager_details').find('span').eq(4).text(data.phone);
+                        $('#manager_details').find('span').eq(5).text(data.email);
 
-                            $('#manager_details').show();
-                            if (data.isEmployee) {
-                                $('#password_field').show();
-                                $('#rule_field').show();
-                            } else {
-                                $('#password_field').hide();
-                                $('#rule_field').hide();
-                                $('#password').val('');
-                                $('#rule').val('');
-                            }
-                        },
-                        error: function(xhr) {
-                        // Handle different error responses
+                        $('#manager_details').show();
+                        if (data.isEmployee) {
+                            $('#password_field').show();
+                            $('#rule_field').show();
+                        } else {
+                            $('#password_field').hide();
+                            $('#rule_field').hide();
+                            $('#password').val('');
+                            $('#rule').val('');
+                        }
+                    },
+                    error: function(xhr) {
                         if (xhr.status === 404) {
                             Swal.fire({
                                 title: 'تحذير',
@@ -227,18 +225,18 @@
                             }).then((result) => {
                                 if (result.isConfirmed) {
                                     fetchManagerDetails(managerId, false);
-                                $('#password_field').show();
-                                $('#rule_field').show();
-                                $('#password').show();
-                                $('#rule').show();
-                                $('#manager_details').show();
-                                // Populate manager details
-                                $('#manager_details').find('span').eq(0).text(result.rank);
-                                $('#manager_details').find('span').eq(1).text(result.seniority);
-                                $('#manager_details').find('span').eq(2).text(result.job_title);
-                                $('#manager_details').find('span').eq(3).text(result.name);
-                                $('#manager_details').find('span').eq(4).text(result.phone);
-                                $('#manager_details').find('span').eq(5).text(result.email);
+                                    $('#password_field').show();
+                                    $('#rule_field').show();
+                                    $('#password').show();
+                                    $('#rule').show();
+                                    $('#manager_details').show();
+                                    // Populate manager details
+                                    $('#manager_details').find('span').eq(0).text(result.rank);
+                                    $('#manager_details').find('span').eq(1).text(result.seniority);
+                                    $('#manager_details').find('span').eq(2).text(result.job_title);
+                                    $('#manager_details').find('span').eq(3).text(result.name);
+                                    $('#manager_details').find('span').eq(4).text(result.phone);
+                                    $('#manager_details').find('span').eq(5).text(result.email);
 
                                 } else {
                                     // Hide details if user cancels
@@ -260,28 +258,57 @@
                             });
                             $('#mangered').val('');
                         }
-                    }   });
-                }
-                else {
-                    $('#manager_details').hide();
-                    $('#password_field').hide();
-                    $('#rule_field').hide();
-                    $('#password').val('');
-                    $('#rule').val('');
-                }
-            }
-            $('#manager_details').hide();
-            $('#password_field').hide();
-            $('#rule_field').hide();
-            $('#mangered').bind('blur', function() {
-                var managerId = $(this).val();
+                    }
+                });
+            } else {
+                $('#manager_details').hide();
+                $('#password_field').hide();
+                $('#rule_field').hide();
                 $('#password').val('');
                 $('#rule').val('');
-                fetchManagerDetails(managerId, true);
-            });
-            var selectedManagerId = $('#mangered').val();
-            if (selectedManagerId) {
-                fetchManagerDetails(selectedManagerId, true);
             }
+        }
+        $('#manager_details').hide();
+        $('#password_field').hide();
+        $('#rule_field').hide();
+        $('#mangered').bind('blur', function() {
+            var managerId = $(this).val();
+            $('#password').val('');
+            $('#rule').val('');
+            fetchManagerDetails(managerId, true);
+        });
+        var selectedManagerId = $('#mangered').val();
+        if (selectedManagerId) {
+            fetchManagerDetails(selectedManagerId, true);
+        }
     </script>
+    <script>
+        // Select the checkboxes by their IDs
+        const fullBooking = document.getElementById("fullBooking");
+        const partialBooking = document.getElementById("partialBooking");
+        const noBooking = document.getElementById("noBooking");
+
+        // Add an onchange event listener for the "noBooking" checkbox
+        noBooking.addEventListener("change", function() {
+            if (noBooking.checked) {
+                // Uncheck the other checkboxes if "noBooking" is checked
+                fullBooking.checked = false;
+                partialBooking.checked = false;
+            }
+        });
+
+        // Add event listeners for "fullBooking" and "partialBooking" to uncheck "noBooking" if either is checked
+        fullBooking.addEventListener("change", function() {
+            if (fullBooking.checked) {
+                noBooking.checked = false;
+            }
+        });
+
+        partialBooking.addEventListener("change", function() {
+            if (partialBooking.checked) {
+                noBooking.checked = false;
+            }
+        });
+    </script>
+
 @endsection

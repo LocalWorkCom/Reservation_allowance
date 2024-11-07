@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\departements;
 use App\Models\Government;
+use App\Models\history_allawonce;
+use App\Models\ReservationAllowance;
 use App\Models\Rule;
 use App\Models\Sector;
 use App\Models\User;
@@ -67,6 +69,27 @@ class sectorsController extends Controller
             'isEmployee' => $isEmployee,
         ]);
     }
+    public function getAllowance($amount, $sectorId)
+    {
+        $startDate = now()->startOfMonth()->toDateString();
+        $endDate = now()->toDateString();
+
+        $employees = ReservationAllowance::where('sector_id', $sectorId)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->get();
+
+        // Calculate total amount for the specified sector and date range
+        $totalAmount = $employees->sum('amount');
+        $is_allow = $totalAmount < $amount;
+
+        // Return total amount and is_allow status
+        return response()->json([
+            'total' => $totalAmount,
+            'is_allow' => $is_allow
+        ]);
+    }
+
+
 
 
     public function index()
@@ -113,15 +136,7 @@ class sectorsController extends Controller
                 // Check if manager exists before accessing its attributes
                 $LoginInfo = User::find($row->manager);
                 if ($LoginInfo) {
-                    // Check the flag to determine if the manager is an employee
-                    // $is_allow = $manager->flag == 'employee' ? 'لا يسمح بالدخول' : $manager->file_number ;
-                    // $div='<br> اخر تسجيل دخول : ' ;
-                    // $last_login =$manager->last_login ?? 'لم يتم التسجيل بعد';
-                    // // Return the manager's name along with the access permission status
-                    // return $is_allow .''. $div.''. $last_login;
                     $is_allow = $LoginInfo->flag == 'employee' ? 'لا يسمح بالدخول' : $LoginInfo->file_number;
-                    // Return the manager's name along with the access permission status
-                    // $p='<p>'. $is_allow .'</p><p>اخر تسجيل دخول '.$LoginInfo->last_login.'</p>';
                     $p = 'اسم المستخدم :' . $is_allow . ' ــــــــــ ';
                     $p .= 'اخر تسجيل دخول ' . $LoginInfo->last_login . '';
                     return $p;
@@ -134,13 +149,15 @@ class sectorsController extends Controller
                 return $btn;
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
-                return $row->reservation_allowance_amount;
+                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount;
             })
             ->addColumn('reservation_allowance', function ($row) {
                 if ($row->reservation_allowance_type == 1) {
                     return 'حجز كلى';
                 } elseif ($row->reservation_allowance_type == 2) {
                     return 'حجز جزئى';
+                } elseif ($row->reservation_allowance_type == 4) {
+                    return 'لا يوجد حجز';
                 } else {
                     return 'حجز كلى و حجز جزئى';
                 }
@@ -158,45 +175,7 @@ class sectorsController extends Controller
             ->rawColumns(['action', 'departments', 'employees', 'login_info', 'employeesdep'])
             ->make(true);
     }
-    // public function getManagerDetails($id)
-    // {
-    //     // Fetch manager data from the database//file_number
-    //     // $manager = User::where('Civil_number', $id)->first();
-    //     $manager = User::where('file_number', $id)->first();
 
-    //     if (!$manager) {
-    //         return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 405);
-    //     }
-
-    //     // Allow this check only for input change, not for initial load
-    //     $isDepartmentCheck = request()->has('check_department') && request()->get('check_department') == true;
-
-    //     // Check if the manager is assigned to a sector
-    //     if ($isDepartmentCheck) {
-    //         if ($manager->department_id != null || $manager->sector != null) {
-    //             return response()->json(['confirm' => 'عفوا هذا المستخدم لديه قطاع بالفعل. هل أنت متأكد أنك تريد نقل هذا المستخدم إلى قسم آخر؟'], 200);
-    //         }
-    //     }
-
-    //     // Calculate seniority/years of service
-    //     $joiningDate = $manager->joining_date ? Carbon::parse($manager->joining_date) : Carbon::parse($manager->created_at);
-    //     $today = Carbon::now();
-    //     $yearsOfService = $joiningDate->diffInYears($today);
-
-    //     // Check if the user is an employee (flag 'employee' means employee)
-    //     $isEmployee = $manager->flag == 'employee';
-
-    //     // Return the manager data in JSON format
-    //     return response()->json([
-    //         'rank' => $manager->grade_id ? $manager->grade->name : 'لا يوجد رتبه',
-    //         'job_title' => $manager->job_title ?? 'لا يوجد مسمى وظيفى',
-    //         'seniority' => $yearsOfService,
-    //         'name' => $manager->name,
-    //         'phone' => $manager->phone,
-    //         'email' => $manager->email,
-    //         'isEmployee' => $isEmployee,  // Include the employee flag
-    //     ]);
-    // }
 
     public function create()
     {
@@ -205,25 +184,23 @@ class sectorsController extends Controller
         return view('sectors.create', compact('users', 'rules'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(Request $request)
     {
         // Custom error messages for validation
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            'budget.required' => 'مبلغ بدل الحجز مطلوب.',
+            // 'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.00.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
-            'part.required' => 'نوع بدل الحجز مطلوب.',
+             'part.required' => 'نوع بدل الحجز مطلوب.',
         ];
 
         // Validation rules
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'budget' => 'required|numeric|min:0.00|max:1000000',
+            'budget' => 'nullable|numeric|min:0.00|max:1000000',
             'part' => 'required',
         ], $messages);
 
@@ -269,17 +246,20 @@ class sectorsController extends Controller
             $reservation_allowance_type = 1;
         } elseif (in_array('2', $part)) {
             $reservation_allowance_type = 2;
+        } elseif (in_array('3', $part)) {
+            $reservation_allowance_type = 4;
         }
 
         // Create and save new sector
         $sector = new Sector();
         $sector->name = $request->name;
         $sector->reservation_allowance_type = $reservation_allowance_type;
-        $sector->reservation_allowance_amount = $request->budget;
+        $sector->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget;
         $sector->manager = $manager;
         $sector->created_by = Auth::id();
         $sector->updated_by = Auth::id();
         $sector->save();
+        saveHistory($sector->reservation_allowance_amount, $sector->id, $request->department_id);
 
         // Handle updating the manager, if present
         if ($manager) {
@@ -380,15 +360,13 @@ class sectorsController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+
     public function update(Request $request)
     {
         $sector = Sector::find($request->id);
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            'budget.required' => 'مبلغ بدل الحجز مطلوب.',
+            // 'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.00.',
             'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
@@ -398,15 +376,20 @@ class sectorsController extends Controller
         // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'budget' => 'required|numeric|min:0.00|max:1000000',
+            'budget' => 'nullable|numeric|min:0.00|max:1000000',
             'part' => 'required',
         ], $messages);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
+        $allowance = $this->getAllowance($request->budget, $request->id);
 
-        // Retrieve the old manager before updating
+        if (!$allowance->original['is_allow']) {
+            $validator->errors()->add('budget', 'قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total']);
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
         $oldManager = $sector->manager;
         $manager = $request->mangered ? User::where('file_number', $request->mangered)->value('id') : null;
 
@@ -424,15 +407,19 @@ class sectorsController extends Controller
             $reservation_allowance_type = 1;
         } elseif (in_array('2', $part)) {
             $reservation_allowance_type = 2;
+        } elseif (in_array('3', $part)) {
+            $reservation_allowance_type = 4;
         }
 
         // Update sector details
         $sector->name = $request->name;
         $sector->reservation_allowance_type = $reservation_allowance_type;
-        $sector->reservation_allowance_amount = $request->budget;
+        $sector->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget;
         $sector->manager = $manager;
         $sector->updated_by = Auth::id();
         $sector->save();
+        saveHistory($sector->reservation_allowance_amount, $sector->id, $request->department_id);
+
         // Handle old and new manager updates
         if ($oldManager != $manager) {
             // Update old manager's sector to null

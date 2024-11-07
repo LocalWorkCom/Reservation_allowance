@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\history_allawonce;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Groups;
@@ -549,4 +550,15 @@ if (!function_exists('send_push_notification')) {
             ->with($relation)
             ->first();
     }
+}
+
+ function saveHistory($amount, $sectorId, $departmentId)
+{
+    $history_allowance = new history_allawonce();
+    $history_allowance->sector_id = $sectorId;
+    $history_allowance->department_id =  $departmentId ?? null;
+    $history_allowance->amount = $amount;
+    $history_allowance->date = now();
+    $history_allowance->save();
+
 }

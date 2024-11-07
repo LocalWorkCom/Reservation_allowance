@@ -115,14 +115,18 @@
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="">صلاحيه الحجز</label>
                                 <div class="d-flex mt-3" dir="rtl">
-                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="part"
+                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="fullBooking"
                                         name="part[]">
-                                    <label for="part"> حجز كلى</label><input type="checkbox"
-                                        class="toggle-radio-buttons mx-2" value="2" id="part" name="part[]">
-                                    <label for="part">حجز جزئى</label>
-                                    @error('part')
+                                    <label for="fullBooking"> حجز كلى</label>
+                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="2"
+                                        id="partialBooking" name="part[]">
+                                    <label for="partialBooking">حجز جزئى</label>
+                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="3" id="noBooking"
+                                        name="part[]">
+                                    <label for="noBooking">لا يوجد حجز</label>
+                                    {{-- @error('part')
                                         <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
+                                    @enderror --}}
                                 </div>
                             </div>
                             <div class="form-group col-md-10 mx-md-2" id="manager">
@@ -319,5 +323,27 @@
             fetchManagerDetails(selectedManagerId);
         }
     </script>
+    <script>
+        // Select the checkboxes by their IDs
+        const fullBooking = document.getElementById("fullBooking");
+        const partialBooking = document.getElementById("partialBooking");
+        const noBooking = document.getElementById("noBooking");
+        noBooking.addEventListener("change", function() {
+            if (noBooking.checked) {
+                fullBooking.checked = false;
+                partialBooking.checked = false;
+            }
+        });
+        fullBooking.addEventListener("change", function() {
+            if (fullBooking.checked) {
+                noBooking.checked = false;
+            }
+        });
 
+        partialBooking.addEventListener("change", function() {
+            if (partialBooking.checked) {
+                noBooking.checked = false;
+            }
+        });
+    </script>
 @endsection

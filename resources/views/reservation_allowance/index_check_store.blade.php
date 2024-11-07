@@ -114,11 +114,12 @@
                                                 @if(count($departement->children))
                                                     @include('reservation_allowance.manageChildren', [
                                                     'children' => $departement->children,
-                                                    'parent_id' => $departement_id,
+                                                    'parent_id' => $department_id,
                                                     ])
                                                 @endif
                                             @endforeach
                                         @endif
+                                        
                                     </select>
                                 </div>
 
@@ -213,7 +214,7 @@
 
                         @if($employee_not_found)
                         <div class="col-lg-4">
-                            <h4 style="text-align:center">الموظفين ارقام الملفات خطاء</h4>
+                            <h4 style="text-align:center">موظفين ارقام الملفات خطأ</h4>
                             <table class="display table table-responsive-sm  table-bordered table-hover dataTable">
                                 <thead>
                                     <tr>
@@ -232,6 +233,7 @@
                         @endif
 
 
+                        @if(Cache::get(auth()->user()->id."_employee_new_add") != null)
                         <div class="col-lg-12" style="text-align: right">
                             <form method="post" action="{{ route('reservation_allowances.store.all') }}">
                                 @csrf
@@ -243,6 +245,7 @@
                                 <button class="btn-all py-2 px-2" type="button" onclick="history.back()" style="color: #0D992C;">الغاء</button>
                             </from>
                         </div>
+                        @endif
                     </div>
                 </div>
             </div>
