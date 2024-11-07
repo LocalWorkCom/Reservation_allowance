@@ -34,35 +34,69 @@ class ReservationReportController extends Controller
     {
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
-    
-        // Convert dates to Carbon instances
+        
+        if (!$startDate || !$endDate) {
+            return response()->json([
+                'data' => [],
+                'totalSectors' => 0,
+                'totalDepartments' => 0,
+                'totalUsers' => 0,
+                'totalAmount' => '0 د.ك'
+            ]);
+        }
+
         $start = Carbon::parse($startDate)->startOfDay();
         $end = Carbon::parse($endDate)->endOfDay();
-    
-        // Query to group by department and calculate totals
+
+        // Group data by sector within the selected date range
         $query = ReservationAllowance::whereBetween('date', [$start, $end])
-            ->whereNotNull('departement_id') // Exclude records with NULL department_id
-            ->selectRaw('departement_id, SUM(amount) as total_amount, COUNT(DISTINCT user_id) as user_count')
-            ->groupBy('departement_id');
-    
+            ->selectRaw('sector_id, COUNT(DISTINCT user_id) as user_count, SUM(amount) as total_amount')
+            ->groupBy('sector_id')
+            ->having('total_amount', '>', 0);
+
+        // Prepare DataTable
         $data = DataTables::of($query)
             ->addIndexColumn()
-            ->addColumn('department_name', function ($row) {
-                return departements::find($row->departement_id)->name ?? 'N/A';
+            ->addColumn('sector_name', function ($row) {
+                return Sector::find($row->sector_id)->name ?? 'N/A';
+            })
+            ->addColumn('main_departments_count', function ($row) {
+                return departements::where('sector_id', $row->sector_id)
+                    ->whereNull('parent_id')
+                    ->count();
+            })
+            ->addColumn('sub_departments_count', function ($row) {
+                $mainDepartments = departements::where('sector_id', $row->sector_id)
+                    ->whereNull('parent_id')
+                    ->pluck('id');
+
+                return departements::where('sector_id', $row->sector_id)
+                    ->whereIn('parent_id', $mainDepartments)
+                    ->count();
+            })
+            ->addColumn('employee_count', function ($row) {
+                return $row->user_count;
+            })
+            ->addColumn('total_amount', function ($row) {
+                return number_format($row->total_amount, 2) . ' د.ك';
             })
             ->make(true);
-    
-        // Calculating distinct department count and other totals
-        $totalDepartments = $query->distinct('departement_id')->count('departement_id'); // Ensuring unique departments
+
+        // Calculate summary data
+        $totalSectors = $query->count(); // Number of sectors with reservations in the selected date range
+        $totalDepartments = departements::whereIn('sector_id', $query->pluck('sector_id'))
+            ->distinct()
+            ->count();
         $totalUsers = $query->get()->sum('user_count');
-        $totalAmount = number_format($query->get()->sum('total_amount'));
-    
+        $totalAmount = number_format($query->get()->sum('total_amount'), 2) . ' د.ك';
+
         // Adding totals to the JSON response
         $response = $data->getData(true);
+        $response['totalSectors'] = $totalSectors;
         $response['totalDepartments'] = $totalDepartments;
         $response['totalUsers'] = $totalUsers;
         $response['totalAmount'] = $totalAmount;
-    
+
         return response()->json($response);
     }
     
@@ -71,23 +105,39 @@ class ReservationReportController extends Controller
         $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
         $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
     
-        // Get department data within the selected date range
+        // Get data grouped by sector within the selected date range
         $data = ReservationAllowance::whereBetween('date', [$startDate, $endDate])
-            ->whereNotNull('departement_id') // Exclude records with NULL department_id
-            ->selectRaw('departement_id, SUM(amount) as total_amount, COUNT(DISTINCT user_id) as user_count')
-            ->groupBy('departement_id')
+            ->selectRaw('sector_id, COUNT(DISTINCT user_id) as user_count, SUM(amount) as total_amount')
+            ->groupBy('sector_id')
+            ->having('total_amount', '>', 0)
             ->get()
             ->map(function ($item) {
-                // Find and add department name to each item
-                $item->department_name = departements::find($item->departement_id)->name ?? 'N/A';
+                // Add sector name, main and sub-departments count
+                $item->sector_name = Sector::find($item->sector_id)->name ?? 'N/A';
+    
+                // Count main departments
+                $mainDepartments = departements::where('sector_id', $item->sector_id)
+                    ->whereNull('parent_id')
+                    ->get();
+                $item->main_departments_count = $mainDepartments->count();
+    
+                // Count sub-departments
+                $item->sub_departments_count = departements::where('sector_id', $item->sector_id)
+                    ->whereIn('parent_id', $mainDepartments->pluck('id'))
+                    ->count();
+    
                 return $item;
             });
     
-        $totalDepartments = $data->count();
+        $totalSectors = $data->count();
+        $totalDepartments = departements::whereIn('sector_id', $data->pluck('sector_id'))
+            ->distinct()
+            ->count();
         $totalUsers = $data->sum('user_count');
         $totalAmount = number_format($data->sum('total_amount'), 2) . ' د.ك';
     
-        // Generate the PDF content
+        
+        // Pass data to the Blade template
         $pdf = new TCPDF();
         $pdf->SetCreator('Your App');
         $pdf->SetTitle('تقارير بدل حجز');
@@ -95,11 +145,18 @@ class ReservationReportController extends Controller
         $pdf->setRTL(true);
         $pdf->SetFont('dejavusans', '', 12);
     
-        $html = view('reserv_report.pdf', compact('data', 'totalDepartments', 'totalUsers', 'totalAmount', 'startDate', 'endDate'))->render();
+        // Render HTML content with Blade view
+        $html = view('reserv_report.pdf', compact(
+            'data', 'totalSectors', 'totalDepartments', 'totalUsers', 'totalAmount', 'startDate', 'endDate'
+        ))->render();
+        
         $pdf->writeHTML($html, true, false, true, false, '');
     
-        return $pdf->Output('reservation_report.pdf', 'I');
+        return $pdf->Output('reserv_report.pdf', 'I');
     }
+    
+    
+
     
 public function showDepartmentDetails(Request $request, $departmentId)
 {
@@ -172,5 +229,78 @@ public function printDepartmentDetails(Request $request, $departmentId)
 
     return $pdf->Output("department_details_report_{$department->name}.pdf", 'I');
 }
+
+public function showSectorDetails(Request $request, $sectorId)
+{
+    $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
+    $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
+
+    $sector = Sector::find($sectorId);
+    $employees = ReservationAllowance::where('sector_id', $sectorId)
+        ->whereBetween('date', [$startDate, $endDate])
+        ->with('user.grade')
+        ->get()
+        ->groupBy('user_id')
+        ->map(function ($entries) {
+            $totalAmount = $entries->sum('amount');
+            $totalDays = $entries->count();
+            return [
+                'user' => $entries->first()->user,
+                'total_days' => $totalDays,
+                'total_amount' => $totalAmount,
+            ];
+        });
+
+    return view('reserv_report.sector_details', compact('sector', 'employees', 'startDate', 'endDate'));
+}
+
+public function getSectorDetailsData(Request $request, $sectorId)
+{
+    $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
+    $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
+
+    $reservations = ReservationAllowance::where('sector_id', $sectorId)
+        ->whereBetween('date', [$startDate, $endDate])
+        ->with('user') // Ensure 'user' relationship is loaded
+        ->get();
+
+    return DataTables::of($reservations)
+        ->addIndexColumn()
+        ->addColumn('day', fn($row) => Carbon::parse($row->date)->translatedFormat('l'))
+        ->addColumn('date', fn($row) => Carbon::parse($row->date)->format('Y-m-d'))
+        ->addColumn('name', fn($row) => optional($row->user)->name ?? 'Unknown') 
+        ->addColumn('department', fn($row) => optional($row->user->department)->name ?? 'N/A')
+        ->addColumn('type', fn($row) => $row->type == 1 ? 'حجز كلي' : 'حجز جزئي')
+        ->addColumn('amount', fn($row) => number_format($row->amount, 2) . ' د ك')
+        ->make(true);
+}
+
+public function printSectorDetails(Request $request, $sectorId)
+{
+    $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
+    $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
+
+    // Fetch data for the selected sector and date range
+    $sector = Sector::find($sectorId);
+    $reservations = ReservationAllowance::where('sector_id', $sectorId)
+        ->whereBetween('date', [$startDate, $endDate])
+        ->with('user')
+        ->get();
+
+    // Prepare the PDF data
+    $pdf = new TCPDF();
+    $pdf->SetCreator('Your App');
+    $pdf->SetTitle("تفاصيل بدل حجز لموظفي قطاع {$sector->name}");
+    $pdf->AddPage();
+    $pdf->setRTL(true);
+    $pdf->SetFont('dejavusans', '', 12);
+
+    // Pass the data to a view and render it as HTML for the PDF
+    $html = view('reserv_report.sector_details_pdf', compact('reservations', 'sector', 'startDate', 'endDate'))->render();
+    $pdf->writeHTML($html, true, false, true, false, '');
+
+    return $pdf->Output("sector_details_report_{$sector->name}.pdf", 'I');
+}
+
     
 }
