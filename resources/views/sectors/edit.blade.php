@@ -88,7 +88,7 @@
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager">
                     <label for="mangered">رقم ملف المدير</label>
                     <input type="text" name="mangered" id="mangered" class="form-control"
-                        value="{{ old('mangered', $data->manager ? $data->manager_name->file_number : null) }}"
+                        value="{{ old('mangered', $data->manager ? $fileNumber : null) }}"
                         autocomplete="one-time-code">
                     @error('mangered')
                         <div class="alert alert-danger">{{ $message }}</div>
