@@ -35,7 +35,7 @@
                         </tr>
                         <tr >
                             <th scope="row">مدير القطاع</th>
-                            <td>{{ $data->manager ? $data->manager_name->name : 'لا يوجد مدير' }}</td>
+                            <td>{{ $data->manager ? $managerName : 'لا يوجد مدير' }}</td>
                         </tr>
                         <tr >
                             <th scope="row">ميزانية البدل</th>

@@ -18,7 +18,7 @@ class departements extends Model
         'description',
         'parent_id'
     ];
-
+    // protected $appends = ['hash_id'];
    
     public function employees()
     {
@@ -96,4 +96,9 @@ class departements extends Model
 
         return $children;
     }
+
+    // public function getHashIdAttribute()
+    // {
+    //     return md5($this->id);
+    // }
 }

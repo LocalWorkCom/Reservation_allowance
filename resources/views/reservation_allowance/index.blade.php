@@ -162,7 +162,7 @@
                         <table id="users-table" class="display table table-responsive-sm  table-bordered table-hover dataTable">
                             <thead>
                                 <tr>
-                                    <th>الرتيب</th>
+                                    <th>الترتيب</th>
                                     <th>الرتبة</th>
                                     <th>الاسم</th>
                                     <th>رقم الملف</th>

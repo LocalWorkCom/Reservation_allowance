@@ -21,6 +21,8 @@ use Illuminate\Support\Facades\Storage;
 use Google\Client as GoogleClient;
 use App\Mail\SendEmail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 if (!function_exists('whats_send')) {
     function whats_send($mobile, $message, $country_code)
@@ -252,9 +254,9 @@ function showUserDepartment()
     // Access the department name
     // dd($user->department);
     $name = 'القسم الرئيسي';
-    if($user->sectors == null && $user->department_id == null){
+    if ($user->sectors == null && $user->department_id == null) {
         $name = 'القسم الرئيسي';
-    }else{
+    } else {
         if ($user->sectors && ! $user->department) {
             $name = $user->sectors != null ? ($user->sectors->name != null ? $user->sectors->name : 'القسم الرئيسي') : '';
         } else {
@@ -523,6 +525,30 @@ if (!function_exists('send_push_notification')) {
         // dd($response);
         $err = curl_error($ch);
         curl_close($ch);
+    }
+
+    function get_by_md5_id($id, $table)
+    {
+        // Hash the input ID with MD5
+        //$hashedId = md5($id);
+        Log::info('Searching for MD5 ID:', ['id' => $id, 'table' => $table]);
+
+        // Query the specified table where the MD5 hash of the ID column matches the hashed ID
+        return DB::table($table)
+            ->where(DB::raw('MD5(id)'), $id)
+            ->first();
+    }
+
+    function get_by_md5_id_relation($id, $table, $relation = array())
+    {
+        // Hash the input ID with MD5
+        //$hashedId = md5($id);
+
+        // Query the specified table where the MD5 hash of the ID column matches the hashed ID
+        return DB::table($table)
+            ->where(DB::raw('MD5(id)'), $id)
+            ->with($relation)
+            ->first();
     }
 }
 
