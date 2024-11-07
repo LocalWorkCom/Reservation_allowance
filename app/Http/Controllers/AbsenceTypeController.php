@@ -76,7 +76,8 @@ class AbsenceTypeController extends Controller
      */
     public function edit($id)
     {
-        $data = AbsenceType::find($id);
+        $data = get_by_md5_id($id, 'absence_types');
+        // $data = AbsenceType::find($id);
         if ($data) {
             return response()->json(['success' => true, 'data' => $data]);
         } else {

@@ -175,7 +175,7 @@
                 targets: -1,
                 render: function(data, type, row) {
                     return `
-                        <a href="#" class="btn btn-sm" style="background-color: #F7AF15;" onclick="openEditModal('${row.id}', '${row.name}')"> <i class="fa fa-edit"></i> تعديل </a>
+                        <a href="#" class="btn btn-sm" style="background-color: #F7AF15;" onclick="openEditModal('${row.hash_id}', '${row.name}')"> <i class="fa fa-edit"></i> تعديل </a>
 
                      `;
                 }

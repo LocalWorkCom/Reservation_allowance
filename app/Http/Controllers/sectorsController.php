@@ -16,6 +16,8 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use RealRashid\SweetAlert\Facades\Alert;
+use Hashids\Hashids;
+use Illuminate\Support\Facades\Log;
 
 class sectorsController extends Controller
 {
@@ -84,12 +86,13 @@ class sectorsController extends Controller
         } elseif (Auth::user()->rule->id == 4) {
             $data = Sector::where('id', auth()->user()->sector);
         }
+
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
-                $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;" href=' . route('sectors.edit', $row->id) . '><i class="fa fa-edit"></i> تعديل</a>';
-                $add_permission = '<a class="btn btn-sm" style="background-color: #bb5207;" href="' .  route('department.create', ['id' => $row->id]) . '"><i class="fa fa-plus"></i> أضافة أداره</a>';
-                $reservationAllowence = '<a class="btn btn-sm" style="background-color: #1d88a1;" href=' . route('reservation_allowances.search_employee_new', 'sector_id=' . $row->id) . '><i class="fa fa-plus"></i> اضافة بدل حجز جماعى</a>';
-                $show_permission = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('sectors.show', $row->id) . '> <i class="fa fa-eye"></i>عرض</a>';
+                $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;" href=' . route('sectors.edit', $row->hash_id) . '><i class="fa fa-edit"></i> تعديل</a>';
+                $add_permission = '<a class="btn btn-sm" style="background-color: #bb5207;" href="' .  route('department.create', ['id' => $row->hash_id]) . '"><i class="fa fa-plus"></i> أضافة أداره</a>';
+                $reservationAllowence = '<a class="btn btn-sm" style="background-color: #1d88a1;" href=' . route('reservation_allowances.search_employee_new', 'sector_id=' . $row->hash_id) . '><i class="fa fa-plus"></i> اضافة بدل حجز جماعى</a>';
+                $show_permission = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('sectors.show', $row->hash_id) . '> <i class="fa fa-eye"></i>عرض</a>';
                 // $addbadal_permission = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('sectors.show', $row->id) . '> <i class="fa fa-plus"></i>أضافه بدل</a>';
 
                 return $show_permission . ' ' . $edit_permission . '' . $add_permission; //$reservationAllowence;
@@ -97,6 +100,7 @@ class sectorsController extends Controller
             ->addColumn('manager_name', function ($row) {
                 // Check if manager exists before accessing its attributes
                 $manager = User::find($row->manager);
+                // $manager = User::find($row->manager);
                 if ($manager) {
                     // Check the flag to determine if the manager is an employee
                     $is_allow = $manager->flag == 'employee' ? 'لا يسمح بالدخول' : 'يسمح بالدخول';
@@ -346,10 +350,13 @@ class sectorsController extends Controller
      */
     public function show(string $id)
     {
-        $data = Sector::find($id);
-        $users = User::where('department_id', null)->whereNot('id', $data->manager)->Where('sector', $id)->get();
+        $data = get_by_md5_id($id, 'sectors');
+        $manager = User::find($data->manager);
+        $managerName = $manager->name ?? 'لا يوجد مدير';
+        // $data = Sector::find($id);
+        $users = User::where('department_id', null)->whereNot('id', $data->manager ?? null)->Where('sector', $data->id)->get();
         $departments = departements::where('sector_id', $id)->get();
-        return view('sectors.showdetails', compact('data', 'users', 'departments'));
+        return view('sectors.showdetails', compact('data', 'managerName', 'users', 'departments'));
     }
 
     /**
@@ -357,16 +364,19 @@ class sectorsController extends Controller
      */
     public function edit(string $id)
     {
-        // Find the sector being edited
-        $data = Sector::findOrFail($id);
+        // $data = Sector::findOrFail($id);
+        $data = get_by_md5_id($id, 'sectors');
         $users = User::where('department_id', null)->where('sector', null)->orWhere('sector', $id)->get();
         $employees =  User::where('department_id', null)->Where('sector', $id)->whereNot('id', $data->manager)->get();
         $rules = Rule::whereNotIn('id', [1, 2, 3])->get();
+        $manager = User::find($data->manager);
+        $fileNumber = $manager->file_number ?? null;
         return view('sectors.edit', [
             'data' => $data,
             'users' => $users,
             'employees' => $employees,
-            'rules' => $rules
+            'rules' => $rules,
+            'fileNumber' => $fileNumber
         ]);
     }
 
