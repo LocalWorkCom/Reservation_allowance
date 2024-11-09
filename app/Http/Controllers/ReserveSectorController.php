@@ -29,25 +29,14 @@ class ReserveSectorController extends Controller
     public function getAll(Request $request)
     {
         try {
-            // Log before attempting to fetch sectors
-            Log::info('Attempting to fetch sectors data.');
-    
-            // Fetch all sectors
-            $sectors = Sector::orderBy('name', 'asc')->get();
-    
-            // Log the number of sectors fetched
-            Log::info('Number of sectors found: ' . $sectors->count());
-    
-            if ($sectors->isEmpty()) {
-                Log::warning('No sectors found in the database.');
-            }
-    
             $month = $request->input('month');
             $year = $request->input('year');
     
+            $sectors = Sector::orderBy('name', 'asc')->get();
+    
             return DataTables::of($sectors)
                 ->addIndexColumn()
-                ->addColumn('sector', fn($row) => $row->name) // Sector name
+                ->addColumn('sector', fn($row) => $row->name)
                 ->addColumn('main_departments_count', function ($row) {
                     return departements::where('sector_id', $row->id)
                         ->whereNull('parent_id')
@@ -59,7 +48,6 @@ class ReserveSectorController extends Controller
                         ->count();
                 })
                 ->addColumn('reservation_allowance_budget', function ($row) use ($month, $year) {
-                    //  if  sector's reservation_allowance_amount is 0 ->> open allowance)
                     if ($row->reservation_allowance_amount == 0) {
                         return "ميزانية مفتوحه";
                     }
@@ -72,18 +60,24 @@ class ReserveSectorController extends Controller
     
                     return number_format($amount, 2) . ' د.ك';
                 })
-                ->addColumn('registered_amount', function ($row) {
-                    $sum = ReservationAllowance::where('sector_id', $row->id)->sum('amount');
+                ->addColumn('registered_amount', function ($row) use ($month, $year) {
+                    $sum = ReservationAllowance::where('sector_id', $row->id)
+                        ->whereYear('date', $year)
+                        ->whereMonth('date', $month)
+                        ->sum('amount');
+    
                     return number_format($sum, 2) . " د.ك";
                 })
                 ->addColumn('remaining_amount', function ($row) use ($month, $year) {
-                    // If  reservation_allowance_amount is 0,
                     if ($row->reservation_allowance_amount == 0) {
                         return "-";
                     }
     
-                    //  calculate the remaining amount
-                    $registeredAmount = ReservationAllowance::where('sector_id', $row->id)->sum('amount');
+                    $registeredAmount = ReservationAllowance::where('sector_id', $row->id)
+                        ->whereYear('date', $year)
+                        ->whereMonth('date', $month)
+                        ->sum('amount');
+    
                     $historicalAmount = DB::table('history_allawonces')
                         ->where('sector_id', $row->id)
                         ->whereYear('date', $year)
@@ -96,16 +90,21 @@ class ReserveSectorController extends Controller
                 ->addColumn('employees_count', function ($row) {
                     return User::where('sector', $row->id)->count();
                 })
-                ->addColumn('received_allowance_count', function ($row) {
+                ->addColumn('received_allowance_count', function ($row) use ($month, $year) {
                     return ReservationAllowance::where('sector_id', $row->id)
+                        ->whereYear('date', $year)
+                        ->whereMonth('date', $month)
                         ->distinct('user_id')
                         ->count('user_id');
                 })
-                ->addColumn('did_not_receive_allowance_count', function ($row) {
+                ->addColumn('did_not_receive_allowance_count', function ($row) use ($month, $year) {
                     $employeesCount = User::where('sector', $row->id)->count();
                     $receivedAllowanceCount = ReservationAllowance::where('sector_id', $row->id)
+                        ->whereYear('date', $year)
+                        ->whereMonth('date', $month)
                         ->distinct('user_id')
                         ->count('user_id');
+    
                     return $employeesCount - $receivedAllowanceCount;
                 })
                 ->make(true);

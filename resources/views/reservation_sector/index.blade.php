@@ -26,7 +26,7 @@
         <div class="col-lg-12">
             <div class="bg-white">
                 <!-- Month and Year Selection Form -->
-                <form id="filter-form" class="d-flex align-items-center mb-4" method="get" action="{{ route('Reserv_statistic_sector.getAll') }}">
+                <form id="filter-form" class="d-flex align-items-center mb-4">
                     <label for="month-select" class="me-2">الشهر:</label>
                     <select id="month-select" name="month" class="form-select me-3">
                         @for ($m = 1; $m <= 12; $m++)
@@ -76,6 +76,7 @@
             const table = $('#users-table').DataTable({
                 processing: true,
                 serverSide: true,
+                deferLoading: 0, 
                 ajax: {
                     url: '{{ route('Reserv_statistic_sector.getAll') }}',
                     data: function(d) {
@@ -96,7 +97,8 @@
                     { data: 'employees_count', name: 'employees_count' },
                     { data: 'received_allowance_count', name: 'received_allowance_count' , render: function (data, type, row) {
                             return '<a href="/sector-employees/' + row.id + '" style="color:blue !important;">' + data + '</a>';
-                        }},                    { data: 'did_not_receive_allowance_count', name: 'did_not_receive_allowance_count' }
+                        }},
+                    { data: 'did_not_receive_allowance_count', name: 'did_not_receive_allowance_count' }
                 ],
                 order: [[1, 'asc']],
                 language: {
