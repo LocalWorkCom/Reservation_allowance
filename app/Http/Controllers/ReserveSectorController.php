@@ -26,7 +26,7 @@ class ReserveSectorController extends Controller
         }
     }
 
-    public function getAll()
+    public function getAll(Request $request)
     {
         try {
             // Log before attempting to fetch sectors
@@ -42,6 +42,9 @@ class ReserveSectorController extends Controller
                 Log::warning('No sectors found in the database.');
             }
     
+            $month = $request->input('month');
+            $year = $request->input('year');
+    
             return DataTables::of($sectors)
                 ->addIndexColumn()
                 ->addColumn('sector', fn($row) => $row->name) // Sector name
@@ -55,17 +58,39 @@ class ReserveSectorController extends Controller
                         ->whereNotNull('parent_id')
                         ->count();
                 })
-                ->addColumn('reservation_allowance_budget', function ($row) {
-                    $amount = number_format($row->reservation_allowance_amount, 2);
-                    return "$amount د.ك";
+                ->addColumn('reservation_allowance_budget', function ($row) use ($month, $year) {
+                    //  if  sector's reservation_allowance_amount is 0 ->> open allowance)
+                    if ($row->reservation_allowance_amount == 0) {
+                        return "ميزانية مفتوحه";
+                    }
+    
+                    $amount = DB::table('history_allawonces')
+                        ->where('sector_id', $row->id)
+                        ->whereYear('date', $year)
+                        ->whereMonth('date', $month)
+                        ->value('amount');
+    
+                    return number_format($amount, 2) . ' د.ك';
                 })
                 ->addColumn('registered_amount', function ($row) {
                     $sum = ReservationAllowance::where('sector_id', $row->id)->sum('amount');
                     return number_format($sum, 2) . " د.ك";
                 })
-                ->addColumn('remaining_amount', function ($row) {
+                ->addColumn('remaining_amount', function ($row) use ($month, $year) {
+                    // If  reservation_allowance_amount is 0,
+                    if ($row->reservation_allowance_amount == 0) {
+                        return "-";
+                    }
+    
+                    //  calculate the remaining amount
                     $registeredAmount = ReservationAllowance::where('sector_id', $row->id)->sum('amount');
-                    $remainingAmount = $row->reservation_allowance_amount - $registeredAmount;
+                    $historicalAmount = DB::table('history_allawonces')
+                        ->where('sector_id', $row->id)
+                        ->whereYear('date', $year)
+                        ->whereMonth('date', $month)
+                        ->value('amount');
+    
+                    $remainingAmount = $historicalAmount - $registeredAmount;
                     return number_format($remainingAmount, 2) . " د.ك";
                 })
                 ->addColumn('employees_count', function ($row) {
@@ -96,6 +121,9 @@ class ReserveSectorController extends Controller
             ]);
         }
     }
+    
+    
+    
     
 }
 
