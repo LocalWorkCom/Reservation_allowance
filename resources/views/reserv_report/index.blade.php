@@ -122,8 +122,15 @@
         return `<a href="/reservation_report/sector/${row.sector_id}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:blue !important;">${data}</a>`;
     }
 },
-            { data: 'main_departments_count', name: 'main_departments_count', searchable: true },
-            { data: 'sub_departments_count', name: 'sub_departments_count', searchable: true },
+
+       { data: 'main_departments_count',
+        name: 'main_departments_count',
+        render: function(data, type, row) {
+            return `<a href="/reservation_report/sector/${row.sector_id}/departments?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:blue !important;">${data}</a>`;
+        }},
+            { data: 'sub_departments_count', name: 'sub_departments_count', searchable: true ,render: function(data, type, row) {
+            return `<a href="/reservation_report/sector/${row.sector_id}/departments?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:blue !important;">${data}</a>`;
+        }},
             { 
     data: 'employee_count', 
     name: 'employee_count',
