@@ -86,7 +86,7 @@ class DepartmentController extends Controller
                     case 2:
                         return 'حجز جزئى';
                     case 4:
-                        return 'لا يوجد حجز';
+                        return 'لا يوجد بدل حجز';
                     default:
                         return 'حجز كلى و حجز جزئى';
                 }
@@ -261,7 +261,7 @@ class DepartmentController extends Controller
                 return match ((int) $row->reservation_allowance_type) {
                     1 => 'حجز كلى',
                     2 => 'حجز جزئى',
-                    4 => 'لا يوجد حجز',
+                    4 => 'لا يوجد بدل حجز',
                     3 => 'حجز كلى و حجز جزئى',
                     default => 'غير معروف',
                 };

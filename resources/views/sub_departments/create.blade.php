@@ -145,7 +145,7 @@
                                     <label for="part">حجز جزئى</label>
                                     <input type="checkbox" class="toggle-radio-buttons mx-2" value="2" id="noBooking"
                                         name="part[]">
-                                    <label for="noBooking">لا يوجد حجز</label>
+                                    <label for="noBooking">لا يوجد بدل حجز</label>
                                     {{-- @error('part')
                                         <div class="alert alert-danger">{{ $message }}</div>
                                     @enderror --}}
