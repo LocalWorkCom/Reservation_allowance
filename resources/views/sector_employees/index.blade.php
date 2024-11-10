@@ -9,10 +9,11 @@
     }
  
     .index-column { width: 5% !important; }
-    .name-column { width: 15% !important; }
+    .name-column { width: 10% !important; }
     .grade-column { width: 10% !important; }
     .days-column { width: 35% !important; }
-    .allowance-column { width: 35% !important; }
+    .department-column { width: 10% !important; }
+    .allowance-column { width: 40% !important; }
 </style>
 
 @extends('layout.main')
@@ -34,9 +35,10 @@
             <!-- Display the sector name dynamically -->
             <p>تفاصيل بدل حجز لموظفين قطاع {{ $sectorName }}</p>
             <!-- Print Button -->
-            <button type="button" class="btn btn-primary" onclick="printSectorReport()" style="background-color: #274373; color: white;">
-                طباعة التقرير
-            </button>           
+    
+
+            <button id="print-report" class="btn btn-primary">طباعة</button>
+
         </div>
     </div>
 </div>
@@ -57,6 +59,7 @@
                                 <th class="index-column">الترتيب</th>
                                 <th class="name-column">الاسم</th>
                                 <th class="grade-column">الرتبه</th>
+                                <th class="department-column">الادارة</th>
                                 <th class="days-column">الايام</th>
                                 <th class="allowance-column">بدل الحجز</th>
                             </tr>
@@ -85,6 +88,7 @@
                 { data: null, name: 'order', orderable: false, searchable: false },
                 { data: 'name', name: 'name' },
                 { data: 'grade', name: 'grade' },
+                { data: 'department', name: 'department' }, 
                 { data: 'days', name: 'days' },
                 { data: 'allowance', name: 'allowance' },
             ],
@@ -117,9 +121,22 @@
         });
     });
 
-    function printSectorReport() {
-        window.open('{{ route("sectorEmployees.printReport", $sectorId) }}', '_blank');
+    $('#print-report').click(function() {
+    const month = $('#month-select').val();
+    const year = $('#year-select').val();
+    
+    if (!month || !year) {
+        alert('Please select both month and year.');
+        return;
     }
+
+    const url = `{{ route('sectorEmployees.printReport', ['sectorId' => $sectorId]) }}?month=${month}&year=${year}`;
+    window.open(url, '_blank');
+});
+
+
+
+
 </script>
 @endpush
 @endsection
