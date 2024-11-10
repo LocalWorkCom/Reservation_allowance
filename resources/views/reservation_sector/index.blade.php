@@ -95,9 +95,16 @@
                     { data: 'registered_amount', name: 'registered_amount' },
                     { data: 'remaining_amount', name: 'remaining_amount' },
                     { data: 'employees_count', name: 'employees_count' },
-                    { data: 'received_allowance_count', name: 'received_allowance_count' , render: function (data, type, row) {
-                            return '<a href="/sector-employees/' + row.id + '" style="color:blue !important;">' + data + '</a>';
-                        }},
+                    { 
+                        data: 'received_allowance_count', 
+                        name: 'received_allowance_count', 
+                        render: function (data, type, row) {
+                            const month = $('#month-select').val();
+                            const year = $('#year-select').val();
+                            return `<a href="/sector-employees/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                        },
+                    },
+
                     { data: 'did_not_receive_allowance_count', name: 'did_not_receive_allowance_count' }
                 ],
                 order: [[1, 'asc']],

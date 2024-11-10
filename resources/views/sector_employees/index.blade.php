@@ -74,7 +74,13 @@
         $('#users-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: '{{ route('sectorEmployees.getData', $sectorId) }}',
+            ajax: {
+        url: '{{ route('sectorEmployees.getData', ['sectorId' => $sectorId]) }}',
+        data: function(d) {
+            d.month = '{{ $month }}';
+            d.year = '{{ $year }}';
+        }
+    },
             columns: [
                 { data: null, name: 'order', orderable: false, searchable: false },
                 { data: 'name', name: 'name' },

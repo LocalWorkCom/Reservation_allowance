@@ -17,79 +17,119 @@ use Illuminate\Support\Facades\Log;
 
 class SectorEmployeesDetailsController extends Controller
 {
-        // When clicking on "no of reserved employee" in sectors static
-    public function index($sectorId)
+    public function index(Request $request, $sectorId)
     {
         if (auth()->check() && auth()->user()->rule_id == 2) {
             $sector = Sector::find($sectorId);
-
+            $month = $request->input('month');
+            $year = $request->input('year');
+    
             return view('sector_employees.index', [
                 'sectorId' => $sectorId,
-                'sectorName' => $sector ? $sector->name : 'Unknown Sector'
+                'sectorName' => $sector ? $sector->name : 'Unknown Sector',
+                'month' => $month,
+                'year' => $year,
             ]);
         } else {
             return abort(403, 'Unauthorized action.');
         }
     }
-public function getData($sectorId)
-{
-    // Get unique users from ReservationAllowance based on sector ID
-    $employees = User::whereIn('id', function ($query) use ($sectorId) {
-        $query->select('user_id')
-              ->from('reservation_allowances')
-              ->where('sector_id', $sectorId);
-    })->with('grade')->get();
-
-    return DataTables::of($employees)
-        ->addColumn('name', fn($user) => $user->name)
-        ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
-        ->addColumn('days', function ($user) use ($sectorId) {
-            $fullDays = ReservationAllowance::where('user_id', $user->id)
-                        ->where('sector_id', $sectorId)
-                        ->where('type', 1)
-                        ->count();
-
-            $partialDays = ReservationAllowance::where('user_id', $user->id)
-                           ->where('sector_id', $sectorId)
-                           ->where('type', 2)
-                           ->count();
-
-            $totalDays = $fullDays + $partialDays;
-            return "كلي: $fullDays | جزئي: $partialDays | مجموع: $totalDays";
-        })
-        ->addColumn('allowance', function ($user) use ($sectorId) {
-            $fullAllowance = ReservationAllowance::where('user_id', $user->id)
-                             ->where('sector_id', $sectorId)
-                             ->where('type', 1)
-                             ->sum('amount');
-
-            $partialAllowance = ReservationAllowance::where('user_id', $user->id)
-                                ->where('sector_id', $sectorId)
-                                ->where('type', 2)
-                                ->sum('amount');
-
-            $totalAllowance = $fullAllowance + $partialAllowance;
-            return "كلي: " . number_format($fullAllowance, 2) . " د.ك | جزئي: " . number_format($partialAllowance, 2) . " د.ك | مجموع: " . number_format($totalAllowance, 2) . " د.ك";
-        })
-        ->addIndexColumn()
-        ->make(true);
-}
-
-
-    public function printReport($sectorId)
+    
+    public function getData(Request $request, $sectorId)
     {
-        // Fetch the sector details
+        $month = $request->input('month');
+        $year = $request->input('year');
+    
+        $employees = User::whereIn('id', function ($query) use ($sectorId, $month, $year) {
+            $query->select('user_id')
+                  ->from('reservation_allowances')
+                  ->where('sector_id', $sectorId)
+                  ->whereYear('date', $year)
+                  ->whereMonth('date', $month);
+        })->with('grade')
+          ->orderBy(function ($query) {
+              $query->select('name')
+                    ->from('grades')
+                    ->whereColumn('grades.id', 'users.grade_id');
+          })
+          ->get();
+    
+        return DataTables::of($employees)
+            ->addColumn('name', fn($user) => $user->name)
+            ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
+            ->addColumn('days', function ($user) use ($sectorId, $month, $year) {
+                $fullDays = ReservationAllowance::where('user_id', $user->id)
+                            ->where('sector_id', $sectorId)
+                            ->where('type', 1)
+                            ->whereYear('date', $year)
+                            ->whereMonth('date', $month)
+                            ->count();
+    
+                $partialDays = ReservationAllowance::where('user_id', $user->id)
+                               ->where('sector_id', $sectorId)
+                               ->where('type', 2)
+                               ->whereYear('date', $year)
+                               ->whereMonth('date', $month)
+                               ->count();
+    
+                return "كلي: $fullDays | جزئي: $partialDays | مجموع: " . ($fullDays + $partialDays);
+            })
+            ->addColumn('allowance', function ($user) use ($sectorId, $month, $year) {
+                $fullAllowance = ReservationAllowance::where('user_id', $user->id)
+                                 ->where('sector_id', $sectorId)
+                                 ->where('type', 1)
+                                 ->whereYear('date', $year)
+                                 ->whereMonth('date', $month)
+                                 ->sum('amount');
+    
+                $partialAllowance = ReservationAllowance::where('user_id', $user->id)
+                                    ->where('sector_id', $sectorId)
+                                    ->where('type', 2)
+                                    ->whereYear('date', $year)
+                                    ->whereMonth('date', $month)
+                                    ->sum('amount');
+    
+                $totalAllowance = $fullAllowance + $partialAllowance;
+                return "كلي: " . number_format($fullAllowance, 2) . " د.ك | جزئي: " . number_format($partialAllowance, 2) . " د.ك | مجموع: " . number_format($totalAllowance, 2) . " د.ك";
+            })
+            ->addIndexColumn()
+            ->make(true);
+    }
+    
+    
+
+
+    public function printReport(Request $request, $sectorId)
+    {
+        $month = $request->input('month');
+        $year = $request->input('year');
+    
         $sector = Sector::find($sectorId);
     
         if ($sector) {
-            // Fetch all users in this sector and their reservation data
-            $users = User::where('sector', $sectorId)->with(['grade', 'reservationAllowances'])->get();
+            // Fetch users ordered by grade
+            $users = User::whereIn('id', function ($query) use ($sectorId, $month, $year) {
+                $query->select('user_id')
+                      ->from('reservation_allowances')
+                      ->where('sector_id', $sectorId)
+                      ->whereYear('date', $year)
+                      ->whereMonth('date', $month);
+            })->with(['grade', 'reservationAllowances'])
+              ->orderBy(function ($query) {
+                  $query->select('name')
+                        ->from('grades')
+                        ->whereColumn('grades.id', 'users.grade_id');
+              })
+              ->get();
     
             // Prepare reservation details for each user
-            $userReservations = $users->map(function ($user) {
-                $reservations = $user->reservationAllowances;
+            $userReservations = $users->map(function ($user) use ($sectorId, $month, $year) {
+                $reservations = $user->reservationAllowances()
+                    ->where('sector_id', $sectorId)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->get();
     
-                // Calculate days and amounts for "حجز كلي" (type 1) and "حجز جزئي" (type 2)
                 $fullDays = $reservations->where('type', 1)->count();
                 $partialDays = $reservations->where('type', 2)->count();
                 $totalDays = $fullDays + $partialDays;
@@ -111,44 +151,22 @@ public function getData($sectorId)
     
             // Create a new TCPDF instance
             $pdf = new TCPDF();
-    
-            // Set document information
             $pdf->SetCreator('Your App');
-            $pdf->SetAuthor('Your App');
-            $pdf->SetTitle('Sector Reservation Report');
-            $pdf->SetSubject('Report');
-    
-            // Set default monospaced font
-            $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-    
-            // Set margins
-            $pdf->SetMargins(10, 10, 10);
-            $pdf->SetHeaderMargin(10);
-            $pdf->SetFooterMargin(10);
-    
-            // Set auto page breaks
-            $pdf->SetAutoPageBreak(TRUE, 10);
-    
-            // Set font for Arabic
+            $pdf->SetTitle("Sector Reservation Report for {$sector->name}");
+            $pdf->AddPage();
+            $pdf->setRTL(true);
             $pdf->SetFont('dejavusans', '', 12);
     
-            // Add a page
-            $pdf->AddPage();
-    
-            // Set RTL direction
-            $pdf->setRTL(true);
-    
-            // Write HTML content for the PDF view
+            // Generate the PDF view content
             $html = view('sector_employees.sector_employees_report', [
                 'sector' => $sector,
-                'userReservations' => $userReservations
+                'userReservations' => $userReservations,
+                'month' => $month,
+                'year' => $year,
             ])->render();
     
-            // Print text using writeHTMLCell method
-            $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
-    
-            // Output PDF
-            return $pdf->Output('sector_reservation_report.pdf', 'I'); // 'I' will display in the browser
+            $pdf->writeHTML($html, true, false, true, false, '');
+            return $pdf->Output("sector_reservation_report_{$sector->name}.pdf", 'I');
         } else {
             return redirect()->back()->with('error', 'No sector found with this ID');
         }
