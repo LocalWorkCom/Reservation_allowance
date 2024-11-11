@@ -176,38 +176,32 @@
 
 @push('scripts')
     <script>
-        $(document).ready(function() {
-            var table = null;
-          
-
+      $(document).ready(function() {
+    let table = null;
 
     function initializeTable(url) {
         table = $('#reservation-table').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
-            url: url,
-            data: function(d) {
-                d.file_number = $('#file_number').val().trim();
-                d.start_date = $('#start_date').val();
-                d.end_date = $('#end_date').val();
-            },
-            dataSrc: function(json) {
-    // Check if totals exist in the response and update the HTML accordingly
-    if (json.totalAmount) {
-        $('#total-amount').text(json.totalAmount);
-       
-    }
-
-    // Ensure the data array is returned for the table
-    return json.data ? json.data : [];
-},
-            error: function(xhr, error, code) {
-                if (xhr.responseJSON && xhr.responseJSON.error) {
-                    alert(xhr.responseJSON.error); // Show the error if no user is found
+                url: url,
+                data: function(d) {
+                    d.file_number = $('#file_number').val().trim();
+                    d.start_date = $('#start_date').val();
+                    d.end_date = $('#end_date').val();
+                },
+                dataSrc: function(json) {
+                    if (json.totalAmount) {
+                        $('#total-amount').text(json.totalAmount);
+                    }
+                    return json.data || [];
+                },
+                error: function(xhr) {
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        alert(xhr.responseJSON.error);
+                    }
                 }
-            }
-        },
+            },
             columns: [
                 { data: null, name: 'order', orderable: false, searchable: false },
                 { data: 'day', name: 'day' },
@@ -215,123 +209,98 @@
                 { data: 'name', name: 'name' },
                 { data: 'sector', name: 'sector' },
                 { data: 'department', name: 'department' },
-                { data: 'grade', name: 'grade' }, 
+                { data: 'grade', name: 'grade' },
                 { data: 'grade_type', name: 'grade_type' },
                 { data: 'type', name: 'type' },
                 { data: 'amount', name: 'amount' },
-
-            
             ],
             order: [[2, 'asc']],
-            
-            "oLanguage": {
-                "sSearch": "",
-                "sSearchPlaceholder": "بحث",
-                "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
-                "sInfoEmpty": 'لا توجد بيانات متاحه',
-                "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
-                "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
-                "sZeroRecords": 'نأسف لا توجد نتيجة مطابقة',
-                "sEmptyTable": 'لا توجد بيانات متاحة',
-                "oPaginate": {
-                    "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
-                    "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
-                    "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
-                    "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
+            oLanguage: {
+                sSearch: "",
+                sSearchPlaceholder: "بحث",
+                sInfo: 'اظهار صفحة _PAGE_ من _PAGES_',
+                sZeroRecords: 'نأسف لا توجد نتيجة مطابقة',
+                sEmptyTable: 'لا توجد بيانات متاحة',
+                oPaginate: {
+                    sFirst: '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
+                    sPrevious: '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
+                    sNext: '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
+                    sLast: '<i class="fa fa-step-forward" aria-hidden="true"></i>'
                 }
             },
             pagingType: "full_numbers",
             fnDrawCallback: function(oSettings) {
-                var page = this.api().page.info().pages;
-                if (page == 1) {
-                    $('.dataTables_paginate').css('visibility', 'hidden');
-                }
+                const page = this.api().page.info().pages;
+                $('.dataTables_paginate').css('visibility', page === 1 ? 'hidden' : 'visible');
             },
             createdRow: function(row, data, dataIndex) {
-                $('td', row).eq(0).html(dataIndex + 1); // Automatic numbering in the first column
-            },
-            
-            
-        });
-    }
-
-            // Trigger the table reload on search form submission
-            $('#search-form').on('submit', function(e) {
-    e.preventDefault();
-    var file_number = $('#file_number').val().trim();
-
-    if (file_number !== '') {
-        if (table === null) {
-            initializeTable('{{ route('reservation_fetch.getAll') }}');
-        } else {
-            table.ajax.url('{{ route('reservation_fetch.getAll') }}').load();
-        }
-    } else {
-        alert('Please enter a valid File Number');
-    }
-});
-
-            // Set the civil number for the last month form submission
-            $('#last-month-form').on('submit', function(e) {
-                e.preventDefault();
-                $('#last_month_file_number').val($('#file_number').val().trim());
-                submitDataTableForm('{{ route('reservation_fetch.getLastMonth') }}');
-            });
-
-            $('#last-three-month-form').on('submit', function(e) {
-                e.preventDefault();
-                $('#last_three_month_file_number').val($('#file_number').val().trim());
-                submitDataTableForm('{{ route('reservation_fetch.getLastThreeMonths') }}');
-            });
-
-            $('#last-six-months-form').on('submit', function(e) {
-                e.preventDefault();
-                $('#last_six_months_file_number').val($('#file_number').val().trim());
-                submitDataTableForm('{{ route('reservation_fetch.getLastSixMonths') }}');
-            });
-
-            $('#last-year-form').on('submit', function(e) {
-                e.preventDefault();
-                $('#last_year_file_number').val($('#file_number').val().trim());
-                submitDataTableForm('{{ route('reservation_fetch.getLastYear') }}');
-            });
-            // Show/hide the date range picker when clicking "Other Dates"
-            $('#other-dates-button').on('click', function() {
-                $('#date-picker-container').toggle(); // Toggle the visibility of the date picker
-            });
-
-            // Handle custom date range form submission
-            $('#custom-date-form').on('submit', function(e) {
-                e.preventDefault();
-
-                var file_number = $('#file_number').val().trim();
-                var start_date = $('#start_date').val();
-                var end_date = $('#end_date').val();
-
-                if (file_number !== '' && start_date !== '' && end_date !== '') {
-                    if (table === null) {
-                        initializeTable('{{ route('reservation_fetch.getCustomDateRange') }}');
-                    } else {
-                        table.ajax.url('{{ route('reservation_fetch.getCustomDateRange') }}').load();
-                    }
-                } else {
-                    alert('يرجى إدخال رقم هوية وتواريخ صالحة');
-                }
-            });
-
-            function submitDataTableForm(url) {
-                var file_number = $('#file_number').val().trim();
-                if (file_number !== '') {
-                    if (table === null) {
-                        initializeTable(url);
-                    } else {
-                        table.ajax.url(url).load();
-                    }
-                } else {
-                    alert('Please enter a valid Civil Number');
-                }
+                $('td', row).eq(0).html(dataIndex + 1);
             }
         });
+    }
+
+    function loadTable(url) {
+        const fileNumber = $('#file_number').val().trim();
+        if (!fileNumber) {
+            alert('Please enter a valid File Number');
+            return;
+        }
+        if (table === null) {
+            initializeTable(url);
+        } else {
+            table.ajax.url(url).load();
+        }
+    }
+
+    $('#search-form').on('submit', function(e) {
+        e.preventDefault();
+        loadTable('{{ route('reservation_fetch.getAll') }}');
+    });
+
+    $('#last-month-form').on('submit', (e) => {
+        e.preventDefault();
+        loadTable('{{ route('reservation_fetch.getLastMonth') }}');
+    });
+    $('#last-three-month-form').on('submit', (e) => {
+        e.preventDefault();
+        loadTable('{{ route('reservation_fetch.getLastThreeMonths') }}');
+    });
+    $('#last-six-months-form').on('submit', (e) => {
+        e.preventDefault();
+        loadTable('{{ route('reservation_fetch.getLastSixMonths') }}');
+    });
+    $('#last-year-form').on('submit', (e) => {
+        e.preventDefault();
+        loadTable('{{ route('reservation_fetch.getLastYear') }}');
+    });
+
+    $('#other-dates-button').on('click', function() {
+        $('#date-picker-container').toggle();
+    });
+    $('#custom-date-form').on('submit', function(e) {
+        e.preventDefault();
+        const startDate = $('#start_date').val();
+        const endDate = $('#end_date').val();
+        if (startDate && endDate) {
+            loadTable('{{ route('reservation_fetch.getCustomDateRange') }}');
+        } else {
+            alert('Please select both start and end dates');
+        }
+    });
+
+    // Print function
+    function printPDF() {
+        const fileNumber = $('#file_number').val().trim();
+        if (fileNumber) {
+            window.open('{{ route('reservation_fetch.print') }}?file_number=' + fileNumber, '_blank');
+        } else {
+            alert('Please enter a valid File Number');
+        }
+    }
+
+    $('#print-pdf-button').on('click', printPDF);
+});
+
 
         function printPDF() {
             let file_number = $('#file_number').val();
