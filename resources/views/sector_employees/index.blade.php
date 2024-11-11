@@ -9,10 +9,11 @@
     }
  
     .index-column { width: 5% !important; }
-    .name-column { width: 15% !important; }
+    .name-column { width: 10% !important; }
     .grade-column { width: 10% !important; }
     .days-column { width: 35% !important; }
-    .allowance-column { width: 35% !important; }
+    .department-column { width: 10% !important; }
+    .allowance-column { width: 40% !important; }
 </style>
 
 @extends('layout.main')
@@ -31,12 +32,10 @@
 <div class="row">
     <div class="container welcome col-11">
         <div class="d-flex justify-content-between">
-            <!-- Display the sector name dynamically -->
             <p>تفاصيل بدل حجز لموظفين قطاع {{ $sectorName }}</p>
-            <!-- Print Button -->
-            <button type="button" class="btn btn-primary" onclick="printSectorReport()" style="background-color: #274373; color: white;">
-                طباعة التقرير
-            </button>           
+            
+            <button id="print-report" class="btn btn-primary">طباعة</button>
+
         </div>
     </div>
 </div>
@@ -57,6 +56,7 @@
                                 <th class="index-column">الترتيب</th>
                                 <th class="name-column">الاسم</th>
                                 <th class="grade-column">الرتبه</th>
+                                <th class="department-column">الادارة</th>
                                 <th class="days-column">الايام</th>
                                 <th class="allowance-column">بدل الحجز</th>
                             </tr>
@@ -74,11 +74,18 @@
         $('#users-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: '{{ route('sectorEmployees.getData', $sectorId) }}',
+            ajax: {
+        url: '{{ route('sectorEmployees.getData', ['sectorId' => $sectorId]) }}',
+        data: function(d) {
+            d.month = '{{ $month }}';
+            d.year = '{{ $year }}';
+        }
+    },
             columns: [
                 { data: null, name: 'order', orderable: false, searchable: false },
                 { data: 'name', name: 'name' },
                 { data: 'grade', name: 'grade' },
+                { data: 'department', name: 'department' }, 
                 { data: 'days', name: 'days' },
                 { data: 'allowance', name: 'allowance' },
             ],
@@ -86,10 +93,10 @@
             "oLanguage": {
                 "sSearch": "",
                 "sSearchPlaceholder": "بحث",
-                "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
+                "sInfo": 'اظهار صفحة PAGE من PAGES',
                 "sInfoEmpty": 'لا توجد بيانات متاحه',
-                "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
-                "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
+                "sInfoFiltered": '(تم تصفية  من MAX اجمالى البيانات)',
+                "sLengthMenu": 'اظهار MENU عنصر لكل صفحة',
                 "sZeroRecords": 'نأسف لا توجد نتيجة',
                 "oPaginate": {
                     "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
@@ -111,9 +118,17 @@
         });
     });
 
-    function printSectorReport() {
-        window.open('{{ route("sectorEmployees.printReport", $sectorId) }}', '_blank');
-    }
+    $('#print-report').click(function() {
+    const month = '{{ $month }}'; 
+    const year = '{{ $year }}'; 
+    const url = `{{ route('sectorEmployees.printReport', ['sectorId' => $sectorId]) }}?month=${month}&year=${year}`;
+    window.open(url, '_blank');
+});
+
+
+
+
+
 </script>
 @endpush
 @endsection
