@@ -119,11 +119,11 @@
     });
 
     $('#print-report').click(function() {
-        const month = '{{ $month }}'; 
-        const year = '{{ $year }}'; 
-        const url = {{ route('sectorEmployees.printReport', ['sectorId' => $sectorId]) }}?month=${month}&year=${year};
-        window.open(url, '_blank');
-    });
+    const month = '{{ $month }}'; 
+    const year = '{{ $year }}'; 
+    const url = `{{ route('sectorEmployees.printReport', ['sectorId' => $sectorId]) }}?month=${month}&year=${year}`;
+    window.open(url, '_blank');
+});
 
 
 

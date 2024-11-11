@@ -86,10 +86,9 @@
                 },
                 columns: [
                     { data: 'order', name: 'order', orderable: false, searchable: false },
-                    { data: 'sector', name: 'sector', render: function(data, type, row) {
-                        return '<a href="/statistics_department/' + row.id + '" style="color:blue !important;">' + data + '</a>';
-                    }},
-                    { data: 'main_departments_count', name: 'main_departments_count' },
+                    { data: 'sector', name: 'sector'},
+                    { data: 'main_departments_count', name: 'main_departments_count', render: function(data, type, row) {
+                        return '<a href="/statistics_department/' + row.id + '" style="color:blue !important;">' + data + '</a>';} },
                     { data: 'sub_departments_count', name: 'sub_departments_count' },
                     { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' },
                     { data: 'registered_amount', name: 'registered_amount' },
