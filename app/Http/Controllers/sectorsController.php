@@ -157,7 +157,7 @@ class sectorsController extends Controller
                 } elseif ($row->reservation_allowance_type == 2) {
                     return 'حجز جزئى';
                 } elseif ($row->reservation_allowance_type == 4) {
-                    return 'لا يوجد حجز';
+                    return 'لا يوجد بدل حجز';
                 } else {
                     return 'حجز كلى و حجز جزئى';
                 }
