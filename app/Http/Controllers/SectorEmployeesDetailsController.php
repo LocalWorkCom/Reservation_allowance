@@ -108,6 +108,7 @@ class SectorEmployeesDetailsController extends Controller
         if (!$month || !$year) {
             return redirect()->back()->withErrors('Please select a valid month and year.');
         }
+        
         $sector = Sector::find($sectorId);
     
         $employees = User::whereIn('id', function ($query) use ($sectorId, $month, $year) {
@@ -117,20 +118,40 @@ class SectorEmployeesDetailsController extends Controller
                       ->whereYear('date', $year)
                       ->whereMonth('date', $month);
             })
-            ->with(['grade', 'department', 'reservationAllowances'])
+            ->with(['grade', 'department'])
             ->get();
     
         $userReservations = $employees->map(function ($user) use ($sectorId, $month, $year) {
-            $reservations = $user->reservationAllowances->where('sector_id', $sectorId)
-                            ->where('date', '>=', Carbon::parse("$year-$month-01"))
-                            ->where('date', '<=', Carbon::parse("$year-$month-01")->endOfMonth());
+            $fullDays = ReservationAllowance::where('user_id', $user->id)
+                        ->where('sector_id', $sectorId)
+                        ->whereYear('date', $year)
+                        ->whereMonth('date', $month)
+                        ->where('type', 1)
+                        ->count();
     
-            $fullDays = $reservations->where('type', 1)->count();
-            $partialDays = $reservations->where('type', 2)->count();
+            $partialDays = ReservationAllowance::where('user_id', $user->id)
+                           ->where('sector_id', $sectorId)
+                           ->whereYear('date', $year)
+                           ->whereMonth('date', $month)
+                           ->where('type', 2)
+                           ->count();
+    
             $totalDays = $fullDays + $partialDays;
     
-            $fullAllowance = $reservations->where('type', 1)->sum('amount');
-            $partialAllowance = $reservations->where('type', 2)->sum('amount');
+            $fullAllowance = ReservationAllowance::where('user_id', $user->id)
+                             ->where('sector_id', $sectorId)
+                             ->whereYear('date', $year)
+                             ->whereMonth('date', $month)
+                             ->where('type', 1)
+                             ->sum('amount');
+    
+            $partialAllowance = ReservationAllowance::where('user_id', $user->id)
+                                ->where('sector_id', $sectorId)
+                                ->whereYear('date', $year)
+                                ->whereMonth('date', $month)
+                                ->where('type', 2)
+                                ->sum('amount');
+    
             $totalAllowance = $fullAllowance + $partialAllowance;
     
             return [
@@ -162,8 +183,4 @@ class SectorEmployeesDetailsController extends Controller
         return $pdf->Output("sector_employees_{$sector->name}.pdf", 'I');
     }
     
-    
-    
-    
 }
-

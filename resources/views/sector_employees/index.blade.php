@@ -32,11 +32,8 @@
 <div class="row">
     <div class="container welcome col-11">
         <div class="d-flex justify-content-between">
-            <!-- Display the sector name dynamically -->
             <p>تفاصيل بدل حجز لموظفين قطاع {{ $sectorName }}</p>
-            <!-- Print Button -->
-    
-
+            
             <button id="print-report" class="btn btn-primary">طباعة</button>
 
         </div>
@@ -96,10 +93,10 @@
             "oLanguage": {
                 "sSearch": "",
                 "sSearchPlaceholder": "بحث",
-                "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
+                "sInfo": 'اظهار صفحة PAGE من PAGES',
                 "sInfoEmpty": 'لا توجد بيانات متاحه',
-                "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
-                "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
+                "sInfoFiltered": '(تم تصفية  من MAX اجمالى البيانات)',
+                "sLengthMenu": 'اظهار MENU عنصر لكل صفحة',
                 "sZeroRecords": 'نأسف لا توجد نتيجة',
                 "oPaginate": {
                     "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
@@ -122,17 +119,12 @@
     });
 
     $('#print-report').click(function() {
-    const month = $('#month-select').val();
-    const year = $('#year-select').val();
-    
-    if (!month || !year) {
-        alert('Please select both month and year.');
-        return;
-    }
+        const month = '{{ $month }}'; 
+        const year = '{{ $year }}'; 
+        const url = {{ route('sectorEmployees.printReport', ['sectorId' => $sectorId]) }}?month=${month}&year=${year};
+        window.open(url, '_blank');
+    });
 
-    const url = `{{ route('sectorEmployees.printReport', ['sectorId' => $sectorId]) }}?month=${month}&year=${year}`;
-    window.open(url, '_blank');
-});
 
 
 
