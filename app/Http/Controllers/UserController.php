@@ -596,7 +596,7 @@ class UserController extends Controller
         $user->save();
         // $id = 1;
 
-        return redirect()->back()->with('success', 'User created successfully.');
+        return redirect()->back()->with('success', 'تم الغاء التعيين بنجاح');
     }
 
     /**
