@@ -51,9 +51,10 @@ class SectorEmployeesDetailsController extends Controller
             ->get();
     
         return DataTables::of($employees)
+            ->addColumn('file_number', fn($user) => $user->file_number) 
             ->addColumn('name', fn($user) => $user->name)
             ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
-            ->addColumn('department', fn($user) => $user->department->name ?? 'N/A')  // New column for department name
+            ->addColumn('department', fn($user) => $user->department->name ?? 'N/A')
             ->addColumn('days', function ($user) use ($sectorId, $month, $year) {
                 $fullDays = ReservationAllowance::where('user_id', $user->id)
                             ->where('sector_id', $sectorId)

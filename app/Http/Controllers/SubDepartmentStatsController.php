@@ -29,55 +29,40 @@ class SubDepartmentStatsController extends Controller
 }
 
 
-public function getAll(Request $request, $department_id)
+public function getAll(Request $request, $subDepartmentId)
 {
     $month = $request->input('month');
     $year = $request->input('year');
 
-    $query = departements::where('parent_id', $department_id)
-        ->withCount('children');
+    $reservationData = ReservationAllowance::where('departement_id', $subDepartmentId)
+        ->whereYear('date', $year)
+        ->whereMonth('date', $month)
+        ->selectRaw('date, COUNT(user_id) as prisoners_count')
+        ->groupBy('date')
+        ->orderBy('date', 'asc')
+        ->get();
 
-    return DataTables::of($query)
-        ->addColumn('department_name', function($row) {
-            return $row->name;
+    return DataTables::of($reservationData)
+        ->addColumn('day', fn($row) => Carbon::parse($row->date)->translatedFormat('l'))
+        ->addColumn('date', fn($row) => Carbon::parse($row->date)->format('Y-m-d'))
+        ->addColumn('prisoners_count', function ($row) use ($subDepartmentId) {
+            $url = route('prisoners.details', ['subDepartmentId' => $subDepartmentId, 'date' => $row->date]);
+            return '<a href="' . $url . '" style="color:blue !important">' . $row->prisoners_count . '</a>';
         })
-        ->addColumn('reservation_allowance_budget', function($row) {
-            return $row->reservation_allowance_amount;
+        ->addColumn('partial_reservation_count', fn($row) => ReservationAllowance::where('departement_id', $subDepartmentId)->where('date', $row->date)->where('type', 2)->count())
+        ->addColumn('partial_reservation_amount', fn($row) => ReservationAllowance::where('departement_id', $subDepartmentId)->where('date', $row->date)->where('type', 2)->sum('amount'))
+        ->addColumn('full_reservation_count', fn($row) => ReservationAllowance::where('departement_id', $subDepartmentId)->where('date', $row->date)->where('type', 1)->count())
+        ->addColumn('full_reservation_amount', fn($row) => ReservationAllowance::where('departement_id', $subDepartmentId)->where('date', $row->date)->where('type', 1)->sum('amount'))
+        ->addColumn('total_amount', function ($row) use ($subDepartmentId) {
+            $partialAmount = ReservationAllowance::where('departement_id', $subDepartmentId)->where('date', $row->date)->where('type', 2)->sum('amount');
+            $fullAmount = ReservationAllowance::where('departement_id', $subDepartmentId)->where('date', $row->date)->where('type', 1)->sum('amount');
+            return $partialAmount + $fullAmount;
         })
-        ->addColumn('registered_by', function($row) use ($month, $year) {
-            return ReservationAllowance::where('departement_id', $row->id)
-                ->whereYear('date', $year)
-                ->whereMonth('date', $month)
-                ->sum('amount');
-        })
-        ->addColumn('remaining_amount', function($row) use ($month, $year) {
-            $budget = $row->reservation_allowance_amount;
-            $registeredAmount = ReservationAllowance::where('departement_id', $row->id)
-                ->whereYear('date', $year)
-                ->whereMonth('date', $month)
-                ->sum('amount');
-            return $budget - $registeredAmount;
-        })
-        ->addColumn('number_of_employees', function($row) {
-            return User::where('department_id', $row->id)->where('flag', 'employee')->count();
-        })
-        ->addColumn('received_allowance_count', function($row) use ($month, $year) {
-            return ReservationAllowance::where('departement_id', $row->id)
-                ->whereYear('date', $year)
-                ->whereMonth('date', $month)
-                ->distinct('user_id')
-                ->count('user_id');
-        })
-        ->addColumn('did_not_receive_allowance_count', function($row) use ($month, $year) {
-            $employees = User::where('department_id', $row->id)->where('flag', 'employee')->count();
-            $receivedAllowance = ReservationAllowance::where('departement_id', $row->id)
-                ->whereYear('date', $year)
-                ->whereMonth('date', $month)
-                ->distinct('user_id')
-                ->count('user_id');
-            return $employees - $receivedAllowance;
-        })
+        ->addColumn('print', fn($row) => '<button class="btn btn-sm btn-primary" onclick="printReport(\'' . $row->date . '\')">طباعة</button>')
+        ->addIndexColumn()
+        ->rawColumns(['prisoners_count', 'print'])
         ->make(true);
 }
+
 
 }

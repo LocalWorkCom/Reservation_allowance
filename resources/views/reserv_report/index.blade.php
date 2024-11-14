@@ -33,7 +33,7 @@
 
     <div class="row" style="direction: rtl">
         <div class="container col-11 mt-3 p-0 pt-5 pb-4">
-            <!-- Date Picker Section -->
+            <!-- Date Picker- Section -->
             <div class="d-flex justify-content-end">
                 <label for="start-date" class="form-label mx-2">من تاريخ</label>
                 <input type="date" id="start-date" name="start_date" class="form-control w-25 mx-2">
@@ -145,32 +145,27 @@
             }
         ],
         order: [[1, 'asc']],
-       "oLanguage": {
-                    "sSearch": "",
-                    "sSearchPlaceholder": "بحث",
-                    "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
-                    "sInfoEmpty": 'لا توجد بيانات متاحه',
-                    "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
-                    "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
-                    "sZeroRecords": 'نأسف لا توجد نتيجة',
-                    "oPaginate": {
-                        "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
-                        "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
-                        "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
-                        "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
-                    }
-                },
-                "pagingType": "full_numbers",
-                "fnDrawCallback": function(oSettings) {
-                    console.log('Page ' + this.api().page.info()
-                        .pages)
-                    var page = this.api().page.info().pages;
-                    console.log($('#users-table tr').length);
-                    if (page == 1) {
-                        $('.dataTables_paginate').css(
-                            'visibility', 'hidden');
-                    }
+        oLanguage: {
+                sSearch: "",
+                sSearchPlaceholder: "بحث",
+                sInfo: 'اظهار صفحة _PAGE_ من _PAGES_',
+                sZeroRecords: 'نأسف لا توجد نتيجة مطابقة',
+                sEmptyTable: 'لا توجد بيانات متاحة',
+                oPaginate: {
+                    sFirst: '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
+                    sPrevious: '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
+                    sNext: '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
+                    sLast: '<i class="fa fa-step-forward" aria-hidden="true"></i>'
                 }
+            },
+            pagingType: "full_numbers",
+            fnDrawCallback: function(oSettings) {
+                const page = this.api().page.info().pages;
+                $('.dataTables_paginate').css('visibility', page === 1 ? 'hidden' : 'visible');
+            },
+            createdRow: function(row, data, dataIndex) {
+                $('td', row).eq(0).html(dataIndex + 1);
+            }
     });
 
     // Fetch report data and update summary on button click

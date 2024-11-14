@@ -6,10 +6,12 @@
         border-radius: 10px;
         margin-top: 20px;
         text-align: center;
+        
     }
 
     .index-column { width: 5% !important; }
     .name-column { width: 10% !important; }
+    .file-number-column { width: 10% !important; }
     .grade-column { width: 10% !important; }
     .days-column { width: 35% !important; }
     .department-column { width: 10% !important; }
@@ -33,7 +35,6 @@
     <div class="container welcome col-11">
         <div class="d-flex justify-content-between">
             <p>تفاصيل بدل حجز لموظفين قطاع {{ $sectorName }}</p>
-
             <button id="print-report" class="btn btn-primary">طباعة</button>
 
         </div>
@@ -50,18 +51,20 @@
                     </div>
                 @endif
                 <div>
-                    <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
-                        <thead>
-                            <tr>
-                                <th class="index-column">الترتيب</th>
-                                <th class="name-column">الاسم</th>
-                                <th class="grade-column">الرتبه</th>
-                                <th class="department-column">الادارة</th>
-                                <th class="days-column">الايام</th>
-                                <th class="allowance-column">بدل الحجز</th>
-                            </tr>
-                        </thead>
-                    </table>
+                <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
+                <thead>
+                    <tr>
+                        <th class="index-column">الترتيب</th>
+                        <th class="file-number-column">رقم الملف</th> 
+                        <th class="name-column">الاسم</th>
+                        <th class="grade-column">الرتبه</th>
+                        <th class="department-column">الادارة</th>
+                        <th class="days-column">الايام</th>
+                        <th class="allowance-column">بدل الحجز</th>
+                    </tr>
+                </thead>
+            </table>
+
                 </div>
             </div>
         </div>
@@ -72,9 +75,9 @@
 <script>
     $(document).ready(function() {
         $('#users-table').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: {
+    processing: true,
+    serverSide: true,
+    ajax: {
         url: '{{ route('sectorEmployees.getData', ['sectorId' => $sectorId]) }}',
         data: function(d) {
             d.month = '{{ $month }}';
@@ -84,6 +87,7 @@
             columns: [
                 { data: null, name: 'order', orderable: false, searchable: false },
                 { data: 'name', name: 'name' },
+                { data: 'file_number', name: 'file_number' }, 
                 { data: 'grade', name: 'grade' },
                 { data: 'department', name: 'department' },
                 { data: 'days', name: 'days' },
