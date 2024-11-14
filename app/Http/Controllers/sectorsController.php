@@ -238,17 +238,14 @@ class sectorsController extends Controller
 
         // Determine reservation allowance type
         $part = $request->input('part');
-        $reservation_allowance_type = null;
+        $reservation_allowance_type = match (true) {
+            in_array('1', $part) && in_array('2', $part) => 3,
+            in_array('1', $part) => 1,
+            in_array('2', $part) => 2,
+            in_array('3', $part) => 4,
+            default => null, // Default to null if no match
+        };
 
-        if (in_array('1', $part) && in_array('2', $part)) {
-            $reservation_allowance_type = 3;
-        } elseif (in_array('1', $part)) {
-            $reservation_allowance_type = 1;
-        } elseif (in_array('2', $part)) {
-            $reservation_allowance_type = 2;
-        } elseif (in_array('3', $part)) {
-            $reservation_allowance_type = 4;
-        }
 
         // Create and save new sector
         $sector = new Sector();

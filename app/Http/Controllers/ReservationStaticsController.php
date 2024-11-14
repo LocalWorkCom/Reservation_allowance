@@ -30,9 +30,12 @@ class ReservationStaticsController extends Controller
     }
     
 
-    public function getAll($sector_id)
+    public function getAll(Request $request, $sector_id)
     {
         try {
+            $month = $request->input('month');
+            $year = $request->input('year');
+    
             $query = departements::withCount('children')
                 ->where('sector_id', $sector_id)
                 ->whereNull('parent_id');
@@ -47,21 +50,33 @@ class ReservationStaticsController extends Controller
                     $budget = $subDepartmentsSum > 0 ? $subDepartmentsSum : $row->reservation_allowance_amount;
                     return number_format($budget, 2) . " د.ك";
                 })
-                ->addColumn('registered_by', function($row) {
+                ->addColumn('registered_by', function($row) use ($month, $year) {
                     $subDepartmentIds = departements::where('parent_id', $row->id)->pluck('id');
-                    $totalRegisteredAmount = ReservationAllowance::whereIn('departement_id', $subDepartmentIds)->sum('amount');
+                    $totalRegisteredAmount = ReservationAllowance::whereIn('departement_id', $subDepartmentIds)
+                        ->whereYear('date', $year)
+                        ->whereMonth('date', $month)
+                        ->sum('amount');
                     if ($subDepartmentIds->isEmpty()) {
-                        $totalRegisteredAmount = ReservationAllowance::where('departement_id', $row->id)->sum('amount');
+                        $totalRegisteredAmount = ReservationAllowance::where('departement_id', $row->id)
+                            ->whereYear('date', $year)
+                            ->whereMonth('date', $month)
+                            ->sum('amount');
                     }
                     return number_format($totalRegisteredAmount, 2) . " د.ك";
                 })
-                ->addColumn('remaining_amount', function($row) {
+                ->addColumn('remaining_amount', function($row) use ($month, $year) {
                     $subDepartmentsSum = departements::where('parent_id', $row->id)->sum('reservation_allowance_amount');
                     $reservationAllowanceBudget = $subDepartmentsSum > 0 ? $subDepartmentsSum : $row->reservation_allowance_amount;
                     $subDepartmentIds = departements::where('parent_id', $row->id)->pluck('id');
-                    $totalRegisteredAmount = ReservationAllowance::whereIn('departement_id', $subDepartmentIds)->sum('amount');
+                    $totalRegisteredAmount = ReservationAllowance::whereIn('departement_id', $subDepartmentIds)
+                        ->whereYear('date', $year)
+                        ->whereMonth('date', $month)
+                        ->sum('amount');
                     if ($subDepartmentIds->isEmpty()) {
-                        $totalRegisteredAmount = ReservationAllowance::where('departement_id', $row->id)->sum('amount');
+                        $totalRegisteredAmount = ReservationAllowance::where('departement_id', $row->id)
+                            ->whereYear('date', $year)
+                            ->whereMonth('date', $month)
+                            ->sum('amount');
                     }
                     $remainingAmount = $reservationAllowanceBudget - $totalRegisteredAmount;
                     return number_format($remainingAmount, 2) . " د.ك";
@@ -74,29 +89,44 @@ class ReservationStaticsController extends Controller
                     }
                     return $totalEmployees;
                 })
-                ->addColumn('received_allowance_count', function($row) {
+                ->addColumn('received_allowance_count', function($row) use ($month, $year) {
                     $subDepartmentIds = departements::where('parent_id', $row->id)->pluck('id');
-                    $uniqueUsers = ReservationAllowance::whereIn('departement_id', $subDepartmentIds)->distinct('user_id')->count('user_id');
+                    $uniqueUsers = ReservationAllowance::whereIn('departement_id', $subDepartmentIds)
+                        ->whereYear('date', $year)
+                        ->whereMonth('date', $month)
+                        ->distinct('user_id')
+                        ->count('user_id');
                     if ($subDepartmentIds->isEmpty()) {
-                        $uniqueUsers = ReservationAllowance::where('departement_id', $row->id)->distinct('user_id')->count('user_id');
+                        $uniqueUsers = ReservationAllowance::where('departement_id', $row->id)
+                            ->whereYear('date', $year)
+                            ->whereMonth('date', $month)
+                            ->distinct('user_id')
+                            ->count('user_id');
                     }
                     return $uniqueUsers;
                 })
-                ->addColumn('did_not_receive_allowance_count', function($row) {
+                ->addColumn('did_not_receive_allowance_count', function($row) use ($month, $year) {
                     $subDepartmentIds = departements::where('parent_id', $row->id)->pluck('id');
                     $totalEmployees = User::whereIn('department_id', $subDepartmentIds)->where('flag', 'employee')->count();
                     if ($subDepartmentIds->isEmpty()) {
                         $totalEmployees = User::where('department_id', $row->id)->where('flag', 'employee')->count();
                     }
-                    $uniqueUsers = ReservationAllowance::whereIn('departement_id', $subDepartmentIds)->distinct('user_id')->count('user_id');
+                    $uniqueUsers = ReservationAllowance::whereIn('departement_id', $subDepartmentIds)
+                        ->whereYear('date', $year)
+                        ->whereMonth('date', $month)
+                        ->distinct('user_id')
+                        ->count('user_id');
                     if ($subDepartmentIds->isEmpty()) {
-                        $uniqueUsers = ReservationAllowance::where('departement_id', $row->id)->distinct('user_id')->count('user_id');
+                        $uniqueUsers = ReservationAllowance::where('departement_id', $row->id)
+                            ->whereYear('date', $year)
+                            ->whereMonth('date', $month)
+                            ->distinct('user_id')
+                            ->count('user_id');
                     }
                     return $totalEmployees - $uniqueUsers;
                 })
                 ->rawColumns(['action'])
                 ->make(true);
-    
         } catch (\Exception $e) {
             \Log::error("Error fetching departments: " . $e->getMessage());
     
@@ -109,5 +139,6 @@ class ReservationStaticsController extends Controller
             ]);
         }
     }
+    
     
 }

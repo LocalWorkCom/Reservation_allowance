@@ -30,15 +30,15 @@
             <div class="container  col-11 mt-3 p-0  pt-5 pb-4">
 
                 <!-- <div class="row " dir="rtl">
-                                <div class="form-group mt-4  mx-md-2 col-12 d-flex ">
-                                    @if (Auth::user()->hasPermission('edit job'))
+                                    <div class="form-group mt-4  mx-md-2 col-12 d-flex ">
+                                        @if (Auth::user()->hasPermission('edit job'))
     <button type="button" class="btn-all  " onclick="openadd()" style="    color: #0D992C;">
-                          
-                                        اضافة وظيفة جديدة <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                    </button>
+
+                                            اضافة وظيفة جديدة <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                                        </button>
     @endif
-                                </div>
-                            </div> -->
+                                    </div>
+                                </div> -->
                 <div class="col-lg-12">
                     <div class="bg-white">
                         @if (session()->has('message'))
@@ -292,11 +292,11 @@
                 ajax: '{{ route('nationality.getAllNationality') }}', // Correct URL concatenation
                 columns: [{
                         data: 'country_name_ar',
-                        name: 'name'
+                        name: 'country_name_ar' // Search will be enabled on this column
                     },
                     {
                         data: 'code',
-                        name: 'code'
+                        name: 'code' // Search will be enabled on this column
                     },
                     {
                         data: 'action',
@@ -318,33 +318,24 @@
                     "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
                     "sZeroRecords": 'نأسف لا توجد نتيجة',
                     "oPaginate": {
-                        "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
-                        "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
-                        "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
-                        "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
-                    }
-
-
-                },
-                layout: {
-                    bottomEnd: {
-                        paging: {
-                            firstLast: false
-                        }
+                        "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
+                        "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
+                        "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
+                        "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
                     }
                 },
                 "pagingType": "full_numbers",
                 "fnDrawCallback": function(oSettings) {
-                    console.log('Page ' + this.api().page.info().pages)
-                    var page = this.api().page.info().pages;
-                    console.log($('#users-table tr').length);
-                    if (page == 1) {
-                        //   $('.dataTables_paginate').hide();//css('visiblity','hidden');
-                        $('.dataTables_paginate').css('visibility', 'hidden'); // to hide
-
+                    var api = this.api();
+                    var pageInfo = api.page.info();
+                    if (pageInfo.recordsTotal <= 10) {
+                        $('.dataTables_paginate').css('visibility', 'hidden');
+                    } else {
+                        $('.dataTables_paginate').css('visibility', 'visible');
                     }
                 }
             });
+
 
 
         });
