@@ -7,7 +7,7 @@
         margin-top: 20px;
         text-align: center;
     }
- 
+
     .index-column { width: 5% !important; }
     .name-column { width: 10% !important; }
     .grade-column { width: 10% !important; }
@@ -25,7 +25,7 @@
 @endpush
 
 @section('title')
-    قطاع 
+    قطاع
 @endsection
 
 @section('content')
@@ -33,7 +33,7 @@
     <div class="container welcome col-11">
         <div class="d-flex justify-content-between">
             <p>تفاصيل بدل حجز لموظفين قطاع {{ $sectorName }}</p>
-            
+
             <button id="print-report" class="btn btn-primary">طباعة</button>
 
         </div>
@@ -85,7 +85,7 @@
                 { data: null, name: 'order', orderable: false, searchable: false },
                 { data: 'name', name: 'name' },
                 { data: 'grade', name: 'grade' },
-                { data: 'department', name: 'department' }, 
+                { data: 'department', name: 'department' },
                 { data: 'days', name: 'days' },
                 { data: 'allowance', name: 'allowance' },
             ],
@@ -106,12 +106,16 @@
                 }
             },
             pagingType: "full_numbers",
-            fnDrawCallback: function(oSettings) {
-                var page = this.api().page.info().pages;
-                if (page == 1) {
-                    $('.dataTables_paginate').css('visibility', 'hidden');
-                }
-            },
+            "fnDrawCallback": function(oSettings) {
+                    var api = this.api();
+                    var pageInfo = api.page.info();
+                    // Check if the total number of records is less than or equal to the number of entries per page
+                    if (pageInfo.recordsTotal <= 10) { // Adjust this number based on your page length
+                        $('.dataTables_paginate').css('visibility', 'hidden'); // Hide pagination
+                    } else {
+                        $('.dataTables_paginate').css('visibility', 'visible'); // Show pagination
+                    }
+                },
             createdRow: function(row, data, dataIndex) {
                 $('td', row).eq(0).html(dataIndex + 1);
             }
@@ -119,8 +123,8 @@
     });
 
     $('#print-report').click(function() {
-    const month = '{{ $month }}'; 
-    const year = '{{ $year }}'; 
+    const month = '{{ $month }}';
+    const year = '{{ $year }}';
     const url = `{{ route('sectorEmployees.printReport', ['sectorId' => $sectorId]) }}?month=${month}&year=${year}`;
     window.open(url, '_blank');
 });

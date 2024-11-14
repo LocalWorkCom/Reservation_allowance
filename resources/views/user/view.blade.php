@@ -326,11 +326,11 @@
                                             'd-none';
 
                                             return `
-        <a href="` + usershow + `" class="btn btn-sm" style="background-color: #274373;"> 
-            <i class="fa fa-eye"></i> عرض  
+        <a href="` + usershow + `" class="btn btn-sm" style="background-color: #274373;">
+            <i class="fa fa-eye"></i> عرض
         </a>
-        <a href="` + useredit + `" class="btn btn-sm" style="background-color: #F7AF15;"> 
-            <i class="fa fa-edit"></i> تعديل 
+        <a href="` + useredit + `" class="btn btn-sm" style="background-color: #F7AF15;">
+            <i class="fa fa-edit"></i> تعديل
         </a>
         <a class="btn btn-sm ${visibility}" style="background-color: #E3641E;" onclick="openTransferModal(${row.id})">
             <i class="fa-solid fa-user-tie"></i>  الغاء التعيين
@@ -364,13 +364,13 @@
                                     },
                                     "pagingType": "full_numbers",
                                     "fnDrawCallback": function(oSettings) {
-                                        console.log('Page ' + this.api().page.info().pages)
-                                        var page = this.api().page.info().pages;
-                                        console.log($('#users-table tr').length);
-                                        if (page <= 1) {
-                                            //   $('.dataTables_paginate').hide();//css('visiblity','hidden');
-                                            $('.dataTables_paginate').css('visibility', 'hidden'); // to hide
-
+                                        var api = this.api();
+                                        var pageInfo = api.page.info();
+                                        // Check if the total number of records is less than or equal to the number of entries per page
+                                        if (pageInfo.recordsTotal <= 10) { // Adjust this number based on your page length
+                                            $('.dataTables_paginate').css('visibility', 'hidden'); // Hide pagination
+                                        } else {
+                                            $('.dataTables_paginate').css('visibility', 'visible'); // Show pagination
                                         }
                                     }
                                 });
@@ -401,7 +401,7 @@
             document.getElementById('id_employee').value = id;
         }
  $(document).ready(function() {
-      
+
         $('#print-table').on('click', function() {
             // Clone the DataTable to a new window
             var printWindow = window.open('', '', 'width=900,height=600');
