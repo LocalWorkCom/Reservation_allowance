@@ -295,8 +295,8 @@ class UserController extends Controller
             // }
 
             Auth::login($user); // Log the user in
-            $update=User::find($user->id);
-            $update->last_login=now();
+            $update = User::find($user->id);
+            $update->last_login = now();
             $update->save();
             return redirect()->route('home');
         }
@@ -593,8 +593,20 @@ class UserController extends Controller
         ]);
         $user = User::find($request->id_employee);
         $user->department_id  = Null;
+        $user->sector  = Null;
         $user->save();
         // $id = 1;
+        $department = departements::where('manager', $request->id_employee)->first();
+        if ($department) {
+            $department->manager = null;
+            $department->save();
+        }
+        $sector = sector::where('manager', $request->id_employee)->first();
+        if ($sector) {
+            $sector->manager = null;
+            $sector->save();
+        }
+
 
         return redirect()->back()->with('success', 'تم الغاء التعيين بنجاح');
     }
@@ -972,6 +984,16 @@ class UserController extends Controller
         // Save user data
         $user->save();
 
+        $department = departements::where('manager', $id)->where('id', '<>', $request->public_administration)->first();
+        if ($department) {
+            $department->manager = null;
+            $department->save();
+        }
+        $sector = sector::where('manager', $id)->where('sector','<>', $request->sector)->first();
+        if ($sector) {
+            $sector->manager = null;
+            $sector->save();
+        }
         session()->flash('success', 'تم الحفظ بنجاح.');
         return redirect()->route('user.employees');
     }
