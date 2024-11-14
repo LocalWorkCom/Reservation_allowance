@@ -6,10 +6,12 @@
         border-radius: 10px;
         margin-top: 20px;
         text-align: center;
+        
     }
  
     .index-column { width: 5% !important; }
     .name-column { width: 10% !important; }
+    .file-number-column { width: 10% !important; }
     .grade-column { width: 10% !important; }
     .days-column { width: 35% !important; }
     .department-column { width: 10% !important; }
@@ -50,18 +52,20 @@
                     </div>
                 @endif
                 <div>
-                    <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
-                        <thead>
-                            <tr>
-                                <th class="index-column">الترتيب</th>
-                                <th class="name-column">الاسم</th>
-                                <th class="grade-column">الرتبه</th>
-                                <th class="department-column">الادارة</th>
-                                <th class="days-column">الايام</th>
-                                <th class="allowance-column">بدل الحجز</th>
-                            </tr>
-                        </thead>
-                    </table>
+                <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
+                <thead>
+                    <tr>
+                        <th class="index-column">الترتيب</th>
+                        <th class="file-number-column">رقم الملف</th> 
+                        <th class="name-column">الاسم</th>
+                        <th class="grade-column">الرتبه</th>
+                        <th class="department-column">الادارة</th>
+                        <th class="days-column">الايام</th>
+                        <th class="allowance-column">بدل الحجز</th>
+                    </tr>
+                </thead>
+            </table>
+
                 </div>
             </div>
         </div>
@@ -72,40 +76,41 @@
 <script>
     $(document).ready(function() {
         $('#users-table').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: {
+    processing: true,
+    serverSide: true,
+    ajax: {
         url: '{{ route('sectorEmployees.getData', ['sectorId' => $sectorId]) }}',
         data: function(d) {
             d.month = '{{ $month }}';
             d.year = '{{ $year }}';
         }
     },
-            columns: [
-                { data: null, name: 'order', orderable: false, searchable: false },
-                { data: 'name', name: 'name' },
-                { data: 'grade', name: 'grade' },
-                { data: 'department', name: 'department' }, 
-                { data: 'days', name: 'days' },
-                { data: 'allowance', name: 'allowance' },
-            ],
-            order: [[1, 'asc']],
-            "oLanguage": {
-                "sSearch": "",
-                "sSearchPlaceholder": "بحث",
-                "sInfo": 'اظهار صفحة PAGE من PAGES',
-                "sInfoEmpty": 'لا توجد بيانات متاحه',
-                "sInfoFiltered": '(تم تصفية  من MAX اجمالى البيانات)',
-                "sLengthMenu": 'اظهار MENU عنصر لكل صفحة',
-                "sZeroRecords": 'نأسف لا توجد نتيجة',
-                "oPaginate": {
-                    "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
-                    "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
-                    "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
-                    "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
-                }
-            },
-            pagingType: "full_numbers",
+    columns: [
+        { data: null, name: 'order', orderable: false, searchable: false },
+        { data: 'file_number', name: 'file_number' }, 
+        { data: 'name', name: 'name' },
+        { data: 'grade', name: 'grade' },
+        { data: 'department', name: 'department' }, 
+        { data: 'days', name: 'days' },
+        { data: 'allowance', name: 'allowance' },
+    ],
+    order: [[1, 'asc']],
+    "oLanguage": {
+        "sSearch": "",
+        "sSearchPlaceholder": "بحث",
+        "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
+        "sInfoEmpty": 'لا توجد بيانات متاحه',
+        "sInfoFiltered": '(تم تصفية من _MAX_ اجمالى البيانات)',
+        "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
+        "sZeroRecords": 'نأسف لا توجد نتيجة مطابقة',
+        "oPaginate": {
+            "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
+            "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
+            "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
+            "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
+        }
+    },
+    pagingType: "full_numbers",
             fnDrawCallback: function(oSettings) {
                 var page = this.api().page.info().pages;
                 if (page == 1) {
