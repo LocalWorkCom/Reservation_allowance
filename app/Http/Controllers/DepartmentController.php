@@ -418,19 +418,19 @@ class DepartmentController extends Controller
         $manager = $request->mangered ? User::where('file_number', $request->mangered)->first() : null;
 
         // if ($manager) {
-            // Create a new department
-            $departements = new Departements();
-            $departements->name = $request->name;
-            $departements->manger = $manager? $manager->id : null; // Assign the user's ID as manager
-            $departements->sector_id = $request->sector;
-            $departements->description = $request->description;
-            $departements->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget;
-            $departements->reservation_allowance_type = $reservation_allowance_type;
-            $departements->created_by = Auth::user()->id;
-            $departements->save();
-            saveHistory($departements->reservation_allowance_amount, $departements->sector_id, $departements->id);
+        // Create a new department
+        $departements = new Departements();
+        $departements->name = $request->name;
+        $departements->manger = $manager ? $manager->id : null; // Assign the user's ID as manager
+        $departements->sector_id = $request->sector;
+        $departements->description = $request->description;
+        $departements->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget;
+        $departements->reservation_allowance_type = $reservation_allowance_type;
+        $departements->created_by = Auth::user()->id;
+        $departements->save();
+        saveHistory($departements->reservation_allowance_amount, $departements->sector_id, $departements->id);
 
-            if ($manager){
+        if ($manager) {
             // Handle manager assignment
             if ($manager->department_id != $departements->id || $manager->department_id != null) {
                 $old_department = Departements::find($manager->department_id);
@@ -460,17 +460,19 @@ class DepartmentController extends Controller
             $manager->save();
 
             // Send email to new manager
-            if ($manager->email) {
-                // Send email to the new manager
-                Sendmail(
-                    'مدير ادارة',
-                    'تم أضافتك كمدير ادارة',
-                    $manager->file_number,
-                    $request->password ? $request->password : null,
-                    $manager->email
-                );
-            } else {
-                return redirect()->route('departments.index', ['id' => $request->sector]);
+            if ($manager && $manager->email) {
+                // Check if the email is valid
+                if (isValidEmail($manager->email)) {
+                    Sendmail(
+                        'مدير ادارة',
+                        'تم أضافتك كمدير ادارة',
+                        $manager->file_number,
+                        $request->password ? $request->password : null,
+                        $manager->email
+                    );
+                } else {
+                    return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
+                }
             }
         }
         // } else {
@@ -533,7 +535,8 @@ class DepartmentController extends Controller
             $reservation_allowance_type = 2; // Only '2' selected
         } elseif (in_array('3', $part)) {
             $reservation_allowance_type = 4; // Only '3' selected
-        }        $file_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->file_number);
+        }
+        $file_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->file_number);
         $file_numbers = array_filter(explode(',', $file_numbers)); // Ensure it's an array of valid numbers
         $manager = $request->mangered ? User::where('file_number', $request->mangered)->first() : null;
 
@@ -654,7 +657,7 @@ class DepartmentController extends Controller
         }
         $rules = Rule::where('id', 3)->get();
 
-        return view('sub_departments.edit', compact('department', 'managers', 'employees', 'sect','rules'));
+        return view('sub_departments.edit', compact('department', 'managers', 'employees', 'sect', 'rules'));
     }
 
     /**
