@@ -581,17 +581,17 @@ class UserController extends Controller
 
         return $data;
     }
-    public function unsigned($id)
+    public function unsigned(Request $request)
     {
         //
-        $user = User::find($id);
+        $user = User::find($request->id_employee);
         $log = DB::table('user_departments')->insert([
             'user_id' => $user->id,
             'department_id' => $user->department_id,
             'flag' => "0",
             'created_at' => now(),
         ]);
-        $user = User::find($id);
+        $user = User::find($request->id_employee);
         $user->department_id  = Null;
         $user->save();
         // $id = 1;
