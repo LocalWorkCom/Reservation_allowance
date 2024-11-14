@@ -295,8 +295,8 @@ class UserController extends Controller
             // }
 
             Auth::login($user); // Log the user in
-            $update=User::find($user->id);
-            $update->last_login=now();
+            $update = User::find($user->id);
+            $update->last_login = now();
             $update->save();
             return redirect()->route('home');
         }
@@ -581,22 +581,34 @@ class UserController extends Controller
 
         return $data;
     }
-    public function unsigned($id)
+    public function unsigned(Request $request)
     {
         //
-        $user = User::find($id);
+        $user = User::find($request->id_employee);
         $log = DB::table('user_departments')->insert([
             'user_id' => $user->id,
             'department_id' => $user->department_id,
             'flag' => "0",
             'created_at' => now(),
         ]);
-        $user = User::find($id);
+        $user = User::find($request->id_employee);
         $user->department_id  = Null;
+        $user->sector  = Null;
         $user->save();
         // $id = 1;
+        $department = departements::where('manager', $request->id_employee)->first();
+        if ($department) {
+            $department->manager = null;
+            $department->save();
+        }
+        $sector = sector::where('manager', $request->id_employee)->first();
+        if ($sector) {
+            $sector->manager = null;
+            $sector->save();
+        }
 
-        return redirect()->back()->with('success', 'User created successfully.');
+
+        return redirect()->back()->with('success', 'تم الغاء التعيين بنجاح');
     }
 
     /**
@@ -972,6 +984,16 @@ class UserController extends Controller
         // Save user data
         $user->save();
 
+        $department = departements::where('manager', $id)->where('id', '<>', $request->public_administration)->first();
+        if ($department) {
+            $department->manager = null;
+            $department->save();
+        }
+        $sector = sector::where('manager', $id)->where('sector','<>', $request->sector)->first();
+        if ($sector) {
+            $sector->manager = null;
+            $sector->save();
+        }
         session()->flash('success', 'تم الحفظ بنجاح.');
         return redirect()->route('user.employees');
     }
