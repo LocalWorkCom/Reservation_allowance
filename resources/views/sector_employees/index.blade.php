@@ -8,7 +8,7 @@
         text-align: center;
         
     }
- 
+
     .index-column { width: 5% !important; }
     .name-column { width: 10% !important; }
     .file-number-column { width: 10% !important; }
@@ -27,7 +27,7 @@
 @endpush
 
 @section('title')
-    قطاع 
+    قطاع
 @endsection
 
 @section('content')
@@ -35,7 +35,6 @@
     <div class="container welcome col-11">
         <div class="d-flex justify-content-between">
             <p>تفاصيل بدل حجز لموظفين قطاع {{ $sectorName }}</p>
-            
             <button id="print-report" class="btn btn-primary">طباعة</button>
 
         </div>
@@ -85,38 +84,42 @@
             d.year = '{{ $year }}';
         }
     },
-    columns: [
-        { data: null, name: 'order', orderable: false, searchable: false },
-        { data: 'file_number', name: 'file_number' }, 
-        { data: 'name', name: 'name' },
-        { data: 'grade', name: 'grade' },
-        { data: 'department', name: 'department' }, 
-        { data: 'days', name: 'days' },
-        { data: 'allowance', name: 'allowance' },
-    ],
-    order: [[1, 'asc']],
-    "oLanguage": {
-        "sSearch": "",
-        "sSearchPlaceholder": "بحث",
-        "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
-        "sInfoEmpty": 'لا توجد بيانات متاحه',
-        "sInfoFiltered": '(تم تصفية من _MAX_ اجمالى البيانات)',
-        "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
-        "sZeroRecords": 'نأسف لا توجد نتيجة مطابقة',
-        "oPaginate": {
-            "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
-            "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
-            "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
-            "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
-        }
-    },
-    pagingType: "full_numbers",
-            fnDrawCallback: function(oSettings) {
-                var page = this.api().page.info().pages;
-                if (page == 1) {
-                    $('.dataTables_paginate').css('visibility', 'hidden');
+            columns: [
+                { data: null, name: 'order', orderable: false, searchable: false },
+                { data: 'name', name: 'name' },
+                { data: 'file_number', name: 'file_number' }, 
+                { data: 'grade', name: 'grade' },
+                { data: 'department', name: 'department' },
+                { data: 'days', name: 'days' },
+                { data: 'allowance', name: 'allowance' },
+            ],
+            order: [[1, 'asc']],
+            "oLanguage": {
+                "sSearch": "",
+                "sSearchPlaceholder": "بحث",
+                "sInfo": 'اظهار صفحة PAGE من PAGES',
+                "sInfoEmpty": 'لا توجد بيانات متاحه',
+                "sInfoFiltered": '(تم تصفية  من MAX اجمالى البيانات)',
+                "sLengthMenu": 'اظهار MENU عنصر لكل صفحة',
+                "sZeroRecords": 'نأسف لا توجد نتيجة',
+                "oPaginate": {
+                    "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
+                    "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
+                    "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
+                    "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
                 }
             },
+            pagingType: "full_numbers",
+            "fnDrawCallback": function(oSettings) {
+                    var api = this.api();
+                    var pageInfo = api.page.info();
+                    // Check if the total number of records is less than or equal to the number of entries per page
+                    if (pageInfo.recordsTotal <= 10) { // Adjust this number based on your page length
+                        $('.dataTables_paginate').css('visibility', 'hidden'); // Hide pagination
+                    } else {
+                        $('.dataTables_paginate').css('visibility', 'visible'); // Show pagination
+                    }
+                },
             createdRow: function(row, data, dataIndex) {
                 $('td', row).eq(0).html(dataIndex + 1);
             }
@@ -124,8 +127,8 @@
     });
 
     $('#print-report').click(function() {
-    const month = '{{ $month }}'; 
-    const year = '{{ $year }}'; 
+    const month = '{{ $month }}';
+    const year = '{{ $year }}';
     const url = `{{ route('sectorEmployees.printReport', ['sectorId' => $sectorId]) }}?month=${month}&year=${year}`;
     window.open(url, '_blank');
 });
