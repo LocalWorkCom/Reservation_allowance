@@ -67,7 +67,11 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: '{{ route("statistics_subdepartments.getAll", ["department_id" => $department_id]) }}'
+                url: '{{ route("statistics_subdepartments.getAll", ["department_id" => $department_id]) }}',
+                data: function(d) {
+            d.month = $('#month-select').val(); 
+            d.year = $('#year-select').val(); 
+        }
             },
             columns: [
                 { data: null, name: 'order', orderable: false, searchable: false },
