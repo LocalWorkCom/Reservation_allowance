@@ -192,15 +192,15 @@ class sectorsController extends Controller
             'name.required' => 'اسم الحقل مطلوب.',
             // 'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
-            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.00.',
-            'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
+           // 'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.00.',
+            //'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
              'part.required' => 'نوع بدل الحجز مطلوب.',
         ];
 
         // Validation rules
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'budget' => 'nullable|numeric|min:0.00|max:1000000',
+            'budget' => 'nullable|numeric',
             'part' => 'required',
         ], $messages);
 
@@ -366,14 +366,14 @@ class sectorsController extends Controller
             // 'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             //'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.00.',
-            'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
+            //'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
         ];
 
         // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'budget' => 'nullable|numeric|min:0.00|max:1000000',
+            'budget' => 'nullable|numeric',
             'part' => 'required',
         ], $messages);
 
