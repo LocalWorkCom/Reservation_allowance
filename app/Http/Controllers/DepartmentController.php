@@ -460,19 +460,17 @@ class DepartmentController extends Controller
             $manager->save();
 
             // Send email to new manager
-            if ($manager && $manager->email) {
-                // Check if the email is valid
-                if (isValidEmail($manager->email)) {
-                    Sendmail(
-                        'مدير ادارة',
-                        'تم أضافتك كمدير ادارة',
-                        $manager->file_number,
-                        $request->password ? $request->password : null,
-                        $manager->email
-                    );
-                } else {
-                    return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
-                }
+            if ($manager->email && isValidEmail($manager->email)) {
+                // Send email to the new manager
+                Sendmail(
+                    'مدير ادارة',
+                    'تم أضافتك كمدير ادارة',
+                    $manager->file_number,
+                    $request->password ? $request->password : null,
+                    $manager->email
+                );
+            } else {
+                return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
             }
         }
         // } else {
@@ -756,7 +754,7 @@ class DepartmentController extends Controller
                     }
                     $newManager->save();
 
-                    if ($newManager->email) {
+                    if ($newManager->email && isValidEmail($newManager->email)) {
                         // Send email to the new manager
                         Sendmail(
                             'مدير ادارة', // Subject
@@ -766,7 +764,7 @@ class DepartmentController extends Controller
                             $newManager->email
                         );
                     } else {
-                        return redirect()->route('departments.index', ['id' => $request->sector]);
+                        return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
                     }
                 }
             }
@@ -779,11 +777,11 @@ class DepartmentController extends Controller
                 $Manager->rule_id = $request->rule;
                 $Manager->password = Hash::make($request->password);
                 $Manager->save();
-                if ($Manager->email) {
+                if ($Manager->email && isValidEmail($Manager->email)) {
                     // Send email to the new manager
                     Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, $request->password ? $request->password : null, $Manager->email);
                 } else {
-                    return redirect()->route('departments.index', ['id' => $request->sector]);
+                    return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
                 }
             }
         }
@@ -920,7 +918,7 @@ class DepartmentController extends Controller
                         $newManager->password = Hash::make($request->password);
                     }
                     $newManager->save();
-                    if ($newManager->email) {
+                    if ($newManager->email && isValidEmail($newManager->email)) {
                         // Send email notification to the new manager
                         Sendmail(
                             'مدير ادارة فرعية', // Subject
@@ -930,7 +928,7 @@ class DepartmentController extends Controller
                             $newManager->email
                         );
                     } else {
-                        return redirect()->route('sub_departments.index', ['id' => $request->sector]);
+                        return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
                     }
                 }
             }
@@ -943,10 +941,10 @@ class DepartmentController extends Controller
                 $Manager->rule_id = $request->rule;
                 $Manager->password = Hash::make($request->password);
                 $Manager->save();
-                if ($manager->email) {
+                if ($Manager->email && isValidEmail($Manager->email)) {
                     Sendmail('مدير ادارة فرعية', 'تم أضافتك كمدير ادارة فرعية ' . $request->name, $Manager->file_number, $request->password ? $request->password : null, $Manager->email);
                 } else {
-                    return redirect()->route('sub_departments.index', ['id' => $request->sector]);
+                    return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
                 }
             }
         }
