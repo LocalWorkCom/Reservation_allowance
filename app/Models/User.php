@@ -73,6 +73,7 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+    // protected $appends = ['hash_id'];
 
     /**
      * The attributes that should be cast.
@@ -185,4 +186,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Sector::class, 'manager');
     }
+
+    // public function getHashIdAttribute()
+    // {
+    //     return md5($this->id);
+    // }
 }

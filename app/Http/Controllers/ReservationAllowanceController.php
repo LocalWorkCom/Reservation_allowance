@@ -384,7 +384,9 @@ class ReservationAllowanceController extends Controller
             $get_departements = departements::with('children')->where('id', '!=', 1)->where('id', $department_id)->get();
         }
 
-        //return $employee_not_found;
+        $cache_name = auth()->user()->id."_employee_new_add";
+        Cache::put($cache_name, $employee_new_add);
+        //return Cache::get($cache_name);
           
         return view('reservation_allowance.index_check_store', compact('type', 'sectors', 'get_departements', 'to_day', 'employee_not_found', 'employee_not_dept', 'employee_new_add', 'department_id', 'sector_id'));
     }
@@ -395,17 +397,31 @@ class ReservationAllowanceController extends Controller
     public function store_all(Request $request)
     {
         //try{
-            /*$messages = [
-                'Civil_number.required' => 'رقم الملف مطلوب ولا يمكن تركه فارغاً.'
+            $messages = [
+                'sector_id.required' => 'القطاع مطلوب ولا يمكن تركه فارغاً.'
             ];
 
             $validatedData = Validator::make($request->all(), [
-                'Civil_number' => 'required'
+                'sector_id' => 'required'
             ], $messages);
 
             if ($validatedData->fails()) {
                 return redirect()->back()->withErrors($validatedData)->withInput();
-            }*/
+            }
+
+            $sector_messages = 'القطاع مطلوب ولا يمكن تركه فارغاً.';
+            $employee_new_add_messages = 'لا يوجد موظفين لديهم الاحقية لاضافة بدل حجز لهم.';
+
+            $cache_name = auth()->user()->id."_employee_new_add";
+            $employee_new_add = Cache::get($cache_name);
+
+            if($request->sector_id == 0 && $employee_new_add == null){
+                return redirect()->back()->withErrors($employee_new_add_messages)->withInput();
+            }
+
+            if($request->sector_id == 0 && $employee_new_add != null){
+                return redirect()->back()->withErrors($sector_messages)->withInput();
+            }
 
             $user = auth()->user();
             $to_day = $request->date;
@@ -729,11 +745,16 @@ class ReservationAllowanceController extends Controller
         if($sector_id != 0){
             //$data = User::query()->where('sector', $sector_id)->where('flag', 'employee');
             $data = User::query()->where('sector', $sector_id);
+            $get_employee_reservation = ReservationAllowance::Query()->where('date', $today)->where('sector_id', $sector_id);
             if($departement_id != 0){
                 $data = $data->where('department_id', $departement_id);
+                $get_employee_reservation = $get_employee_reservation->where('departement_id', $departement_id);
             }else{
                 $data = $data->where('department_id', null);
+                $get_employee_reservation = $get_employee_reservation->where('departement_id', null);
             }
+            $get_employee_reservation = $get_employee_reservation->pluck('user_id');
+            $data = $data->whereNotIn('id', $get_employee_reservation);
             $data = $data->get();
         }
 

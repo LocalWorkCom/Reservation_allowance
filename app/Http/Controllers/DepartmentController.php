@@ -32,10 +32,10 @@ class DepartmentController extends Controller
         } elseif (Auth::user()->rule->id == 3) {
             $departments = departements::where('id', auth()->user()->department_id);
         }
-        $departments = departements::where('sector_id', $id)->get();
-
         // Fetch the related sector information
         $sectors = Sector::findOrFail($id);
+        // $sectors = get_by_md5_id($id, 'sectors');
+        $departments = departements::where('sector_id', $sectors->id)->get();
 
         return view('departments.index', compact('departments', 'sectors'));
     }
@@ -75,7 +75,6 @@ class DepartmentController extends Controller
                 ->orderBy('id', 'desc')
                 ->get();
         }
-
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
                 return '<button class="btn btn-primary btn-sm">Edit</button>';
@@ -87,7 +86,7 @@ class DepartmentController extends Controller
                     case 2:
                         return 'حجز جزئى';
                     case 4:
-                        return 'لا يوجد حجز';
+                        return 'لا يوجد بدل حجز';
                     default:
                         return 'حجز كلى و حجز جزئى';
                 }
@@ -211,6 +210,8 @@ class DepartmentController extends Controller
     {
 
         $users = User::where('flag', 'employee')->where('department_id', NULL)->get();
+        // $parentDepartment = get_by_md5_id($id, 'departements');
+
         $departments = departements::where('parent_id', $id)->get();
         $parentDepartment = departements::findOrFail($id);
 
@@ -234,6 +235,8 @@ class DepartmentController extends Controller
 
     public function getSub_Department(Request $request, $id)
     {
+        // $parentDepartment = get_by_md5_id($id, 'departments');
+
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
             $data = departements::where('parent_id', $request->id)
                 ->withCount('iotelegrams', 'outgoings', 'children')
@@ -258,7 +261,7 @@ class DepartmentController extends Controller
                 return match ((int) $row->reservation_allowance_type) {
                     1 => 'حجز كلى',
                     2 => 'حجز جزئى',
-                    4 => 'لا يوجد حجز',
+                    4 => 'لا يوجد بدل حجز',
                     3 => 'حجز كلى و حجز جزئى',
                     default => 'غير معروف',
                 };
@@ -312,6 +315,7 @@ class DepartmentController extends Controller
      */
     public function create($id)
     {
+        // $sectors = get_by_md5_id($id, 'sectors');
         $sectors = Sector::findOrFail($id);
         $managers = User::where('id', '!=', auth()->user()->id)
             ->whereNot('id', $sectors->manager)
@@ -319,7 +323,7 @@ class DepartmentController extends Controller
                 $query->where('sector', $id)
                     ->orWhereNull('sector');
             })
-            ->whereNull('department_id') // Ensure all users do not have a department
+            ->whereNull('department_id')
             ->get();
 
         $rules = Rule::where('id', 3)->get();
@@ -331,6 +335,8 @@ class DepartmentController extends Controller
     public function create_1($id)
     {
         $department = departements::findOrFail($id);
+
+        // $department = get_by_md5_id($id, 'departments');
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
             $employees = User::where(function ($query) use ($id) {
                 $query->where('department_id', $id)
@@ -601,12 +607,12 @@ class DepartmentController extends Controller
     }
     public function show($id)
     {
+        // $department = get_by_md5_id_relation($id, 'sectors', array('manager', 'managerAssistant', 'children', 'parent'));
         $department = departements::with(['manager', 'managerAssistant', 'children', 'parent'])->findOrFail($id);
         return view('departments.show', compact('department'));
     }
     public function edit(departements $department)
     {
-        // dd($department);
         $id = $department->sector_id;
         $managers = User::where('id', '!=', auth()->user()->id)
 
@@ -628,6 +634,8 @@ class DepartmentController extends Controller
     }
     public function edit_1(departements $department)
     {
+        // $department = get_by_md5_id_relation($department->parent_id, 'departments', array('sectors'));
+
         $sect = departements::with(['sectors'])->findOrFail($department->parent_id);
         if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
 
