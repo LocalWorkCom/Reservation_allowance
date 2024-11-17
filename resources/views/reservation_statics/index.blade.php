@@ -75,12 +75,27 @@
                             return `<a href="{{ url('/statistics_subdepartments') }}/${row.id}?month={{ request()->query('month') }}&year={{ request()->query('year') }}" style="color: blue !important;">${data}</a>`;
                         },
                     },
-                    { data: 'sub_departments_count', name: 'sub_departments_count' },
+                    { data: 'sub_departments_count', name: 'sub_departments_count',
+                        render: function (data, type, row) {
+                            return `<a href="{{ url('/statistics_subdepartments') }}/${row.id}?month={{ request()->query('month') }}&year={{ request()->query('year') }}" style="color: blue !important;">${data}</a>`;
+                        },
+                     },
                     { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' },
                     { data: 'registered_by', name: 'registered_by' },
                     { data: 'remaining_amount', name: 'remaining_amount' },
                     { data: 'number_of_employees', name: 'number_of_employees' },
-                    { data: 'received_allowance_count', name: 'received_allowance_count' },
+                    { 
+                    data: 'received_allowance_count', 
+                    name: 'received_allowance_count', 
+                    render: function(data, type, row) {
+                        // Add query parameters for month and year
+                        const month = '{{ request()->query('month') }}';
+                        const year = '{{ request()->query('year') }}';
+                        
+                        // Link to a route that shows employees for this department
+                        return `<a href="/department-employees/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                    },
+},
                     { data: 'did_not_receive_allowance_count', name: 'did_not_receive_allowance_count' },
                 ],
                 order: [[1, 'asc']],
