@@ -109,7 +109,7 @@ class SectorEmployeesDetailsController extends Controller
         if (!$month || !$year) {
             return redirect()->back()->withErrors('Please select a valid month and year.');
         }
-        
+    
         $sector = Sector::find($sectorId);
     
         $employees = User::whereIn('id', function ($query) use ($sectorId, $month, $year) {
@@ -156,6 +156,7 @@ class SectorEmployeesDetailsController extends Controller
             $totalAllowance = $fullAllowance + $partialAllowance;
     
             return [
+                'file_number' => $user->file_number, // Add file number
                 'user' => $user,
                 'department' => $user->department->name ?? 'N/A',
                 'grade' => $user->grade->name ?? 'N/A',
@@ -183,5 +184,6 @@ class SectorEmployeesDetailsController extends Controller
     
         return $pdf->Output("sector_employees_{$sector->name}.pdf", 'I');
     }
+    
     
 }

@@ -33,8 +33,8 @@ class ReservationStaticsController extends Controller
     public function getAll(Request $request, $sector_id)
     {
         try {
-            $month = $request->input('month');
-            $year = $request->input('year');
+            $month = $request->input('month', now()->month); // Default to current month
+            $year = $request->input('year', now()->year);    // Default to current year
     
             $query = departements::withCount('children')
                 ->where('sector_id', $sector_id)
