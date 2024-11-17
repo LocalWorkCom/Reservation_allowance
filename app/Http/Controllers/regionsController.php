@@ -52,13 +52,13 @@ class regionsController extends Controller
     }
     //add government
     public function addgovernment(Request $request){
-       
+
         $requestinput=$request->except('_token');
         $job = new Government();
         $job->name=$request->nameadd;
         $job->save();
         $message="تم اضافه المحافظه";
-        return redirect()->route('government.all',compact('message'));
+        return redirect()->route('government.all')->with('message', $message);
         //return redirect()->back()->with(compact('activeTab','message'));
     }
     //show government
@@ -84,8 +84,8 @@ class regionsController extends Controller
         $gover->name=$request->name;
         $gover->save();
 
-        $message='';
-        return redirect()->route('government.all',compact('message'));
+        $message='تم التعديل بنجاح';
+        return redirect()->route('government.all')->with('message', $message);
      }
 
     //END government
@@ -94,7 +94,7 @@ class regionsController extends Controller
      */
     public function index($id)
     {
-        
+
         return view("regions.index",compact("id"));
     }
     public function getregions(Request $request)
@@ -125,7 +125,7 @@ class regionsController extends Controller
     })
     ->rawColumns(['action'])
     ->make(true);
-        
+
     }
     public function getGovernorates($sector)
     {
@@ -153,7 +153,7 @@ class regionsController extends Controller
      */
     public function store(Request $request)
     {
-            
+
         $requestinput=$request->except('_token');
         $region = new Region();
         $region->name=$request->nameadd;
@@ -161,10 +161,10 @@ class regionsController extends Controller
         $region->save();
         $message="تم اضافه المنطقه";
         $id=0;
-        return redirect()->route('regions.index',compact('message' ,'id'));
+        return redirect()->route('regions.index',compact('id'))->with('message', $message);
     }
 
-   
+
     public function update(Request $request)
     {
         $region = Region::find($request->id);
@@ -179,7 +179,7 @@ class regionsController extends Controller
 
         $message='تم التعديل على المنطقه';
         $id=0;
-        return redirect()->route('regions.index',compact('message' ,'id'));
+        return redirect()->route('regions.index',compact('id'))->with('message', $message);
     }
 
     /**

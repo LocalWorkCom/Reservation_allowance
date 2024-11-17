@@ -48,13 +48,15 @@
             <div class="container col-11" style="background-color:transparent;">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/">الرئيسيه</a></li>
+                        <li class="breadcrumb-item"><a href="/">الرئيسيه</a>
+                        </li>
                         <li class="breadcrumb-item"><a
                                 href="{{ route('departments.index', ['id' => $department->sector_id]) }}">
                                 {{-- {{ $department->name }} --}} الأدارات
                             </a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page"><a href=""> تعديل ادارة</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><a
+                                href=""> تعديل ادارة</a></li>
                     </ol>
                 </nav>
             </div>
@@ -67,9 +69,17 @@
         <br>
         <div class="row">
             <div class="container  col-11 mt-3 p-0 ">
+<<<<<<< HEAD
                 <div class="container col-10 mt-5 mb-3 pb-5" style="border:0.5px solid #C7C7CC;">
                     <form action="{{ route('departments.update', $department->hash_id) }}" method="POST"
                         enctype="multipart/form-data">
+=======
+                <div class="container col-10 mt-5 mb-3 pb-5"
+                    style="border:0.5px solid #C7C7CC;">
+                    <form
+                        action="{{ route('departments.update', $department->id) }}"
+                        method="POST" enctype="multipart/form-data">
+>>>>>>> e854c43a9a921d57a66b1928e5567b259379a062
                         @csrf
                         @method('PUT')
 
@@ -82,92 +92,134 @@
                                 </ul>
                             </div>
                         @endif
-                        <div class="form-row mx-3 mt-4 d-flex justify-content-center">
+                        <div
+                            class="form-row mx-3 mt-4 d-flex justify-content-center">
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="sector">اختر القطاع </label>
-                                <input type="text" name="name" id="name" class="form-control"
-                                    value="{{ $department->sectors->name }}" disabled>
-                                <input type="hidden" name="sector" id="sector" class="form-control"
+                                <input type="text" name="name" id="name"
+                                    class="form-control"
+                                    value="{{ $department->sectors->name }}"
+                                    disabled>
+                                <input type="hidden" name="sector" id="sector"
+                                    class="form-control"
                                     value="{{ $department->sectors->id }}">
                                 @error('sector')
-                                    <div class="alert alert-danger">{{ $message }}</div>
+                                    <div class="alert alert-danger">{{ $message }}
+                                    </div>
                                 @enderror
                             </div>
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="name">أسم الأداره الرئيسية</label>
-                                <input type="text" name="name" class="form-control" autocomplete="one-time-code"
+                                <input type="text" name="name"
+                                    class="form-control"
+                                    autocomplete="one-time-code"
                                     value="{{ $department->name }}">
                                 @error('name')
-                                    <div class="alert alert-danger">{{ $message }}</div>
+                                    <div class="alert alert-danger">{{ $message }}
+                                    </div>
                                 @enderror
                             </div>
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="budget">ميزانية بدل حجز</label>
-                                <input type="text" name="budget" class="form-control" autocomplete="one-time-code"
+                                <input type="text" name="budget"
+                                    class="form-control"
+                                    autocomplete="one-time-code"
                                     value="{{ $department->reservation_allowance_amount }}">
                                 @error('budget')
-                                    <div class="alert alert-danger">{{ $message }}</div>
+                                    <div class="alert alert-danger">{{ $message }}
+                                    </div>
                                 @enderror
                             </div>
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="">صلاحيه الحجز</label>
                                 <div class="d-flex mt-3 " dir="rtl">
-                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="1"  id="fullBooking"
-                                        @if ($department->reservation_allowance_type == 1 || $department->reservation_allowance_type == 3) checked @endif name="part[]">
+                                    <input type="checkbox"
+                                        class="toggle-radio-buttons mx-2"
+                                        value="1" id="fullBooking"
+                                        @if (
+                                            $department->reservation_allowance_type == 1 ||
+                                                $department->reservation_allowance_type == 3) checked @endif
+                                        name="part[]">
                                     <label for="fullBooking"> حجز كلى</label>
-                                    <input type="checkbox"  class="toggle-radio-buttons mx-2" value="2"  name="part[]" id="partialBooking"
-                                        @if ($department->reservation_allowance_type == 2 || $department->reservation_allowance_type == 3) checked @endif>
+                                    <input type="checkbox"
+                                        class="toggle-radio-buttons mx-2"
+                                        value="2" name="part[]"
+                                        id="partialBooking"
+                                        @if (
+                                            $department->reservation_allowance_type == 2 ||
+                                                $department->reservation_allowance_type == 3) checked @endif>
                                     <label for="partialBooking">حجز جزئى</label>
-                                    <input type="checkbox"  class="toggle-radio-buttons mx-2" value="3" name="part[]" id="noBooking"
-                                    @if ( $department->reservation_allowance_type == 4) checked @endif>
-                                <label for="noBooking">لا يوجد حجز</label>
+                                    <input type="checkbox"
+                                        class="toggle-radio-buttons mx-2"
+                                        value="3" name="part[]" id="noBooking"
+                                        @if ($department->reservation_allowance_type == 4) checked @endif>
+                                    <label for="noBooking">لا يوجد بدل حجز</label>
                                     {{-- @error('budget')
                                         <div class="alert alert-danger">{{ $message }}</div>
                                     @enderror --}}
                                 </div>
                             </div>
-                            <div class="form-group col-md-10 mx-md-2" id="manager">
+                            <div class="form-group col-md-10 mx-md-2"
+                                id="manager">
                                 <label for="mangered">رقم ملف المدير</label>
-                                <input type="text" name="mangered" id="mangered" class="form-control"
+                                <input type="text" name="mangered" id="mangered"
+                                    class="form-control"
                                     autocomplete="one-time-code">
 
                                 @error('mangered')
-                                    <div class="alert alert-danger">{{ $message }}</div>
+                                    <div class="alert alert-danger">{{ $message }}
+                                    </div>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-10 mx-md-2" id="password_field" style="display: none;">
+                            <div class="form-group col-md-10 mx-md-2"
+                                id="password_field" style="display: none;">
                                 <label for="password">كلمة المرور</label>
-                                <input type="password" name="password" id="password" class="form-control">
+                                <input type="password" name="password"
+                                    id="password" class="form-control">
                                 @error('password')
-                                    <div class="alert alert-danger">{{ $message }}</div>
+                                    <div class="alert alert-danger">{{ $message }}
+                                    </div>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-10 mx-md-2" id="rule_field" style="display: none;">
+                            <div class="form-group col-md-10 mx-md-2"
+                                id="rule_field" style="display: none;">
                                 <label for="rule">الصلاحيات</label>
-                                <select name="rule" id="rule" class="form-control">
+                                <select name="rule" id="rule"
+                                    class="form-control">
                                     <option value="">اختار الصلاحية</option>
                                     @foreach ($rules as $rule)
-                                        <option value="{{ $rule->id }}">{{ $rule->name }}</option>
+                                        <option value="{{ $rule->id }}">
+                                            {{ $rule->name }}</option>
                                     @endforeach
                                 </select>
                                 @error('rule')
-                                    <div class="alert alert-danger">{{ $message }}</div>
+                                    <div class="alert alert-danger">
+                                        {{ $message }}</div>
                                 @enderror
                             </div>
 
-                            <div class="form-group col-md-10 mx-md-2" id="manager_details">
-                                <div class="col-12 div-info d-flex justify-content-between" style="direction: rtl">
+                            <div class="form-group col-md-10 mx-md-2"
+                                id="manager_details">
+                                <div class="col-12 div-info d-flex justify-content-between"
+                                    style="direction: rtl">
                                     <div class="col-7">
-                                        <div class="col-12 div-info-padding"><b>الرتبه : <span></span></b></div>
-                                        <div class="col-12 div-info-padding"><b>الأقدميه : <span></span></b></div>
+                                        <div class="col-12 div-info-padding">
+                                            <b>الرتبه : <span></span></b></div>
+                                        <div class="col-12 div-info-padding">
+                                            <b>الأقدميه : <span></span></b></div>
 
-                                        <div class="col-12 div-info-padding"><b>المسمى الوظيفى: <span></span></b></div>
+                                        <div class="col-12 div-info-padding">
+                                            <b>المسمى الوظيفى: <span></span></b>
+                                        </div>
                                     </div>
                                     <div class="col-5">
-                                        <div class="col-12 div-info-padding"><b>الأسم: <span></span></b></div>
+                                        <div class="col-12 div-info-padding">
+                                            <b>الأسم: <span></span></b></div>
 
-                                        <div class="col-12 div-info-padding"><b>الهاتف: <span></span></b></div>
-                                        <div class="col-12 div-info-padding"><b>الأيميل: <span></span></b></div>
+                                        <div class="col-12 div-info-padding">
+                                            <b>الهاتف: <span></span></b></div>
+                                        <div class="col-12 div-info-padding">
+                                            <b>الأيميل: <span></span></b></div>
 
                                     </div>
                                 </div>
@@ -179,17 +231,22 @@
 
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="description">الوصف </label>
-                                <input type="text" name="description" class="form-control"
-                                    autocomplete="one-time-code" value="{{ $department->description }}">
+                                <input type="text" name="description"
+                                    class="form-control"
+                                    autocomplete="one-time-code"
+                                    value="{{ $department->description }}">
                                 @error('description')
-                                    <div class="alert alert-danger">{{ $message }}</div>
+                                    <div class="alert alert-danger">
+                                        {{ $message }}</div>
                                 @enderror
                             </div>
 
 
                             <div class="input-group moftsh col-md-10 mx-md-2">
-                                <label for="file_number" class="col-12"> أرقام الملفات</label>
-                                <textarea class="form-control" name="file_number" id="file_number" style="height: 100px">
+                                <label for="file_number" class="col-12"> أرقام
+                                    الملفات</label>
+                                <textarea class="form-control" name="file_number" id="file_number"
+                                    style="height: 100px">
                                             @foreach ($employees as $employee)
 {{ $employee->file_number }}
 @endforeach
@@ -234,12 +291,18 @@
                         sector_id: sectorId
                     }, // Send sector_id to the backend
                     success: function(data) {
-                        $('#manager_details').find('span').eq(0).text(data.rank);
-                        $('#manager_details').find('span').eq(1).text(data.seniority);
-                        $('#manager_details').find('span').eq(2).text(data.job_title);
-                        $('#manager_details').find('span').eq(3).text(data.name);
-                        $('#manager_details').find('span').eq(4).text(data.phone);
-                        $('#manager_details').find('span').eq(5).text(data.email);
+                        $('#manager_details').find('span').eq(0).text(
+                            data.rank);
+                        $('#manager_details').find('span').eq(1).text(
+                            data.seniority);
+                        $('#manager_details').find('span').eq(2).text(
+                            data.job_title);
+                        $('#manager_details').find('span').eq(3).text(
+                            data.name);
+                        $('#manager_details').find('span').eq(4).text(
+                            data.phone);
+                        $('#manager_details').find('span').eq(5).text(
+                            data.email);
                         $('#manager_details').show();
 
                         // Show password and rule fields for employees
@@ -267,8 +330,10 @@
 
                                 } else {
                                     // Handle cancel action: clear the manager input field
-                                    $('#mangered').val(''); // Clear the input field
-                                    $('#manager_details').hide(); // Hide the manager details
+                                    $('#mangered').val(
+                                    ''); // Clear the input field
+                                    $('#manager_details')
+                                .hide(); // Hide the manager details
                                     $('#password_field').hide();
                                     $('#rule_field').hide();
                                 }
@@ -326,25 +391,28 @@
         }
     </script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
             const noBookingCheckbox = document.getElementById('noBooking');
-            const fullBookingCheckbox = document.getElementById('fullBooking');
-            const partialBookingCheckbox = document.getElementById('partialBooking');
+            const fullBookingCheckbox = document.getElementById(
+                'fullBooking');
+            const partialBookingCheckbox = document.getElementById(
+                'partialBooking');
 
-            noBookingCheckbox.addEventListener('change', function () {
+            noBookingCheckbox.addEventListener('change', function() {
                 if (this.checked) {
                     fullBookingCheckbox.checked = false;
                     partialBookingCheckbox.checked = false;
                 }
             });
 
-            [fullBookingCheckbox, partialBookingCheckbox].forEach(checkbox => {
-                checkbox.addEventListener('change', function () {
-                    if (this.checked) {
-                        noBookingCheckbox.checked = false;
-                    }
+            [fullBookingCheckbox, partialBookingCheckbox].forEach(
+                checkbox => {
+                    checkbox.addEventListener('change', function() {
+                        if (this.checked) {
+                            noBookingCheckbox.checked = false;
+                        }
+                    });
                 });
-            });
         });
     </script>
 @endsection

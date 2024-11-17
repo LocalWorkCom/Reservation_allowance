@@ -160,7 +160,7 @@
 
                         <input type="checkbox" class="toggle-radio-buttons mx-2" value="3" id="noBooking"
                             style="height:30px;" @if ($data->reservation_allowance_type == 4) checked @endif name="part[]">
-                        <label for="noBooking" class="col-12">لا يوجد حجز</label>
+                        <label for="noBooking" class="col-12">لا يوجد بدل حجز</label>
 
                         @error('part')
                             <div class="alert alert-danger">{{ $message }}</div>
@@ -324,5 +324,5 @@
             });
         });
     </script>
-   
+
 @endsection
