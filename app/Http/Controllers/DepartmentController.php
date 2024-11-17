@@ -777,11 +777,8 @@ class DepartmentController extends Controller
                             $newManager->email
                         );
                     } else {
-<<<<<<< HEAD
                         return redirect()->route('departments.index', ['id' => $sectors_details->hash_id]);
-=======
                         return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
->>>>>>> e854c43a9a921d57a66b1928e5567b259379a062
                     }
                 }
             }
@@ -800,11 +797,8 @@ class DepartmentController extends Controller
                     // Send email to the new manager
                     Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, $request->password ? $request->password : null, $Manager->email);
                 } else {
-<<<<<<< HEAD
                     return redirect()->route('departments.index', ['id' => $sectors_details->hash_id]);
-=======
                     return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
->>>>>>> e854c43a9a921d57a66b1928e5567b259379a062
                 }
             }
         }
