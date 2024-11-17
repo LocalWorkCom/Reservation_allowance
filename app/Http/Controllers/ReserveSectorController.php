@@ -53,16 +53,15 @@ class ReserveSectorController extends Controller
                         ->count();
                 })
                 ->addColumn('reservation_allowance_budget', function ($row) use ($month, $year) {
-                    if ($row->reservation_allowance_amount == 0) {
-                        return "ميزانية مفتوحه"; 
-                    }
-
+                   
                     $amount = DB::table('history_allawonces')
                         ->where('sector_id', $row->id)
                         ->whereYear('date', $year)
                         ->whereMonth('date', $month)
                         ->value('amount');
-    
+                        if (is_null($amount) || $amount == 0) {
+                            return "ميزانية مفتوحه"; // Open budget
+                        }
                     return number_format($amount, 2) . ' د.ك';
                 })
                 // Total registered amount for the selected period

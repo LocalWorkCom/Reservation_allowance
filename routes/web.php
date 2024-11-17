@@ -40,6 +40,7 @@ use App\Http\Controllers\SubDepartmentReservationController;
 use App\Http\Controllers\PrisonersDetailsController;
 use App\Http\Controllers\SectorEmployeesDetailsController;
 use App\Http\Controllers\ReservationReportController;
+use App\Http\Controllers\DepartmentEmployeesDetailsController;
 
 
 
@@ -516,6 +517,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/sector-employees/{sectorId}', [SectorEmployeesDetailsController::class, 'index'])->name('sectorEmployees.index');
     Route::get('/sector-employees/data/{sectorId}', [SectorEmployeesDetailsController::class, 'getData'])->name('sectorEmployees.getData');
     Route::get('/sector/{sectorId}/printReport', [SectorEmployeesDetailsController::class, 'printReport'])->name('sectorEmployees.printReport');
+   
+    //reservation statics per persons in selected department
+    Route::get('/department-employees/{department_id}', [DepartmentEmployeesDetailsController::class, 'index'])->name('department.employees');
+    Route::get('/department-employees/data/{department_id}', [DepartmentEmployeesDetailsController::class, 'getData'])->name('department.employees.getData');
 
 
     // Route to fetch data for prisoners' details DataTable

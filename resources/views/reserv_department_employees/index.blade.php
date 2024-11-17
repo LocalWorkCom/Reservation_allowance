@@ -16,14 +16,15 @@
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer></script>
 @endpush
 
-@section('title', "تفاصيل الإدارات الفرعية للإدارة: $departmentName")
+
+@section('title', ' {{ $departmentName }} تفاصيل الموظفين للإدارة')
 
 @section('content')
-<div class="row">
-        <div class="container welcome col-11">
-            <div class="d-flex justify-content-between">
-    <h4>الإدارات الفرعية للإدارة: {{ $departmentName }}</h4>
-    </div>
+    <div class="row">
+    <div class="container welcome col-11">
+    <div class="d-flex justify-content-between">
+        <h4>تفاصيل الموظفين للإدارة: {{ $departmentName }}</h4>
+        </div>
         </div>
     </div>
 
@@ -34,18 +35,16 @@
                 <table id="users-table" class="display table table-bordered table-hover">
                     <thead>
                         <tr>
-                <th>#</th>
-                <th>اسم الإدارة الفرعية</th>
-                <th>ميزانية بدل الحجز</th>
-                <th>المسجل</th>
-                <th>المبلغ المتبقي</th>
-                <th>عدد الموظفين</th>
-                <th>الحاصلين على بدل حجز</th>
-                <th>لم يحصل على بدل حجز</th>
+                    <th>#</th>
+                    <th>رقم الملف</th>
+                    <th>الاسم</th>
+                    <th>الرتبة</th>
+                    <th>الأيام</th>
+                    <th>المبلغ</th>
                 </tr>
-                    </thead>
-                </table>
-            </div>
+            </thead>
+        </table>
+        </div>
         </div>
     </div>
 @endsection
@@ -57,21 +56,19 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: '{{ route("statistics_subdepartments.getAll", $departmentId) }}',
+                url: '{{ route("department.employees.getData", $departmentId) }}',
                 data: {
                     month: '{{ $month }}',
                     year: '{{ $year }}',
                 }
             },
             columns: [
-                { data: null, orderable: false, searchable: false },
-                { data: 'sub_department_name', name: 'sub_department_name' },
-                { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' },
-                { data: 'registered_by', name: 'registered_by' },
-                { data: 'remaining_amount', name: 'remaining_amount' },
-                { data: 'employees_count', name: 'employees_count' },
-                { data: 'received_allowance_count', name: 'received_allowance_count' },
-                { data: 'did_not_receive_allowance_count', name: 'did_not_receive_allowance_count' },
+                { data: null, searchable: false, orderable: false },
+                { data: 'file_number', name: 'file_number' },
+                { data: 'name', name: 'name' },
+                { data: 'grade', name: 'grade' },
+                { data: 'days', name: 'days' },
+                { data: 'allowance', name: 'allowance' },
             ],
             order: [[1, 'asc']],
                 language: {
@@ -95,5 +92,5 @@
                 },
             });
         });
-    </script>
+</script>
 @endpush
