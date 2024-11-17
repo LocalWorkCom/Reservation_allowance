@@ -57,7 +57,6 @@
                         <th class="index-column">الترتيب</th>
                         <th class="name-column">الاسم</th>
                         <th class="file-number-column">رقم الملف</th> 
-        
                         <th class="grade-column">الرتبه</th>
                         <th class="department-column">الادارة</th>
                         <th class="days-column">الايام</th>
