@@ -179,7 +179,7 @@
                                 <div class="d-flex" style="justify-content: space-around !important">
                                     @if ($reservation_allowance_type == 1 || $reservation_allowance_type == 3)
                                     <div style="display: inline-flex; direction: ltr;">
-                                        <label for=""> حجز كلى</label>
+                                        <label for=""> حجز كلى للكل</label>
                                         <input type="radio" name="allowance_all" id="allowance_all"
                                             onclick="check_all(1)" value="1" class="form-control">
                                     </div>
@@ -187,14 +187,14 @@
                                     @endif
                                     @if ($reservation_allowance_type == 2 || $reservation_allowance_type == 3)
                                     <div style="display: inline-flex; direction: ltr;">
-                                        <label for=""> حجز جزئى</label>
+                                        <label for=""> حجز جزئى للكل</label>
                                         <input type="radio" name="allowance_all" id="allowance_all"
                                             onclick="check_all(2)" value="2" class="form-control">
                                     </div>
                                     <span>|</span>
                                     @endif
                                     <div style="display: inline-flex; direction: ltr;">
-                                        <label for=""> لا يوجد</label>
+                                        <label for=""> لا يوجد للكل</label>
                                         <input type="radio" name="allowance_all" id="allowance_all"
                                             onclick="check_all(0)" value="0" checked class="form-control">
                                     </div>
