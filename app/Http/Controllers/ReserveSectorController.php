@@ -28,18 +28,15 @@ class ReserveSectorController extends Controller
     public function getAll(Request $request)
     {
         try {
-            // Retrieve and validate month and year from the request
             $month = $request->input('month');
             $year = $request->input('year');
             
-            // Ensure month and year are provided to avoid errors
             if (!$month || !$year) {
                 return response()->json([
                     'error' => 'Please select both month and year.'
                 ], 400);
             }
 
-            // Fetch sectors ordered by name
             $sectors = Sector::orderBy('name', 'asc')->get();
 
             return DataTables::of($sectors)
@@ -55,10 +52,9 @@ class ReserveSectorController extends Controller
                         ->whereNotNull('parent_id')
                         ->count();
                 })
-                // Budget for the selected month and year or open if balance = 0
                 ->addColumn('reservation_allowance_budget', function ($row) use ($month, $year) {
                     if ($row->reservation_allowance_amount == 0) {
-                        return "ميزانية مفتوحه"; // Open budget
+                        return "ميزانية مفتوحه"; 
                     }
 
                     $amount = DB::table('history_allawonces')
