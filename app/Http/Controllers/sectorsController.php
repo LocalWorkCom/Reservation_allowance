@@ -145,7 +145,7 @@ class sectorsController extends Controller
             })
             ->addColumn('departments', function ($row) {
                 $num = departements::where('sector_id', $row->id)->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('departments.index', ['id' => $row->id]) . '> ' . $num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('departments.index', ['id' => $row->hash_id]) . '> ' . $num . '</a>';
                 return $btn;
             })
             ->addColumn('reservation_allowance_amount', function ($row) {

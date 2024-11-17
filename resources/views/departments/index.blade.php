@@ -175,7 +175,7 @@
                     var departmentEdit =
                         '{{ route('departments.edit', ':id') }}';
                     departmentEdit = departmentEdit
-                        .replace(':id', row.id);
+                        .replace(':id', row.hash_id);
                     var subdepartment =
                         '{{ route('sub_departments.create', ':id') }}';
                     subdepartment = subdepartment
@@ -183,7 +183,7 @@
                     var departmentShow =
                         '{{ route('departments.show', ':id') }}';
                     departmentShow = departmentShow
-                        .replace(':id', row.id);
+                        .replace(':id', row.hash_id);
                     /*  var addReservation =
                          '{{ route('reservation_allowances.search_employee_new', 'sector_id=:sector&departement_id=:id') }}';
                      addReservation = addReservation.replace(':id', row.id);
