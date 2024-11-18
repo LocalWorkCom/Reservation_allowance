@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Crypt;
 
 class Government extends Model
 {
@@ -26,5 +27,13 @@ class Government extends Model
     public function groupPoints()
     {
         return $this->belongsTo(Grouppoint::class);
+    }
+
+    protected $appends = ['hash_id'];
+
+    public function getHashIdAttribute()
+    {
+        return md5($this->id);
+        //return Crypt::encryptString($this->id);
     }
 }

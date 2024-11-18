@@ -8,6 +8,7 @@ use App\Models\Region;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Crypt;
 
 class regionsController extends Controller
 {
@@ -38,10 +39,10 @@ class regionsController extends Controller
             $edit_permission=null;
             $region_permission=null;
             if(Auth::user()->hasPermission('edit Government')){
-                $edit_permission = '<a class="btn btn-sm"  style="background-color: #F7AF15;"  onclick="openedit('.$row->id.','.$name.')">  <i class="fa fa-edit"></i> تعديل </a>';
+                $edit_permission = '<a class="btn btn-sm"  style="background-color: #F7AF15;"  onclick="openedit('.$row->hash_id.','.$name.')">  <i class="fa fa-edit"></i> تعديل </a>';
             }
             if(Auth::user()->hasPermission('view Region')){
-                $region_permission = '<a class="btn btn-sm"  style="background-color: #b77a48;"  href="'.route('regions.index',['id' => $row->id ]).'"> <i class="fa-solid fa-mountain-sun"></i> مناطق </a>';
+                $region_permission = '<a class="btn btn-sm"  style="background-color: #b77a48;"  href="'.route('regions.index',['id' => $row->hash_id ]).'"> <i class="fa-solid fa-mountain-sun"></i> مناطق </a>';
             }
             return $edit_permission .' '. $region_permission ;
 
@@ -94,11 +95,11 @@ class regionsController extends Controller
      */
     public function index($id)
     {
-
         return view("regions.index",compact("id"));
     }
     public function getregions(Request $request)
     {
+        $government = get_by_md5_id($request->government_id, 'governments');
         $query = Region::with('government')
         ->select('regions.*', 'governments.name as government_name')
         ->join('governments', 'regions.government_id', '=', 'governments.id')
@@ -106,7 +107,7 @@ class regionsController extends Controller
         ->orderBy('regions.created_at', 'desc');
 
         if ($request->has('government_id') && $request->government_id) {
-            $query->where('government_id', $request->government_id);
+            $query->where('government_id', $government->id);
         }
 
     $data = $query->get();
