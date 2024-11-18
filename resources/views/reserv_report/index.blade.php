@@ -1,5 +1,4 @@
 <style>
-    /* Updated Styles */
     .info-box {
             background-color: #ffffff;
             padding: 20px;
@@ -72,7 +71,9 @@
     </div>
 
             <!-- Data Table for Detailed Report -->
-            <div class="mt-4 bg-white">
+            <div class="row">
+    <div class="container col-11 mt-3">
+        <div class="bg-white p-4">
                 <table id="users-table" class="display table table-bordered table-hover dataTable">
                     <thead>
                     <tr>
@@ -145,27 +146,25 @@
             }
         ],
         order: [[1, 'asc']],
-        oLanguage: {
+        language: {
                 sSearch: "",
                 sSearchPlaceholder: "بحث",
                 sInfo: 'اظهار صفحة _PAGE_ من _PAGES_',
-                sZeroRecords: 'نأسف لا توجد نتيجة مطابقة',
-                sEmptyTable: 'لا توجد بيانات متاحة',
+                sInfoEmpty: 'لا توجد بيانات متاحه',
+                sInfoFiltered: '(تم تصفية من _MAX_ اجمالى البيانات)',
+                sLengthMenu: 'اظهار _MENU_ عنصر لكل صفحة',
+                sZeroRecords: 'نأسف لا توجد نتيجة',
                 oPaginate: {
-                    sFirst: '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
-                    sPrevious: '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
-                    sNext: '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
-                    sLast: '<i class="fa fa-step-forward" aria-hidden="true"></i>'
-                }
+                    sFirst: '<i class="fa fa-fast-backward"></i>',
+                    sPrevious: '<i class="fa fa-chevron-left"></i>',
+                    sNext: '<i class="fa fa-chevron-right"></i>',
+                    sLast: '<i class="fa fa-step-forward"></i>',
+                },
             },
-            pagingType: "full_numbers",
-            fnDrawCallback: function(oSettings) {
-                const page = this.api().page.info().pages;
-                $('.dataTables_paginate').css('visibility', page === 1 ? 'hidden' : 'visible');
-            },
+           pagingType: "full_numbers",
             createdRow: function(row, data, dataIndex) {
-                $('td', row).eq(0).html(dataIndex + 1);
-            }
+                $('td', row).eq(0).html(dataIndex + 1); 
+            },
     });
 
     // Fetch report data and update summary on button click

@@ -43,6 +43,8 @@
                 <th>اليوم</th>
                 <th>التاريخ</th>
                 <th>اسم الموظف</th>
+                <th>رقم الملف</th> 
+                <th>الرتبة</th> 
                 <th>الإدارة</th>
                 <th>نوع الحجز</th>
                 <th>المبلغ</th>
@@ -55,6 +57,8 @@
                     <td>{{ \Carbon\Carbon::parse($reservation->date)->translatedFormat('l') }}</td>
                     <td>{{ \Carbon\Carbon::parse($reservation->date)->format('Y-m-d') }}</td>
                     <td>{{ optional($reservation->user)->name ?? 'غير معروف' }}</td>
+                    <td>{{ optional($reservation->user)->file_number ?? 'N/A' }}</td> 
+                    <td>{{ optional($reservation->user->grade)->name ?? 'N/A' }}</td> 
                     <td>{{ optional($reservation->user->department)->name ?? 'N/A' }}</td>
                     <td>{{ $reservation->type == 1 ? 'حجز كلي' : 'حجز جزئي' }}</td>
                     <td>{{ number_format($reservation->amount, 2) }} د.ك</td>
