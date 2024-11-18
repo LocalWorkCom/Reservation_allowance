@@ -50,16 +50,15 @@ class ReservationStaticsController extends Controller
                 ->addColumn('department_name', fn($row) => $row->name)
                 ->addColumn('sub_departments_count', fn($row) => $row->children_count)
                 ->addColumn('reservation_allowance_budget', function ($row) use ($month, $year) {
-                    if ($row->reservation_allowance_amount == 0) {
-                        return "ميزانية مفتوحه"; // Open budget
-                    }
-    
+                   
                     $amount = DB::table('history_allawonces')
                         ->where('department_id', $row->id)
                         ->whereYear('date', $year)
                         ->whereMonth('date', $month)
                         ->value('amount');
-    
+                        if (is_null($amount) || $amount == 0) {
+                            return "ميزانية مفتوحه"; // Open budget
+                        }
                     return number_format($amount, 2) . ' د.ك';
                 })
                 ->addColumn('registered_by', function ($row) use ($month, $year) {
@@ -71,9 +70,7 @@ class ReservationStaticsController extends Controller
                     return number_format($sum, 2) . " د.ك";
                 })
                 ->addColumn('remaining_amount', function ($row) use ($month, $year) {
-                    if ($row->reservation_allowance_amount == 0) {
-                        return "-"; // No limit if open budget
-                    }
+                   
     
                     $registeredAmount = ReservationAllowance::where('departement_id', $row->id)
                         ->whereYear('date', $year)
@@ -86,8 +83,11 @@ class ReservationStaticsController extends Controller
                         ->whereMonth('date', $month)
                         ->value('amount');
     
-                    $remainingAmount = $historicalAmount - $registeredAmount;
-                    return number_format($remainingAmount, 2) . " د.ك";
+                        if ( $historicalAmount == 0 || is_null( $historicalAmount)) {
+                            return "-"; 
+                       }
+                       $remainingAmount = $historicalAmount - $registeredAmount;
+                       return number_format($remainingAmount, 2) . " د.ك";
                 })
                 ->addColumn('number_of_employees', function ($row) {
                     return User::where('department_id', $row->id)->where('flag', 'employee')->count();

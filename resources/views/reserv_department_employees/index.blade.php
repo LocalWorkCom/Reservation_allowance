@@ -62,6 +62,8 @@
                     year: '{{ $year }}',
                 }
             },
+
+            
             columns: [
                 { data: null, searchable: false, orderable: false },
                 { data: 'file_number', name: 'file_number' },
