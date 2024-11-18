@@ -28,42 +28,48 @@ class ReservationReportController extends Controller
     }
     }
 
-   
-
     public function getReportData(Request $request)
     {
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
-    
+        
         if (!$startDate || !$endDate) {
             return response()->json([
                 'data' => [],
                 'totalSectors' => 0,
                 'totalDepartments' => 0,
                 'totalUsers' => 0,
-                'totalAmount' => '0.00 د.ك'
+                'totalAmount' => '0 '
             ]);
         }
-    
+
         $start = Carbon::parse($startDate)->startOfDay();
         $end = Carbon::parse($endDate)->endOfDay();
-    
+
+        // Group data by sector within the selected date range
         $query = ReservationAllowance::whereBetween('date', [$start, $end])
-            ->join('sectors', 'sectors.id', '=', 'reservation_allowances.sector_id')
-            ->selectRaw('sectors.name as sector_name, sector_id, COUNT(DISTINCT user_id) as user_count, SUM(amount) as total_amount')
-            ->groupBy('sector_id', 'sectors.name')
+            ->selectRaw('sector_id, COUNT(DISTINCT user_id) as user_count, SUM(amount) as total_amount')
+            ->groupBy('sector_id')
             ->having('total_amount', '>', 0);
-    
+
+        // Prepare DataTable
         $data = DataTables::of($query)
             ->addIndexColumn()
+            ->addColumn('sector_name', function ($row) {
+                return Sector::find($row->sector_id)->name ?? 'N/A';
+            })
             ->addColumn('main_departments_count', function ($row) {
                 return departements::where('sector_id', $row->sector_id)
                     ->whereNull('parent_id')
                     ->count();
             })
             ->addColumn('sub_departments_count', function ($row) {
+                $mainDepartments = departements::where('sector_id', $row->sector_id)
+                    ->whereNull('parent_id')
+                    ->pluck('id');
+
                 return departements::where('sector_id', $row->sector_id)
-                    ->whereNotNull('parent_id')
+                    ->whereIn('parent_id', $mainDepartments)
                     ->count();
             })
             ->addColumn('employee_count', function ($row) {
@@ -73,18 +79,22 @@ class ReservationReportController extends Controller
                 return number_format($row->total_amount, 2) . ' د.ك';
             })
             ->make(true);
-    
-        $totalSectors = $query->count();
-        $totalDepartments = departements::whereIn('sector_id', $query->pluck('sector_id'))->distinct()->count();
+
+        // Calculate summary data
+        $totalSectors = $query->count(); // Number of sectors with reservations in the selected date range
+        $totalDepartments = departements::whereIn('sector_id', $query->pluck('sector_id'))
+            ->distinct()
+            ->count();
         $totalUsers = $query->get()->sum('user_count');
-        $totalAmount = number_format($query->get()->sum('total_amount'), 2);
-    
+        $totalAmount = number_format($query->get()->sum('total_amount'), 2) ;
+
+        // Adding totals to the JSON response
         $response = $data->getData(true);
         $response['totalSectors'] = $totalSectors;
         $response['totalDepartments'] = $totalDepartments;
         $response['totalUsers'] = $totalUsers;
         $response['totalAmount'] = $totalAmount;
-    
+
         return response()->json($response);
     }
     
