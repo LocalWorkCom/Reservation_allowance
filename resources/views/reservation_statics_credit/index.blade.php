@@ -167,36 +167,39 @@
                         searchable: false
                     }
                 ],
-                order: [
-                    [1, 'asc']
-                ],
                 "oLanguage": {
-                    "sSearch": "",
-                    "sSearchPlaceholder": "بحث",
-                    "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
-                    "sInfoEmpty": 'لا توجد بيانات متاحه',
-                    "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
-                    "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
-                    "sZeroRecords": 'نأسف لا توجد نتيجة',
-                    "oPaginate": {
-                        "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
-                        "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
-                        "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
-                        "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
-                    }
-                },
-                pagingType: "full_numbers",
-                fnDrawCallback: function(oSettings) {
-                    var page = this.api().page.info().pages;
-                    if (page == 1) {
-                        $('.dataTables_paginate').css('visibility',
-                            'hidden'); // Hide pagination if only one page
-                    }
-                },
-                createdRow: function(row, data, dataIndex) {
-                    $('td', row).eq(0).html(dataIndex + 1); // Automatic numbering in the first column
+                "sSearch": "",
+                "sSearchPlaceholder": "بحث",
+                "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
+                "sInfoEmpty": 'لا توجد بيانات متاحه',
+                "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
+                "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
+                "sZeroRecords": 'نأسف لا توجد نتيجة',
+                "oPaginate": {
+                    "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
+                    "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
+                    "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
+                    "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
                 }
-            });
+            },
+            layout: {
+                bottomEnd: {
+                    paging: {
+                        firstLast: false
+                    }
+                }
+            },
+            "pagingType": "full_numbers",
+            "fnDrawCallback": function(oSettings) {
+                    var api = this.api();
+                    var pageInfo = api.page.info();
+                    // Check if the total number of records is less than or equal to the number of entries per page
+                    if (pageInfo.recordsTotal <= 10) { // Adjust this number based on your page length
+                        $('.dataTables_paginate').css('visibility', 'hidden'); // Hide pagination
+                    } else {
+                        $('.dataTables_paginate').css('visibility', 'visible'); // Show pagination
+                    }
+                }
         });
 
         function printReport(date) {
