@@ -30,18 +30,23 @@
         <br><br>
         <button id="print-report" class="btn btn-secondary mx-2">طباعة</button>
         <table id="users-table" class="display table table-bordered table-hover dataTable">
-            <thead>
-                <tr>
-                    <th>الترتيب</th>
-                    <th>اليوم</th>
-                    <th>التاريخ</th>
-                    <th>الاسم</th>
-                    <th>الإدارة</th>
-                    <th>النوع</th>
-                    <th>المبلغ</th>
-                </tr>
-            </thead>
-        </table>
+    <thead>
+        <tr>
+            <th>الترتيب</th>
+            <th>اليوم</th>
+            <th>التاريخ</th>
+            <th>الاسم</th>
+            <th>رقم الملف</th>
+            <th>الرتبة</th> <!-- New column for grade -->
+            <th>الإدارة</th>
+            <th>النوع</th>
+            <th>المبلغ</th>
+        </tr>
+    </thead>
+</table>
+
+
+
     </div>
 </div>
 @endsection
@@ -50,49 +55,52 @@
 <script>
     $(document).ready(function() {
         $('#users-table').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: '{{ route('reservation_report.sector_details_data', ['sectorId' => $sector->id]) }}',
-                data: {
-                    start_date: '{{ $startDate->format('Y-m-d') }}',
-                    end_date: '{{ $endDate->format('Y-m-d') }}'
-                }
-            },
-            columns: [
-                { 
-                    data: null, 
-                    orderable: false, 
-                    searchable: false,
-                    render: function (data, type, row, meta) {
-                        return meta.row + 1;
-                    }
-                },
-                { data: 'day', name: 'day' },
-                { data: 'date', name: 'date' },
-                { data: 'name', name: 'name' },
-                { data: 'department', name: 'department' },
-                { data: 'type', name: 'type' },
-                { data: 'amount', name: 'amount' }
-            ],
-            order: [[2, 'asc']],
-            language: {
-                sSearch: "",
-                sSearchPlaceholder: "بحث",
-                sInfo: 'اظهار صفحة _PAGE_ من _PAGES_',
-                sInfoEmpty: 'لا توجد بيانات متاحه',
-                sInfoFiltered: '(تم تصفية من _MAX_ اجمالى البيانات)',
-                sLengthMenu: 'اظهار _MENU_ عنصر لكل صفحة',
-                sZeroRecords: 'نأسف لا توجد نتيجة',
-                paginate: {
-                    first: "الأول",
-                    last: "الأخير",
-                    next: "التالي",
-                    previous: "السابق"
-                }
-            },
-            pagingType: "full_numbers"
-        });
+    processing: true,
+    serverSide: true,
+    ajax: {
+        url: '{{ route('reservation_report.sector_details_data', ['sectorId' => $sector->id]) }}',
+        data: {
+            start_date: '{{ $startDate->format('Y-m-d') }}',
+            end_date: '{{ $endDate->format('Y-m-d') }}'
+        }
+    },
+    columns: [
+        { 
+            data: null, 
+            orderable: false, 
+            searchable: false,
+            render: function (data, type, row, meta) {
+                return meta.row + 1;
+            }
+        },
+        { data: 'day', name: 'day' },
+        { data: 'date', name: 'date' },
+        { data: 'name', name: 'name' },
+        { data: 'file_number', name: 'file_number' },
+        { data: 'grade', name: 'grade' }, 
+        { data: 'department', name: 'department' },
+        { data: 'type', name: 'type' },
+        { data: 'amount', name: 'amount' }
+    ],
+    order: [[5, 'asc']], 
+    language: {
+        sSearch: "",
+        sSearchPlaceholder: "بحث",
+        sInfo: 'اظهار صفحة _PAGE_ من _PAGES_',
+        sInfoEmpty: 'لا توجد بيانات متاحه',
+        sInfoFiltered: '(تم تصفية من _MAX_ اجمالى البيانات)',
+        sLengthMenu: 'اظهار _MENU_ عنصر لكل صفحة',
+        sZeroRecords: 'نأسف لا توجد نتيجة',
+        paginate: {
+            first: "الأول",
+            last: "الأخير",
+            next: "التالي",
+            previous: "السابق"
+        }
+    },
+    pagingType: "full_numbers"
+});
+
 
         $('#print-report').click(function() {
             const url = `{{ route('reservation_report.sector_details_print', ['sectorId' => $sector->id]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}`;

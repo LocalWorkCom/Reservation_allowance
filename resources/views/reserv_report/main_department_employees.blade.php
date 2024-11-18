@@ -24,21 +24,25 @@
             <thead>
                 <tr>
                     <th>الترتيب</th>
+                    <th>اليوم</th>
+                    <th>التاريخ</th>
                     <th>اسم الموظف</th>
-                    <th>الرقم المدني</th>
                     <th>رقم الملف</th>
                     <th>الرتبة</th>
-                    <th>مبلغ الحجز</th>
+                    <th>نوع الحجز</th>
+                    <th>المبلغ</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($employees as $index => $employee)
                     <tr>
                         <td>{{ $index + 1 }}</td>
+                        <td>{{ $employee['day'] }}</td>
+                        <td>{{ $employee['date'] }}</td>
                         <td>{{ $employee['name'] }}</td>
-                        <td>{{ $employee['civil_id'] }}</td>
                         <td>{{ $employee['file_number'] }}</td>
                         <td>{{ $employee['grade'] }}</td>
+                        <td>{{ $employee['type'] }}</td>
                         <td>{{ $employee['reservation_amount'] }} د.ك</td>
                     </tr>
                 @endforeach
@@ -71,11 +75,12 @@ $(document).ready(function() {
     });
 
     $('#print-report').click(function() {
-        const startDate = '{{ $startDate->format('Y-m-d') }}';
-        const endDate = '{{ $endDate->format('Y-m-d') }}';
-        const url = `{{ route('reservation_report.main_department_employees_print', ['departmentId' => $department->id]) }}?start_date=${startDate}&end_date=${endDate}`;
-        window.open(url, '_blank');
-    });
+    const startDate = '{{ $startDate->format('Y-m-d') }}';
+    const endDate = '{{ $endDate->format('Y-m-d') }}';
+    const url = `{{ route('reservation_report.main_department_employees_print', ['departmentId' => $department->id]) }}?start_date=${startDate}&end_date=${endDate}`;
+    window.open(url, '_blank');
+});
+
 });
 </script>
 @endpush

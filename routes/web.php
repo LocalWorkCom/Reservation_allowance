@@ -570,7 +570,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('reservation_report/main_department/{departmentId}/employees', [ReservationReportController::class, 'showMainDepartmentEmployees'])->name('reservation_report.main_department_employees');
     Route::get('reservation_report/main_department/{departmentId}/employees/print', [ReservationReportController::class, 'printMainDepartmentEmployees'])->name('reservation_report.main_department_employees_print');
     Route::get('reservation_report/sub_department/{subDepartmentId}/employees', [ReservationReportController::class, 'showSubDepartmentEmployees'])->name('reservation_report.sub_department_employees');
-    Route::get('reservation_report/sub_department/{subDepartmentId}/employees/print', [ReservationReportController::class, 'printSubDepartmentEmployees'])->name('reservation_report.sub_department_employees_print');
+    Route::get('reservation_report/sub_department/{subDepartmentId}/employees/print', [ReservationReportController::class, 'printSubDepartmentEmployees'])
+    ->name('reservation_report.sub_department_employees_print');
+
 
 
 
