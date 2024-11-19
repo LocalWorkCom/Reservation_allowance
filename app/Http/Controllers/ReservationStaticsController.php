@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Sector;
+use Illuminate\Support\Facades\Log;
 
 class ReservationStaticsController extends Controller
 {
@@ -47,6 +48,7 @@ class ReservationStaticsController extends Controller
             $data = $query->orderBy('updated_at', 'desc')->get();
     
             return DataTables::of($data)
+            ->addIndexColumn()
                 ->addColumn('department_name', fn($row) => $row->name)
                 ->addColumn('sub_departments_count', fn($row) => $row->children_count)
                 ->addColumn('reservation_allowance_budget', function ($row) use ($month, $year) {

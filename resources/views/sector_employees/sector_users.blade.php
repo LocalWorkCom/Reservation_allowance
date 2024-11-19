@@ -1,86 +1,72 @@
-<style>
-    .info-box {
-        background-color: white;
-        padding: 20px;
-        border-radius: 10px;
-        margin-top: 20px;
-        text-align: center;
-    }
-</style>
-
 @extends('layout.main')
 
+
 @push('style')
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
-    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer></script>
 @endpush
-
-
-@section('title', ' {{ $departmentName }} تفاصيل الموظفين للإدارة')
+@section('title', 'الموظفين في القطاع')
 
 @section('content')
-    <div class="row">
+<div class="row">
     <div class="container welcome col-11">
-    <div class="d-flex justify-content-between">
-        <p>تفاصيل الموظفين للإدارة: {{ $departmentName }}</p>
+    
+            <p>الموظفين في القطاع</p>
         </div>
-        </div>
-    </div>
+ 
+</div>
 
-    <div class="row">
-        <div class="container col-11 mt-3 p-0 pt-5 pb-4b ">
-            <!-- DataTable -->
-            <div class="bg-white p-4">
-            <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
-            <thead>
-                        <tr>
-                    <th>#</th>
-                    
-                    <th>الرتبة</th>
-                    <th>الاسم</th>
-                    <th>رقم الملف</th>
-                    <th>الأيام</th>
-                    <th>المبلغ</th>
-                </tr>
-            </thead>
-        </table>
-        </div>
+<div class="row">
+    <div class="container col-11 mt-3 p-0 pt-5 pb-4">
+        <div class="bg-white p-4">
+        <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
+                <thead>
+                    <tr>
+                        <th>الترتيب</th>
+                       
+                        <th>الرتبة</th>
+                        <th>اسم الموظف</th>
+                        <th>رقم الملف</th>
+                        <th>الادارة</th>
+                       
+                    </tr>
+                </thead>
+            </table>
         </div>
     </div>
+</div>
 @endsection
 
 @push('scripts')
 <script>
-    $(document).ready(function() {
-        $('#users-table').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: '{{ route("department.employees.getData", $departmentId) }}',
-                data: {
-                    month: '{{ $month }}',
-                    year: '{{ $year }}',
-                }
-            },
-
-            
-            columns: [
-                {
+$(document).ready(function () {
+    $('#users-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route('sector.users.data', $sectorId) }}',
+            data: function (d) {
+                d.month = '{{ $month }}'; // Passed from Blade
+                d.year = '{{ $year }}'; // Passed from Blade
+            }
+        },
+        columns: [
+            {
                 data: null,
                 orderable: false,
                 searchable: false,
                 render: function (data, type, row, meta) {
-                    return meta.row + 1; // Auto-generate row numbers
+                    return meta.row + 1; // Row number
                 }
             },
             { data: 'grade', name: 'grade' },
             { data: 'name', name: 'name' },
             { data: 'file_number', name: 'file_number' },
-            { data: 'days', name: 'days' },
-            { data: 'allowance', name: 'allowance' },
-            ],
-            order: [[1, 'asc']],
+            { data: 'department', name: 'department' },
+            
+        ],
+        order: [[1, 'asc']],
             "oLanguage": {
                 "sSearch": "",
                 "sSearchPlaceholder": "بحث",
@@ -115,6 +101,7 @@
                     }
                 }
         });
-});
+    });
+
 </script>
 @endpush

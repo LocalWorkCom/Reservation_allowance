@@ -21,22 +21,22 @@
 @section('content')
 <div class="row">
     <div class="container welcome col-11">
-        <div class="d-flex justify-content-between align-items-center">
-            <h4>الإدارات الفرعية للإدارة: {{ $departmentName }}</h4>
+        <div class="d-flex justify-content-between ">
+            <p>الإدارات الفرعية للإدارة: {{ $departmentName }}</p>
             <div>
-                <p><strong>الشهر:</strong> {{ $month }}</p>
-                <p><strong>السنة:</strong> {{ $year }}</p>
+                <h3><strong>الشهر:</strong> {{ $month }}</h3>
+                <h3><strong>السنة:</strong> {{ $year }}</h3>
             </div>
         </div>
     </div>
 </div>
 
 <div class="row">
-    <div class="container col-11 mt-3">
+    <div class="container col-11 mt-3 p-0 pt-5 pb-4b">
         <div class="bg-white p-4">
-            <table id="users-table" class="display table table-bordered table-hover">
-                <thead>
-                    <tr>
+        <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
+                    <thead>
+                        <tr>
                         <th>#</th>
                         <th>اسم الإدارة الفرعية</th>
                         <th>ميزانية بدل الحجز</th>
@@ -67,8 +67,13 @@
                 }
             },
             columns: [
-                { data: null, orderable: false, searchable: false }, 
-                {
+                {data: null,
+                orderable: false,
+                searchable: false,
+                render: function (data, type, row, meta) {
+                    return meta.row + 1; // Auto-generate row numbers
+                }},               
+                 {
                     data: 'sub_department_name', 
                     name: 'sub_department_name',
                 },

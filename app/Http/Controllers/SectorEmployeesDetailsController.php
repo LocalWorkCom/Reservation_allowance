@@ -95,8 +95,86 @@ class SectorEmployeesDetailsController extends Controller
             ->make(true);
     }
     
-    
-    
+    public function notReservedUsers(Request $request, $sectorId)
+{
+    $sector = Sector::find($sectorId);
+    $month = $request->input('month');
+    $year = $request->input('year');
+
+    return view('sector_employees.not_reserved', [
+        'sectorId' => $sectorId,
+        'sectorName' => $sector ? $sector->name : 'Unknown Sector',
+        'month' => $month,
+        'year' => $year,
+    ]);
+}
+public function getNotReservedData(Request $request, $sectorId)
+{
+    $month = $request->input('month');
+    $year = $request->input('year');
+
+    $users = User::where('sector', $sectorId)
+        ->whereNotIn('id', function ($query) use ($sectorId, $month, $year) {
+            $query->select('user_id')
+                ->from('reservation_allowances')
+                ->where('sector_id', $sectorId)
+                ->whereYear('date', $year)
+                ->whereMonth('date', $month);
+        })
+        ->with(['grade', 'department'])
+        ->get();
+
+    return DataTables::of($users)
+        ->addColumn('file_number', fn($user) => $user->file_number)
+        ->addColumn('name', fn($user) => $user->name)
+        ->addColumn('department', fn($user) => $user->department->name ?? 'N/A')
+        ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
+        ->addIndexColumn()
+        ->make(true);
+}
+public function sectorUsersPage(Request $request, $sectorId)
+{
+    $sector = Sector::find($sectorId);
+    $month = $request->input('month');
+    $year = $request->input('year');
+
+    return view('sector_employees.sector_users', [
+        'sectorId' => $sectorId,
+        'sectorName' => $sector ? $sector->name : 'Unknown Sector',
+        'month' => $month,
+        'year' => $year,
+    ]);
+}
+
+
+public function getSectorUsers(Request $request, $sectorId)
+{
+    $month = $request->input('month');
+    $year = $request->input('year');
+
+    // Ensure $month and $year are provided
+    if (!$month || !$year) {
+        return response()->json([
+            'data' => [],
+            'error' => 'Month and Year are required.'
+        ]);
+    }
+
+    // Fetch users belonging to the sector
+    $users = User::where('sector', $sectorId)
+        ->with(['grade', 'department']) // Ensure these relationships exist
+        ->get();
+
+    // Return data to DataTables
+    return DataTables::of($users)
+        ->addColumn('file_number', fn($user) => $user->file_number)
+        ->addColumn('name', fn($user) => $user->name)
+        ->addColumn('department', fn($user) => $user->department->name ?? 'N/A')
+        ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
+        ->addIndexColumn()
+        ->make(true);
+}
+
 
 
     public function printReport($sectorId, Request $request)

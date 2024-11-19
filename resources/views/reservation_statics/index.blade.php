@@ -24,16 +24,16 @@
     <div class="row">
         <div class="container welcome col-11">
             <div class="d-flex justify-content-between">
-                <h4>الاحصائيات بدل حجز - {{ $sector_name }}</h4>
+                <p>الاحصائيات بدل حجز - {{ $sector_name }}</p>
             </div>
         </div>
     </div>
 
     <div class="row">
-        <div class="container col-11 mt-3">
+        <div class="container col-11 mt-3 p-0 pt-5 pb-4b ">
             <!-- DataTable -->
             <div class="bg-white p-4">
-                <table id="users-table" class="display table table-bordered table-hover">
+                <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
                     <thead>
                         <tr>
                             <th>الترتيب</th>
@@ -55,50 +55,53 @@
 
 @push('scripts')
     <script>
-        $(document).ready(function () {
-            const table = $('#users-table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: '{{ route('Reserv_statistic.getAll', ['sector_id' => $sector_id]) }}',
-                    data: function (d) {
-                        // Pass month and year as query parameters from the sector page
-                        d.month = '{{ request()->query('month') }}';
-                        d.year = '{{ request()->query('year') }}';
-                    },
+     $(document).ready(function () {
+    const table = $('#users-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route("Reserv_statistic.getAll", ["sector_id" => $sector_id]) }}',
+            data: function (d) {
+                d.month = '{{ request()->query("month") }}';
+                d.year = '{{ request()->query("year") }}';
+            },
+        },
+        columns: [
+            {
+                data: null,
+                orderable: false,
+                searchable: false,
+                render: function (data, type, row, meta) {
+                    return meta.row + 1; // Auto-generate row numbers
+                }
+            },
+            {
+                data: 'department_name',
+                render: function (data, type, row) {
+                    return `<a href="{{ url('/statistics_subdepartments') }}/${row.id}?month={{ request()->query('month') }}&year={{ request()->query('year') }}" style="color: blue !important;">${data}</a>`;
                 },
-                columns: [
-                    { data: null, orderable: false, searchable: false }, // Auto-increment column
-                    { 
-                        data: 'department_name', 
-                        render: function (data, type, row) {
-                            return `<a href="{{ url('/statistics_subdepartments') }}/${row.id}?month={{ request()->query('month') }}&year={{ request()->query('year') }}" style="color: blue !important;">${data}</a>`;
-                        },
-                    },
-                    { data: 'sub_departments_count', name: 'sub_departments_count',
-                        render: function (data, type, row) {
-                            return `<a href="{{ url('/statistics_subdepartments') }}/${row.id}?month={{ request()->query('month') }}&year={{ request()->query('year') }}" style="color: blue !important;">${data}</a>`;
-                        },
-                     },
-                    { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' },
-                    { data: 'registered_by', name: 'registered_by' },
-                    { data: 'remaining_amount', name: 'remaining_amount' },
-                    { data: 'number_of_employees', name: 'number_of_employees' },
-                    { 
-                    data: 'received_allowance_count', 
-                    name: 'received_allowance_count', 
-                    render: function(data, type, row) {
-                        // Add query parameters for month and year
-                        const month = '{{ request()->query('month') }}';
-                        const year = '{{ request()->query('year') }}';
-                        
-                        // Link to a route that shows employees for this department
-                        return `<a href="/department-employees/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
-                    },
-},
-                    { data: 'did_not_receive_allowance_count', name: 'did_not_receive_allowance_count' },
-                ],
-                "oLanguage": {
+            },
+            {
+                data: 'sub_departments_count',
+                render: function (data, type, row) {
+                    return `<a href="{{ url('/statistics_subdepartments') }}/${row.id}?month={{ request()->query('month') }}&year={{ request()->query('year') }}" style="color: blue !important;">${data}</a>`;
+                }
+            },
+            { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' },
+            { data: 'registered_by', name: 'registered_by' },
+            { data: 'remaining_amount', name: 'remaining_amount' },
+            { data: 'number_of_employees', name: 'number_of_employees' },
+            {
+                data: 'received_allowance_count',
+                render: function (data, type, row) {
+                    const month = '{{ request()->query("month") }}';
+                    const year = '{{ request()->query("year") }}';
+                    return `<a href="/department-employees/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                },
+            },
+            { data: 'did_not_receive_allowance_count', name: 'did_not_receive_allowance_count' },
+        ],
+        "oLanguage": {
                 "sSearch": "",
                 "sSearchPlaceholder": "بحث",
                 "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
@@ -132,6 +135,8 @@
                     }
                 }
         });
-        });
+});
+
+    
     </script>
 @endpush
