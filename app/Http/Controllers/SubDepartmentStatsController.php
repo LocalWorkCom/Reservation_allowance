@@ -111,5 +111,74 @@ class SubDepartmentStatsController extends Controller
             ]);
         }
     }
+
+    public function subDepartmentEmployeesPage(Request $request, $subDepartmentId)
+{
+    $month = $request->input('month');
+    $year = $request->input('year');
+    $subDepartment = departements::find($subDepartmentId);
+
+    return view('reservation_subdeparts.subdeparts_employee', [
+        'subDepartmentId' => $subDepartmentId,
+        'subDepartmentName' => $subDepartment->name ?? 'Unknown Subdepartment',
+        'month' => $month,
+        'year' => $year,
+    ]);
+}
+
+public function getSubDepartmentEmployees(Request $request, $subDepartmentId)
+{
+    $month = $request->input('month');
+    $year = $request->input('year');
+
+    $users = User::where('department_id', $subDepartmentId)
+        ->with(['grade'])
+        ->get();
+
+    return DataTables::of($users)
+        ->addColumn('file_number', fn($user) => $user->file_number)
+        ->addColumn('name', fn($user) => $user->name)
+        ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
+        ->addIndexColumn()
+        ->make(true);
+}
+public function notReceivedEmployeesPage(Request $request, $subDepartmentId)
+{
+    $month = $request->input('month');
+    $year = $request->input('year');
+    $subDepartment = departements::find($subDepartmentId);
+
+    return view('reservation_subdeparts.not_reserved', [
+        'subDepartmentId' => $subDepartmentId,
+        'subDepartmentName' => $subDepartment->name ?? 'Unknown Subdepartment',
+        'month' => $month,
+        'year' => $year,
+    ]);
+}
+
+public function getNotReceivedEmployees(Request $request, $subDepartmentId)
+{
+    $month = $request->input('month');
+    $year = $request->input('year');
+
+    $users = User::where('department_id', $subDepartmentId)
+        ->whereNotIn('id', function ($query) use ($subDepartmentId, $month, $year) {
+            $query->select('user_id')
+                ->from('reservation_allowances')
+                ->where('departement_id', $subDepartmentId)
+                ->whereYear('date', $year)
+                ->whereMonth('date', $month);
+        })
+        ->with(['grade'])
+        ->get();
+
+    return DataTables::of($users)
+        ->addColumn('file_number', fn($user) => $user->file_number)
+        ->addColumn('name', fn($user) => $user->name)
+        ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
+        ->addIndexColumn()
+        ->make(true);
+}
+
     
 }

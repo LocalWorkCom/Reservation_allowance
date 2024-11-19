@@ -78,9 +78,22 @@
                     name: 'sub_department_name',
                 },
                 { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' },
-                { data: 'registered_by', name: 'registered_by' },
+                { data: 'registered_by', name: 'registered_by',
+                    render: function(data, type, row) {
+                        const month = '{{ $month }}';
+                        const year = '{{ $year }}';
+                        return `<a href="/department-employees/${row.id}?month=${month}&year=${year}" style="color: blue !important;">${data}</a>`;
+                    }
+                 },
                 { data: 'remaining_amount', name: 'remaining_amount' },
-                { data: 'employees_count', name: 'employees_count' },
+                {
+                    data: 'employees_count',
+                    render: function(data, type, row) {
+                        const month = '{{ $month }}';
+                        const year = '{{ $year }}';
+                        return `<a href="/subdepartment-employees/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                    }
+                },
                 { 
                     data: 'received_allowance_count', 
                     name: 'received_allowance_count',
@@ -90,7 +103,14 @@
                         return `<a href="/department-employees/${row.id}?month=${month}&year=${year}" style="color: blue !important;">${data}</a>`;
                     }
                 },
-                { data: 'did_not_receive_allowance_count', name: 'did_not_receive_allowance_count' },
+                {
+                    data: 'did_not_receive_allowance_count',
+                    render: function(data, type, row) {
+                        const month = '{{ $month }}';
+                        const year = '{{ $year }}';
+                        return `<a href="/subdepartment-not-received/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                    }
+                }
             ],
             "oLanguage": {
                 "sSearch": "",
