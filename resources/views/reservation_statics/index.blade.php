@@ -88,9 +88,21 @@
                 }
             },
             { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' },
-            { data: 'registered_by', name: 'registered_by' },
+            { data: 'registered_by', name: 'registered_by',
+                render: function (data, type, row) {
+                    const month = '{{ request()->query("month") }}';
+                    const year = '{{ request()->query("year") }}';
+                    return `<a href="/department-employees/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                },
+             },
             { data: 'remaining_amount', name: 'remaining_amount' },
-            { data: 'number_of_employees', name: 'number_of_employees' },
+            { data: 'number_of_employees', name: 'number_of_employees',
+                render: function(data, type, row) {
+                const month = '{{ request()->query("month") }}';
+                const year = '{{ request()->query("year") }}';
+                return `<a href="/all-department-employees/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+    }
+             },
             {
                 data: 'received_allowance_count',
                 render: function (data, type, row) {
@@ -99,7 +111,13 @@
                     return `<a href="/department-employees/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
                 },
             },
-            { data: 'did_not_receive_allowance_count', name: 'did_not_receive_allowance_count' },
+            { data: 'did_not_receive_allowance_count', name: 'did_not_receive_allowance_count',
+                render: function(data, type, row) {
+                const month = '{{ request()->query("month") }}';
+                const year = '{{ request()->query("year") }}';
+                return `<a href="/department-not-received/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+            }
+             },
         ],
         "oLanguage": {
                 "sSearch": "",
