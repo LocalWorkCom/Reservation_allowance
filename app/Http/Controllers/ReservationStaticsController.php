@@ -59,7 +59,7 @@ class ReservationStaticsController extends Controller
                         ->whereMonth('date', $month)
                         ->value('amount');
                         if (is_null($amount) || $amount == 0) {
-                            return "ميزانية مفتوحه"; // Open budget
+                            return "ميزانيةغير محدده"; // Open budget
                         }
                     return number_format($amount, 2) . ' د.ك';
                 })
@@ -124,6 +124,75 @@ class ReservationStaticsController extends Controller
             ]);
         }
     }
+
+    public function departmentEmployeesPage(Request $request, $departmentId)
+{
+    $month = $request->input('month');
+    $year = $request->input('year');
+    $department = departements::find($departmentId);
+
+    return view('reservation_statics.department_employees', [
+        'departmentId' => $departmentId,
+        'departmentName' => $department->name ?? 'Unknown Department',
+        'month' => $month,
+        'year' => $year,
+    ]);
+}
+
+public function getDepartmentEmployees(Request $request, $departmentId)
+{
+    $month = $request->input('month');
+    $year = $request->input('year');
+
+    $users = User::where('department_id', $departmentId)
+        ->with(['grade'])
+        ->get();
+
+    return DataTables::of($users)
+        ->addColumn('file_number', fn($user) => $user->file_number)
+        ->addColumn('name', fn($user) => $user->name)
+        ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
+        ->addIndexColumn()
+        ->make(true);
+}
+public function notReceivedEmployeesPage(Request $request, $departmentId)
+{
+    $month = $request->input('month');
+    $year = $request->input('year');
+    $department = departements::find($departmentId);
+
+    return view('reservation_statics.not_reserved_employees', [
+        'departmentId' => $departmentId,
+        'departmentName' => $department->name ?? 'Unknown Department',
+        'month' => $month,
+        'year' => $year,
+    ]);
+}
+
+public function getNotReceivedEmployees(Request $request, $departmentId)
+{
+    $month = $request->input('month');
+    $year = $request->input('year');
+
+    $users = User::where('department_id', $departmentId)
+        ->whereNotIn('id', function ($query) use ($departmentId, $month, $year) {
+            $query->select('user_id')
+                ->from('reservation_allowances')
+                ->where('departement_id', $departmentId)
+                ->whereYear('date', $year)
+                ->whereMonth('date', $month);
+        })
+        ->with(['grade'])
+        ->get();
+
+    return DataTables::of($users)
+        ->addColumn('file_number', fn($user) => $user->file_number)
+        ->addColumn('name', fn($user) => $user->name)
+        ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
+        ->addIndexColumn()
+        ->make(true);
+}
+
     
 
     

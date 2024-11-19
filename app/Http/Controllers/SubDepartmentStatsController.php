@@ -47,7 +47,7 @@ class SubDepartmentStatsController extends Controller
                         ->sum('amount');
     
                     if (is_null($amount) || $amount == 0) {
-                        return "ميزانية مفتوحه";
+                        return "ميزانية غير محدده";
                     }
                     return number_format($amount, 2) . " د.ك";
                 })
