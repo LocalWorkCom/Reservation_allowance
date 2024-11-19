@@ -390,6 +390,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/sector-employees/data/{sectorId}', [SectorEmployeesDetailsController::class, 'getData'])->name('sectorEmployees.getData');
     Route::get('/sector/{sectorId}/printReport', [SectorEmployeesDetailsController::class, 'printReport'])->name('sectorEmployees.printReport');
 
+    Route::get('/sector-employees/{sectorId}/not-reserved', [SectorEmployeesDetailsController::class, 'notReservedUsers'])->name('sector_employees.not_reserved');
+    Route::get('/sector-employees/{sectorId}/not-reserved-data', [SectorEmployeesDetailsController::class, 'getNotReservedData'])->name('sector_employees.not_reserved_data');
+    Route::get('/sector-users/{sectorId}', [SectorEmployeesDetailsController::class, 'sectorUsersPage'])->name('sector.users.page');
+    Route::get('/sector-users-data/{sectorId}', [SectorEmployeesDetailsController::class, 'getSectorUsers'])->name('sector.users.data');
+
     //reservation statics per persons in selected department
     Route::get('/department-employees/{department_id}', [DepartmentEmployeesDetailsController::class, 'index'])->name('department.employees');
     Route::get('/department-employees/data/{department_id}', [DepartmentEmployeesDetailsController::class, 'getData'])->name('department.employees.getData');
