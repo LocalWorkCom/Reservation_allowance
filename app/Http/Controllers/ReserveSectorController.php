@@ -60,7 +60,7 @@ class ReserveSectorController extends Controller
                         ->whereMonth('date', $month)
                         ->value('amount');
                         if (is_null($amount) || $amount == 0) {
-                            return "ميزانية مفتوحه"; // Open budget
+                            return "ميزانية غير محدده"; // Open budget
                         }
                     return number_format($amount, 2) . ' د.ك';
                 })
