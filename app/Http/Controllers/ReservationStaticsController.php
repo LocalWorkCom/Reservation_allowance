@@ -59,7 +59,7 @@ class ReservationStaticsController extends Controller
                         ->whereMonth('date', $month)
                         ->value('amount');
                         if (is_null($amount) || $amount == 0) {
-                            return "ميزانيةغير محدده"; // Open budget
+                            return "ميزانية غير محدده"; // Open budget
                         }
                     return number_format($amount, 2) . ' د.ك';
                 })

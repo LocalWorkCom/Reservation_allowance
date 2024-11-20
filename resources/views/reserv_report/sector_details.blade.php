@@ -35,9 +35,9 @@
             <th>الترتيب</th>
             <th>اليوم</th>
             <th>التاريخ</th>
+            <th>الرتبة</th> 
             <th>الاسم</th>
-            <th>رقم الملف</th>
-            <th>الرتبة</th> <!-- New column for grade -->
+            <th>رقم الملف</th> 
             <th>الإدارة</th>
             <th>النوع</th>
             <th>المبلغ</th>
@@ -75,9 +75,10 @@
         },
         { data: 'day', name: 'day' },
         { data: 'date', name: 'date' },
+        { data: 'grade', name: 'grade' }, 
         { data: 'name', name: 'name' },
         { data: 'file_number', name: 'file_number' },
-        { data: 'grade', name: 'grade' }, 
+      
         { data: 'department', name: 'department' },
         { data: 'type', name: 'type' },
         { data: 'amount', name: 'amount' }
