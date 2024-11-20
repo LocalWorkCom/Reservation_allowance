@@ -318,7 +318,8 @@
                                             useredit = useredit.replace(':id', row.id);
                                             var usershow = '{{ route('user.show', ':id') }}';
                                             usershow = usershow.replace(':id', row.id);
-                                            var vacation = '';
+                                            var vacation = '{{ route('vacations.list', ':id') }}';
+                                            vacation = vacation.replace(':id', row.id);
                                             var unsigned = '{{ route('user.unsigned', ':id') }}';
                                             unsigned = unsigned.replace(':id', row.id);
                                             var visibility = row.department_id != null ? 'd-block-inline' :

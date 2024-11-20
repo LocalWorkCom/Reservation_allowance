@@ -317,8 +317,8 @@ class DepartmentController extends Controller
      */
     public function create($id)
     {
-        // $sectors = get_by_md5_id($id, 'sectors');
-        $sectors = Sector::findOrFail($id);
+         $sectors = get_by_md5_id($id, 'sectors');
+        //$sectors = Sector::findOrFail($id);
         $managers = User::where('id', '!=', auth()->user()->id)
             ->whereNot('id', $sectors->manager)
             ->where(function ($query) use ($id) {

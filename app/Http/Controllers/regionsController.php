@@ -39,7 +39,7 @@ class regionsController extends Controller
             $edit_permission=null;
             $region_permission=null;
             if(Auth::user()->hasPermission('edit Government')){
-                $edit_permission = '<a class="btn btn-sm"  style="background-color: #F7AF15;"  onclick="openedit('.$row->hash_id.','.$name.')">  <i class="fa fa-edit"></i> تعديل </a>';
+                $edit_permission = '<a class="btn btn-sm"  style="background-color: #F7AF15;"  onclick="openedit('.$row->id.','.$name.')">  <i class="fa fa-edit"></i> تعديل </a>';
             }
             if(Auth::user()->hasPermission('view Region')){
                 $region_permission = '<a class="btn btn-sm"  style="background-color: #b77a48;"  href="'.route('regions.index',['id' => $row->hash_id ]).'"> <i class="fa-solid fa-mountain-sun"></i> مناطق </a>';
