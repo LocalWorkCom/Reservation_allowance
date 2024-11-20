@@ -21,82 +21,93 @@ class ReservationReportController extends Controller
     public function index()
     {
 
-        if ( auth()->user()->rule_id == 2) {
-        return view('reserv_report.index');
-    } else {
-        return abort(403, 'Unauthorized action.');
-    }
+        if (auth()->check() && auth()->user()->rule_id == 2) {
+            return view('reserv_report.index');
+        } else {
+            return abort(403, 'Unauthorized action.');
+        }
     }
 
     public function getReportData(Request $request)
     {
-        $startDate = $request->input('start_date');
-        $endDate = $request->input('end_date');
-        
-        if (!$startDate || !$endDate) {
+        try {
+            $startDate = $request->input('start_date');
+            $endDate = $request->input('end_date');
+    
+            if (!$startDate || !$endDate) {
+                return response()->json([
+                    'data' => [],
+                    'totalSectors' => 0,
+                    'totalDepartments' => 0,
+                    'totalUsers' => 0,
+                    'totalAmount' => '0 د.ك'
+                ]);
+            }
+    
+            $start = Carbon::parse($startDate)->startOfDay();
+            $end = Carbon::parse($endDate)->endOfDay();
+    
+            $query = ReservationAllowance::whereBetween('date', [$start, $end])
+                ->selectRaw('sector_id, COUNT(DISTINCT user_id) as user_count, SUM(amount) as total_amount')
+                ->groupBy('sector_id')
+                ->having('total_amount', '>', 0);
+    
+            $data = DataTables::of($query)
+                ->addIndexColumn()
+                ->addColumn('sector_name', function ($row) {
+                    return Sector::find($row->sector_id)->name ?? 'N/A';
+                })
+                ->addColumn('main_departments_count', function ($row) {
+                    return departements::where('sector_id', $row->sector_id)
+                        ->whereNull('parent_id')
+                        ->count();
+                })
+                ->addColumn('sub_departments_count', function ($row) {
+                    $mainDepartments = departements::where('sector_id', $row->sector_id)
+                        ->whereNull('parent_id')
+                        ->pluck('id');
+                    return departements::where('sector_id', $row->sector_id)
+                        ->whereIn('parent_id', $mainDepartments)
+                        ->count();
+                })
+                ->addColumn('employee_count', function ($row) {
+                    return $row->user_count;
+                })
+                ->addColumn('total_amount', function ($row) {
+                    return number_format($row->total_amount, 2) . ' د.ك';
+                })
+                ->make(true);
+    
+            // Calculate totals for summary
+            $totalSectors = $query->count();
+            $totalDepartments = departements::whereIn('sector_id', $query->pluck('sector_id'))
+                ->distinct()
+                ->count();
+            $totalUsers = $query->get()->sum('user_count');
+            $totalAmount = number_format($query->get()->sum('total_amount'), 2) . ' د.ك';
+    
+            // Add summary data to the response
+            $response = $data->getData(true);
+            $response['totalSectors'] = $totalSectors;
+            $response['totalDepartments'] = $totalDepartments;
+            $response['totalUsers'] = $totalUsers;
+            $response['totalAmount'] = $totalAmount;
+    
+            return response()->json($response);
+        } catch (\Exception $e) {
+            Log::error("Error fetching report data: " . $e->getMessage());
+    
             return response()->json([
                 'data' => [],
                 'totalSectors' => 0,
                 'totalDepartments' => 0,
                 'totalUsers' => 0,
-                'totalAmount' => '0 '
+                'totalAmount' => '0 د.ك',
+                'error' => 'Failed to load data'
             ]);
         }
-
-        $start = Carbon::parse($startDate)->startOfDay();
-        $end = Carbon::parse($endDate)->endOfDay();
-
-        // Group data by sector within the selected date range
-        $query = ReservationAllowance::whereBetween('date', [$start, $end])
-            ->selectRaw('sector_id, COUNT(DISTINCT user_id) as user_count, SUM(amount) as total_amount')
-            ->groupBy('sector_id')
-            ->having('total_amount', '>', 0);
-
-        // Prepare DataTable
-        $data = DataTables::of($query)
-            ->addIndexColumn()
-            ->addColumn('sector_name', function ($row) {
-                return Sector::find($row->sector_id)->name ?? 'N/A';
-            })
-            ->addColumn('main_departments_count', function ($row) {
-                return departements::where('sector_id', $row->sector_id)
-                    ->whereNull('parent_id')
-                    ->count();
-            })
-            ->addColumn('sub_departments_count', function ($row) {
-                $mainDepartments = departements::where('sector_id', $row->sector_id)
-                    ->whereNull('parent_id')
-                    ->pluck('id');
-
-                return departements::where('sector_id', $row->sector_id)
-                    ->whereIn('parent_id', $mainDepartments)
-                    ->count();
-            })
-            ->addColumn('employee_count', function ($row) {
-                return $row->user_count;
-            })
-            ->addColumn('total_amount', function ($row) {
-                return number_format($row->total_amount, 2) . ' د.ك';
-            })
-            ->make(true);
-
-        // Calculate summary data
-        $totalSectors = $query->count(); // Number of sectors with reservations in the selected date range
-        $totalDepartments = departements::whereIn('sector_id', $query->pluck('sector_id'))
-            ->distinct()
-            ->count();
-        $totalUsers = $query->get()->sum('user_count');
-        $totalAmount = number_format($query->get()->sum('total_amount'), 2) ;
-
-        // Adding totals to the JSON response
-        $response = $data->getData(true);
-        $response['totalSectors'] = $totalSectors;
-        $response['totalDepartments'] = $totalDepartments;
-        $response['totalUsers'] = $totalUsers;
-        $response['totalAmount'] = $totalAmount;
-
-        return response()->json($response);
     }
+    
     
     public function printReport(Request $request)
     {
@@ -222,7 +233,7 @@ class ReservationReportController extends Controller
 
 //     return $pdf->Output("department_details_report_{$department->name}.pdf", 'I');
 // }
-///
+// ///
 public function showSectorDetails(Request $request, $sectorId)
 {
     $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
