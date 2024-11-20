@@ -6,7 +6,7 @@
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer></script>
 @endpush
 
-@section('title', "تفاصيل بدل الحجز للموظف: $employeeName")
+@section('title', "تفاصيل بدل الحجز للموظف")
 
 @section('content')
 <div class="row">

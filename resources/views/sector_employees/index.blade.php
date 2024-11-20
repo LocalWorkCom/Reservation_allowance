@@ -97,7 +97,13 @@
               { data: 'name', name: 'name' },
                 { data: 'file_number', name: 'file_number' }, 
                 { data: 'department', name: 'department' },
-                { data: 'days', name: 'days' },
+                { data: 'days', name: 'days',
+                    render: function (data, type, row) {
+                    const month = '{{ $month }}';
+                    const year = '{{ $year }}';
+                    return `<a href="/employee-allowance-details/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                }
+                 },
                             
                 {
                 data: 'allowance',
