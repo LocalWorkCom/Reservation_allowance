@@ -162,32 +162,51 @@
 </div>
 
 <br>
-<div class="row">
-    <div class="container  col-11 mt-3 p-0  p-4">
+<div class="row " dir="rtl">
+    <div class="container col-11 p-4">
+        <div class=" d-flex flex-wrap justify-content-between">
+            <div class=" col-5 d-flex justify-content-between">
+                <h5 class="text-dark">التاريخ : <span class="text-info">11-11</span></h5>
+                <h5 class="text-dark">القوة :  <span class="text-info">211</span></h5>
+                <h5 class="text-dark">التكلفة : <span class="text-info">211</span></h5>
 
-    <ul class="nav nav-tabs " id="myTab" role="tablist" dir="rtl">
-        <li class="nav-item " role="presentation ">
-            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
+                <h5 class="text-dark">ملاحظات الملف : <span class="text-info">211</span></h5>
+            </div>
+            <div class="col-5 d-flex align-items-end justify-content-end">
+    <select class="form-select form-select-lg select2 w-50 mx-3" name="sector_id" id="sector_id" required>
+        <option selected disabled>وكيل الوزارة المساعد لشئون امن المنافذ</option>
+        <option>1</option>
+    </select>
+    <button class="btn btn-success py-2 px-3 mx-2" type="submit">اعتماد الكشف</button>
+    <button class="btn btn-danger py-2 px-3" type="submit">الغاء</button>
+</div>
+
+
+
+        </div>
+        <ul class="nav nav-tabs " id="myTab" role="tablist">
+            <li class="nav-item " role="presentation ">
+                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
                     role="tab" aria-controls="home" aria-selected="true">
-                الموظفين الذين سيتم اضافتهم
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link " id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
+                    الموظفين الذين سيتم اضافتهم
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link " id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
                     role="tab" aria-controls="profile" aria-selected="false">
-                الموظفين غير مسجلين فى الادارة او القطاع
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link " id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
+                    الموظفين غير مسجلين فى الادارة او القطاع
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link " id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
                     role="tab" aria-controls="contact" aria-selected="false">
-                موظفين ارقام الملفات خطأ
-            </button>
-        </li>
-    </ul>
-    <div class="tab-content mt-3" id="myTabContent">
-        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-            <!-- <table class="table table-bordered table-hover">
+                    موظفين ارقام الملفات خطأ
+                </button>
+            </li>
+        </ul>
+        <div class="tab-content mt-3" id="myTabContent">
+            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <!-- <table class="table table-bordered table-hover">
                 <thead>
                     <tr>
                         <th>الترتيب</th>
@@ -203,43 +222,43 @@
                     </tr>
                 </tbody>
             </table> -->
-            <h3 class="text-center text-info"> لا يوجد</h3>
+                <h3 class="text-center text-info"> لا يوجد</h3>
+            </div>
+            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>الترتيب</th>
+                            <th>الاسم</th>
+                            <th>رقم الملف</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>اسم الموظف</td>
+                            <td>456</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>الترتيب</th>
+                            <th>رقم الملف</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>789</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-            <table class="table table-bordered table-hover">
-                <thead>
-                    <tr>
-                        <th>الترتيب</th>
-                        <th>الاسم</th>
-                        <th>رقم الملف</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>اسم الموظف</td>
-                        <td>456</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-            <table class="table table-bordered table-hover">
-                <thead>
-                    <tr>
-                        <th>الترتيب</th>
-                        <th>رقم الملف</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>789</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
 
 
     </div>
