@@ -262,6 +262,44 @@ public function getSectorUsers(Request $request, $sectorId)
     
         return $pdf->Output("sector_employees_{$sector->name}.pdf", 'I');
     }
+
+    public function allowanceDetailsPage(Request $request, $employeeId)
+    {
+        $month = $request->input('month');
+        $year = $request->input('year');
+        $employee = User::find($employeeId);
+    
+        if (!$employee) {
+            return abort(404, 'Employee not found');
+        }
+    
+        return view('sector_employees.allowance_details', [
+            'employeeName' => $employee->name,
+            'employeeId' => $employeeId,
+            'month' => $month,
+            'year' => $year
+        ]);
+    }
+    public function getAllowanceDetails(Request $request, $employeeId)
+{
+    $month = $request->input('month');
+    $year = $request->input('year');
+
+    $allowances = ReservationAllowance::where('user_id', $employeeId)
+        ->whereYear('date', $year)
+        ->whereMonth('date', $month)
+        ->get();
+
+    return DataTables::of($allowances)
+        ->addColumn('date', function ($allowance) {
+            return Carbon::parse($allowance->date)->format('Y-m-d');
+        })
+        ->addColumn('type', fn($allowance) => $allowance->type == 1 ? 'كلي' : 'جزئي')
+        ->addColumn('amount', fn($allowance) => number_format($allowance->amount, 2) . ' د.ك')
+        ->addIndexColumn()
+        ->make(true);
+}
+
     
     
 }
