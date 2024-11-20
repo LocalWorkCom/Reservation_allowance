@@ -596,7 +596,7 @@ class UserController extends Controller
         $user->sector  = Null;
         $user->save();
         // $id = 1;
-        $department = departements::where('manager', $request->id_employee)->first();
+        $department = departements::where('manger', $request->id_employee)->first();
         if ($department) {
             $department->manager = null;
             $department->save();
