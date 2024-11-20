@@ -97,8 +97,24 @@
               { data: 'name', name: 'name' },
                 { data: 'file_number', name: 'file_number' }, 
                 { data: 'department', name: 'department' },
-                { data: 'days', name: 'days' },
-                { data: 'allowance', name: 'allowance' },
+                { data: 'days', name: 'days',
+                    render: function (data, type, row) {
+                    const month = '{{ $month }}';
+                    const year = '{{ $year }}';
+                    return `<a href="/employee-allowance-details/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                }
+                 },
+                            
+                {
+                data: 'allowance',
+                name: 'allowance',
+                render: function (data, type, row) {
+                    const month = '{{ $month }}';
+                    const year = '{{ $year }}';
+                    return `<a href="/employee-allowance-details/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                }
+            },
+
             ],
             order: [[1, 'asc']],
             "oLanguage": {

@@ -1,102 +1,66 @@
-<style>
-    .info-box {
-        background-color: white;
-        padding: 20px;
-        border-radius: 10px;
-        margin-top: 20px;
-        text-align: center;
-    }
-</style>
-
 @extends('layout.main')
-
 @push('style')
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
     <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer></script>
 @endpush
 
-
-@section('title', '  تفاصيل الموظفين للإدارة')
+@section('title', "تفاصيل بدل الحجز للموظف: $employeeName")
 
 @section('content')
-    <div class="row">
+<div class="row">
     <div class="container welcome col-11">
-    <div class="d-flex justify-content-between">
-        <p>تفاصيل الموظفين للإدارة: {{ $departmentName }}</p>
-        </div>
+        <div class="d-flex justify-content-between">
+            <p>تفاصيل بدل الحجز للموظف: {{ $employeeName }}</p>
         </div>
     </div>
+</div>
 
-    <div class="row">
-        <div class="container col-11 mt-3 p-0 pt-5 pb-4b ">
-            <!-- DataTable -->
-            <div class="bg-white p-4">
-            <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
-            <thead>
-                        <tr>
-                    <th>#</th>
-                    
-                    <th>الرتبة</th>
-                    <th>الاسم</th>
-                    <th>رقم الملف</th>
-                    <th>الأيام</th>
-                    <th>المبلغ</th>
-                </tr>
-            </thead>
-        </table>
-        </div>
+<div class="row">
+    <div class="container col-11 mt-3 p-0 pt-5 pb-4">
+        <div class="bg-white p-4">
+        <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
+        <thead>
+                    <tr>
+                        <th>الترتيب</th>
+                        <th>التاريخ</th>
+                        <th>النوع</th>
+                        <th>المبلغ</th>
+                    </tr>
+                </thead>
+            </table>
         </div>
     </div>
+</div>
 @endsection
 
 @push('scripts')
 <script>
-    $(document).ready(function() {
-        $('#users-table').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: '{{ route("department.employees.getData", $departmentId) }}',
-                data: {
-                    month: '{{ $month }}',
-                    year: '{{ $year }}',
-                }
-            },
-
-            
-            columns: [
-                {
-                data: null,
-                orderable: false,
+$(document).ready(function() {
+    $('#users-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route('employee.allowance.details.data', $employeeId) }}',
+            data: function(d) {
+                d.month = '{{ $month }}';
+                d.year = '{{ $year }}';
+            }
+        },
+        columns: [
+            { 
+                data: null, 
+                orderable: false, 
                 searchable: false,
                 render: function (data, type, row, meta) {
                     return meta.row + 1; // Auto-generate row numbers
                 }
             },
-            { data: 'grade', name: 'grade' },
-            { data: 'name', name: 'name' },
-            { data: 'file_number', name: 'file_number' },
-            { 
-                    data: 'allowance', 
-                    name: 'allowance',
-                    render: function (data, type, row) {
-                        const month = '{{ $month }}';
-                        const year = '{{ $year }}';
-                        return `<a href="/employee-allowance-details/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
-                    }
-                },
-            { 
-                    data: 'allowance', 
-                    name: 'allowance',
-                    render: function (data, type, row) {
-                        const month = '{{ $month }}';
-                        const year = '{{ $year }}';
-                        return `<a href="/employee-allowance-details/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
-                    }
-                },
-            ],
-            order: [[1, 'asc']],
+            { data: 'date', name: 'date' },
+            { data: 'type', name: 'type' },
+            { data: 'amount', name: 'amount' }
+        ],
+        order: [[1, 'asc']],
             "oLanguage": {
                 "sSearch": "",
                 "sSearchPlaceholder": "بحث",

@@ -61,7 +61,8 @@ class DepartmentEmployeesDetailsController extends Controller
                                ->where('type', 2)
                                ->count();
 
-                return "كلي: $fullDays | جزئي: $partialDays";
+                               $totalDays = $fullDays + $partialDays;
+                               return "كلي: $fullDays | جزئي: $partialDays | مجموع: $totalDays";
             })
             ->addColumn('allowance', function ($user) use ($departmentId, $month, $year) {
                 $fullAllowance = ReservationAllowance::where('user_id', $user->id)
@@ -78,8 +79,9 @@ class DepartmentEmployeesDetailsController extends Controller
                                     ->where('type', 2)
                                     ->sum('amount');
 
-                return "كلي: " . number_format($fullAllowance, 2) . " د.ك | جزئي: " . number_format($partialAllowance, 2) . " د.ك";
-            })
+                                    $totalAllowance = $fullAllowance + $partialAllowance;
+                                    return "كلي: " . number_format($fullAllowance, 2) . " د.ك | جزئي: " . number_format($partialAllowance, 2) . " د.ك | مجموع: " . number_format($totalAllowance, 2) . " د.ك";
+                                           })
             ->addIndexColumn()
             ->make(true);
     }
@@ -157,4 +159,37 @@ class DepartmentEmployeesDetailsController extends Controller
         $pdf->writeHTML($html, true, false, true, false, '');
         return $pdf->Output("department_employees_{$department->name}.pdf", 'I');
     }
+
+    public function allowanceDetailsPage(Request $request, $employeeId)
+{
+    $month = $request->input('month');
+    $year = $request->input('year');
+    $employee = User::find($employeeId);
+
+    return view('reservation_statics.allowance_details', [
+        'employeeName' => $employee->name,
+        'employeeId' => $employeeId,
+        'month' => $month,
+        'year' => $year,
+    ]);
+}
+
+public function getAllowanceDetails(Request $request, $employeeId)
+{
+    $month = $request->input('month');
+    $year = $request->input('year');
+
+    $allowances = ReservationAllowance::where('user_id', $employeeId)
+        ->whereYear('date', $year)
+        ->whereMonth('date', $month)
+        ->get();
+
+    return DataTables::of($allowances)
+        ->addColumn('date', fn($allowance) => Carbon::parse($allowance->date)->format('Y-m-d'))
+        ->addColumn('type', fn($allowance) => $allowance->type == 1 ? 'كلي' : 'جزئي')
+        ->addColumn('amount', fn($allowance) => number_format($allowance->amount, 2) . ' د.ك')
+        ->addIndexColumn()
+        ->make(true);
+}
+
 }
