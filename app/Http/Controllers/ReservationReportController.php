@@ -28,8 +28,6 @@ class ReservationReportController extends Controller
     }
     }
 
-   
-
     public function getReportData(Request $request)
     {
         $startDate = $request->input('start_date');
@@ -105,23 +103,19 @@ class ReservationReportController extends Controller
         $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
         $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
     
-        // Get data grouped by sector within the selected date range
         $data = ReservationAllowance::whereBetween('date', [$startDate, $endDate])
             ->selectRaw('sector_id, COUNT(DISTINCT user_id) as user_count, SUM(amount) as total_amount')
             ->groupBy('sector_id')
             ->having('total_amount', '>', 0)
             ->get()
             ->map(function ($item) {
-                // Add sector name, main and sub-departments count
                 $item->sector_name = Sector::find($item->sector_id)->name ?? 'N/A';
     
-                // Count main departments
                 $mainDepartments = departements::where('sector_id', $item->sector_id)
                     ->whereNull('parent_id')
                     ->get();
                 $item->main_departments_count = $mainDepartments->count();
     
-                // Count sub-departments
                 $item->sub_departments_count = departements::where('sector_id', $item->sector_id)
                     ->whereIn('parent_id', $mainDepartments->pluck('id'))
                     ->count();
@@ -137,7 +131,6 @@ class ReservationReportController extends Controller
         $totalAmount = number_format($data->sum('total_amount'), 2) . ' د.ك';
     
         
-        // Pass data to the Blade template
         $pdf = new TCPDF();
         $pdf->SetCreator('Your App');
         $pdf->SetTitle('تقارير بدل حجز');
@@ -261,14 +254,16 @@ public function getSectorDetailsData(Request $request, $sectorId)
 
     $reservations = ReservationAllowance::where('sector_id', $sectorId)
         ->whereBetween('date', [$startDate, $endDate])
-        ->with('user') // Ensure 'user' relationship is loaded
+        ->with(['user.grade', 'user.department'])
         ->get();
 
     return DataTables::of($reservations)
         ->addIndexColumn()
         ->addColumn('day', fn($row) => Carbon::parse($row->date)->translatedFormat('l'))
         ->addColumn('date', fn($row) => Carbon::parse($row->date)->format('Y-m-d'))
-        ->addColumn('name', fn($row) => optional($row->user)->name ?? 'Unknown') 
+        ->addColumn('name', fn($row) => optional($row->user)->name ?? 'Unknown')
+        ->addColumn('file_number', fn($row) => optional($row->user)->file_number ?? 'N/A')
+        ->addColumn('grade', fn($row) => optional($row->user->grade)->name ?? 'N/A') // Add grade
         ->addColumn('department', fn($row) => optional($row->user->department)->name ?? 'N/A')
         ->addColumn('type', fn($row) => $row->type == 1 ? 'حجز كلي' : 'حجز جزئي')
         ->addColumn('amount', fn($row) => number_format($row->amount, 2) . ' د ك')
@@ -280,12 +275,14 @@ public function printSectorDetails(Request $request, $sectorId)
     $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
     $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
 
-    // Fetch data for the selected sector and date range
     $sector = Sector::find($sectorId);
     $reservations = ReservationAllowance::where('sector_id', $sectorId)
         ->whereBetween('date', [$startDate, $endDate])
-        ->with('user')
-        ->get();
+        ->with(['user.grade', 'user.department']) 
+        ->get()
+        ->sortBy(function ($reservation) {
+            return optional($reservation->user->grade)->name; 
+        });
 
     // Prepare the PDF data
     $pdf = new TCPDF();
@@ -301,6 +298,8 @@ public function printSectorDetails(Request $request, $sectorId)
 
     return $pdf->Output("sector_details_report_{$sector->name}.pdf", 'I');
 }
+
+
 ////
 
 public function showMainDepartmentDetails(Request $request, $sectorId)
@@ -454,7 +453,6 @@ public function printSubDepartmentsDetails(Request $request, $departmentId)
 }
 
 
-
 public function showMainDepartmentEmployees(Request $request, $departmentId)
 {
     $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
@@ -464,20 +462,23 @@ public function showMainDepartmentEmployees(Request $request, $departmentId)
 
     $employees = ReservationAllowance::where('departement_id', $departmentId)
         ->whereBetween('date', [$startDate, $endDate])
-        ->with('user.grade') // Load user and their grade info
+        ->with('user.grade')
         ->get()
         ->map(function ($entry) {
             return [
+                'day' => \Carbon\Carbon::parse($entry->date)->translatedFormat('l'), 
+                'date' => \Carbon\Carbon::parse($entry->date)->format('Y-m-d'), 
                 'name' => $entry->user->name,
-                'civil_id' => $entry->user->Civil_number,
                 'file_number' => $entry->user->file_number,
                 'grade' => optional($entry->user->grade)->name,
+                'type' => $entry->type == 1 ? 'حجز كلي' : 'حجز جزئي', 
                 'reservation_amount' => number_format($entry->amount, 2)
             ];
         });
 
     return view('reserv_report.main_department_employees', compact('department', 'employees', 'startDate', 'endDate'));
 }
+
 public function printMainDepartmentEmployees(Request $request, $departmentId)
 {
     $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
@@ -491,10 +492,12 @@ public function printMainDepartmentEmployees(Request $request, $departmentId)
         ->get()
         ->map(function ($entry) {
             return [
+                'day' => \Carbon\Carbon::parse($entry->date)->translatedFormat('l'), 
+                'date' => \Carbon\Carbon::parse($entry->date)->format('Y-m-d'), 
                 'name' => $entry->user->name,
-                'civil_id' => $entry->user->Civil_number,
                 'file_number' => $entry->user->file_number,
                 'grade' => optional($entry->user->grade)->name,
+                'type' => $entry->type == 1 ? 'حجز كلي' : 'حجز جزئي', 
                 'reservation_amount' => number_format($entry->amount, 2)
             ];
         });
@@ -517,6 +520,7 @@ public function printMainDepartmentEmployees(Request $request, $departmentId)
     return $pdf->Output("main_department_employees_report_{$department->name}.pdf", 'I');
 }
 
+
 ////
 public function showSubDepartmentEmployees(Request $request, $subDepartmentId)
 {
@@ -524,20 +528,26 @@ public function showSubDepartmentEmployees(Request $request, $subDepartmentId)
     $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
 
     $subDepartment = departements::find($subDepartmentId);
+
     $employees = ReservationAllowance::where('departement_id', $subDepartmentId)
         ->whereBetween('date', [$startDate, $endDate])
-        ->with('user')
+        ->with('user.grade') 
         ->get()
         ->map(function ($reservation) {
             return [
+                'day' => Carbon::parse($reservation->date)->translatedFormat('l'),
+                'date' => Carbon::parse($reservation->date)->format('Y-m-d'),
                 'employee_name' => $reservation->user->name ?? 'Unknown',
-                'reservation_amount' => $reservation->amount,
-                'reservation_date' => Carbon::parse($reservation->date)->format('Y-m-d'), 
+                'file_number' => $reservation->user->file_number ?? 'N/A',
+                'grade' => optional($reservation->user->grade)->name ?? 'N/A',
+                'type' => $reservation->type == 1 ? 'حجز كلي' : 'حجز جزئي',
+                'reservation_amount' => number_format($reservation->amount, 2),
             ];
         });
 
     return view('reserv_report.sub_department_employees', compact('subDepartment', 'employees', 'startDate', 'endDate'));
 }
+
 
 
 
@@ -549,16 +559,20 @@ public function printSubDepartmentEmployees(Request $request, $subDepartmentId)
     $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
 
     $subDepartment = departements::find($subDepartmentId);
+
     $employees = ReservationAllowance::where('departement_id', $subDepartmentId)
         ->whereBetween('date', [$startDate, $endDate])
-        ->with('user')
+        ->with('user.grade') 
         ->get()
         ->map(function ($reservation) {
             return [
+                'day' => Carbon::parse($reservation->date)->translatedFormat('l'),
+                'date' => Carbon::parse($reservation->date)->format('Y-m-d'),
                 'name' => optional($reservation->user)->name ?? 'Unknown',
+                'file_number' => optional($reservation->user)->file_number ?? 'N/A',
                 'grade' => optional($reservation->user->grade)->name ?? 'N/A',
-                'date' => $reservation->date->format('Y-m-d'),
-                'amount' => number_format($reservation->amount, 2) . ' د.ك'
+                'type' => $reservation->type == 1 ? 'حجز كلي' : 'حجز جزئي',
+                'amount' => number_format($reservation->amount, 2) . ' د.ك',
             ];
         });
 
@@ -569,10 +583,18 @@ public function printSubDepartmentEmployees(Request $request, $subDepartmentId)
     $pdf->setRTL(true);
     $pdf->SetFont('dejavusans', '', 12);
 
-    $html = view('reserv_report.sub_department_employees_pdf', compact('subDepartment', 'employees', 'startDate', 'endDate'))->render();
+    $html = view('reserv_report.sub_department_employees_pdf', compact(
+        'subDepartment', 'employees', 'startDate', 'endDate'
+    ))->render();
     $pdf->writeHTML($html, true, false, true, false, '');
-
+    Log::info('Print route accessed', [
+        'subDepartmentId' => $subDepartmentId,
+        'start_date' => $request->input('start_date'),
+        'end_date' => $request->input('end_date'),
+    ]);
+    
     return $pdf->Output("sub_department_employees_{$subDepartment->name}.pdf", 'I');
 }
+
 
 }

@@ -16,41 +16,38 @@
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer></script>
 @endpush
 
-@section('title', "تفاصيل الإدارات الفرعية للإدارة: $departmentName")
+
+@section('title', '  تفاصيل الموظفين للإدارة')
 
 @section('content')
-<div class="row">
+    <div class="row">
     <div class="container welcome col-11">
-        <div class="d-flex justify-content-between ">
-            <p>الإدارات الفرعية للإدارة: {{ $departmentName }}</p>
-            <div>
-                <h3><strong>الشهر:</strong> {{ $month }}</h3>
-                <h3><strong>السنة:</strong> {{ $year }}</h3>
-            </div>
+    <div class="d-flex justify-content-between">
+        <p>تفاصيل الموظفين للإدارة: {{ $departmentName }}</p>
+        </div>
         </div>
     </div>
-</div>
 
-<div class="row">
-    <div class="container col-11 mt-3 p-0 pt-5 pb-4b">
-        <div class="bg-white p-4">
-        <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
-                    <thead>
+    <div class="row">
+        <div class="container col-11 mt-3 p-0 pt-5 pb-4b ">
+            <!-- DataTable -->
+            <div class="bg-white p-4">
+            <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
+            <thead>
                         <tr>
-                        <th>#</th>
-                        <th>اسم الإدارة الفرعية</th>
-                        <th>ميزانية بدل الحجز</th>
-                        <th>المسجل</th>
-                        <th>المبلغ المتبقي</th>
-                        <th>عدد الموظفين</th>
-                        <th>الحاصلين على بدل حجز</th>
-                        <th>لم يحصل على بدل حجز</th>
-                    </tr>
-                </thead>
-            </table>
+                    <th>#</th>
+                    
+                    <th>الرتبة</th>
+                    <th>الاسم</th>
+                    <th>رقم الملف</th>
+                    <th>الأيام</th>
+                    <th>المبلغ</th>
+                </tr>
+            </thead>
+        </table>
+        </div>
         </div>
     </div>
-</div>
 @endsection
 
 @push('scripts')
@@ -60,58 +57,46 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: '{{ route("statistics_subdepartments.getAll", $departmentId) }}',
-                data: function(d) {
-                    d.month = '{{ $month }}';
-                    d.year = '{{ $year }}';
+                url: '{{ route("department.employees.getData", $departmentId) }}',
+                data: {
+                    month: '{{ $month }}',
+                    year: '{{ $year }}',
                 }
             },
+
+            
             columns: [
-                {data: null,
+                {
+                data: null,
                 orderable: false,
                 searchable: false,
                 render: function (data, type, row, meta) {
                     return meta.row + 1; // Auto-generate row numbers
-                }},               
-                 {
-                    data: 'sub_department_name', 
-                    name: 'sub_department_name',
-                },
-                { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' },
-                { data: 'registered_by', name: 'registered_by',
-                    render: function(data, type, row) {
-                        const month = '{{ $month }}';
-                        const year = '{{ $year }}';
-                        return `<a href="/department-employees/${row.id}?month=${month}&year=${year}" style="color: blue !important;">${data}</a>`;
-                    }
-                 },
-                { data: 'remaining_amount', name: 'remaining_amount' },
-                {
-                    data: 'employees_count',
-                    render: function(data, type, row) {
-                        const month = '{{ $month }}';
-                        const year = '{{ $year }}';
-                        return `<a href="/subdepartment-employees/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
-                    }
-                },
-                { 
-                    data: 'received_allowance_count', 
-                    name: 'received_allowance_count',
-                    render: function(data, type, row) {
-                        const month = '{{ $month }}';
-                        const year = '{{ $year }}';
-                        return `<a href="/department-employees/${row.id}?month=${month}&year=${year}" style="color: blue !important;">${data}</a>`;
-                    }
-                },
-                {
-                    data: 'did_not_receive_allowance_count',
-                    render: function(data, type, row) {
-                        const month = '{{ $month }}';
-                        const year = '{{ $year }}';
-                        return `<a href="/subdepartment-not-received/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
-                    }
                 }
+            },
+            { data: 'grade', name: 'grade' },
+            { data: 'name', name: 'name' },
+            { data: 'file_number', name: 'file_number' },
+            { 
+                    data: 'allowance', 
+                    name: 'allowance',
+                    render: function (data, type, row) {
+                        const month = '{{ $month }}';
+                        const year = '{{ $year }}';
+                        return `<a href="/employee-allowance-details/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                    }
+                },
+            { 
+                    data: 'allowance', 
+                    name: 'allowance',
+                    render: function (data, type, row) {
+                        const month = '{{ $month }}';
+                        const year = '{{ $year }}';
+                        return `<a href="/employee-allowance-details/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                    }
+                },
             ],
+            order: [[1, 'asc']],
             "oLanguage": {
                 "sSearch": "",
                 "sSearchPlaceholder": "بحث",
@@ -146,6 +131,6 @@
                     }
                 }
         });
-    });
+});
 </script>
 @endpush

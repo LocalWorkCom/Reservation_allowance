@@ -18,13 +18,21 @@ class departements extends Model
         'description',
         'parent_id'
     ];
-    // protected $appends = ['hash_id'];
+
+    protected $appends = ['hash_id'];
+
+
    
     public function employees()
     {
         return $this->hasMany(User::class , 'department_id');
     }
     // Relationships
+    // public function manager()
+    // {
+    //     return $this->belongsTo(User::class, 'manger');
+    // }
+
     public function manager()
     {
         return $this->belongsTo(User::class, 'manger');
@@ -97,8 +105,8 @@ class departements extends Model
         return $children;
     }
 
-    // public function getHashIdAttribute()
-    // {
-    //     return md5($this->id);
-    // }
+    public function getHashIdAttribute()
+    {
+        return md5($this->id);
+    }
 }

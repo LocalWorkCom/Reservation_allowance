@@ -84,7 +84,7 @@
                         <div class="col-2">
                             <p> بدل حجز بالهويات</p>
                         </div>
-                        
+
                         <form class="" id="search_employee_allowances">
                             @csrf
                             <div class="row d-flex flex-wrap justify-content-between">
@@ -119,7 +119,7 @@
                                                 @endif
                                             @endforeach
                                         @endif
-                                        
+
                                     </select>
                                 </div>
 
@@ -144,7 +144,7 @@
                                     </a>
                                     {{-- @endif --}}
                                 </div> -->
-                        
+
                     </div>
                     <!-- show_reservation_allowances_info -->
                     <div id="show_reservation_allowances_info" class="col-12"></div>
@@ -186,7 +186,7 @@
                                             <td>{{$employee_newadd->file_number}}</td>
                                         </tr>
                                         @endforeach
-                            </table>   
+                            </table>
                         </div>
                         @endif
 
@@ -205,10 +205,10 @@
                                         <tr>
                                             <td>{{$K_employee_notdept+1}}</td>
                                             <td>{{$employee_notdept->name}}</td>
-                                            <td>{{$employee_notdept->file_number}}</td>                                        
+                                            <td>{{$employee_notdept->file_number}}</td>
                                         </tr>
                                         @endforeach
-                            </table>   
+                            </table>
                         </div>
                         @endif
 
@@ -228,7 +228,7 @@
                                     <td>{{$employee_notfound['Civil_number']}}</td>
                                     </tr>
                                     @endforeach
-                            </table>   
+                            </table>
                         </div>
                         @endif
 
@@ -331,25 +331,11 @@
                         {
                             data: 'employee_allowance_amount',
                             name: 'employee_allowance_amount'
-                        } 
+                        }
                     ],
                     order: [0, 'asc'],
 
-                    oLanguage: {
-                        "sSearch": "",
-                        "sSearchPlaceholder": "بحث",
-                        "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
-                        "sInfoEmpty": 'لا توجد بيانات متاحه',
-                        "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
-                        "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
-                        "sZeroRecords": 'نأسف لا توجد نتيجة',
-                        "oPaginate": {
-                            "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
-                            "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
-                            "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
-                            "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
-                        }
-                    },
+
                     layout: {
 
                         bottomEnd: {
@@ -358,17 +344,35 @@
                             }
                         }
                     },
-                    pagingType: "full_numbers",
                     bDestroy: true,
-                    fnDrawCallback: function(oSettings) {
-                        console.log('Page ' + this.api().page.info().pages)
-                        var page = this.api().page.info().pages;
-                        console.log($('#users-table tr').length);
-                        if (page <= 1) {
-                            //$('.dataTables_paginate').hide();//css('visiblity','hidden');
-                            $('.dataTables_paginate').css('visibility', 'hidden'); // to hide
-                        }
-                    },
+                   "oLanguage": {
+                    "sSearch": "",
+                    "sSearchPlaceholder": "بحث",
+                    "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
+                    "sInfoEmpty": 'لا توجد بيانات متاحه',
+                    "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
+                    "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
+                    "sZeroRecords": 'نأسف لا توجد نتيجة',
+                    "oPaginate": {
+                        "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
+                        "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
+                        "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
+                        "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
+                    }
+                },
+                "pagingType": "full_numbers",
+                "fnDrawCallback": function(oSettings) {
+                    var api = this.api();
+                    var pageInfo = api.page.info();
+                    if (pageInfo.recordsTotal <= 10) {
+                        $('.dataTables_paginate').css(
+                            'visibility', 'hidden');
+                    } else {
+                        $('.dataTables_paginate').css(
+                            'visibility', 'visible');
+                    }
+                },
+
                     createdRow: function(row, data, dataIndex) {
                         $('td', row).eq(0).html(dataIndex + 1); // Automatic numbering in the first column
                     }
@@ -386,7 +390,7 @@
                     table.page(0).draw(false); // Reset to first page and redraw the table
                 });
                 //end of call datatable
-            
+
 
 
         });

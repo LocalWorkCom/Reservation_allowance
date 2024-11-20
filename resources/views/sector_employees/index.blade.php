@@ -6,10 +6,12 @@
         border-radius: 10px;
         margin-top: 20px;
         text-align: center;
+        
     }
 
     .index-column { width: 5% !important; }
     .name-column { width: 10% !important; }
+    .file-number-column { width: 10% !important; }
     .grade-column { width: 10% !important; }
     .days-column { width: 35% !important; }
     .department-column { width: 10% !important; }
@@ -33,7 +35,6 @@
     <div class="container welcome col-11">
         <div class="d-flex justify-content-between">
             <p>تفاصيل بدل حجز لموظفين قطاع {{ $sectorName }}</p>
-
             <button id="print-report" class="btn btn-primary">طباعة</button>
 
         </div>
@@ -42,26 +43,28 @@
 
 <div class="row">
     <div class="container col-11 mt-3 p-0 pt-5 pb-4">
-        <div class="col-lg-12">
+       
             <div class="bg-white">
                 @if (session()->has('message'))
                     <div class="alert alert-info">
                         {{ session('message') }}
                     </div>
                 @endif
-                <div>
-                    <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
-                        <thead>
-                            <tr>
-                                <th class="index-column">الترتيب</th>
-                                <th class="name-column">الاسم</th>
-                                <th class="grade-column">الرتبه</th>
-                                <th class="department-column">الادارة</th>
-                                <th class="days-column">الايام</th>
-                                <th class="allowance-column">بدل الحجز</th>
-                            </tr>
-                        </thead>
-                    </table>
+           
+                <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
+                <thead>
+                    <tr>
+                        <th class="index-column">الترتيب</th>
+                        <th class="grade-column">الرتبه</th>
+                        <th class="name-column">الاسم</th>
+                        <th class="file-number-column">رقم الملف</th> 
+                        <th class="department-column">الادارة</th>
+                        <th class="days-column">الايام</th>
+                        <th class="allowance-column">بدل الحجز</th>
+                    </tr>
+                </thead>
+            </table>
+
                 </div>
             </div>
         </div>
@@ -72,9 +75,9 @@
 <script>
     $(document).ready(function() {
         $('#users-table').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: {
+    processing: true,
+    serverSide: true,
+    ajax: {
         url: '{{ route('sectorEmployees.getData', ['sectorId' => $sectorId]) }}',
         data: function(d) {
             d.month = '{{ $month }}';
@@ -82,30 +85,61 @@
         }
     },
             columns: [
-                { data: null, name: 'order', orderable: false, searchable: false },
-                { data: 'name', name: 'name' },
-                { data: 'grade', name: 'grade' },
+                {
+                data: null,
+                orderable: false,
+                searchable: false,
+                render: function (data, type, row, meta) {
+                    return meta.row + 1; // Auto-generate row numbers
+                }
+            },
+            { data: 'grade', name: 'grade' },
+              { data: 'name', name: 'name' },
+                { data: 'file_number', name: 'file_number' }, 
                 { data: 'department', name: 'department' },
-                { data: 'days', name: 'days' },
-                { data: 'allowance', name: 'allowance' },
+                { data: 'days', name: 'days',
+                    render: function (data, type, row) {
+                    const month = '{{ $month }}';
+                    const year = '{{ $year }}';
+                    return `<a href="/employee-allowance-details/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                }
+                 },
+                            
+                {
+                data: 'allowance',
+                name: 'allowance',
+                render: function (data, type, row) {
+                    const month = '{{ $month }}';
+                    const year = '{{ $year }}';
+                    return `<a href="/employee-allowance-details/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                }
+            },
+
             ],
             order: [[1, 'asc']],
             "oLanguage": {
                 "sSearch": "",
                 "sSearchPlaceholder": "بحث",
-                "sInfo": 'اظهار صفحة PAGE من PAGES',
+                "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
                 "sInfoEmpty": 'لا توجد بيانات متاحه',
-                "sInfoFiltered": '(تم تصفية  من MAX اجمالى البيانات)',
-                "sLengthMenu": 'اظهار MENU عنصر لكل صفحة',
+                "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
+                "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
                 "sZeroRecords": 'نأسف لا توجد نتيجة',
                 "oPaginate": {
-                    "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
-                    "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
-                    "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
-                    "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
+                    "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
+                    "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
+                    "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
+                    "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
                 }
             },
-            pagingType: "full_numbers",
+            layout: {
+                bottomEnd: {
+                    paging: {
+                        firstLast: false
+                    }
+                }
+            },
+            "pagingType": "full_numbers",
             "fnDrawCallback": function(oSettings) {
                     var api = this.api();
                     var pageInfo = api.page.info();
@@ -115,10 +149,7 @@
                     } else {
                         $('.dataTables_paginate').css('visibility', 'visible'); // Show pagination
                     }
-                },
-            createdRow: function(row, data, dataIndex) {
-                $('td', row).eq(0).html(dataIndex + 1);
-            }
+                }
         });
     });
 

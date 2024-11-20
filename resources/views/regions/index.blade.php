@@ -46,7 +46,7 @@
                                 style="text-align: center; color:#ff8f00;height: 40px;font-size: 19px; padding-inline:10px;">
                                 <option value="" selected disabled > المحافظه</option>
                                 @foreach (getgovernments() as $government)
-                                    <option value="{{ $government->id }}" @if ($government->id == $id) selected @endif>
+                                    <option value="{{ $government->hash_id }}" @if ($government->hash_id == $id) selected @endif>
                                         {{ $government->name }}</option>
                                 @endforeach
                             </select>

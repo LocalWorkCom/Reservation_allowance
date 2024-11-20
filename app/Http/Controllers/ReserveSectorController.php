@@ -28,18 +28,15 @@ class ReserveSectorController extends Controller
     public function getAll(Request $request)
     {
         try {
-            // Retrieve and validate month and year from the request
             $month = $request->input('month');
             $year = $request->input('year');
             
-            // Ensure month and year are provided to avoid errors
             if (!$month || !$year) {
                 return response()->json([
                     'error' => 'Please select both month and year.'
                 ], 400);
             }
 
-            // Fetch sectors ordered by name
             $sectors = Sector::orderBy('name', 'asc')->get();
 
             return DataTables::of($sectors)
@@ -55,18 +52,16 @@ class ReserveSectorController extends Controller
                         ->whereNotNull('parent_id')
                         ->count();
                 })
-                // Budget for the selected month and year or open if balance = 0
                 ->addColumn('reservation_allowance_budget', function ($row) use ($month, $year) {
-                    if ($row->reservation_allowance_amount == 0) {
-                        return "ميزانية مفتوحه"; // Open budget
-                    }
-
+                   
                     $amount = DB::table('history_allawonces')
                         ->where('sector_id', $row->id)
                         ->whereYear('date', $year)
                         ->whereMonth('date', $month)
                         ->value('amount');
-    
+                        if (is_null($amount) || $amount == 0) {
+                            return "ميزانية غير محدده"; // Open budget
+                        }
                     return number_format($amount, 2) . ' د.ك';
                 })
                 // Total registered amount for the selected period
@@ -80,10 +75,7 @@ class ReserveSectorController extends Controller
                 })
                 // Remaining balance: historical budget minus registered amount
                 ->addColumn('remaining_amount', function ($row) use ($month, $year) {
-                    if ($row->reservation_allowance_amount == 0) {
-                        return "-"; // No limit if open budget
-                    }
-
+                   
                     $registeredAmount = ReservationAllowance::where('sector_id', $row->id)
                         ->whereYear('date', $year)
                         ->whereMonth('date', $month)
@@ -94,15 +86,15 @@ class ReserveSectorController extends Controller
                         ->whereYear('date', $year)
                         ->whereMonth('date', $month)
                         ->value('amount');
-    
+                 if ( $historicalAmount == 0 || is_null( $historicalAmount)) {
+                         return "-"; 
+                    }
                     $remainingAmount = $historicalAmount - $registeredAmount;
                     return number_format($remainingAmount, 2) . " د.ك";
                 })
-                // Total employees in sector
                 ->addColumn('employees_count', function ($row) {
                     return User::where('sector', $row->id)->count();
                 })
-                // Count of employees who received allowance within the selected period
                 ->addColumn('received_allowance_count', function ($row) use ($month, $year) {
                     return ReservationAllowance::where('sector_id', $row->id)
                         ->whereYear('date', $year)
@@ -110,7 +102,6 @@ class ReserveSectorController extends Controller
                         ->distinct('user_id')
                         ->count('user_id');
                 })
-                // Count of employees who did not receive allowance within the selected period
                 ->addColumn('did_not_receive_allowance_count', function ($row) use ($month, $year) {
                     $employeesCount = User::where('sector', $row->id)->count();
                     $receivedAllowanceCount = ReservationAllowance::where('sector_id', $row->id)
@@ -135,3 +126,4 @@ class ReserveSectorController extends Controller
         }
     }
 }
+

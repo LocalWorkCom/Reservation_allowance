@@ -23,6 +23,8 @@ use App\Mail\SendEmail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 if (!function_exists('whats_send')) {
     function whats_send($mobile, $message, $country_code)
@@ -525,6 +527,19 @@ if (!function_exists('send_push_notification')) {
         // dd($response);
         $err = curl_error($ch);
         curl_close($ch);
+    }
+
+    function get_by_decrypt_id_with_table($id, $table)
+    {
+        $id = Crypt::decryptString($id);
+        return DB::table($table)
+                ->where('id', $id)
+                ->first();
+    }
+
+    function get_by_decrypt_id($id)
+    {
+        return $id = Crypt::decryptString($id);
     }
 
     function get_by_md5_id($id, $table)

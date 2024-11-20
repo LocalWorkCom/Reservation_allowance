@@ -33,12 +33,13 @@ class DepartmentController extends Controller
             $departments = departements::where('id', auth()->user()->department_id);
         }
         // Fetch the related sector information
-        $sectors = Sector::findOrFail($id);
-        // $sectors = get_by_md5_id($id, 'sectors');
+        //$sectors = Sector::findOrFail($id);
+        $sectors = get_by_md5_id($id, 'sectors');
         $departments = departements::where('sector_id', $sectors->id)->get();
 
         return view('departments.index', compact('departments', 'sectors'));
     }
+
     public function getAllowancedepart($amount, $departement_id)
     {
         $startDate = now()->startOfMonth()->toDateString();
@@ -62,16 +63,17 @@ class DepartmentController extends Controller
     public function getDepartment($id)
     {
 
-
         if (in_array(Auth::user()->rule->id, [1, 2, 4])) {
 
+            $sectors = get_by_md5_id($id, 'sectors');
+
             $data = departements::where('parent_id', null)
-                ->where('sector_id', $id)
+                ->where('sector_id', $sectors->id)
                 ->orderBy('id', 'desc')
                 ->get();
         } else {
             $data = departements::where('parent_id', null)
-                ->where('sector_id', $id)
+                ->where('sector_id', $sectors->id)
                 ->orderBy('id', 'desc')
                 ->get();
         }
@@ -315,8 +317,8 @@ class DepartmentController extends Controller
      */
     public function create($id)
     {
-        // $sectors = get_by_md5_id($id, 'sectors');
-        $sectors = Sector::findOrFail($id);
+         $sectors = get_by_md5_id($id, 'sectors');
+        //$sectors = Sector::findOrFail($id);
         $managers = User::where('id', '!=', auth()->user()->id)
             ->whereNot('id', $sectors->manager)
             ->where(function ($query) use ($id) {
@@ -609,14 +611,18 @@ class DepartmentController extends Controller
     public function show($id)
     {
         // $department = get_by_md5_id_relation($id, 'sectors', array('manager', 'managerAssistant', 'children', 'parent'));
-        $department = departements::with(['manager', 'managerAssistant', 'children', 'parent'])->findOrFail($id);
+        $department = get_by_md5_id($id, 'departements');
+        $department = departements::with(['manager', 'managerAssistant', 'children', 'parent'])->findOrFail($department->id);
         return view('departments.show', compact('department'));
     }
-    public function edit(departements $department)
-    {
+
+    //public function edit(departements $department)
+    public function edit($id)
+    {     
+        $department = get_by_md5_id($id, 'departements');   
+        $department = departements::findOrFail($department->id);   
         $id = $department->sector_id;
         $managers = User::where('id', '!=', auth()->user()->id)
-
             ->where(function ($query) use ($id) {
                 $query->where('sector', $id)
                     ->orWhere(function ($subQuery) {
@@ -661,8 +667,11 @@ class DepartmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, departements $department)
+    //public function update(Request $request, departements $department)
+    public function update(Request $request, $id)
     {
+        $department = get_by_md5_id($id, 'departements');   
+        $department = departements::findOrFail($department->id);   
         // Add a log or debugging output
         Log::info('Starting department update for department ID: ' . $department->id);
 
@@ -684,6 +693,9 @@ class DepartmentController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
+
+        $sectors_details = Sector::where('id', $request->sector)->first();
+
         $allowance = $this->getAllowancedepart($request->budget, $department->id);
 
         if (!$allowance->original['is_allow']) {
@@ -709,6 +721,7 @@ class DepartmentController extends Controller
         } elseif (in_array('3', $part)) {
             $reservation_allowance_type = 4; // Only '3' selected
         }
+
         // Handle updating department details
         $department->name = $request->name;
         $department->sector_id = $request->sector;
@@ -764,10 +777,13 @@ class DepartmentController extends Controller
                             $newManager->email
                         );
                     } else {
+                        return redirect()->route('departments.index', ['id' => $sectors_details->hash_id]);
                         return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
                     }
                 }
             }
+
+
         } else {
             $sector = Sector::find($request->id);
             $Manager = User::find($manager);
@@ -781,12 +797,13 @@ class DepartmentController extends Controller
                     // Send email to the new manager
                     Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, $request->password ? $request->password : null, $Manager->email);
                 } else {
+                    return redirect()->route('departments.index', ['id' => $sectors_details->hash_id]);
                     return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
                 }
             }
         }
 
-
+        
         // Handle employee updates
         $currentEmployees = User::where('sector', $request->sector)
             ->where('department_id', null)
@@ -821,8 +838,8 @@ class DepartmentController extends Controller
         }
 
         // Redirect after successful update
-        return redirect()->route('departments.index', ['id' => $request->sector])
-            ->with('success', 'Department updated successfully.');
+        //return redirect()->route('departments.index', ['id' => $request->sector])
+        return redirect()->route('departments.index', $sectors_details->hash_id)->with('success', 'Department updated successfully.');
     }
 
 
