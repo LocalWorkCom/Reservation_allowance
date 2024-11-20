@@ -114,7 +114,11 @@
                                 </div>
 
                                 <div class="form-group  mx-2">
-                                    <input class="form-control" type="date" name="date" id="date" max="{{$to_day}}" value="{{$to_day}}" required>
+                                    <select id="year-select" name="year" class="form-select me-3">
+                                        @for ($y = 2020; $y <= date('Y'); $y++)
+                                            <option value="{{ $y }}" {{ $y == now()->year ? 'selected' : '' }}>{{ $y }}</option>
+                                        @endfor
+                                    </select>
                                 </div>
 
                                 <div class="">
@@ -309,20 +313,19 @@
                         "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
                         "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
                     }
-                },
-                "pagingType": "full_numbers",
-                "fnDrawCallback": function(oSettings) {
-                    var api = this.api();
-                    var pageInfo = api.page.info();
-                    if (pageInfo.recordsTotal <= 10) {
-                        $('.dataTables_paginate').css(
-                            'visibility', 'hidden');
-                    } else {
-                        $('.dataTables_paginate').css(
-                            'visibility', 'visible');
-                    }
-                }
-            },
+                    },
+                    "pagingType": "full_numbers",
+                    "fnDrawCallback": function(oSettings) {
+                        var api = this.api();
+                        var pageInfo = api.page.info();
+                        if (pageInfo.recordsTotal <= 10) {
+                            $('.dataTables_paginate').css(
+                                'visibility', 'hidden');
+                        } else {
+                            $('.dataTables_paginate').css(
+                                'visibility', 'visible');
+                        }
+                    },
                     createdRow: function(row, data, dataIndex) {
                         $('td', row).eq(0).html(dataIndex + 1); // Automatic numbering in the first column
                     }
