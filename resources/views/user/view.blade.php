@@ -64,17 +64,15 @@
 
                 @if (request()->fullUrlIs('*employees?department_id=*'))
                     {{-- Check if department and sector are available --}}
-                        <p>قوة/
-                            {{ $department->sectors->name }}/
-                            {{ $department->name }} <!-- Display department name -->
-                        </p>
-                   
+                    <p>قوة/
+                        {{ $department->sectors->name }}/
+                        {{ $department->name }} <!-- Display department name -->
+                    </p>
                 @elseif (Auth::user()->rule_id != 2)
                     <p>موظفين القوة</p>
                 @elseif (Auth::user()->rule_id == 2)
                     <p>موظفين الوزارة</p>
                 @endif
-
 
                 <div class="form-group">
 
@@ -112,8 +110,9 @@
 
             </div>
 
+           
         </div>
-
+       
     </div>
     <div class="row mb-4">
         <div class="col-12">
@@ -172,9 +171,24 @@
 
             @include('inc.flash')
             <div class="col-lg-12 pt-5 pb-5">
-                <div class="bg-white ">
-
-                    <div>
+                <div class="row d-flex justify-content-between " dir="rtl">
+                    <div class="form-group moftsh mt-4  mx-4  d-flex">
+                        <p class="filter "> تصفية حسب :</p>
+                        <button class="btn-all px-3 mx-2 btn-filter btn-active" data-filter="all" style="color: #274373;">
+                            الكل ({{ $all }})
+                        </button>
+                        <button class="btn-all px-3 mx-2 btn-filter" data-filter="assigned" style="color: #274373;">
+                            رتب الضباط ({{ $Officer }})
+                        </button>
+                        <button class="btn-all px-3 mx-2 btn-filter" data-filter="unassigned" style="color: #274373;">
+                            رتب المهنيين ({{ $Officer2 }})
+                        </button>
+                        
+                        <button class="btn-all px-3 mx-2 btn-filter" data-filter="unassigned" style="color: #274373;">
+                            رتب الأفراد   ({{ $person }})
+                        </button>
+                    </div>
+                </div>
                         <table id="users-table"
                             class="display table table-responsive-sm  table-bordered table-hover dataTable">
                             <thead>
@@ -198,6 +212,7 @@
                         <script>
                             $(document).ready(function() {
                                 $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
+                                // var filter = 'all'; // Default filter
 
                                 @php
                                     $department_id = request()->get('department_id');
@@ -371,6 +386,18 @@
                                         .search(this.value)
                                         .draw();
                                 });
+                                // $('.btn-filter').on('click', function() {
+                                //     filter = $(this).data('filter'); // Get the filter value from the clicked button
+                                //     table.ajax.reload(); // Reload the DataTable with the new filter
+                                // });
+                                // // Filter buttons click event
+                                // $('.btn-filter').click(function() {
+                                //     filter = $(this).data('filter'); // Update filter
+                                //     $('.btn-filter').removeClass('btn-active'); // Remove active class from all
+                                //     $(this).addClass('btn-active'); // Add active class to clicked button
+
+                                //     table.page(0).draw(false); // Reset to first page and redraw the table
+                                // });
                             });
                         </script>
 

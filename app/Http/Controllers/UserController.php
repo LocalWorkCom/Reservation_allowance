@@ -60,21 +60,27 @@ class UserController extends Controller
 
     // }
     public function index(Request $request, $flag)
+
     {
+        $department_id = $request->get('department_id'); // Fetch department_id from the request
+    
+        // Fetch all users in the specified department
+        $users = User::where('department_id', $department_id)->get();
+    
+        // Fetch grade counts based on user associations
+        $gradeIds = $users->pluck('grade_id'); // Get all grade IDs from users in this department
+        $all = grade::whereIn('id', $gradeIds)->count();
+
+        $Officer = Grade::whereIn('id', $gradeIds)->where('type', 2)->count();
+        $Officer2 = Grade::whereIn('id', $gradeIds)->where('type', 1)->count();
+        $person = Grade::whereIn('id', $gradeIds)->where('type', 3)->count();
+    
+        // Fetch related departments and sectors
         $departments = departements::all();
         $sectors = Sector::all();
 
-        // if()
-        $department_id = 0;
-        // $sector_id = 0;
-        if (request()->has('department_id')) {
-            $department_id = request()->has('department_id');
-        }
-
-        // if (request()->has('sector')) {
-        //     $sector_id = request()->has('sector');
-        // }
-        return view('user.view', compact('departments', 'department_id', 'sectors', 'flag'));
+    
+        return view('user.view', compact('departments', 'department_id', 'sectors', 'Officer', 'Officer2', 'person','all','flag'));
     }
 
 
