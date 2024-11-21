@@ -61,7 +61,9 @@
                                     <option value="create">اضافة</option>
                                     <option value="delete">ازالة</option>
                                     <option value="download">تحميل</option>
-                                    <option value="archive">ارشفة</option>
+                                    <option value="search">بحث</option>
+                                    <option value="report">تقارير</option>
+                                    <option value="statistic">احصائيات</option>
                                     <option value="add_archive"> اضافة ارشفة</option>
                                     <option value="add_employee"> اضافة موظف</option>
                                 </select>

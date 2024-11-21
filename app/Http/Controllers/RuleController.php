@@ -30,27 +30,26 @@ class RuleController extends Controller
     public function getRule()
     {
         $data = Rule::all();
-       
+
         return DataTables::of($data)->addColumn('action', function ($row) {
-            
-            return '<button class="btn btn-primary btn-sm">Edit</button>'
-                    ;
+
+            return '<button class="btn btn-primary btn-sm">Edit</button>';
         })
-        ->addColumn('permissions', function ($row) { // New column for departments count
-            $permission_ids = explode(',', $row->permission_ids);
-            $allPermission = Permission::whereIn('id', $permission_ids)->pluck('name')->toArray();
-            $translatedPermissions = array_map(function ($permission) {
-                return __('permissions.' . $permission);
-            }, $allPermission);
-            return implode(', ', $translatedPermissions);
-        })
-        ->addColumn('department', function ($row) { // New column for departments count
-        
-            $department = departements::where('id', $row->department_id)->pluck('name')->first();
-            return $department;
-        })
-        ->rawColumns(['action'])
-        ->make(true);
+            ->addColumn('permissions', function ($row) { // New column for departments count
+                $permission_ids = explode(',', $row->permission_ids);
+                $allPermission = Permission::whereIn('id', $permission_ids)->pluck('name')->toArray();
+                $translatedPermissions = array_map(function ($permission) {
+                    return __('permissions.' . $permission);
+                }, $allPermission);
+                return implode(', ', $translatedPermissions);
+            })
+            ->addColumn('department', function ($row) { // New column for departments count
+
+                $department = departements::where('id', $row->department_id)->pluck('name')->first();
+                return $department;
+            })
+            ->rawColumns(['action'])
+            ->make(true);
     }
 
     /**
@@ -61,18 +60,23 @@ class RuleController extends Controller
         $user = User::find(Auth::user()->id);
         $rule_permisssion = Rule::find($user->rule_id);
         $permission_ids = explode(',', $rule_permisssion->permission_ids);
-        $allPermission = Permission::whereIn('id', $permission_ids)->get();
-        // dd($allPermission);
+        $allPermission = Permission::whereIn('id', $permission_ids)
+            ->orderby('guard_name')
+            ->get();
+
+        // Group permissions by their "title" (e.g., employees)
+        $groupedPermissions = $allPermission->groupBy(function ($permission) {
+            // Assume the first part of the name is the title (e.g., "employees")
+            return explode('.', $permission->guard_name)[0];
+        });  
+              // dd($allPermission);
         // $alldepartment =$user->createdDepartments;
-        if($user->flag == "user")
-        {
-            $alldepartment = departements::where('id',$user->department_id)->orwhere('parent_id',$user->department_id)->get();
+        if ($user->flag == "user") {
+            $alldepartment = departements::where('id', $user->department_id)->orwhere('parent_id', $user->department_id)->get();
+        } else {
+            $alldepartment = departements::where('id', $user->public_administration)->orwhere('parent_id', $user->public_administration)->get();
         }
-        else
-        {
-            $alldepartment = departements::where('id',$user->public_administration)->orwhere('parent_id',$user->public_administration)->get();
-        }
-        return view('role.create',compact('allPermission','alldepartment'));
+        return view('role.create', compact('groupedPermissions', 'alldepartment'));
 
         // return $dataTable->render('permission.create'  ,compact('models'));
 
@@ -91,7 +95,7 @@ class RuleController extends Controller
         //     'department_id' => 'required',
         // ]);
 
-         $messages = [
+        $messages = [
             'name.required' => 'الاسم  مطلوب ولا يمكن تركه فارغاً.',
             'permissions_ids.required' => 'الصلاحية   مطلوب ولا يمكن تركه فارغاً.',
 
@@ -100,7 +104,7 @@ class RuleController extends Controller
 
             // Add more custom messages here
         ];
-        
+
         $validatedData = Validator::make($request->all(), [
             'name' => [
                 'required',
@@ -110,15 +114,15 @@ class RuleController extends Controller
             ],
             'permissions_ids' => 'required',
             'department_id' => 'required',
-            
-        ], $messages);
-    
-    
 
-    // Handle validation failure
-    if ($validatedData->fails()) {
-        return redirect()->back()->withErrors($validatedData)->withInput();
-    }
+        ], $messages);
+
+
+
+        // Handle validation failure
+        if ($validatedData->fails()) {
+            return redirect()->back()->withErrors($validatedData)->withInput();
+        }
 
 
         try {
@@ -142,7 +146,6 @@ class RuleController extends Controller
             return response()->json($e->getMessage());
             // return redirect()->back()->with('error', 'Failed to create permission. ' . );
         }
-        
     }
 
     /**
@@ -156,23 +159,20 @@ class RuleController extends Controller
 
         $permission_ids = explode(',', $rule_permission->permission_ids);
 
-            // Fetch all permissions that the user has access to based on their role
+        // Fetch all permissions that the user has access to based on their role
         $hisPermissions = Permission::whereIn('id', $permission_ids)->get();
         $user = User::find(Auth::user()->id);
-        if($user->flag == "user")
-        {
-            $alldepartment = departements::where('id',$user->department_id)->orwhere('parent_id',$user->department_id)->get();
-        }
-        else
-        {
-            $alldepartment = departements::where('id',$user->public_administration)->orwhere('parent_id',$user->public_administration)->get();
+        if ($user->flag == "user") {
+            $alldepartment = departements::where('id', $user->department_id)->orwhere('parent_id', $user->department_id)->get();
+        } else {
+            $alldepartment = departements::where('id', $user->public_administration)->orwhere('parent_id', $user->public_administration)->get();
         }
 
         // $alldepartment =$user->createdDepartments;
-       
+
         // dd($allPermissions);
 
-        return view('role.show' ,compact('allpermission','alldepartment','hisPermissions','rule_permission'));
+        return view('role.show', compact('allpermission', 'alldepartment', 'hisPermissions', 'rule_permission'));
     }
 
     /**
@@ -180,37 +180,32 @@ class RuleController extends Controller
      */
     public function edit($id)
     {
-        
+
         // dd( $id);
         $rule_permission = Rule::find($id);
         $allpermission = Permission::get();
 
         $permission_ids = explode(',', $rule_permission->permission_ids);
 
-            // Fetch all permissions that the user has access to based on their role
+        // Fetch all permissions that the user has access to based on their role
         $hisPermissions = Permission::whereIn('id', $permission_ids)->get();
         $user = User::find(Auth::user()->id);
-        if($user->flag == "user")
-        {
-            $alldepartment = departements::where('id',$user->department_id)->orwhere('parent_id',$user->department_id)->get();
-        }
-        else
-        {
-            $alldepartment = departements::where('id',$user->public_administration)->orwhere('parent_id',$user->public_administration)->get();
+        if ($user->flag == "user") {
+            $alldepartment = departements::where('id', $user->department_id)->orwhere('parent_id', $user->department_id)->get();
+        } else {
+            $alldepartment = departements::where('id', $user->public_administration)->orwhere('parent_id', $user->public_administration)->get();
         }
         // $alldepartment =$user->createdDepartments;
-       
+
         // dd($allPermissions);
 
-        return view('role.edit' ,compact('allpermission','alldepartment','hisPermissions','rule_permission'));
-
-
+        return view('role.edit', compact('allpermission', 'alldepartment', 'hisPermissions', 'rule_permission'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update($id ,Request $request)
+    public function update($id, Request $request)
     {
         // dd($request);
 
@@ -228,7 +223,7 @@ class RuleController extends Controller
 
             // Add more custom messages here
         ];
-        
+
         $validatedData = Validator::make($request->all(), [
             'name' => [
                 'required',
@@ -238,15 +233,15 @@ class RuleController extends Controller
             ],
             'permissions_ids' => 'required',
             'department_id' => 'required',
-            
-        ], $messages);
-    
-    
 
-    // Handle validation failure
-    if ($validatedData->fails()) {
-        return redirect()->back()->withErrors($validatedData)->withInput();
-    }
+        ], $messages);
+
+
+
+        // Handle validation failure
+        if ($validatedData->fails()) {
+            return redirect()->back()->withErrors($validatedData)->withInput();
+        }
         try {
             // dd("");
             $permission_ids = implode(",", $request->permissions_ids);

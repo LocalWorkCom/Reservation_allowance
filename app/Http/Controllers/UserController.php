@@ -59,21 +59,74 @@ class UserController extends Controller
 
 
     // }
-    public function index()
-    {
-        $departments = departements::all();
-        // if()
-        // $department_id = 0;
-        // $sector_id = 0;
-        // if (request()->has('department_id')) {
-        //     $department_id = request()->has('department_id');
-        // }
+    // public function index(Request $request)
+    // {
+    //     $departments = departements::all();
+    //     $sectors = Sector::all();
+    //     $all = grade::count();
 
-        // if (request()->has('sector')) {
-        //     $sector_id = request()->has('sector');
-        // }
-        return view('user.view', compact('departments'));
+    //     // if()
+    //     $department_id = 0;
+    //     // $sector_id = 0;
+    //     if (request()->has('department_id')) {
+    //         $department_id = request()->has('department_id');
+    //     }
+
+    //     $Officer = grade::where('type', 2)->count();
+    //     $Officer2 = grade::where('type', 1)->count();
+    //     $person = grade::where('type', 3)->count();
+
+    //     // return view("grads.index", compact('all', 'Officer', 'Officer2', 'person'));
+
+    //     // if (request()->has('sector')) {
+    //     //     $sector_id = request()->has('sector');
+    //     // }
+    //     return view('user.view', compact('departments', 'department_id','sectors','all', 'Officer', 'Officer2', 'person'));
+    // }
+
+    public function index(Request $request)
+    {
+        $department_id = $request->get('department_id'); // Fetch department_id from the request
+    
+        // Fetch all users in the specified department
+        $users = User::where('department_id', $department_id)->get();
+    
+        // Fetch grade counts based on user associations
+        $gradeIds = $users->pluck('grade_id'); // Get all grade IDs from users in this department
+        $all = grade::whereIn('id', $gradeIds)->count();
+
+        $Officer = Grade::whereIn('id', $gradeIds)->where('type', 2)->count();
+        $Officer2 = Grade::whereIn('id', $gradeIds)->where('type', 1)->count();
+        $person = Grade::whereIn('id', $gradeIds)->where('type', 3)->count();
+    
+        // Fetch related departments and sectors
+        $departments = departements::all();
+        $sectors = Sector::all();
+    
+        return view('user.view', compact('departments', 'department_id', 'sectors', 'Officer', 'Officer2', 'person','all'));
     }
+    
+
+    public function add_employees(Request $request)
+    {
+        $department_id = $request->department_id;
+        $Civil_number = $request->Civil_number;
+
+        // Find the user by Civil_number
+        $user = User::where('Civil_number', $Civil_number)->first();
+
+        // Check if the user exists
+        if (!$user) {
+            return redirect()->back()->withErrors(['error' => 'لا يوجد موظف باهذا الرقم المدني.']);
+        }
+
+        // If the user is found, assign the department_id and save
+        $user->department_id = $department_id;
+        $user->save();
+
+        return redirect()->route('user.employees', ['department_id' => $department_id]);
+    }
+
 
     public function getUsers(Request $request)
     {
@@ -125,6 +178,11 @@ class UserController extends Controller
                 $data = $data->where('sector', request()->get('sector_id'))->whereNull('department_id');
         }
 
+        if (request()->has('Civil_number')) {
+            if (request()->has('amp;Civil_number') != 1)
+                $data = $data->where('Civil_number', request()->get('Civil_number'));
+        }
+
         // Finally, fetch the results
         $data = $data->orderby('grade_id', 'asc')->get();
 
@@ -143,6 +201,8 @@ class UserController extends Controller
             ->rawColumns(['action'])
             ->make(true);
     }
+
+
 
 
     // public function login(Request $request)
@@ -989,7 +1049,7 @@ class UserController extends Controller
             $department->manager = null;
             $department->save();
         }
-        $sector = sector::where('manager', $id)->where('sector','<>', $request->sector)->first();
+        $sector = sector::where('manager', $id)->where('sector', '<>', $request->sector)->first();
         if ($sector) {
             $sector->manager = null;
             $sector->save();
