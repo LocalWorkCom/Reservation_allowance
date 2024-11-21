@@ -523,7 +523,7 @@ class UserController extends Controller
         $area = Region::all();
         $sectors = Sector::all();
         $qualifications = Qualification::all();
-        // $violationTypeName = ViolationTypes::whereJsonContains('type_id', 0)->get();
+        $violationTypeName = ViolationTypes::whereJsonContains('type_id', 0)->get();
 
         // Get the selected violation type from old input or set a default value
         $selectedViolationType = old('type_military', 'police'); // Default to 'police'
