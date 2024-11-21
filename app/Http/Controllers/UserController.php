@@ -989,7 +989,7 @@ class UserController extends Controller
             $department->manager = null;
             $department->save();
         }
-        $sector = sector::where('manager', $id)->where('sector','<>', $request->sector)->first();
+        $sector = sector::where('manager', $id)->where('sector', '<>', $request->sector)->first();
         if ($sector) {
             $sector->manager = null;
             $sector->save();

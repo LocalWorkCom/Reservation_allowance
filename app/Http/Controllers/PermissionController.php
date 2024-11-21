@@ -31,6 +31,9 @@ class PermissionController extends Controller
 
         $models = [];
 
+        // List of models to exclude (you can define the names of models to remove here)
+        $excludeModels = ['Iotelegram', 'paperTransaction', 'Io_file', 'ReservationAllowance', 'outgoing_files', 'outgoings', 'history_allawonce'];
+
         // Iterate through each file to get model class names
         foreach ($modelFiles as $file) {
             // Get the file name
@@ -44,13 +47,13 @@ class PermissionController extends Controller
 
             // Check if the class exists and is an instance of Eloquent Model
             if (class_exists($modelClass) && is_subclass_of($modelClass, 'Illuminate\Database\Eloquent\Model')) {
-                // $translatedName = __('models.' . $modelName);
-
-                $models[] = $modelName;
+                // Check if the model is in the exclude list
+                if (!in_array($modelName, $excludeModels)) {
+                    $models[] = $modelName;
+                }
             }
         }
 
-        // dd($models);
         return $models;
     }
 

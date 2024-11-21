@@ -18,20 +18,20 @@ class paperTransaction extends Model
         'images'
     ];
 
-    public function point()
-    {
-        return $this->belongsTo(Point::class);
-    }
+    // public function point()
+    // {
+    //     return $this->belongsTo(Point::class);
+    // }
 
-    public function mission()
-    {
-        return $this->belongsTo(InspectorMission::class);
-    }
+    // public function mission()
+    // {
+    //     return $this->belongsTo(InspectorMission::class);
+    // }
 
-    public function inspector()
-    {
-        return $this->belongsTo(Inspector::class);
-    }
+    // public function inspector()
+    // {
+    //     return $this->belongsTo(Inspector::class);
+    // }
 
     public function user()
     {

@@ -188,6 +188,13 @@
                             <h6>القطاعات</h6>
                         </a>
                     </li>
+                    <li
+                    class="nav-item {{ request()->routeIs('user.employees') ? 'active' : '' }} @isset($search) @if ($search == 'emps') active @endif @endisset">
+                    <a href="{{ route('user.employees') }}">
+                        <img src="{{ asset('frontend/images/managements.svg') }}" alt="logo">
+                        <h6>المستخدمين والصلاحيات</h6>
+                    </a>
+                </li>
                 @else
                     <li
                         class="nav-item {{ request()->routeIs('departments.index') ? 'active' : '' }} @isset($search) @if ($search == 'dept') active @endif @endisset">
