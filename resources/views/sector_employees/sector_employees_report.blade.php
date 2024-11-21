@@ -30,28 +30,31 @@
     <h2>تقرير بدل حجز لقطاع  {{ $sector->name }} - {{ $month }}/{{ $year }}</h2>
 
     <table>
-        <thead>
-            <tr>
-                <th>الترتيب</th>
-                <th>اسم الموظف</th>
-                <th>الإدارة</th>
-                <th>الرتبة</th>
-                <th>الأيام</th>
-                <th>مبلغ الحجز</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($userReservations as $index => $reservation)
-                <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $reservation['user']->name }}</td>
-                    <td>{{ $reservation['department'] }}</td>
-                    <td>{{ $reservation['grade'] }}</td>
-                    <td>كلي: {{ $reservation['fullDays'] }} | جزئي: {{ $reservation['partialDays'] }} | مجموع: {{ $reservation['totalDays'] }}</td>
-                    <td>كلي: {{ number_format($reservation['fullAllowance'], 2) }} د.ك | جزئي: {{ number_format($reservation['partialAllowance'], 2) }} د.ك | مجموع: {{ number_format($reservation['totalAllowance'], 2) }} د.ك</td>
-                </tr>
-            @endforeach
-        </tbody>
+    <thead>
+    <tr>
+        <th>الترتيب</th>
+        <th>رقم الملف</th> 
+        <th>اسم الموظف</th>
+        <th>الإدارة</th>
+        <th>الرتبة</th>
+        <th>الأيام</th>
+        <th>مبلغ الحجز</th>
+    </tr>
+</thead>
+<tbody>
+    @foreach($userReservations as $index => $reservation)
+        <tr>
+            <td>{{ $index + 1 }}</td>
+            <td>{{ $reservation['file_number'] }}</td> 
+            <td>{{ $reservation['user']->name }}</td>
+            <td>{{ $reservation['department'] }}</td>
+            <td>{{ $reservation['grade'] }}</td>
+            <td>كلي: {{ $reservation['fullDays'] }} | جزئي: {{ $reservation['partialDays'] }} | مجموع: {{ $reservation['totalDays'] }}</td>
+            <td>كلي: {{ number_format($reservation['fullAllowance'], 2) }} د.ك | جزئي: {{ number_format($reservation['partialAllowance'], 2) }} د.ك | مجموع: {{ number_format($reservation['totalAllowance'], 2) }} د.ك</td>
+        </tr>
+    @endforeach
+</tbody>
+
     </table>
 </body>
 </html>

@@ -114,15 +114,13 @@
                                 </div>
 
                                 <div class="form-group  mx-2">
-                                    <input class="form-control" type="date" name="date" id="date" max="{{$to_day}}" value="{{$to_day}}" required>
+                                    <select id="year-select" name="year" class="form-select me-3">
+                                        @for ($y = 2020; $y <= date('Y'); $y++)
+                                            <option value="{{ $y }}" {{ $y == now()->year ? 'selected' : '' }}>{{ $y }}</option>
+                                        @endfor
+                                    </select>
                                 </div>
 
-                                <div class="">
-                                    <label for="Civil_number">
-                                        <button class="btn-all py-2 px-2" type="submit" style="color:green;">
-                                            <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                            عرض موظفين بدل حجز </button>
-                                </div>
                             </div>
                         </form>
                         <!--  <div class="d-flex justify-content-between mt-2">
@@ -148,7 +146,68 @@
 
     <br>
     <div class="row">
-        <div class="container  col-11 mt-3 p-0  pt-5 pb-4">
+        <div class="container col-11 p-4">
+            <div class="d-flex gap-2 flex-wrap" style="direction: rtl;">
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="" id="">
+                    <button type="submit" class="btn mx-1" style="background-color: #3c7327; color:white; border-radius:10px;">يناير</button>
+                </form>
+
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="" id="">
+                    <button type="submit" class="btn mx-1" style="background-color: #732b27; color:white; border-radius:10px;">فبراير</button>
+                </form>
+
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="" id="">
+                    <button type="submit" class="btn mx-1" style="background-color: #273b73; color:white; border-radius:10px;">مارس</button>
+                </form>
+
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="" id="">
+                    <button type="submit" class="btn mx-1" style="background-color: #6a98d1; color:white; border-radius:10px;">ابريل</button>
+                </form>
+
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="" id="">
+                    <button type="submit" class="btn mx-1" style="background-color: #cacd2b; color:white; border-radius:10px;">مايو</button>
+                </form>
+
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="" id="">
+                    <button type="submit" class="btn mx-1" style="background-color: #56e71f; color:white; border-radius:10px;">يونيو</button>
+                </form>
+
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="" id="">
+                    <button type="submit" class="btn mx-1" style="background-color: #bf2c8b; color:white; border-radius:10px;">يوليو</button>
+                </form>
+
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="" id="">
+                    <button type="submit" class="btn mx-1" style="background-color: #585bc3; color:white; border-radius:10px;">اغسطس</button>
+                </form>
+
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="" id="">
+                    <button type="submit" class="btn mx-1" style="background-color: #e34848; color:white; border-radius:10px;">سبتمبر</button>
+                </form>
+
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="" id="">
+                    <button type="submit" class="btn mx-1" style="background-color: #61e5ba; color:white; border-radius:10px;">اكتوبر</button>
+                </form>
+
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="" id="">
+                    <button type="submit" class="btn mx-1" style="background-color: #a76ae9; color:white; border-radius:10px;">نوفمبر</button>
+                </form>
+
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="" id="">
+                    <button type="submit" class="btn mx-1" style="background-color: #db770f; color:white; border-radius:10px;">ديسمبر</button>
+                </form>
+            </div>
 
             <div class="col-lg-12">
                 <div class="bg-white">
@@ -176,8 +235,8 @@
                 </div>
             </div>
 
-        </div>
 
+        </div>
     </div>
 
     <script>
@@ -285,21 +344,7 @@
                     ],
                     order: [0, 'asc'],
 
-                    oLanguage: {
-                        "sSearch": "",
-                        "sSearchPlaceholder": "بحث",
-                        "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
-                        "sInfoEmpty": 'لا توجد بيانات متاحه',
-                        "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
-                        "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
-                        "sZeroRecords": 'نأسف لا توجد نتيجة',
-                        "oPaginate": {
-                            "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
-                            "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
-                            "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
-                            "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
-                        }
-                    },
+
                     layout: {
 
                         bottomEnd: {
@@ -308,15 +353,32 @@
                             }
                         }
                     },
-                    pagingType: "full_numbers",
                     bDestroy: true,
-                    fnDrawCallback: function(oSettings) {
-                        console.log('Page ' + this.api().page.info().pages)
-                        var page = this.api().page.info().pages;
-                        console.log($('#users-table tr').length);
-                        if (page <= 1) {
-                            //$('.dataTables_paginate').hide();//css('visiblity','hidden');
-                            $('.dataTables_paginate').css('visibility', 'hidden'); // to hide
+                   "oLanguage": {
+                    "sSearch": "",
+                    "sSearchPlaceholder": "بحث",
+                    "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
+                    "sInfoEmpty": 'لا توجد بيانات متاحه',
+                    "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
+                    "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
+                    "sZeroRecords": 'نأسف لا توجد نتيجة',
+                    "oPaginate": {
+                        "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
+                        "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
+                        "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
+                        "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
+                    }
+                    },
+                    "pagingType": "full_numbers",
+                    "fnDrawCallback": function(oSettings) {
+                        var api = this.api();
+                        var pageInfo = api.page.info();
+                        if (pageInfo.recordsTotal <= 10) {
+                            $('.dataTables_paginate').css(
+                                'visibility', 'hidden');
+                        } else {
+                            $('.dataTables_paginate').css(
+                                'visibility', 'visible');
                         }
                     },
                     createdRow: function(row, data, dataIndex) {

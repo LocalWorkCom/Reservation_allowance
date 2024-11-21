@@ -51,9 +51,10 @@ class SectorEmployeesDetailsController extends Controller
             ->get();
     
         return DataTables::of($employees)
+            ->addColumn('file_number', fn($user) => $user->file_number) 
             ->addColumn('name', fn($user) => $user->name)
             ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
-            ->addColumn('department', fn($user) => $user->department->name ?? 'N/A')  // New column for department name
+            ->addColumn('department', fn($user) => $user->department->name ?? 'N/A')
             ->addColumn('days', function ($user) use ($sectorId, $month, $year) {
                 $fullDays = ReservationAllowance::where('user_id', $user->id)
                             ->where('sector_id', $sectorId)
@@ -94,8 +95,86 @@ class SectorEmployeesDetailsController extends Controller
             ->make(true);
     }
     
-    
-    
+    public function notReservedUsers(Request $request, $sectorId)
+{
+    $sector = Sector::find($sectorId);
+    $month = $request->input('month');
+    $year = $request->input('year');
+
+    return view('sector_employees.not_reserved', [
+        'sectorId' => $sectorId,
+        'sectorName' => $sector ? $sector->name : 'Unknown Sector',
+        'month' => $month,
+        'year' => $year,
+    ]);
+}
+public function getNotReservedData(Request $request, $sectorId)
+{
+    $month = $request->input('month');
+    $year = $request->input('year');
+
+    $users = User::where('sector', $sectorId)
+        ->whereNotIn('id', function ($query) use ($sectorId, $month, $year) {
+            $query->select('user_id')
+                ->from('reservation_allowances')
+                ->where('sector_id', $sectorId)
+                ->whereYear('date', $year)
+                ->whereMonth('date', $month);
+        })
+        ->with(['grade', 'department'])
+        ->get();
+
+    return DataTables::of($users)
+        ->addColumn('file_number', fn($user) => $user->file_number)
+        ->addColumn('name', fn($user) => $user->name)
+        ->addColumn('department', fn($user) => $user->department->name ?? 'N/A')
+        ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
+        ->addIndexColumn()
+        ->make(true);
+}
+public function sectorUsersPage(Request $request, $sectorId)
+{
+    $sector = Sector::find($sectorId);
+    $month = $request->input('month');
+    $year = $request->input('year');
+
+    return view('sector_employees.sector_users', [
+        'sectorId' => $sectorId,
+        'sectorName' => $sector ? $sector->name : 'Unknown Sector',
+        'month' => $month,
+        'year' => $year,
+    ]);
+}
+
+
+public function getSectorUsers(Request $request, $sectorId)
+{
+    $month = $request->input('month');
+    $year = $request->input('year');
+
+    // Ensure $month and $year are provided
+    if (!$month || !$year) {
+        return response()->json([
+            'data' => [],
+            'error' => 'Month and Year are required.'
+        ]);
+    }
+
+    // Fetch users belonging to the sector
+    $users = User::where('sector', $sectorId)
+        ->with(['grade', 'department']) // Ensure these relationships exist
+        ->get();
+
+    // Return data to DataTables
+    return DataTables::of($users)
+        ->addColumn('file_number', fn($user) => $user->file_number)
+        ->addColumn('name', fn($user) => $user->name)
+        ->addColumn('department', fn($user) => $user->department->name ?? 'N/A')
+        ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
+        ->addIndexColumn()
+        ->make(true);
+}
+
 
 
     public function printReport($sectorId, Request $request)
@@ -108,7 +187,7 @@ class SectorEmployeesDetailsController extends Controller
         if (!$month || !$year) {
             return redirect()->back()->withErrors('Please select a valid month and year.');
         }
-        
+    
         $sector = Sector::find($sectorId);
     
         $employees = User::whereIn('id', function ($query) use ($sectorId, $month, $year) {
@@ -155,6 +234,7 @@ class SectorEmployeesDetailsController extends Controller
             $totalAllowance = $fullAllowance + $partialAllowance;
     
             return [
+                'file_number' => $user->file_number, // Add file number
                 'user' => $user,
                 'department' => $user->department->name ?? 'N/A',
                 'grade' => $user->grade->name ?? 'N/A',
@@ -182,5 +262,44 @@ class SectorEmployeesDetailsController extends Controller
     
         return $pdf->Output("sector_employees_{$sector->name}.pdf", 'I');
     }
+
+    public function allowanceDetailsPage(Request $request, $employeeId)
+    {
+        $month = $request->input('month');
+        $year = $request->input('year');
+        $employee = User::find($employeeId);
+    
+        if (!$employee) {
+            return abort(404, 'Employee not found');
+        }
+    
+        return view('sector_employees.allowance_details', [
+            'employeeName' => $employee->name,
+            'employeeId' => $employeeId,
+            'month' => $month,
+            'year' => $year
+        ]);
+    }
+    public function getAllowanceDetails(Request $request, $employeeId)
+{
+    $month = $request->input('month');
+    $year = $request->input('year');
+
+    $allowances = ReservationAllowance::where('user_id', $employeeId)
+        ->whereYear('date', $year)
+        ->whereMonth('date', $month)
+        ->get();
+
+    return DataTables::of($allowances)
+        ->addColumn('date', function ($allowance) {
+            return Carbon::parse($allowance->date)->format('Y-m-d');
+        })
+        ->addColumn('type', fn($allowance) => $allowance->type == 1 ? 'كلي' : 'جزئي')
+        ->addColumn('amount', fn($allowance) => number_format($allowance->amount, 2) . ' د.ك')
+        ->addIndexColumn()
+        ->make(true);
+}
+
+    
     
 }

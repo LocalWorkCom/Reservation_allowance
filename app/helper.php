@@ -23,6 +23,8 @@ use App\Mail\SendEmail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 if (!function_exists('whats_send')) {
     function whats_send($mobile, $message, $country_code)
@@ -527,6 +529,19 @@ if (!function_exists('send_push_notification')) {
         curl_close($ch);
     }
 
+    function get_by_decrypt_id_with_table($id, $table)
+    {
+        $id = Crypt::decryptString($id);
+        return DB::table($table)
+                ->where('id', $id)
+                ->first();
+    }
+
+    function get_by_decrypt_id($id)
+    {
+        return $id = Crypt::decryptString($id);
+    }
+
     function get_by_md5_id($id, $table)
     {
         // Hash the input ID with MD5
@@ -552,7 +567,7 @@ if (!function_exists('send_push_notification')) {
     }
 }
 
- function saveHistory($amount, $sectorId, $departmentId)
+function saveHistory($amount, $sectorId, $departmentId)
 {
     $history_allowance = new history_allawonce();
     $history_allowance->sector_id = $sectorId;
@@ -560,5 +575,19 @@ if (!function_exists('send_push_notification')) {
     $history_allowance->amount = $amount;
     $history_allowance->date = now();
     $history_allowance->save();
+}
 
+function isValidEmail($email)
+{
+    // Check if the email format is valid
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return false;
+    }
+    // Extract the domain from the email address
+    $domain = substr(strrchr($email, "@"), 1);
+    // Check if the domain has an MX record
+    if (!checkdnsrr($domain, "MX")) {
+        return false;
+    }
+    return true;
 }

@@ -21,18 +21,18 @@ class Iotelegram extends Model
     {
         return $this->belongsTo(departements::class, 'from_departement');
     }
-    public function external_department()
-    {
-        return $this->belongsTo(ExternalDepartment::class, 'from_departement');
-    }
+    // public function external_department()
+    // {
+    //     return $this->belongsTo(ExternalDepartment::class, 'from_departement');
+    // }
     public function recieved()
     {
         return $this->belongsTo(User::class, 'recieved_by');
     }
-    public function representive()
-    {
-        return $this->belongsTo(Postman::class, 'representive_id');
-    }
+    // public function representive()
+    // {
+    //     return $this->belongsTo(Postman::class, 'representive_id');
+    // }
     public function updated_by()
     {
         return $this->belongsTo(User::class);

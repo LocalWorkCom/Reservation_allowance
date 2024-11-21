@@ -75,12 +75,12 @@
 
             <div class="d-flex justify-content-between">
                 <div class="col-12">
-                    <div class="row d-flex " style="direction: rtl">
-                        <div class="col-4">
+                    <div class=" d-flex flex-wrap justify-content-between " style="direction: rtl">
+                        <div >
                             <p> بدل حجز مجموعات بالهويات</p>
                         </div>
 
-                        <div class="row d-flex flex-wrap justify-content-between">
+                        <div class=" d-flex flex-wrap ">
                             <!-- 1 for sector , 2 for department -->
                             <input name="department_type" id="department_type"
                                 type="hidden"

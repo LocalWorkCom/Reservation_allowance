@@ -20,32 +20,29 @@ class ReserveFetchController extends Controller
         return view('reservation_fetch.index');
     }
 
-    // Fetch user by civil number
+   
     private function fetchUser($fileNumber)
     {
         return User::where('file_number', $fileNumber)->first();
     }
 
-    // Get all sub-department IDs for a department
     private function getManagerAccessibleDepartments($departmentId)
     {
         return departements::where('parent_id', $departmentId)->pluck('id')->toArray();
     }
 
-    // Get all departments under a sector
     private function getSectorDepartments($sectorId)
     {
         return departements::where('sector_id', $sectorId)->pluck('id')->toArray();
     }
 
-    // Check access to employee data based on manager role
     private function canAccessEmployeeData($manager, $employee)
     {
         if ($manager->rule_id == 2) {
-            return true; // Super Admin access
+            return true; 
         }
 
-        if ($manager->rule_id == 3) { // Department Manager
+        if ($manager->rule_id == 3) { 
             $accessibleDepartments = array_merge(
                 [$manager->department_id],
                 $this->getManagerAccessibleDepartments($manager->department_id)
@@ -53,7 +50,7 @@ class ReserveFetchController extends Controller
             return in_array($employee->department_id, $accessibleDepartments);
         }
 
-        if ($manager->rule_id == 4) { // Sector Manager
+        if ($manager->rule_id == 4) { 
             $accessibleDepartments = $this->getSectorDepartments($manager->sector);
             return $employee->sector == $manager->sector || in_array($employee->department_id, $accessibleDepartments);
         }
@@ -61,7 +58,6 @@ class ReserveFetchController extends Controller
         return false;
     }
 
-    // Common columns for DataTables response
     private function addCommonColumns($dataTable, $user)
     {
         return $dataTable
@@ -77,7 +73,6 @@ class ReserveFetchController extends Controller
             ->addIndexColumn();
     }
 
-    // Get Grade Type
     private function getGradeType($user)
     {
         return match (grade::find($user->grade_id)?->type ?? null) {
@@ -85,7 +80,6 @@ class ReserveFetchController extends Controller
         };
     }
 
-    // Fetch reservation data for a user within a date range
     private function fetchReservations($userId, $startDate, $endDate)
     {
         return ReservationAllowance::where('user_id', $userId)
@@ -93,7 +87,6 @@ class ReserveFetchController extends Controller
             ->get();
     }
 
-    // Main reservation data response handler with manager restrictions
     private function handleReservationData($employee, $reservations)
     {
         $totalAmount = $reservations->sum('amount');
@@ -104,9 +97,10 @@ class ReserveFetchController extends Controller
             ->make(true);
     }
 
+
     public function getAll(Request $request)
     {
-        $fileNumber = $request->input('file_number'); // Change to 'file_number'
+        $fileNumber = $request->input('file_number'); 
         $employee = $this->fetchUser($fileNumber);
     
         if ($employee && $this->canAccessEmployeeData(Auth::user(), $employee)) {
@@ -116,10 +110,9 @@ class ReserveFetchController extends Controller
         return $this->userNotFoundOrUnauthorizedResponse();
     }
 
-    // Handle reservation data for date ranges
     private function getReservationsWithinDays(Request $request, $days)
     {
-        $fileNumber = $request->input('file_number'); // Change to 'file_number'
+        $fileNumber = $request->input('file_number'); 
         $employee = $this->fetchUser($fileNumber);
     
         if ($employee && $this->canAccessEmployeeData(Auth::user(), $employee)) {
@@ -153,7 +146,7 @@ class ReserveFetchController extends Controller
 
     public function getCustomDateRange(Request $request)
     {
-        $user = $this->fetchUser($request->input('file_number')); // Change to 'file_number'
+        $user = $this->fetchUser($request->input('file_number')); 
         $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
         $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
     
@@ -165,11 +158,10 @@ class ReserveFetchController extends Controller
     }
     
 
-    // Custom response for user not found or unauthorized access
     private function userNotFoundOrUnauthorizedResponse()
     {
         return response()->json([
-            'draw' => 1, // Ensures that DataTables processes the response correctly
+            'draw' => 1, 
             'recordsTotal' => 0,
             'recordsFiltered' => 0,
             'data' => [],
@@ -178,7 +170,7 @@ class ReserveFetchController extends Controller
 
     public function printReport(Request $request)
     {
-        $user = $this->fetchUser($request->input('file_number')); // Change to 'file_number'
+        $user = $this->fetchUser($request->input('file_number')); 
         if (!$user || !$this->canAccessEmployeeData(Auth::user(), $user)) {
             return redirect()->back()->with('error', 'No user found with this File Number');
         }
