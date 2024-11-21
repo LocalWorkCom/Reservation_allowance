@@ -84,6 +84,9 @@ return [
     'edit ReservationAllowance' => 'تعديل بدل حجز',
     'view ReservationAllowance' => 'عرض بدل حجز',
     'delete ReservationAllowance' => 'حذف بدل حجز',
+    'statistic ReservationAllowance' => 'احصائيات بدل حجز',
+    'search ReservationAllowance' => 'بحث بدل حجز',
+    'report ReservationAllowance' => 'تقارير بدل حجز',
     
     'User' => 'موظفين',
     'Sector' => 'قطاع',
