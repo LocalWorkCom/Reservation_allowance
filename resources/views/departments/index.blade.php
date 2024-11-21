@@ -276,11 +276,11 @@
     }
 
     function showUsers(departmentId) {
-        window.location.href = '/employees?department_id=' + departmentId;
+        window.location.href = '/employees/user?department_id=' + departmentId;
     }
 
     function showSubUsers(parentDepartmentId) {
-        window.location.href = '/employees?parent_department_id=' +
+        window.location.href = '/employees/user?parent_department_id=' +
             parentDepartmentId;
     }
 </script>
