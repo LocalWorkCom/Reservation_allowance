@@ -94,7 +94,6 @@ class UserController extends Controller
 
     public function add_employees(Request $request)
     {
-        
         $department_id = $request->department_id;
         $Civil_number = $request->Civil_number;
 
@@ -110,7 +109,7 @@ class UserController extends Controller
         $user->department_id = $department_id;
         $user->save();
 
-        return redirect()->route('user.employees', ['department_id' => $department_id]);
+        return redirect()->route('user.employees', ['department_id' => $department_id, 'flag'=>'user']);
     }
 
 
@@ -120,7 +119,7 @@ class UserController extends Controller
         $parentDepartment = Departements::find(Auth()->user()->department_id);
 
         $filter = $request->get('filter'); // Retrieve filter
-        $department_id = $request->get('department_id'); // Fetch department_id from the request
+        $department_id = $request->get('amp;department_id'); // Fetch department_id from the request
 
 
         // Apply the filter based on the type
@@ -130,7 +129,6 @@ class UserController extends Controller
             $data = User::where('flag', $flag); // Start as a query
         } elseif (Auth::user()->rule->name == "superadmin") {
             $data = User::where('flag', $flag); // Start as a query for superadmins too
-            // dd(0);
         } else {
             // dd($parentDepartment);
             if (!$parentDepartment) {
@@ -182,21 +180,23 @@ class UserController extends Controller
         $gradeIds = $users->pluck('grade_id'); // Get all grade IDs from users in this department
         if ($filter == 'all') {
 
-            $all = Grade::whereIn('id', $gradeIds)->pluck('id')->toArray();
-            $data->whereIn('grade_id', $all);
+            $all = Grade::pluck('id')->toArray();
+            $data->where('department_id', $department_id)->whereIn('grade_id', $all);
         } elseif ($filter == 'person') {
-            $person = Grade::whereIn('id', $gradeIds)->where('type', 3)->pluck('id')->toArray();
-            $data->whereIn('grade_id', $person);
+            $person = Grade::where('type', 3)->pluck('id')->toArray();
+            $data->where('department_id', $department_id)->whereIn('grade_id', $person);
         } elseif ($filter == 'Officer') {
-            $Officer = Grade::whereIn('id', $gradeIds)->where('type', 2)->pluck('id')->toArray();
-            $data->whereIn('grade_id', $Officer);
+            $Officer = Grade::where('type', 2)->pluck('id')->toArray();
+            $data->where('department_id', $department_id)->whereIn('grade_id', $Officer);
+            dd($data->get());
         } elseif ($filter == 'Officer2') {
-            $Officer2 = Grade::whereIn('id', $gradeIds)->where('type', 1)->pluck('id')->toArray();
-            $data->whereIn('grade_id', $Officer2);
+            $Officer2 = Grade::where('type', 1)->pluck('id')->toArray();
+            $data->where('department_id', $department_id)->whereIn('grade_id', $Officer2);
         }
         // Finally, fetch the results
         $data = $data->orderby('grade_id', 'asc')->get();
 
+        // dd($data);
         return DataTables::of($data)->addColumn('action', function ($row) {
             return $row;
         })
