@@ -8,6 +8,7 @@ use App\Models\Region;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Crypt;
 
 class regionsController extends Controller
 {
@@ -41,7 +42,7 @@ class regionsController extends Controller
                 $edit_permission = '<a class="btn btn-sm"  style="background-color: #F7AF15;"  onclick="openedit('.$row->id.','.$name.')">  <i class="fa fa-edit"></i> تعديل </a>';
             }
             if(Auth::user()->hasPermission('view Region')){
-                $region_permission = '<a class="btn btn-sm"  style="background-color: #b77a48;"  href="'.route('regions.index',['id' => $row->id ]).'"> <i class="fa-solid fa-mountain-sun"></i> مناطق </a>';
+                $region_permission = '<a class="btn btn-sm"  style="background-color: #b77a48;"  href="'.route('regions.index',['id' => $row->hash_id ]).'"> <i class="fa-solid fa-mountain-sun"></i> مناطق </a>';
             }
             return $edit_permission .' '. $region_permission ;
 
@@ -52,13 +53,13 @@ class regionsController extends Controller
     }
     //add government
     public function addgovernment(Request $request){
-       
+
         $requestinput=$request->except('_token');
         $job = new Government();
         $job->name=$request->nameadd;
         $job->save();
         $message="تم اضافه المحافظه";
-        return redirect()->route('government.all',compact('message'));
+        return redirect()->route('government.all')->with('message', $message);
         //return redirect()->back()->with(compact('activeTab','message'));
     }
     //show government
@@ -84,8 +85,8 @@ class regionsController extends Controller
         $gover->name=$request->name;
         $gover->save();
 
-        $message='';
-        return redirect()->route('government.all',compact('message'));
+        $message='تم التعديل بنجاح';
+        return redirect()->route('government.all')->with('message', $message);
      }
 
     //END government
@@ -94,11 +95,11 @@ class regionsController extends Controller
      */
     public function index($id)
     {
-        
         return view("regions.index",compact("id"));
     }
     public function getregions(Request $request)
     {
+        $government = get_by_md5_id($request->government_id, 'governments');
         $query = Region::with('government')
         ->select('regions.*', 'governments.name as government_name')
         ->join('governments', 'regions.government_id', '=', 'governments.id')
@@ -106,7 +107,7 @@ class regionsController extends Controller
         ->orderBy('regions.created_at', 'desc');
 
         if ($request->has('government_id') && $request->government_id) {
-            $query->where('government_id', $request->government_id);
+            $query->where('government_id', $government->id);
         }
 
     $data = $query->get();
@@ -125,7 +126,7 @@ class regionsController extends Controller
     })
     ->rawColumns(['action'])
     ->make(true);
-        
+
     }
     public function getGovernorates($sector)
     {
@@ -153,7 +154,7 @@ class regionsController extends Controller
      */
     public function store(Request $request)
     {
-            
+
         $requestinput=$request->except('_token');
         $region = new Region();
         $region->name=$request->nameadd;
@@ -161,10 +162,10 @@ class regionsController extends Controller
         $region->save();
         $message="تم اضافه المنطقه";
         $id=0;
-        return redirect()->route('regions.index',compact('message' ,'id'));
+        return redirect()->route('regions.index',compact('id'))->with('message', $message);
     }
 
-   
+
     public function update(Request $request)
     {
         $region = Region::find($request->id);
@@ -179,7 +180,7 @@ class regionsController extends Controller
 
         $message='تم التعديل على المنطقه';
         $id=0;
-        return redirect()->route('regions.index',compact('message' ,'id'));
+        return redirect()->route('regions.index',compact('id'))->with('message', $message);
     }
 
     /**

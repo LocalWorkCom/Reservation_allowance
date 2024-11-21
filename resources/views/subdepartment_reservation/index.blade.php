@@ -33,7 +33,7 @@
     <br>
 
     <div class="row">
-        <div class="container col-11 mt-3 p-0 pt-5 pb-4">   
+        <div class="container col-11 mt-3 p-0 pt-5 pb-4">
              <div class="col-lg-12">
              <div class="bg-white">
                     @if (session()->has('message'))
@@ -80,6 +80,16 @@
                     { data: 'full_reservation_amount', name: 'full_reservation_amount' },
                     { data: 'total_amount', name: 'total_amount' },
                 ],
+                "fnDrawCallback": function(oSettings) {
+                    var api = this.api();
+                    var pageInfo = api.page.info();
+                    // Check if the total number of records is less than or equal to the number of entries per page
+                    if (pageInfo.recordsTotal <= 10) { // Adjust this number based on your page length
+                        $('.dataTables_paginate').css('visibility', 'hidden'); // Hide pagination
+                    } else {
+                        $('.dataTables_paginate').css('visibility', 'visible'); // Show pagination
+                    }
+                }
                 createdRow: function(row, data, dataIndex) {
                     $('td', row).eq(0).html(dataIndex + 1);
                 }

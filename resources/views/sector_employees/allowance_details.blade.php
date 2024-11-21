@@ -1,64 +1,68 @@
 @extends('layout.main')
 
-@section('title', "تفاصيل الموظفين في الإدارة الفرعية: {$subDepartment->name}")
-
 @push('style')
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
     <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer></script>
+@endpush
 
-    @endpush
+@section('title', "تفاصيل بدل الحجز للموظف")
 
 @section('content')
-    <div class="row" style="direction: rtl;"> 
-        <div class="container welcome col-11">
+<div class="row">
+    <div class="container welcome col-11">
         <div class="d-flex justify-content-between">
-            <p>تفاصيل الموظفين في الإدارة الفرعية: {{ $subDepartment->name }} الفترة من: {{ $startDate->format('Y-m-d') }} إلى: {{ $endDate->format('Y-m-d') }}</p>
+            <p>تفاصيل بدل الحجز للموظف: {{ $employeeName }}</p>
         </div>
-        <button id="print-report" class="btn btn-secondary">طباعة</button>
     </div>
 </div>
 
-    <div class="row" style="direction: rtl;">
-        <div class="container col-11 mt-3 p-0 pt-5 pb-4">
-            <table id="users-table" class="display table table-bordered table-hover dataTable">
+<div class="row">
+    <div class="container col-11 mt-3 p-0 pt-5 pb-4">
+        <div class="bg-white p-4">
+        <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
                 <thead>
                     <tr>
                         <th>الترتيب</th>
-                        <th>اليوم</th>
                         <th>التاريخ</th>
-                        <th>الرتبة</th>
-                        <th>اسم الموظف</th>
-                        <th>رقم الملف</th>
-                      
-                        <th>نوع الحجز</th>
+                        <th>النوع</th>
                         <th>المبلغ</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @foreach ($employees as $index => $employee)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>{{ $employee['day'] }}</td>
-                            <td>{{ $employee['date'] }}</td>
-                            <td>{{ $employee['grade'] }}</td>
-                            <td>{{ $employee['employee_name'] }}</td>
-                            <td>{{ $employee['file_number'] }}</td>
-                            <td>{{ $employee['type'] }}</td>
-                            <td>{{ $employee['reservation_amount'] }} د.ك</td>
-                        </tr>
-                    @endforeach
-                </tbody>
             </table>
         </div>
     </div>
+</div>
 @endsection
 
 @push('scripts')
 <script>
 $(document).ready(function() {
     $('#users-table').DataTable({
-        "oLanguage": {
+    processing: true,
+    serverSide: true,
+    ajax: {
+        url: '{{ route('employee.allowance.details.data', $employeeId) }}',
+        data: function(d) {
+            d.month = '{{ $month }}';
+            d.year = '{{ $year }}';
+        }
+    },
+    columns: [
+        { 
+            data: null, 
+            orderable: false, 
+            searchable: false,
+            render: function (data, type, row, meta) {
+                return meta.row + 1; 
+            }
+        },
+        { data: 'date', name: 'date' },
+        { data: 'type', name: 'type' },
+        { data: 'amount', name: 'amount' },
+    ],
+            order: [[1, 'asc']],
+            "oLanguage": {
                 "sSearch": "",
                 "sSearchPlaceholder": "بحث",
                 "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
@@ -92,15 +96,8 @@ $(document).ready(function() {
                     }
                 }
         });
-
-    $('#print-report').click(function() {
-    const startDate = '{{ $startDate->format('Y-m-d') }}';
-    const endDate = '{{ $endDate->format('Y-m-d') }}';
-    const url = `{{ route('reservation_report.sub_department_employees_print', ['subDepartmentId' => $subDepartment->id]) }}?start_date=${startDate}&end_date=${endDate}`;
-    window.open(url, '_blank');
-});
+    });
 
 
-});
 </script>
 @endpush

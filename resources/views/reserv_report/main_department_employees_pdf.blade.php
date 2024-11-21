@@ -20,35 +20,43 @@
         th {
             background-color: #f2f2f2;
         }
-        h3 {
+        h3, p {
             text-align: center;
         }
     </style>
 </head>
 <body>
+    <!-- Logo and Title -->
     <img src="{{ asset('img/logo.png') }}" alt="Logo" width="50px">
     <h3>تفاصيل الموظفين المحجوزين في الإدارة الرئيسية: {{ $department->name }}</h3>
     <p><strong>الفترة من:</strong> {{ $startDate->format('Y-m-d') }} <strong>إلى:</strong> {{ $endDate->format('Y-m-d') }}</p>
 
+    <!-- Data Table -->
     <table>
         <thead>
             <tr>
                 <th>الترتيب</th>
-                <th>اسم الموظف</th>
-                <th>الرقم المدني</th>
-                <th>رقم الملف</th>
+                <th>اليوم</th>
+                <th>التاريخ</th>
                 <th>الرتبة</th>
-                <th>مبلغ الحجز</th>
+                <th>اسم الموظف</th>
+                <th>رقم الملف</th>
+               
+                <th>نوع الحجز</th>
+                <th>المبلغ</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($employees as $index => $employee)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $employee['name'] }}</td>
-                    <td>{{ $employee['civil_id'] }}</td>
-                    <td>{{ $employee['file_number'] }}</td>
+                    <td>{{ $employee['day'] }}</td>
+                    <td>{{ $employee['date'] }}</td>
                     <td>{{ $employee['grade'] }}</td>
+                    <td>{{ $employee['name'] }}</td>
+                    <td>{{ $employee['file_number'] }}</td>
+                   
+                    <td>{{ $employee['type'] }}</td>
                     <td>{{ $employee['reservation_amount'] }} د.ك</td>
                 </tr>
             @endforeach

@@ -1,6 +1,6 @@
 @extends('layout.main')
 
-@section('title', "تفاصيل بدل حجز لموظفي قطاع {$sector->name}")
+@section('title', "تفاصيل بدل حجز للموظف {$user->name}")
 
 @push('style')
 <link rel="stylesheet" type="text/css"
@@ -11,12 +11,13 @@
         src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
     </script>
     @endpush
+
 @section('content')
-<div class="row" >
+<div class="row" style="direction: rtl">
     <div class="container welcome col-11">
         <div class="d-flex justify-content-between">
-            <div class="mt-4 bg-white">
-                <p>تفاصيل بدل حجز لموظفي قطاع {{ $sector->name }} الفترة من: {{ $startDate->format('Y-m-d') }} إلى: {{ $endDate->format('Y-m-d') }}</p>
+            <div class="mt-4 bg-white" style="direction: rtl">
+                <p>تفاصيل بدل حجز للموظف {{ $user->name }} الفترة من: {{ $startDate->format('Y-m-d') }} إلى: {{ $endDate->format('Y-m-d') }}</p>
             </div>
         </div>
         <br><br>
@@ -25,13 +26,10 @@
             <thead>
                 <tr>
                     <th>الترتيب</th>
-                    <th>الرتبة</th>
-                    <th>الاسم</th>
-                    <th>رقم الملف</th>
-                    
-                    <th>الإدارة</th>
-                    <th>عدد الأيام</th>
-                    <th>المبلغ الإجمالي</th>
+                    <th>اليوم</th>
+                    <th>التاريخ</th>
+                    <th>النوع</th>
+                    <th>المبلغ</th>
                 </tr>
             </thead>
         </table>
@@ -46,7 +44,7 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: '{{ route('reservation_report.sector_details_data', ['sectorId' => $sector->id]) }}',
+                url: '{{ route('reservation_report.user_details_data', ['userId' => $user->id]) }}',
                 data: {
                     start_date: '{{ $startDate->format('Y-m-d') }}',
                     end_date: '{{ $endDate->format('Y-m-d') }}'
@@ -61,26 +59,10 @@
                         return meta.row + 1;
                     }
                 },
-                { data: 'grade', name: 'grade' },
-                { data: 'name', name: 'name', render: function(data, type, row) {
-                        return `<a href="/reservation_report/user/${row.id}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:blue !important;">${data}</a>`;
-                    } },
-                { data: 'file_number', name: 'file_number', render: function(data, type, row) {
-                        return `<a href="/reservation_report/user/${row.id}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:blue !important;">${data}</a>`;
-                    } },
-                { data: 'department', name: 'department' },
-                { data: 'days', name: 'days',
-                    render: function(data, type, row) {
-                        return `<a href="/reservation_report/user/${row.id}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:blue !important;">${data}</a>`;
-                    }
-                 },
-                { 
-                    data: 'allowance', 
-                    name: 'allowance',
-                    render: function(data, type, row) {
-                        return `<a href="/reservation_report/user/${row.id}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:blue !important;">${data}</a>`;
-                    }
-                }
+                { data: 'day', name: 'day' },
+                { data: 'date', name: 'date' },
+                { data: 'type', name: 'type' },
+                { data: 'amount', name: 'amount' }
             ],
             order: [[2, 'desc']],
             "oLanguage": {
@@ -117,11 +99,7 @@
             }
         });
 
-        $('#print-report').click(function() {
-            const url = `{{ route('reservation_report.sector_details_print', ['sectorId' => $sector->id]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}`;
-            window.open(url, '_blank');
-        });
+      
     });
 </script>
-
 @endpush

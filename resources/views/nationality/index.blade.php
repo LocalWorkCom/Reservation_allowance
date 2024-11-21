@@ -1,8 +1,11 @@
 @extends('layout.main')
 @push('style')
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
-    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
+    <script type="text/javascript" charset="utf8"
+        src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
     </script>
 @endpush
 
@@ -17,9 +20,12 @@
                 <div class="d-flex justify-content-between">
                     <p> الدول والجنسيات </p>
                     @if (Auth::user()->hasPermission('edit job'))
-                        <button type="button" class="btn-all  " onclick="openadd()" style="    color: #0D992C;">
+                        <button type="button" class="btn-all  " onclick="openadd()"
+                            style="    color: #0D992C;">
 
-                            اضافة دولة جديدة <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                            اضافة دولة جديدة <img
+                                src="{{ asset('frontend/images/add-btn.svg') }}"
+                                alt="img">
                         </button>
                     @endif
                 </div>
@@ -30,15 +36,15 @@
             <div class="container  col-11 mt-3 p-0  pt-5 pb-4">
 
                 <!-- <div class="row " dir="rtl">
-                                <div class="form-group mt-4  mx-md-2 col-12 d-flex ">
-                                    @if (Auth::user()->hasPermission('edit job'))
+                                        <div class="form-group mt-4  mx-md-2 col-12 d-flex ">
+                                            @if (Auth::user()->hasPermission('edit job'))
     <button type="button" class="btn-all  " onclick="openadd()" style="    color: #0D992C;">
-                          
-                                        اضافة وظيفة جديدة <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                    </button>
+
+                                                اضافة وظيفة جديدة <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                                            </button>
     @endif
-                                </div>
-                            </div> -->
+                                        </div>
+                                    </div> -->
                 <div class="col-lg-12">
                     <div class="bg-white">
                         @if (session()->has('message'))
@@ -67,37 +73,46 @@
     </section>
 
     {{-- this for add form --}}
-    <div class="modal fade" id="add" tabindex="-1" aria-labelledby="representativeLabel" aria-hidden="true">
+    <div class="modal fade" id="add" tabindex="-1"
+        aria-labelledby="representativeLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header d-flex justify-content-center">
                     <div class="title d-flex flex-row align-items-center">
-                        <h5 class="modal-title" id="lable"> أضافه دولة جديدة</h5>
+                        <h5 class="modal-title" id="lable"> أضافه دولة جديدة
+                        </h5>
 
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> &times;
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"> &times;
                     </button>
                 </div>
                 <div class="modal-body mt-3 mb-5">
-                    <div class="container pt-5 pb-4" style="border: 0.2px solid rgb(166, 165, 165);">
-                        <form class="edit-grade-form" id="add-form" action=" {{ route('nationality.add') }}"
-                            method="POST">
+                    <div class="container pt-5 pb-4"
+                        style="border: 0.2px solid rgb(166, 165, 165);">
+                        <form class="edit-grade-form" id="add-form"
+                            action=" {{ route('nationality.add') }}" method="POST">
                             @csrf
                             <div class="form-group">
                                 <label for="name">الاسم</label>
-                                <input type="text" id="nameadd" name="nameadd" class="form-control" required>
-                                <span class="text-danger span-error" id="nameadd-error" dir="rtl"></span>
+                                <input type="text" id="nameadd" name="nameadd"
+                                    class="form-control" required>
+                                <span class="text-danger span-error"
+                                    id="nameadd-error" dir="rtl"></span>
 
                             </div>
                             <div class="form-group">
                                 <label for="name">الكود</label>
-                                <input type="text" id="codeAdd" name="codeAdd" class="form-control">
-                                <span class="text-danger span-error" id="codeAdd-error" dir="rtl"></span>
+                                <input type="text" id="codeAdd" name="codeAdd"
+                                    class="form-control">
+                                <span class="text-danger span-error"
+                                    id="codeAdd-error" dir="rtl"></span>
 
                             </div>
                             <!-- Save button -->
                             <div class="text-end">
-                                <button type="submit" class="btn-blue" onclick="confirmAdd()">اضافه</button>
+                                <button type="submit" class="btn-blue"
+                                    onclick="confirmAdd()">اضافه</button>
                             </div>
                         </form>
                     </div>
@@ -106,39 +121,47 @@
         </div>
     </div>
     {{-- this for edit form --}}
-    <div class="modal fade" id="edit" tabindex="-1" aria-labelledby="representativeLabel" aria-hidden="true">
+    <div class="modal fade" id="edit" tabindex="-1"
+        aria-labelledby="representativeLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header d-flex justify-content-center">
                     <div class="title d-flex flex-row align-items-center">
-                        <h5 class="modal-title" id="lable"> تعديل على مسمى الدولة ؟</h5>
+                        <h5 class="modal-title" id="lable"> تعديل على مسمى
+                            الدولة ؟</h5>
 
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> &times;
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"> &times;
                     </button>
                 </div>
                 <div class="modal-body mt-3 mb-5">
-                    <div class="container pt-5 pb-4" style="border: 0.2px solid rgb(166, 165, 165);">
-                        <form class="edit-grade-form" id="edit-form" action=" {{ route('nationality.update') }}"
+                    <div class="container pt-5 pb-4"
+                        style="border: 0.2px solid rgb(166, 165, 165);">
+                        <form class="edit-grade-form" id="edit-form"
+                            action=" {{ route('nationality.update') }}"
                             method="POST">
                             @csrf
                             <div class="form-group">
                                 <label for="name">الاسم</label>
-                                <input type="text" id="nameedit" value="" name="name" class="form-control"
-                                    required>
-                                <input type="text" id="idedit" value="" name="id" hidden
+                                <input type="text" id="nameedit" value=""
+                                    name="name" class="form-control" required>
+                                <input type="text" id="idedit"
+                                    value="" name="id" hidden
                                     class="form-control">
 
                             </div>
                             <div class="form-group">
                                 <label for="name">الكود</label>
-                                <input type="text" id="codeedit" value="" name="codeedit"
+                                <input type="text" id="codeedit"
+                                    value="" name="codeedit"
                                     class="form-control">
 
                             </div>
                             <!-- Save button -->
                             <div class="text-end">
-                                <button type="submit" class="btn-blue" onclick="confirmEdit()">تعديل</button>
+                                <button type="submit" class="btn-blue"
+                                    onclick="confirmEdit()">تعديل</button>
                             </div>
                         </form>
                     </div>
@@ -147,34 +170,45 @@
         </div>
     </div>
     {{-- model for delete form --}}
-    <div class="modal fade" id="delete" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal fade" id="delete" tabindex="-1"
+        aria-labelledby="deleteModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header d-flex justify-content-center">
                     <div class="title d-flex flex-row align-items-center">
-                        <h5 class="modal-title" id="deleteModalLabel"> !تنبــــــيه</h5>
+                        <h5 class="modal-title" id="deleteModalLabel">
+                            !تنبــــــيه</h5>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> &times;
+                    <button type="button" class="btn-close"
+                        data-bs-dismiss="modal" aria-label="Close"> &times;
                     </button>
                 </div>
                 <div class="modal-body  mt-3 mb-5">
-                    <div class="container pt-5 pb-3" style="border: 0.2px solid rgb(166, 165, 165);">
-                        <form id="delete-form" action="{{ route('nationality.delete') }}" method="POST">
+                    <div class="container pt-5 pb-3"
+                        style="border: 0.2px solid rgb(166, 165, 165);">
+                        <form id="delete-form"
+                            action="{{ route('nationality.delete') }}"
+                            method="POST">
                             @csrf
                             <div class="form-group d-flex justify-content-center ">
-                                <h5 class="modal-title " id="deleteModalLabel"> هل تريد حذف هذا المسمى ؟</h5>
+                                <h5 class="modal-title " id="deleteModalLabel"> هل
+                                    تريد حذف هذا المسمى ؟</h5>
 
 
-                                <input type="text" id="id" hidden name="id" class="form-control">
+                                <input type="text" id="id" hidden
+                                    name="id" class="form-control">
                             </div>
                             <!-- Save button -->
                             <div class="text-end">
-                                <div class="modal-footer mx-2 d-flex justify-content-center">
+                                <div
+                                    class="modal-footer mx-2 d-flex justify-content-center">
                                     <div class="text-end">
-                                        <button type="button" class="btn-blue" id="closeButton">لا</button>
+                                        <button type="button" class="btn-blue"
+                                            id="closeButton">لا</button>
                                     </div>
                                     <div class="text-end">
-                                        <button type="submit" class="btn-blue" onclick="confirmDelete()">نعم</button>
+                                        <button type="submit" class="btn-blue"
+                                            onclick="confirmDelete()">نعم</button>
                                     </div>
                                 </div>
                             </div>
@@ -273,9 +307,11 @@
             inputs.forEach(function(input) {
                 if (!input.value) {
                     valid = false;
-                    input.style.borderColor = 'red'; // Optional: highlight empty inputs
+                    input.style.borderColor =
+                    'red'; // Optional: highlight empty inputs
                 } else {
-                    input.style.borderColor = ''; // Reset border color if input is filled
+                    input.style.borderColor =
+                    ''; // Reset border color if input is filled
                 }
             });
 
@@ -284,7 +320,8 @@
             }
         }
         $(document).ready(function() {
-            $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
+            $.fn.dataTable.ext.classes.sPageButton =
+            'btn-pagination btn-sm'; // Change Pagination Button Class
 
             $('#users-table').DataTable({
                 processing: true,
@@ -292,11 +329,11 @@
                 ajax: '{{ route('nationality.getAllNationality') }}', // Correct URL concatenation
                 columns: [{
                         data: 'country_name_ar',
-                        name: 'name'
+                        name: 'country_name_ar' // Search will be enabled on this column
                     },
                     {
                         data: 'code',
-                        name: 'code'
+                        name: 'code' // Search will be enabled on this column
                     },
                     {
                         data: 'action',
@@ -318,33 +355,26 @@
                     "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
                     "sZeroRecords": 'نأسف لا توجد نتيجة',
                     "oPaginate": {
-                        "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
-                        "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
-                        "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
-                        "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
-                    }
-
-
-                },
-                layout: {
-                    bottomEnd: {
-                        paging: {
-                            firstLast: false
-                        }
+                        "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
+                        "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
+                        "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
+                        "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
                     }
                 },
                 "pagingType": "full_numbers",
                 "fnDrawCallback": function(oSettings) {
-                    console.log('Page ' + this.api().page.info().pages)
-                    var page = this.api().page.info().pages;
-                    console.log($('#users-table tr').length);
-                    if (page == 1) {
-                        //   $('.dataTables_paginate').hide();//css('visiblity','hidden');
-                        $('.dataTables_paginate').css('visibility', 'hidden'); // to hide
-
+                    var api = this.api();
+                    var pageInfo = api.page.info();
+                    if (pageInfo.recordsTotal <= 10) {
+                        $('.dataTables_paginate').css(
+                            'visibility', 'hidden');
+                    } else {
+                        $('.dataTables_paginate').css(
+                            'visibility', 'visible');
                     }
                 }
             });
+
 
 
         });

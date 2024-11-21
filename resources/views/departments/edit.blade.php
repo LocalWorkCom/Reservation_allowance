@@ -69,11 +69,14 @@
         <br>
         <div class="row">
             <div class="container  col-11 mt-3 p-0 ">
-                <div class="container col-10 mt-5 mb-3 pb-5"
+                <div class="container col-10 mt-5 mb-3 pb-5" style="border:0.5px solid #C7C7CC;">
+                    <form action="{{ route('departments.update', $department->hash_id) }}" method="POST"
+                        enctype="multipart/form-data">
+                <!-- <div class="container col-10 mt-5 mb-3 pb-5"
                     style="border:0.5px solid #C7C7CC;">
                     <form
                         action="{{ route('departments.update', $department->id) }}"
-                        method="POST" enctype="multipart/form-data">
+                        method="POST" enctype="multipart/form-data"> -->
                         @csrf
                         @method('PUT')
 
