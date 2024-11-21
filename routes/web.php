@@ -458,10 +458,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('reservation_report/main_department/{departmentId}/sub_departments', [ReservationReportController::class, 'showSubDepartments'])->name('reservation_report.main_department_sub_departments')->middleware('check.permission:view Inspector');
     Route::get('reservation_report/main_department/{departmentId}/sub_departments/print', [ReservationReportController::class, 'printSubDepartmentsDetails'])->name('reservation_report.main_department_sub_departments_print')->middleware('check.permission:view Inspector');
     Route::get('reservation_report/main_department/{departmentId}/employees', [ReservationReportController::class, 'showMainDepartmentEmployees'])->name('reservation_report.main_department_employees')->middleware('check.permission:view Inspector');
+    Route::get('reservation_report/main_department/{departmentId}/employees_data', [ReservationReportController::class, 'getMainDepartmentEmployeesData'])->name('reservation_report.main_department_employees_data')->middleware('check.permission:view Inspector');
+    Route::get('reservation_report/user/{userId}/details', [ReservationReportController::class, 'showUserDetails'])->name('reservation_report.user_details');
+
+    
     Route::get('reservation_report/main_department/{departmentId}/employees/print', [ReservationReportController::class, 'printMainDepartmentEmployees'])->name('reservation_report.main_department_employees_print')->middleware('check.permission:view Inspector');
     Route::get('reservation_report/sub_department/{subDepartmentId}/employees', [ReservationReportController::class, 'showSubDepartmentEmployees'])->name('reservation_report.sub_department_employees')->middleware('check.permission:view Inspector');
     Route::get('reservation_report/sub_department/{subDepartmentId}/employees/print', [ReservationReportController::class, 'printSubDepartmentEmployees'])->name('reservation_report.sub_department_employees_print')->middleware('check.permission:view Inspector');
-
+    Route::get('/reservation_report/user/{userId}/details', [ReservationReportController::class, 'showUserDetails'])->name('reservation_report.user_details');
+    Route::get('/reservation_report/user/{userId}/details_data', [ReservationReportController::class, 'getUserDetailsData'])->name('reservation_report.user_details_data');
+    
 
 
 
