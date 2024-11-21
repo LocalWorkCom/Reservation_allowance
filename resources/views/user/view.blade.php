@@ -54,28 +54,51 @@
                 </div>
             </div>
         </div>
+
         <div class="container welcome col-11">
-            <div class="d-flex justify-content-between">
-                @if (Auth::user()->rule_id == 2)
+            <div class="d-flex ">
+                @if (request()->fullUrlIs('*employees?department_id=*'))
+                    <p>قوة وكيل الامن العام</p>
+                @elseif (Auth::user()->rule_id != 2)
+                    <p>موظفين القوة</p>
+                @elseif (Auth::user()->rule_id == 2)
                     <p>موظفين الوزارة</p>
                 @endif
-                @if (Auth::user()->rule_id != 2)
-                    <p>موظفين القوة</p>
-                @endif
-                <div class="form-group">
-                    @if (Auth::user()->hasPermission('add_employee User'))
-                        <button type="button" class="wide-btn"
-                            onclick="window.location.href='{{ route('user.create') }}'" style="color: #0D992C;">
-                            اضافة موظف جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                        </button>
-                        {{-- <a href="{{ route('export-users') }}" class="btn btn-primary"
-                            style="border-radius: 5px;">تصدير</a> --}}
-                        {{-- <button type="button" class="btn btn-success" onclick="window.print()"
-                            style="background-color: #274373; color:white;">طباعة الجدول</button> --}}
 
-                        <a href="{{ route('download-template') }}" class="btn "
-                            style="border-radius: 5px;background-color: #274373; border-color: #274373; color:white; border-radius:10px;">تحميل
-                            القالب</a>
+                <div class="form-group">
+
+                    @if (Auth::user()->hasPermission('add_employee User'))
+
+                    <a href="{{ route('download-template') }}" class="btn-all text-info mx-2 p-2">تحميل
+                        القالب</a>
+
+                    <button type="button" class="wide-btn mx-2"
+                        onclick="window.location.href='{{ route('user.create') }}'" style="color: #0D992C;">
+                        اضافة موظف جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                    </button>
+        
+
+                     </div>
+                        @if (request()->fullUrlIs('*employees?department_id=*'))
+
+                            <form class="" action="{{ route('user.employees.add') }}" method="post">
+                                <input type="hidden" id="department_id" name="department_id" value="{{request()->get('department_id')}}" class="form-control" >
+                                @csrf
+                                <div class="row d-flex flex-wrap ">
+                                    <!-- 1 for sector , 2 for department -->
+                                    <div class="d-flex">
+                                        <input type="text" id="Civil_number" name="Civil_number" class="form-control" placeholder="الرقم المدني" style="border-radius:10px !important;">
+                                    </div>
+                                    <button class="btn-all py-2 mx-2" type="submit" style="color:green;">
+                                        <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                                        اضافة موظف للادارة
+                                    </button>
+
+                               
+                            </form>
+                        @endif
+
+
                     @endif
 
                 </div>
@@ -150,25 +173,14 @@
                                     <th>رقم المسلسل</th>
                                     <th>الرتبه</th>
                                     <th>الاسم</th>
-                                    {{--    <th>رقم المدني</th>
-                                    <th>الرقم العسكري</th> --}}
                                     <th>رقم الملف</th>
+                                    <th>الرقم المدني</th>
                                     <th>الهاتف</th>
                                     <th>الادارة</th>
                                     <th>القطاع</th>
                                     <th style="width:150px !important;">العمليات</th>
                                 </tr>
                             </thead>
-                            <!--  <tfoot>
-                                    <tr>
-                                        <th>رقم التعريف</th>
-                                        <th>الاسم</th>
-                                        <th>القسم</th>
-                                        <th>الهاتف</th>
-                                        <th>الرقم العسكري</th>
-                                        <th style="width:150px !important;"></th>
-                                    </tr>
-                         </tfoot> -->
                         </table>
 
 
@@ -178,66 +190,31 @@
                             $(document).ready(function() {
                                 $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
 
-
                                 @php
                                     $department_id = request()->get('department_id');
                                     $parent_department_id = request()->get('parent_department_id');
-                                    $sector_id = request()->get('sector_id'); // Get department_id from request
-                                    $type = request()->get('type'); // Get department_id from request
-                                    // dd($sector_id);
-                                    //  $Dataurl = 'api/users';
-                                    $Dataurl = 'api.users';
-                                    if (isset($mode)) {
-                                        if ($mode == 'search') {
-                                            //  $Dataurl = 'searchUsers/users';
-                                            $Dataurl = 'search.user';
-                                        }
+                                    $sector_id = request()->get('sector_id');
+                                    $type = request()->get('type');
+                                    $Civil_number = request()->get('Civil_number'); // Get Civil_number from request
+                                    $Dataurl = 'api.users'; // Default URL
+
+                                    if (isset($mode) && $mode == 'search') {
+                                        $Dataurl = 'search.user';
                                     }
+
                                     $parms = [];
-                                    // dd($Dataurl);
                                     if ($department_id) {
-                                        //  $Dataurl .= '?department_id=' . $department_id;
-                                        /*  if ($parms != '') {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $parms .= '&';
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    } else {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $parms = '?';
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    } */
                                         $parms['department_id'] = $department_id;
                                     }
                                     if ($parent_department_id) {
-                                        //  $Dataurl .= '?department_id=' . $department_id;
-                                        /*  if ($parms != '') {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $parms .= '&';
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    } else {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $parms = '?';
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    } */
                                         $parms['parent_department_id'] = $parent_department_id;
                                     }
-
                                     if ($sector_id) {
-                                        /*   if ($parms != '') {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $parms .= '&';
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    } else {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $parms = '?';
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }*/
-
                                         $parms['sector_id'] = $sector_id;
                                     }
-                                    if ($type) {
-                                        /*  if ($parms != '') {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $parms .= '&';
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    } else {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            $parms = '?';
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }*/
-
-                                        $parms['type'] = $type;
+                                    if ($Civil_number) {
+                                        $parms['Civil_number'] = $Civil_number; // Add Civil_number to parameters
                                     }
-                                    //dd($parms);
-                                    //  $url_data = route($Dataurl, $parms);
-
-                                    //  dd(http_build_query($parms));
-                                    // $Dataurl .= '?' . http_build_query($parms);
-                                    // dd($url_data);
                                 @endphp
                                 /*
                                   $('#users-table tfoot th').each(function (i) {
@@ -290,6 +267,10 @@
                                             name: 'file_number'
                                         },
                                         {
+                                            data: 'Civil_number',
+                                            name: 'Civil_number'
+                                        },
+                                        {
                                             data: 'phone',
                                             name: 'phone'
                                         },
@@ -323,7 +304,7 @@
                                             var unsigned = '{{ route('user.unsigned', ':id') }}';
                                             unsigned = unsigned.replace(':id', row.id);
                                             var visibility = row.department_id != null ? 'd-block-inline' :
-                                            'd-none';
+                                                'd-none';
 
                                             return `
         <a href="` + usershow + `" class="btn btn-sm" style="background-color: #274373;"> 
@@ -396,12 +377,14 @@
 
 
 <script>
-   function openTransferModal(id) {
-            $('#TranferMdel').modal('show');
-            document.getElementById('id_employee').value = id;
-        }
- $(document).ready(function() {
-      
+    
+
+    function openTransferModal(id) {
+        $('#TranferMdel').modal('show');
+        document.getElementById('id_employee').value = id;
+    }
+    $(document).ready(function() {
+
         $('#print-table').on('click', function() {
             // Clone the DataTable to a new window
             var printWindow = window.open('', '', 'width=900,height=600');

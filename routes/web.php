@@ -108,7 +108,8 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/getGoverment/{id}', [UserController::class, 'getGoverment'])->name('user.getGoverment')->middleware('check.permission:view Government');
     Route::any('/getRegion/{id}', [UserController::class, 'getRegion'])->name('user.getRegion')->middleware('check.permission:view Region');
 
-    Route::get('/employees', [UserController::class, 'index'])->name('user.employees')->middleware('check.permission:view User');
+    Route::any('/employees', [UserController::class, 'index'])->name('user.employees')->middleware('check.permission:view User');
+    Route::post('/employees/add', [UserController::class, 'add_employees'])->name('user.employees.add')->middleware('check.permission:create User');
     Route::get('/edit/{id}', [UserController::class, 'edit'])->name('user.edit')->middleware('check.permission:edit User');
     Route::get('/show/{id}', [UserController::class, 'show'])->name('user.show')->middleware('check.permission:view User');
     Route::post('/update/{id}', [UserController::class, 'update'])->name('user.update')->middleware('check.permission:edit User');
@@ -539,6 +540,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/get-manager-sector-details/{id}/{sector}', [sectorsController::class, 'getManagerSectorDetails']);
     Route::get('/get-allowance-sector', [SectorsController::class, 'getAllowance']);
     Route::get('/get-allowance-department', [DepartmentController::class, 'getAllowancedepart']);
+    
+    Route::any('/employee_search/getAll', [UserController::class, 'getAll'])->name('employee_search.getAll')->middleware('check.permission:view Inspector');
 
     //reserv search
     Route::get('/reservation_fetch', [ReserveFetchController::class, 'static'])->name('reservation_fetch.index')->middleware('check.permission:view Inspector');
