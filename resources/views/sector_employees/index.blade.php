@@ -34,15 +34,15 @@
 <div class="row">
     <div class="container welcome col-11">
         <div class="d-flex justify-content-between">
-            <p>تفاصيل بدل حجز لموظفين قطاع {{ $sectorName }}</p>
-            <button id="print-report" class="btn btn-primary">طباعة</button>
+            <p>تفاصيل بدل حجز لموظفين قطاع <span class="text-info"> {{ $sectorName }}</span></p>
+            <button id="print-report" class="btn-all text-info">طباعة</button>
 
         </div>
     </div>
 </div>
 
 <div class="row">
-    <div class="container col-11 mt-3 p-0 pt-5 pb-4">
+    <div class="container col-11 mt-3 py-5 pb-4">
        
             <div class="bg-white">
                 @if (session()->has('message'))

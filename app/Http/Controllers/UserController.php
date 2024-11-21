@@ -62,6 +62,8 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $departments = departements::all();
+        $sectors = Sector::all();
+
         // if()
         $department_id = 0;
         // $sector_id = 0;
@@ -72,8 +74,9 @@ class UserController extends Controller
         // if (request()->has('sector')) {
         //     $sector_id = request()->has('sector');
         // }
-        return view('user.view', compact('departments', 'department_id'));
+        return view('user.view', compact('departments', 'department_id','sectors'));
     }
+    
 
     public function add_employees(Request $request)
     {

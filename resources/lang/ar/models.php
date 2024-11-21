@@ -44,6 +44,8 @@ return [
  'WorkingTree'=>'نظام العمل',
  'WorkingTreeTime'=>'وقت نظام العمل',
  'instantmission'=>'امر خدمة',
+ 'ReservationAllowance'=>'بدل حجز'
+
 
     // Add more permissions as needed
 ];
