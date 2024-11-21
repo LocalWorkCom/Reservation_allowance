@@ -1,13 +1,13 @@
 @extends('layout.main')
 
 @push('style')
-<link rel="stylesheet" type="text/css"
+    <link rel="stylesheet" type="text/css"
         href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
-<script type="text/javascript" charset="utf8"
+    <script type="text/javascript" charset="utf8"
         src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
-<script type="text/javascript" charset="utf8"
+    <script type="text/javascript" charset="utf8"
         src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
-</script>
+    </script>
 @endpush
 
 @section('title', 'تقارير بدل حجز')
@@ -84,6 +84,8 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
+        $.fn.dataTable.ext.classes.sPageButton =
+        'btn-pagination btn-sm';
         var table = $('#users-table').DataTable({
             processing: true,
             serverSide: true,
@@ -131,32 +133,33 @@
         return `<a href="/reservation_report/sector/${row.sector_id}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:blue !important;">${data}</a>`;
     }
             }
-        ],
-        order: [[1, 'asc']],
-        "oLanguage": {
-                "sSearch": "",
-                "sSearchPlaceholder": "بحث",
-                "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
-                "sInfoEmpty": 'لا توجد بيانات متاحه',
-                "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
-                "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
-                "sZeroRecords": 'نأسف لا توجد نتيجة',
-                "oPaginate": {
-                    "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
-                    "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
-                    "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
-                    "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
-                }
-            },
-            layout: {
-                bottomEnd: {
-                    paging: {
-                        firstLast: false
+        ],  order: [
+                    [1, 'desc']
+                ],
+                "oLanguage": {
+                    "sSearch": "",
+                    "sSearchPlaceholder": "بحث",
+                    "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
+                    "sInfoEmpty": 'لا توجد بيانات متاحه',
+                    "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
+                    "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
+                    "sZeroRecords": 'نأسف لا توجد نتيجة',
+                    "oPaginate": {
+                        "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
+                        "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
+                        "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
+                        "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
                     }
-                }
-            },
-            "pagingType": "full_numbers",
-            "fnDrawCallback": function(oSettings) {
+                },
+                layout: {
+                    bottomEnd: {
+                        paging: {
+                            firstLast: false
+                        }
+                    }
+                },
+                "pagingType": "full_numbers",
+                "fnDrawCallback": function(oSettings) {
                     var api = this.api();
                     var pageInfo = api.page.info();
                     // Check if the total number of records is less than or equal to the number of entries per page
@@ -166,7 +169,8 @@
                         $('.dataTables_paginate').css('visibility', 'visible'); // Show pagination
                     }
                 }
-    });
+            });
+        
 
         $('#filter-form').on('submit', function(e) {
             e.preventDefault();
@@ -192,7 +196,7 @@
                 }
             });
         });
-
+    });
          // Print report
     $('#print-report').click(function() {
         const startDate = $('#start-date').val();
@@ -205,6 +209,6 @@
             alert('يرجى اختيار نطاق تاريخ صحيح');
         }
     });
-    });
+  
 </script>
 @endpush

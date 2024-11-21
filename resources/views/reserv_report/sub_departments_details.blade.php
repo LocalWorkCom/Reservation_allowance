@@ -54,7 +54,15 @@
                                         {{ $subDepartment['employee_count'] }}
                                     </a>
                                 </td>
-                                <td>{{ $subDepartment['reservation_amount'] }}</td> 
+                             
+
+                                <td>
+                                <a href="{{ route('reservation_report.sub_department_employees', ['subDepartmentId' => $subDepartment['id']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:blue !important;">    
+                                {{ $subDepartment['reservation_amount'] }}
+                                </a>
+                            
+                            </td> 
+                                
                             </tr>
                         @endforeach
                     </tbody>
@@ -67,6 +75,8 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
+    $.fn.dataTable.ext.classes.sPageButton =
+    'btn-pagination btn-sm';
     $('#users-table').DataTable({
         "oLanguage": {
                 "sSearch": "",
