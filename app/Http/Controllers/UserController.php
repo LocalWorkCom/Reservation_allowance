@@ -59,32 +59,8 @@ class UserController extends Controller
 
 
     // }
-    // public function index(Request $request)
-    // {
-    //     $departments = departements::all();
-    //     $sectors = Sector::all();
-    //     $all = grade::count();
+    public function index(Request $request, $flag)
 
-    //     // if()
-    //     $department_id = 0;
-    //     // $sector_id = 0;
-    //     if (request()->has('department_id')) {
-    //         $department_id = request()->has('department_id');
-    //     }
-
-    //     $Officer = grade::where('type', 2)->count();
-    //     $Officer2 = grade::where('type', 1)->count();
-    //     $person = grade::where('type', 3)->count();
-
-    //     // return view("grads.index", compact('all', 'Officer', 'Officer2', 'person'));
-
-    //     // if (request()->has('sector')) {
-    //     //     $sector_id = request()->has('sector');
-    //     // }
-    //     return view('user.view', compact('departments', 'department_id','sectors','all', 'Officer', 'Officer2', 'person'));
-    // }
-
-    public function index(Request $request)
     {
         $department_id = $request->get('department_id'); // Fetch department_id from the request
     
@@ -102,13 +78,15 @@ class UserController extends Controller
         // Fetch related departments and sectors
         $departments = departements::all();
         $sectors = Sector::all();
+
     
-        return view('user.view', compact('departments', 'department_id', 'sectors', 'Officer', 'Officer2', 'person','all'));
+        return view('user.view', compact('departments', 'department_id', 'sectors', 'Officer', 'Officer2', 'person','all','flag'));
     }
-    
+
 
     public function add_employees(Request $request)
     {
+        
         $department_id = $request->department_id;
         $Civil_number = $request->Civil_number;
 
@@ -130,29 +108,30 @@ class UserController extends Controller
 
     public function getUsers(Request $request)
     {
-        // dd(request());
+        $flag = $request->flag;
         $parentDepartment = Departements::find(Auth()->user()->department_id);
 
         if (Auth::user()->rule->name == "localworkadmin") {
-            $data = User::query(); // Start as a query
+            $data = User::where('flag', $flag); // Start as a query
         } elseif (Auth::user()->rule->name == "superadmin") {
-            $data = User::query(); // Start as a query for superadmins too
+            $data = User::where('flag', $flag); // Start as a query for superadmins too
+            // dd(0);
         } else {
             // dd($parentDepartment);
             if (!$parentDepartment) {
                 $sector = Auth::user()->sector;
-                $data = User::where('sector', $sector);
+                $data = User::where('flag', $flag)->where('sector', $sector);
             } else {
 
                 if (is_null($parentDepartment->parent_id)) {
                     $subdepart = Departements::where('parent_id', $parentDepartment->id)->pluck('id')->toArray();
-                    $data = User::where(function ($query) use ($subdepart, $parentDepartment) {
+                    $data = User::where('flag', $flag)->where(function ($query) use ($subdepart, $parentDepartment) {
                         $query->whereIn('department_id', $subdepart)
                             ->orWhere('department_id', $parentDepartment->id)
                             ->orWhereNull('department_id');
                     });
                 } else {
-                    $data = User::where('department_id', $parentDepartment->id);
+                    $data = User::where('flag', $flag)->where('department_id', $parentDepartment->id);
                 }
             }
         }
@@ -654,11 +633,12 @@ class UserController extends Controller
         $user = User::find($request->id_employee);
         $user->department_id  = Null;
         $user->sector  = Null;
+        $user->flag  = 'employee';
         $user->save();
         // $id = 1;
         $department = departements::where('manger', $request->id_employee)->first();
         if ($department) {
-            $department->manager = null;
+            $department->manger = null;
             $department->save();
         }
         $sector = sector::where('manager', $request->id_employee)->first();
@@ -838,7 +818,7 @@ class UserController extends Controller
         }
 
         $id = $request->type;
-        return redirect()->route('user.employees');
+        return redirect()->route('user.employees', $request->flag);
     }
 
     /**
@@ -1055,7 +1035,7 @@ class UserController extends Controller
             $sector->save();
         }
         session()->flash('success', 'تم الحفظ بنجاح.');
-        return redirect()->route('user.employees');
+        return redirect()->route('user.employees', $request->flag);
     }
 
     public function getGoverment($id)

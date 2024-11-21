@@ -10,9 +10,9 @@
             <li class="breadcrumb-item "><a href="/">الرئيسيه</a></li>
 
             @if (url()->current() == url('/users_create/0'))
-            <li class="breadcrumb-item"><a href="{{ route('user.index', 0) }}">المستخدمين</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('user.index', 'user') }}">المستخدمين</a></li>
             @elseif (url()->current() == url('/users_create/1'))
-            <li class="breadcrumb-item"><a href="{{ route('user.employees', 1) }}">الموظفين</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('user.employees', 'employee') }}">الموظفين</a></li>
             @endif
             <li class="breadcrumb-item active" aria-current="page"> <a href=""> اضافة </a></li>
         </ol>
