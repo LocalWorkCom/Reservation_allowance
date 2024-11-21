@@ -86,7 +86,7 @@
                 </div>
 
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="email_field" style="display: none;">
-                    <label class="pb-3" for="email">الأيميل</label>
+                    <label  for="email">الأيميل</label>
                     <input type="email" name="email" id="email" class="form-control" required>
                     @error('email')
                         <div class="alert alert-danger">{{ $message }}</div>
@@ -160,7 +160,7 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
-                
+
 
                 <div class="container col-11">
                     <div class="form-row d-flex justify-content-end mt-4 mb-3">
@@ -245,6 +245,14 @@
                         // Show/hide password and rule fields
                         if (data.isEmployee) {
                             $('#email_field').show();
+
+                            if (data.email === 'لا يوجد بريد الكتروني') {
+                                $('#email').val('');
+
+                            } else {
+                                $('#email').val(data.email);
+
+                            }
                             $('#email').val(data.email);
                         } else {
                             $('#email_field').hide();

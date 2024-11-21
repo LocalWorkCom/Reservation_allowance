@@ -121,7 +121,8 @@
 
                     <div class="input-group moftsh px-md-5 px-3 pt-3">
                         <label for="Civil_number" class="col-12"> أرقام الملفات</label>
-                        <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px;background-color: #F8F8F8;border-radius: 10px !important;"></textarea>
+                        <textarea class="form-control" name="Civil_number" id="Civil_number"
+                            style="height: 100px;background-color: #F8F8F8;border-radius: 10px !important;"></textarea>
                     </div>
                 </div>
                 <div class="input-group moftsh px-md-5 px-3 pt-3">
@@ -164,18 +165,18 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror --}}
                 </div>
-            
-            <div class="container col-11">
-                <div class="form-row d-flex justify-content-end mt-4 mb-3">
-                    <button type="submit" class="btn-blue">
-                        <img src="{{ asset('frontend/images/white-add.svg') }}" alt="img" height="20px"
-                            width="20px">
-                        اضافة
-                    </button>
-                </div>
-            </div>
 
-        </div>
+                <div class="container col-11">
+                    <div class="form-row d-flex justify-content-end mt-4 mb-3">
+                        <button type="submit" class="btn-blue">
+                            <img src="{{ asset('frontend/images/white-add.svg') }}" alt="img" height="20px"
+                                width="20px">
+                            اضافة
+                        </button>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </form>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -201,8 +202,7 @@
                         $('#manager_details').find('span').eq(4).text(data.email);
 
                         $('#manager_details').show();
-                        if (data.isEmployee) {
-                            console.log(data.email);
+                        if (data.email) {
                             $('#email_field').show();
                             if (data.email === 'لا يوجد بريد الكتروني') {
                                 $('#email').val('');
@@ -213,7 +213,7 @@
                             }
                         } else {
                             // $('#email_field').hide();
-                            $('#email').val('');
+                            $('#email').val(data.email);
 
                         }
                     },
@@ -233,6 +233,13 @@
                                     fetchManagerDetails(managerId, false);
                                     $('#email_field').show();
                                     $('#email').show();
+                                    if (data.email === 'لا يوجد بريد الكتروني') {
+                                        $('#email').val('');
+
+                                    } else {
+                                        $('#email').val(data.email);
+
+                                    }
                                     $('#manager_details').show();
                                     // Populate manager details
                                     $('#manager_details').find('span').eq(0).text(result.rank);
@@ -272,6 +279,7 @@
         $('#mangered').bind('blur', function() {
             var managerId = $(this).val();
             $('#email').val('');
+
             fetchManagerDetails(managerId, true);
         });
         var selectedManagerId = $('#mangered').val();
