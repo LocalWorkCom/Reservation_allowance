@@ -82,7 +82,7 @@
                 <div class="col-12">
                     <div class="row d-flex " style="direction: rtl">
                         <div class="col-2">
-                            <p> بدل الحجز</p>
+                            <p> بدل حجز بالهويات</p>
                         </div>
 
                         <form class="" id="search_employee_allowances">
@@ -92,14 +92,13 @@
                                 <input name="department_type" id="department_type" type="hidden"
                                     value="{{ Auth::user()->department_id == null ? 1 : 2 }}">
 
-                                <div class="d-flex">
+                                <div class="d-flex mx-2">
                                     {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                     <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
                                     <select class="custom-select custom-select-lg select2" name="sector_id" id="sector_id" required>
                                         <option value="0" selected>اختار القطاع</option>
                                         @foreach ($sectors as $sector)
-                                            <option value="{{ $sector->id }}">
-                                                {{ $sector->name }}</option>
+                                            <option value="{{ $sector->id }}" {{$sector->id == $sector_id ? "selected" : ""}}> {{ $sector->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -107,26 +106,32 @@
                                 <div class="d-flex mx-2" id="departement_div">
                                     {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                     <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
-                                    <select class="custom-select custom-select-lg select2" name="departement_id"
-                                        id="departement_id">
-                                        <option value="0" selected>اختار الادارة</option>
+                                    <select class="custom-select custom-select-lg" name="departement_id" id="departement_id">
+                                        <option value="0" >اختار الادارة</option>
+                                        @if($get_departements)
+                                            @foreach($get_departements as $departement)
+                                            <option value="{{ $departement->id }}" {{$departement->id == $department_id ? "selected" : ""}}> {{ $departement->name }}</option>
+                                                @if(count($departement->children))
+                                                    @include('reservation_allowance.manageChildren', [
+                                                    'children' => $departement->children,
+                                                    'parent_id' => $department_id,
+                                                    ])
+                                                @endif
+                                            @endforeach
+                                        @endif
+
                                     </select>
                                 </div>
 
                                 <div class="form-group  mx-2">
-                                    <select id="year-select" name="year" class="form-select me-3">
-                                        @for ($y = 2020; $y <= date('Y'); $y++)
-                                            <option value="{{ $y }}" {{ $y == now()->year ? 'selected' : '' }}>{{ $y }}</option>
-                                        @endfor
-                                    </select>
+                                    <input class="form-control" type="date" name="date" id="date" max="{{$to_day}}" value="{{$to_day}}" required>
                                 </div>
 
-                                <div class="">
-                                    <label for="Civil_number">
+                                <!-- <div class="">
                                         <button class="btn-all py-2 px-2" type="submit" style="color:green;">
                                             <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
                                             عرض موظفين بدل حجز </button>
-                                </div>
+                                </div>-->
                             </div>
                         </form>
                         <!--  <div class="d-flex justify-content-between mt-2">
@@ -152,68 +157,7 @@
 
     <br>
     <div class="row">
-        <div class="container col-11 p-4">
-            <div class="d-flex gap-2 flex-wrap" style="direction: rtl;">
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #3c7327; color:white; border-radius:10px;">يناير</button>
-                </form>
-
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #732b27; color:white; border-radius:10px;">فبراير</button>
-                </form>
-
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #273b73; color:white; border-radius:10px;">مارس</button>
-                </form>
-
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #6a98d1; color:white; border-radius:10px;">ابريل</button>
-                </form>
-
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #cacd2b; color:white; border-radius:10px;">مايو</button>
-                </form>
-
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #56e71f; color:white; border-radius:10px;">يونيو</button>
-                </form>
-
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #bf2c8b; color:white; border-radius:10px;">يوليو</button>
-                </form>
-
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #585bc3; color:white; border-radius:10px;">اغسطس</button>
-                </form>
-
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #e34848; color:white; border-radius:10px;">سبتمبر</button>
-                </form>
-
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #61e5ba; color:white; border-radius:10px;">اكتوبر</button>
-                </form>
-
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #a76ae9; color:white; border-radius:10px;">نوفمبر</button>
-                </form>
-
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #db770f; color:white; border-radius:10px;">ديسمبر</button>
-                </form>
-            </div>
+        <div class="container  col-11 mt-3 p-0  pt-5 pb-4">
 
             <div class="col-lg-12">
                 <div class="bg-white">
@@ -223,26 +167,91 @@
                         </div>
                     @endif
 
-                    <div>
-                        <table id="users-table" class="display table table-responsive-sm  table-bordered table-hover dataTable">
-                            <thead>
-                                <tr>
-                                    <th>الترتيب</th>
-                                    <th>الرتبة</th>
-                                    <th>الاسم</th>
-                                    <th>رقم الملف</th>
-                                    <th>نوع بدل الحجز</th>
-                                    <th>اليومية</th>
-                                    <!-- <th style="width:150px;">العمليات</th>-->
-                                </tr>
-                            </thead>
-                        </table>
+                    @if($employee_new_add)
+                    <div class="row" style="direction:rtl">
+                        <div class="col-lg-4">
+                            <h4 style="text-align:center">الموظفين الذين سيتم اضافتهم</h4>
+                            <table class="display table table-responsive-sm  table-bordered table-hover dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>الترتيب</th>
+                                        <th>الاسم</th>
+                                        <th>رقم الملف</th>
+                                    </tr>
+                                </thead>
+                                        @foreach($employee_new_add as $K_employee_newadd=>$employee_newadd)
+                                        <tr>
+                                            <td>{{$K_employee_newadd+1}}</td>
+                                            <td>{{$employee_newadd->name}}</td>
+                                            <td>{{$employee_newadd->file_number}}</td>
+                                        </tr>
+                                        @endforeach
+                            </table>
+                        </div>
+                        @endif
+
+                        @if($employee_not_dept)
+                        <div class="col-lg-4">
+                            <h4 style="text-align:center">الموظفين غير مسجلين فى الادارة او القطاع</h4>
+                            <table class="display table table-responsive-sm  table-bordered table-hover dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>الترتيب</th>
+                                        <th>الاسم</th>
+                                        <th>رقم الملف</th>
+                                    </tr>
+                                </thead>
+                                        @foreach($employee_not_dept as $K_employee_notdept=>$employee_notdept)
+                                        <tr>
+                                            <td>{{$K_employee_notdept+1}}</td>
+                                            <td>{{$employee_notdept->name}}</td>
+                                            <td>{{$employee_notdept->file_number}}</td>
+                                        </tr>
+                                        @endforeach
+                            </table>
+                        </div>
+                        @endif
+
+                        @if($employee_not_found)
+                        <div class="col-lg-4">
+                            <h4 style="text-align:center">موظفين ارقام الملفات خطأ</h4>
+                            <table class="display table table-responsive-sm  table-bordered table-hover dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>الترتيب</th>
+                                        <th>رقم الملف</th>
+                                    </tr>
+                                </thead>
+                                    @foreach($employee_not_found as $K_employee_notfound=>$employee_notfound)
+                                    <tr>
+                                    <td>{{$K_employee_notfound+1}}</td>
+                                    <td>{{$employee_notfound['Civil_number']}}</td>
+                                    </tr>
+                                    @endforeach
+                            </table>
+                        </div>
+                        @endif
+
+
+                        @if(Cache::get(auth()->user()->id."_employee_new_add") != null)
+                        <div class="col-lg-12" style="text-align: right">
+                            <form method="post" action="{{ route('reservation_allowances.store.all') }}">
+                                @csrf
+                                <input type="hidden" name="date" value="{{$to_day}}">
+                                <input type="hidden" name="type" value="{{$type}}">
+                                <input type="hidden" name="sector_id" value="{{$sector_id}}">
+                                <input type="hidden" name="departement_id" value="{{$department_id}}">
+                                <button class="btn-all py-2 px-2" type="submit" style="color: #0D992C;">اضف بدل حجز</button>
+                                <button class="btn-all py-2 px-2" type="button" onclick="history.back()" style="color: #0D992C;">الغاء</button>
+                            </from>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
 
-
         </div>
+
     </div>
 
     <script>
@@ -287,35 +296,11 @@
             var date = document.getElementById('date').value;
             var filter = 'all'; // Default filter
 
-            // Check if there are errors
-            @if ($errors->any())
-                // Check if it's an add or edit operation
-                @if (session('modal_type') === 'add')
-                    $('#addForm').modal('show');
-                @elseif (session('modal_type') === 'edit')
-                    $('#edit').modal('show');
-                @endif
-            @endif
-
-            $('#search_employee_allowances').on('submit', function(e) {
-                var form = $(this);
-                e.preventDefault();
-                get_table_data("{{ route('reservation_allowances.getAll') }}");
-            });
-
-
-            function get_table_data(data_url)
-            {
-                var filter = 'all'; // Default filter
-                var sector_id = document.getElementById('sector_id').value;
-                var departement_id = document.getElementById('departement_id').value;
-                var date = document.getElementById('date').value;
-
                 table = $('#users-table').DataTable({
                     processing: true,
                     serverSide: true,
                     ajax: {
-                        url: data_url,
+                        url: "{{ route('reservation_allowances.getAll') }}",
                         data: function(d) {
                             d.filter = filter; // Use the global filter variable
                             d.sector_id = sector_id;
@@ -374,19 +359,20 @@
                         "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
                         "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
                     }
-                    },
-                    "pagingType": "full_numbers",
-                    "fnDrawCallback": function(oSettings) {
-                        var api = this.api();
-                        var pageInfo = api.page.info();
-                        if (pageInfo.recordsTotal <= 10) {
-                            $('.dataTables_paginate').css(
-                                'visibility', 'hidden');
-                        } else {
-                            $('.dataTables_paginate').css(
-                                'visibility', 'visible');
-                        }
-                    },
+                },
+                "pagingType": "full_numbers",
+                "fnDrawCallback": function(oSettings) {
+                    var api = this.api();
+                    var pageInfo = api.page.info();
+                    if (pageInfo.recordsTotal <= 10) {
+                        $('.dataTables_paginate').css(
+                            'visibility', 'hidden');
+                    } else {
+                        $('.dataTables_paginate').css(
+                            'visibility', 'visible');
+                    }
+                },
+
                     createdRow: function(row, data, dataIndex) {
                         $('td', row).eq(0).html(dataIndex + 1); // Automatic numbering in the first column
                     }
@@ -404,7 +390,7 @@
                     table.page(0).draw(false); // Reset to first page and redraw the table
                 });
                 //end of call datatable
-            }
+
 
 
         });
@@ -423,15 +409,6 @@
             } else if (selectedValue === '2') {
                 alert("You selected Option 2");
             }
-        });
-
-        import {
-            Tab,
-            initMDB
-        } from "mdb-ui-kit";
-
-        initMDB({
-            Tab
         });
     </script>
 @endpush
