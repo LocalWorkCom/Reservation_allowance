@@ -121,12 +121,6 @@
                                     </select>
                                 </div>
 
-                                <div class="">
-                                    <label for="Civil_number">
-                                        <button class="btn-all py-2 px-2" type="submit" style="color:green;">
-                                            <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                            عرض موظفين بدل حجز </button>
-                                </div>
                             </div>
                         </form>
                         <!--  <div class="d-flex justify-content-between mt-2">
@@ -423,15 +417,6 @@
             } else if (selectedValue === '2') {
                 alert("You selected Option 2");
             }
-        });
-
-        import {
-            Tab,
-            initMDB
-        } from "mdb-ui-kit";
-
-        initMDB({
-            Tab
         });
     </script>
 @endpush
