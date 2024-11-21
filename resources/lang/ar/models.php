@@ -34,7 +34,7 @@ return [
  'Groups'=>'مجموعة',
  'InspectorGroupHistory'=>'احصائيات مفتش المحجموعة',
  'InspectorMission'=>'مهام المفتش',
- 'Notification'=>'رسائل',
+ 'Notification'=>'اشعارات',
  'PersonalMission'=>'مهام شخصيه',
  'PointDays'=>'نقاط اليوم',
  'Setting'=>'الاعدادات',
