@@ -289,7 +289,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('sectors/update', [sectorsController::class, 'update'])->name('sectors.update')->middleware('check.permission:edit Sector');
     // //End sectors
-    //End GroupPoints
+
+
+
+    // Route::get('trstssss', [governmentController::class, 'index']);
+
+    // //End GroupPoints
     // Route::get('/get-governorates/{sector}', [pointsController::class, 'getGovernorates'])->middleware('check.permission:view Point');
     // Route::get('/get-regions/{governorate}', [pointsController::class, 'getRegions'])->middleware('check.permission:view Point');
     // Route::get('/get-points/{governorate}', [pointsController::class, 'getAllPoints'])->middleware('check.permission:view Point');
@@ -430,7 +435,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/get-manager-sector-details/{id}/{sector}', [sectorsController::class, 'getManagerSectorDetails']);
     Route::get('/get-allowance-sector', [SectorsController::class, 'getAllowance']);
     Route::get('/get-allowance-department', [DepartmentController::class, 'getAllowancedepart']);
-    
+
     Route::any('/employee_search/getAll', [UserController::class, 'getAll'])->name('employee_search.getAll')->middleware('check.permission:view Inspector');
 
     //reserv search
@@ -459,13 +464,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('reservation_report/main_department/{departmentId}/employees_data', [ReservationReportController::class, 'getMainDepartmentEmployeesData'])->name('reservation_report.main_department_employees_data')->middleware('check.permission:view Inspector');
     Route::get('reservation_report/user/{userId}/details', [ReservationReportController::class, 'showUserDetails'])->name('reservation_report.user_details');
 
-    
+
     Route::get('reservation_report/main_department/{departmentId}/employees/print', [ReservationReportController::class, 'printMainDepartmentEmployees'])->name('reservation_report.main_department_employees_print')->middleware('check.permission:view Inspector');
     Route::get('reservation_report/sub_department/{subDepartmentId}/employees', [ReservationReportController::class, 'showSubDepartmentEmployees'])->name('reservation_report.sub_department_employees')->middleware('check.permission:view Inspector');
     Route::get('reservation_report/sub_department/{subDepartmentId}/employees/print', [ReservationReportController::class, 'printSubDepartmentEmployees'])->name('reservation_report.sub_department_employees_print')->middleware('check.permission:view Inspector');
     Route::get('/reservation_report/user/{userId}/details', [ReservationReportController::class, 'showUserDetails'])->name('reservation_report.user_details');
     Route::get('/reservation_report/user/{userId}/details_data', [ReservationReportController::class, 'getUserDetailsData'])->name('reservation_report.user_details_data');
-    
+
 
 
 
