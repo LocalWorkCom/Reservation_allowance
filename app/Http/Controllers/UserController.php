@@ -94,17 +94,17 @@ class UserController extends Controller
         // Fetch grade counts based on user associations
         $gradeIds = $users->pluck('grade_id'); // Get all grade IDs from users in this department
 
-        $gradeall = Grade::whereIn('id', $gradeIds)->pluck('id')->toArray();
-        $all = User::whereIn('grade_id', $gradeall)->count();
+        $gradeall = Grade::pluck('id')->toArray();
+        $all = User::where('department_id', $department_id)->whereIn('grade_id', $gradeall)->count();
 
-        $gradeperson = Grade::whereIn('id', $gradeIds)->where('type', 3)->pluck('id')->toArray();
-        $person = User::whereIn('grade_id', $gradeperson)->count();
+        $gradeperson = Grade::where('type', 3)->pluck('id')->toArray();
+        $person = User::where('department_id', $department_id)->whereIn('grade_id', $gradeperson)->count();
 
-        $gradeOfficer = Grade::whereIn('id', $gradeIds)->where('type', 2)->pluck('id')->toArray();
-        $Officer = User::whereIn('grade_id', $gradeOfficer)->count();
+        $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
+        $Officer = User::where('department_id', $department_id)->whereIn('grade_id', $gradeOfficer)->count();
 
-        $graseOfficer2 = Grade::whereIn('id', $gradeIds)->where('type', 1)->pluck('id')->toArray();
-        $Officer2 = User::whereIn('grade_id', $graseOfficer2)->count();
+        $graseOfficer2 = Grade::where('type', 1)->pluck('id')->toArray();
+        $Officer2 = User::where('department_id', $department_id)->whereIn('grade_id', $graseOfficer2)->count();
 
         // Fetch related departments and sectors
         $departments = departements::all();
