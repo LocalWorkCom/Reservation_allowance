@@ -212,7 +212,7 @@
 
                             }
                         } else {
-                            $('#email_field').hide();
+                            // $('#email_field').hide();
                             $('#email').val('');
 
                         }
@@ -272,6 +272,7 @@
         $('#mangered').bind('blur', function() {
             var managerId = $(this).val();
             $('#email').val('');
+
             fetchManagerDetails(managerId, true);
         });
         var selectedManagerId = $('#mangered').val();
