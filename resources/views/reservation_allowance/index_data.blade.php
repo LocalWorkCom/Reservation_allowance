@@ -305,8 +305,7 @@
                         $('.dataTables_paginate').css(
                             'visibility', 'visible');
                     }
-                }
-            },
+                },
                     createdRow: function(row, data, dataIndex) {
                         $('td', row).eq(0).html(dataIndex + 1); // Automatic numbering in the first column
                     }

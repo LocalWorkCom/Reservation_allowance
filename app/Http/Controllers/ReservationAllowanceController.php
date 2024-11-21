@@ -175,7 +175,7 @@ class ReservationAllowanceController extends Controller
      */
     public function store(Request $request)
     {
-        //try{
+        try{
             $messages = [
                 'Civil_number.required' => 'رقم الهوية مطلوب ولا يمكن تركه فارغاً.'
             ];
@@ -221,9 +221,9 @@ class ReservationAllowanceController extends Controller
             $add_reservation_allowance->created_by = $user->id;
             $add_reservation_allowance->save();
             return redirect()->route('reservation_allowances.index')->with('success', 'تم اضافه بدل حجز بنجاح');
-        /*}catch(\Exception $e){
+        }catch(\Exception $e){
             return redirect()->back()->with('error', 'An error occurred while creating the group. Please try agai');
-        }*/
+        }
     }
 
     public function create_all()
@@ -316,6 +316,7 @@ class ReservationAllowanceController extends Controller
         $to_day = $request->date;
         $to_day_name = Carbon::parse($to_day)->translatedFormat('l');
         $type = $request->type;
+        $total_grade_value = 0;
 
         $get_departements = []; 
         $sector_id = 0;
@@ -367,6 +368,8 @@ class ReservationAllowanceController extends Controller
                     if($check_sector == 1){
                         $sector_id = $request->sector_id;
                         $department_id = $request->departement_id;
+                        $employee['grade_value'] = $grade_value;
+                        $total_grade_value += $grade_value;
                         $employee_new_add[] = $employee;
                         //array_push($employee_new_add, $employee_new_adds);
                     } 
@@ -388,7 +391,7 @@ class ReservationAllowanceController extends Controller
         Cache::put($cache_name, $employee_new_add);
         //return Cache::get($cache_name);
           
-        return view('reservation_allowance.index_check_store', compact('type', 'sectors', 'get_departements', 'to_day', 'employee_not_found', 'employee_not_dept', 'employee_new_add', 'department_id', 'sector_id'));
+        return view('reservation_allowance.index_check_store', compact('type', 'total_grade_value', 'sectors', 'get_departements', 'to_day', 'employee_not_found', 'employee_not_dept', 'employee_new_add', 'department_id', 'sector_id'));
     }
 
     /**
@@ -396,7 +399,7 @@ class ReservationAllowanceController extends Controller
      */
     public function store_all(Request $request)
     {
-        //try{
+        try{
             $messages = [
                 'sector_id.required' => 'القطاع مطلوب ولا يمكن تركه فارغاً.'
             ];
@@ -525,17 +528,9 @@ class ReservationAllowanceController extends Controller
             }
 
             return redirect()->route('reservation_allowances.index_data',[$request->sector_id, $request->departement_id, $to_day])->with('success', 'تم اضافه بدل حجز بنجاح');
-        /*}catch(\Exception $e){
+        }catch(\Exception $e){
             return redirect()->back()->with('error', 'An error occurred while creating the group. Please try agai');
-        }*/
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show($id)
-    {
-        //
+        }
     }
 
     public function getAll(Request $request)
@@ -604,30 +599,86 @@ class ReservationAllowanceController extends Controller
             ->make(true);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
+    public function getAllWithMonth(Request $request)
     {
-        //
-    }
+        $user = auth()->user();
+        $to_day = Carbon::now()->format('Y-m-d');
+        $data = [];
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+        if($request->has('year')){
+            $year = $request->input('year');
+        }else{
+            $year = Carbon::now()->format('Y');
+        }
+        if($request->has('month')){
+            $month = $request->input('month');
+        }else{
+            $month = Carbon::now()->format('m');
+        }
+        if($request->has('sector_id')){
+            $sector_id = $request->input('sector_id');
+        }else{
+            $sector_id = 0;
+        }
+        if($request->has('departement_id')){
+            $departement_id = $request->input('departement_id');
+        }else{
+            $departement_id = 0;
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
-    {
-        //
-    }
+        $data = ReservationAllowance::Query()->with('users', 'users.grade', 'departements')->whereMonth('date', $month)->whereYear('date', $year);
+        if($sector_id != 0){
+            $data = $data->where('sector_id', $sector_id);
+        }else{
+            if($user->rule_id != 2){
+                $data = $data->where('sector_id', $user->sector);
+            }
+        }
 
+        if($departement_id != 0){
+            $data = $data->where('departement_id', $departement_id);
+        }else{
+            if($user->rule_id == 3){
+                $data = $data->where('departement_id', $user->department_id);
+            }
+        }
+        $data = $data->get();
+
+        return DataTables::of($data)
+            ->addColumn('action', function ($row) {
+                return '<button class="btn  btn-sm" style="background-color: #259240;"><i class="fa fa-edit"></i></button>';
+            })
+            ->addColumn('employee_name', function ($row) {
+                return $row->users->name;  // Display the count of iotelegrams
+            })
+            ->addColumn('employee_grade', function ($row) {
+                  // Display the count of iotelegrams
+                if($row->users->grade_id != null){return $row->users->grade->name;}else{return "لا يوجد رتبة";}
+
+            })
+            ->addColumn('employee_file_num', function ($row) {
+                if($row->users->file_number == null){return "لا يوجد رقم ملف";}else{return $row->users->file_number;}
+            })
+            /*->addColumn('type', function ($row) {
+                return $row->type;
+            })*/
+            ->addColumn('employee_allowance_type_btn', function ($row) {
+                if($row->type == '1'){
+                    $btn = '<div class="d-flex" style="justify-content: space-around !important"><div style="display: inline-flex; direction: ltr;"><label for="">  حجز كلى</label><input type="radio" class="form-control" checked disabled></div><span>|</span><div style="display: inline-flex; direction: ltr;"><label for="">  حجز جزئى</label><input type="radio" class="form-control" disabled></div></div>';
+                }else{
+                    $btn = '<div class="d-flex" style="justify-content: space-around !important"><div style="display: inline-flex; direction: ltr;"><label for="">  حجز كلى</label><input type="radio" class="form-control" disabled></div><span>|</span><div style="display: inline-flex; direction: ltr;"><label for="">  حجز جزئى</label><input type="radio"class="form-control" checked disabled></div></div>';
+                }
+                return $btn;
+            })
+            ->addColumn('employee_allowance_amount', function ($row) {
+                return $row->amount.' د.ك ';  // Display the count of iotelegrams
+            })
+
+            ->rawColumns(['employee_allowance_type_btn'])
+            //->rawColumns(['action'])
+            ->make(true);
+    }
+    
     public function get_departement($sector_id, $type)
     {
        // dd($type);

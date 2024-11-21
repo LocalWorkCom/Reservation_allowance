@@ -114,7 +114,7 @@
                                 </div>
 
                                 <div class="form-group  mx-2">
-                                    <select id="year-select" name="year" class="form-select me-3">
+                                    <select id="year" name="year" class="form-select me-3">
                                         @for ($y = 2020; $y <= date('Y'); $y++)
                                             <option value="{{ $y }}" {{ $y == now()->year ? 'selected' : '' }}>{{ $y }}</option>
                                         @endfor
@@ -148,65 +148,29 @@
     <div class="row">
         <div class="container col-11 p-4">
             <div class="d-flex gap-2 flex-wrap" style="direction: rtl;">
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #3c7327; color:white; border-radius:10px;">يناير</button>
-                </form>
+                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(1)" style="background-color: #3c7327; color:white; border-radius:10px; margin:10px;">يناير </button>
 
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #732b27; color:white; border-radius:10px;">فبراير</button>
-                </form>
+                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(2)" style="background-color: #732b27; color:white; border-radius:10px; margin:10px;">فبراير </button>
 
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #273b73; color:white; border-radius:10px;">مارس</button>
-                </form>
+                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(3)" style="background-color: #273b73; color:white; border-radius:10px; margin:10px;">مارس </button>
 
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #6a98d1; color:white; border-radius:10px;">ابريل</button>
-                </form>
+                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(4)" style="background-color: #6a98d1; color:white; border-radius:10px; margin:10px;">ابريل </button>
 
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #cacd2b; color:white; border-radius:10px;">مايو</button>
-                </form>
+                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(5)" style="background-color: #cacd2b; color:white; border-radius:10px; margin:10px;">مايو </button>
 
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #56e71f; color:white; border-radius:10px;">يونيو</button>
-                </form>
+                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(6)" style="background-color: #56e71f; color:white; border-radius:10px; margin:10px;">يونيو </button>
 
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #bf2c8b; color:white; border-radius:10px;">يوليو</button>
-                </form>
+                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(7)" style="background-color: #bf2c8b; color:white; border-radius:10px; margin:10px;">يوليو </button>
 
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #585bc3; color:white; border-radius:10px;">اغسطس</button>
-                </form>
+                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(8)" style="background-color: #585bc3; color:white; border-radius:10px; margin:10px;">اغسطس </button>
 
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #e34848; color:white; border-radius:10px;">سبتمبر</button>
-                </form>
+                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(9)" style="background-color: #e34848; color:white; border-radius:10px; margin:10px;">سبتمبر </button>
 
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #61e5ba; color:white; border-radius:10px;">اكتوبر</button>
-                </form>
+                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(10)" style="background-color: #61e5ba; color:white; border-radius:10px; margin:10px;">اكتوبر </button>
 
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #a76ae9; color:white; border-radius:10px;">نوفمبر</button>
-                </form>
+                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(11)" style="background-color: #a76ae9; color:white; border-radius:10px; margin:10px;">نوفمبر </button>
 
-                <form id="last-month-form" method="get" action="">
-                    <input type="hidden" name="" id="">
-                    <button type="submit" class="btn mx-1" style="background-color: #db770f; color:white; border-radius:10px;">ديسمبر</button>
-                </form>
+                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(12)" style="background-color: #db770f; color:white; border-radius:10px; margin:10px;">ديسمبر </button>
             </div>
 
             <div class="col-lg-12">
@@ -272,13 +236,16 @@
 @push('scripts')
 
     <script>
-
+        function search_employee_allowances_with_month($month)
+        {
+            get_table_data("{{ route('reservation_allowances.getAllWithMonth') }}", $month);
+        }
 
         $(document).ready(function() {
             var table = "";
             var sector_id = document.getElementById('sector_id').value;
             var departement_id = document.getElementById('departement_id').value;
-            var date = document.getElementById('date').value;
+            var year = document.getElementById('year').value;
             var filter = 'all'; // Default filter
 
             // Check if there are errors
@@ -294,16 +261,16 @@
             $('#search_employee_allowances').on('submit', function(e) {
                 var form = $(this);
                 e.preventDefault();
-                get_table_data("{{ route('reservation_allowances.getAll') }}");
+                get_table_data("{{ route('reservation_allowances.getAll', 0) }}");
             });
 
 
-            function get_table_data(data_url)
+            window.get_table_data = function get_table_data(data_url, month)
             {
                 var filter = 'all'; // Default filter
                 var sector_id = document.getElementById('sector_id').value;
                 var departement_id = document.getElementById('departement_id').value;
-                var date = document.getElementById('date').value;
+                var year = document.getElementById('year').value;
 
                 table = $('#users-table').DataTable({
                     processing: true,
@@ -314,7 +281,8 @@
                             d.filter = filter; // Use the global filter variable
                             d.sector_id = sector_id;
                             d.departement_id = departement_id;
-                            d.date = date;
+                            d.year = year;
+                            d.month = month;
                         }
                     },
                     columns: [{
