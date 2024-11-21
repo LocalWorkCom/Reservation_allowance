@@ -80,6 +80,10 @@ return [
     'view Setting' => 'عرض اعدادات',
     'delete Setting' => 'حذف اعدادات',
 
+    'create ReservationAllowance' => 'اضافه بدل حجز',
+    'edit ReservationAllowance' => 'تعديل بدل حجز',
+    'view ReservationAllowance' => 'عرض بدل حجز',
+    'delete ReservationAllowance' => 'حذف بدل حجز',
     
     'User' => 'موظفين',
     'Sector' => 'قطاع',
@@ -96,6 +100,7 @@ return [
     'Rule' => 'مهام',
     'Setting' => 'اعدادات',
     'VacationType' => 'انواع اجازات',
+    'ReservationAllowance'=>'بدل حجز'
 
 
 

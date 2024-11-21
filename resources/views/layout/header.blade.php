@@ -176,9 +176,6 @@
                     </div>
                 </li>
 
-
-
-
                 {{-- @if (Auth::user()->hasPermission('view sectors')) --}}
                 @if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2 || Auth::user()->rule->id == 4)
                     <li
