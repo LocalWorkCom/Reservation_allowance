@@ -59,21 +59,42 @@ class UserController extends Controller
 
 
     // }
-    public function index()
+    public function index(Request $request)
     {
         $departments = departements::all();
         // if()
-        // $department_id = 0;
+        $department_id = 0;
         // $sector_id = 0;
-        // if (request()->has('department_id')) {
-        //     $department_id = request()->has('department_id');
-        // }
+        if (request()->has('department_id')) {
+            $department_id = request()->has('department_id');
+        }
 
         // if (request()->has('sector')) {
         //     $sector_id = request()->has('sector');
         // }
-        return view('user.view', compact('departments'));
+        return view('user.view', compact('departments', 'department_id'));
     }
+
+    public function add_employees(Request $request)
+    {
+        $department_id = $request->department_id;
+        $Civil_number = $request->Civil_number;
+
+        // Find the user by Civil_number
+        $user = User::where('Civil_number', $Civil_number)->first();
+
+        // Check if the user exists
+        if (!$user) {
+            return redirect()->back()->withErrors(['error' => 'لا يوجد موظف باهذا الرقم المدني.']);
+        }
+
+        // If the user is found, assign the department_id and save
+        $user->department_id = $department_id;
+        $user->save();
+
+        return redirect()->route('user.employees', ['department_id' => $department_id]);
+    }
+
 
     public function getUsers(Request $request)
     {
@@ -125,6 +146,11 @@ class UserController extends Controller
                 $data = $data->where('sector', request()->get('sector_id'))->whereNull('department_id');
         }
 
+        if (request()->has('Civil_number')) {
+            if (request()->has('amp;Civil_number') != 1)
+                $data = $data->where('Civil_number', request()->get('Civil_number'));
+        }
+
         // Finally, fetch the results
         $data = $data->orderby('grade_id', 'asc')->get();
 
@@ -143,6 +169,8 @@ class UserController extends Controller
             ->rawColumns(['action'])
             ->make(true);
     }
+
+
 
 
     // public function login(Request $request)
@@ -989,7 +1017,7 @@ class UserController extends Controller
             $department->manager = null;
             $department->save();
         }
-        $sector = sector::where('manager', $id)->where('sector','<>', $request->sector)->first();
+        $sector = sector::where('manager', $id)->where('sector', '<>', $request->sector)->first();
         if ($sector) {
             $sector->manager = null;
             $sector->save();

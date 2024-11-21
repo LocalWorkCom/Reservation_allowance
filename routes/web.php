@@ -88,7 +88,8 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/getGoverment/{id}', [UserController::class, 'getGoverment'])->name('user.getGoverment')->middleware('check.permission:view Government');
     Route::any('/getRegion/{id}', [UserController::class, 'getRegion'])->name('user.getRegion')->middleware('check.permission:view Region');
 
-    Route::get('/employees', [UserController::class, 'index'])->name('user.employees')->middleware('check.permission:view User');
+    Route::any('/employees', [UserController::class, 'index'])->name('user.employees')->middleware('check.permission:view User');
+    Route::post('/employees/add', [UserController::class, 'add_employees'])->name('user.employees.add')->middleware('check.permission:create User');
     Route::get('/edit/{id}', [UserController::class, 'edit'])->name('user.edit')->middleware('check.permission:edit User');
     Route::get('/show/{id}', [UserController::class, 'show'])->name('user.show')->middleware('check.permission:view User');
     Route::post('/update/{id}', [UserController::class, 'update'])->name('user.update')->middleware('check.permission:edit User');
@@ -429,6 +430,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/get-manager-sector-details/{id}/{sector}', [sectorsController::class, 'getManagerSectorDetails']);
     Route::get('/get-allowance-sector', [SectorsController::class, 'getAllowance']);
     Route::get('/get-allowance-department', [DepartmentController::class, 'getAllowancedepart']);
+    
+    Route::any('/employee_search/getAll', [UserController::class, 'getAll'])->name('employee_search.getAll')->middleware('check.permission:view Inspector');
 
     //reserv search
     Route::get('/reservation_fetch', [ReserveFetchController::class, 'static'])->name('reservation_fetch.index')->middleware('check.permission:view Inspector');
@@ -453,6 +456,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('reservation_report/main_department/{departmentId}/sub_departments', [ReservationReportController::class, 'showSubDepartments'])->name('reservation_report.main_department_sub_departments')->middleware('check.permission:view Inspector');
     Route::get('reservation_report/main_department/{departmentId}/sub_departments/print', [ReservationReportController::class, 'printSubDepartmentsDetails'])->name('reservation_report.main_department_sub_departments_print')->middleware('check.permission:view Inspector');
     Route::get('reservation_report/main_department/{departmentId}/employees', [ReservationReportController::class, 'showMainDepartmentEmployees'])->name('reservation_report.main_department_employees')->middleware('check.permission:view Inspector');
+    Route::get('reservation_report/main_department/{departmentId}/employees_data', [ReservationReportController::class, 'getMainDepartmentEmployeesData'])->name('reservation_report.main_department_employees_data')->middleware('check.permission:view Inspector');
+    Route::get('reservation_report/user/{userId}/details', [ReservationReportController::class, 'showUserDetails'])->name('reservation_report.user_details');
+
+    
     Route::get('reservation_report/main_department/{departmentId}/employees/print', [ReservationReportController::class, 'printMainDepartmentEmployees'])->name('reservation_report.main_department_employees_print')->middleware('check.permission:view Inspector');
     Route::get('reservation_report/sub_department/{subDepartmentId}/employees', [ReservationReportController::class, 'showSubDepartmentEmployees'])->name('reservation_report.sub_department_employees')->middleware('check.permission:view Inspector');
     Route::get('reservation_report/sub_department/{subDepartmentId}/employees/print', [ReservationReportController::class, 'printSubDepartmentEmployees'])->name('reservation_report.sub_department_employees_print')->middleware('check.permission:view Inspector');

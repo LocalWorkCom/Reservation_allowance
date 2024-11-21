@@ -82,8 +82,7 @@
                             <div class="d-flex">
                                 {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                 <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
-                                <select class="custom-select custom-select-lg" name="sector_id" id="sector_id"
-                                    required>
+                                <select class="custom-select custom-select-lg" name="sector_id" id="sector_id" required>
                                     <option value="0" selected>اختار القطاع</option>
                                     @foreach ($sectors as $sector)
                                     <option value="{{ $sector->id }}" {{ $sector->id == $sector_id ? 'selected' : '' }}>
@@ -166,45 +165,53 @@
                         style="direction:rtl">
                         <thead>
                             <tr>
-                                <th rowspan="2"><p>الترتيب</p></th>
-                                <th rowspan="2"><p>الرتبة</p></th>
-                                <th rowspan="2"><p>الاسم</p></th>
-                                <th rowspan="2"><p>رقم الملف</p></th>
+                                <th rowspan="2">
+                                    <p>الترتيب</p>
+                                </th>
+                                <th rowspan="2">
+                                    <p>الاسم</p>
+                                </th>
+                                <th rowspan="2">
+                                    <p>رقم الملف</p>
+                                </th>
+                                <th rowspan="2">
+                                    <p>الرتبة</p>
+                                </th>
                                 <th>بدل الحجز</th>
                                 <!-- <th style="width:150px;">العمليات</th>-->
                             </tr>
 
                             <tr>
-                            <th>
-                                <div class="d-flex" style="justify-content: space-around !important">
-                                    @if ($reservation_allowance_type == 1 || $reservation_allowance_type == 3)
-                                    <div style="display: inline-flex; direction: ltr;">
-                                        <label for=""> حجز كلى للكل</label>
-                                        <input type="radio" name="allowance_all" id="allowance_all"
-                                            onclick="check_all(1)" value="1" class="form-control">
+                                <th>
+                                    <div class="d-flex" style="justify-content: space-around !important">
+                                        @if ($reservation_allowance_type == 1 || $reservation_allowance_type == 3)
+                                        <div style="display: inline-flex; direction: ltr;">
+                                            <label for=""> حجز كلى للكل</label>
+                                            <input type="radio" name="allowance_all" id="allowance_all"
+                                                onclick="check_all(1)" value="1" class="form-control">
+                                        </div>
+                                        <span>|</span>
+                                        @endif
+                                        @if ($reservation_allowance_type == 2 || $reservation_allowance_type == 3)
+                                        <div style="display: inline-flex; direction: ltr;">
+                                            <label for=""> حجز جزئى للكل</label>
+                                            <input type="radio" name="allowance_all" id="allowance_all"
+                                                onclick="check_all(2)" value="2" class="form-control">
+                                        </div>
+                                        <span>|</span>
+                                        @endif
+                                        <div style="display: inline-flex; direction: ltr;">
+                                            <label for=""> لا يوجد للكل</label>
+                                            <input type="radio" name="allowance_all" id="allowance_all"
+                                                onclick="check_all(0)" value="0" checked class="form-control">
+                                        </div>
                                     </div>
-                                    <span>|</span>
-                                    @endif
-                                    @if ($reservation_allowance_type == 2 || $reservation_allowance_type == 3)
-                                    <div style="display: inline-flex; direction: ltr;">
-                                        <label for=""> حجز جزئى للكل</label>
-                                        <input type="radio" name="allowance_all" id="allowance_all"
-                                            onclick="check_all(2)" value="2" class="form-control">
-                                    </div>
-                                    <span>|</span>
-                                    @endif
-                                    <div style="display: inline-flex; direction: ltr;">
-                                        <label for=""> لا يوجد للكل</label>
-                                        <input type="radio" name="allowance_all" id="allowance_all"
-                                            onclick="check_all(0)" value="0" checked class="form-control">
-                                    </div>
-                                </div>
-                            </th>
-                            <!-- <th style="width:150px;">العمليات</th>-->
-                        </tr>
+                                </th>
+                                <!-- <th style="width:150px;">العمليات</th>-->
+                            </tr>
 
                         </thead>
-                        @if ($employees)                       
+                        @if ($employees)
 
                         @php($x=0)
                         @foreach ($employees as $k_employee=>$employee)
@@ -212,8 +219,8 @@
                         <tr>
                             <th>{{ $x }}</th>
                             <th>{{ $employee->name }}</th>
-                            <th>{{ $employee->grade_id != null ? $employee->grade->name : 'لا يوجد رتبة' }}</th>
                             <th>{{ $employee->file_number != null ? $employee->file_number : 'لا يوجد رقم ملف' }}
+                            <th>{{ $employee->grade_id != null ? $employee->grade->name : 'لا يوجد رتبة' }}</th>
                             </th>
                             <th>
                                 <div class="d-flex" style="justify-content: space-around !important">
@@ -253,9 +260,9 @@
 
                 @if ($reservation_allowance_type != 4)
                 <div class="" style="margin-top:20px">
-                    <button class="btn-all py-2 px-2" style="color:#ffffff; background-color:#274373 !important;" onclick="confirm_reservation()"
-                        class="menu-link px-3">
-                     
+                    <button class="btn-all py-2 px-2" style="color:#ffffff; background-color:#274373 !important;"
+                        onclick="confirm_reservation()" class="menu-link px-3">
+
                         اضف بدل حجز</button>
                 </div>
                 @endif
@@ -278,6 +285,42 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
+
+    $('#users-table').DataTable({
+        searching: true,
+        bDestroy: true,
+        "oLanguage": {
+            "sSearch": "",
+            "sSearchPlaceholder": "بحث",
+            "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
+            "sInfoEmpty": 'لا توجد بيانات متاحه',
+            "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
+            "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
+            "sZeroRecords": 'نأسف لا توجد نتيجة',
+            "oPaginate": {
+                "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
+                "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
+                "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
+                "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
+            }
+        },
+        "pagingType": "full_numbers",
+        "fnDrawCallback": function(oSettings) {
+            var api = this.api();
+            var pageInfo = api.page.info();
+            if (pageInfo.recordsTotal <= 10) {
+                $('.dataTables_paginate').css(
+                    'visibility', 'hidden');
+            } else {
+                $('.dataTables_paginate').css(
+                    'visibility', 'visible');
+            }
+        },
+        createdRow: function(row, data, dataIndex) {
+            $('td', row).eq(0).html(dataIndex + 1); // Automatic numbering in the first column
+        }
+    });
+
     function closeModal() {
         $('#delete').modal('hide');
     }
@@ -299,15 +342,15 @@ $(document).ready(function() {
     });
 
 
-        
 
 
-        /*$(function() {
-            $(".select2").select2({
-                dir: "rtl"
-            });
-        });*/
-    
+
+    /*$(function() {
+        $(".select2").select2({
+            dir: "rtl"
+        });
+    });*/
+
 
 
 });
@@ -331,48 +374,49 @@ function check_all($type) {
         var type_name = "no";
     }
 
-    for($i=1; $i<=employee_count; $i++){
-        department_type = document.getElementById('allowance_'+type_name+'_'+$i).checked = true;
-        var employee_id = document.getElementById('allowance_'+type_name+'_'+$i).value;
+    for ($i = 1; $i <= employee_count; $i++) {
+        department_type = document.getElementById('allowance_' + type_name + '_' + $i).checked = true;
+        var employee_id = document.getElementById('allowance_' + type_name + '_' + $i).value;
         add_to_cache($type, employee_id);
     }
 
 }
 
 
-    function confirm_reservation() {
-        Swal.fire({
-            title: 'تحذير',
-            text: 'هل انت متاكد من انك تريد ان تضيف بدل حجز لهؤلاء الموظفين',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'نعم, نقل',
-            cancelButtonText: 'إلغاء',
-            confirmButtonColor: '#3085d6'
-        }).then((result) => {
-            if (result.isConfirmed) {  
-                var reservation_date = document.getElementById('date').value;
-                var reservation_sector_id = document.getElementById('sector_id').value;
-                var reservation_departement_id = document.getElementById('departement_id').value;
-                var map_url = "{{ route('reservation_allowances.confirm_reservation_allowances',['date', 'sector', 'departement']) }}";
-                map_url = map_url.replace('date', reservation_date);
-                map_url = map_url.replace('sector', reservation_sector_id);
-                map_url = map_url.replace('departement', reservation_departement_id);
-                window.location.href = map_url;
-            } else {
+function confirm_reservation() {
+    Swal.fire({
+        title: 'تحذير',
+        text: 'هل انت متاكد من انك تريد ان تضيف بدل حجز لهؤلاء الموظفين',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'نعم, نقل',
+        cancelButtonText: 'إلغاء',
+        confirmButtonColor: '#3085d6'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            var reservation_date = document.getElementById('date').value;
+            var reservation_sector_id = document.getElementById('sector_id').value;
+            var reservation_departement_id = document.getElementById('departement_id').value;
+            var map_url =
+                "{{ route('reservation_allowances.confirm_reservation_allowances',['date', 'sector', 'departement']) }}";
+            map_url = map_url.replace('date', reservation_date);
+            map_url = map_url.replace('sector', reservation_sector_id);
+            map_url = map_url.replace('departement', reservation_departement_id);
+            window.location.href = map_url;
+        } else {
 
-            }
-        });
-    }
+        }
+    });
+}
 
-    //add to chche
-    /*$('.emlpoyee_allowance_radio:checked').each(function(i) {
-        var type = document.getElementById('allowance_all').value;
-        var map_url ="{{ route('reservation_allowances.add_reservation_allowances_employess', ['type', 'id']) }}";
-        map_url = map_url.replace('id', $(this).val());
-        map_url = map_url.replace('type', type);
-        $.get(map_url, function(data) {});
-    });*/
+//add to chche
+/*$('.emlpoyee_allowance_radio:checked').each(function(i) {
+    var type = document.getElementById('allowance_all').value;
+    var map_url ="{{ route('reservation_allowances.add_reservation_allowances_employess', ['type', 'id']) }}";
+    map_url = map_url.replace('id', $(this).val());
+    map_url = map_url.replace('type', type);
+    $.get(map_url, function(data) {});
+});*/
 
 
 

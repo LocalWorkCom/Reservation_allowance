@@ -192,9 +192,9 @@ class sectorsController extends Controller
             'name.required' => 'اسم الحقل مطلوب.',
             // 'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
-           // 'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.00.',
+            // 'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.00.',
             //'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
-             'part.required' => 'نوع بدل الحجز مطلوب.',
+            'part.required' => 'نوع بدل الحجز مطلوب.',
         ];
 
         // Validation rules
@@ -280,13 +280,13 @@ class sectorsController extends Controller
             $user->sector = $sector->id;
             $user->department_id = null;
 
-                $user->flag = 'user';
-                $user->rule_id = 3;
-                $user->email =$request->email;
-                $user->password = Hash::make('123456');
+            $user->flag = 'user';
+            $user->rule_id = 3;
+            $user->email = $request->email;
+            $user->password = Hash::make('123456');
             $user->save();
             if ($user->email) {
-                Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع ' . $request->name, $user->file_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $user->email);
+                Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع ' . $request->name, $user->file_number, $user->password, $user->email);
             }
         }
 
@@ -382,7 +382,7 @@ class sectorsController extends Controller
         $allowance = $this->getAllowance($request->budget, $request->id);
 
         if (!$allowance->original['is_allow']) {
-            $validator->errors()->add('budget', '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من '. $allowance->original['total'].'لوجود بدلات حجز اكبر من القيمه المدخله'    );
+            $validator->errors()->add('budget', '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total'] . 'لوجود بدلات حجز اكبر من القيمه المدخله');
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
@@ -393,7 +393,7 @@ class sectorsController extends Controller
         if ($request->mangered && $manager == null) {
             return redirect()->back()->withErrors('رقم هويه المدير غير موجود')->withInput();
         }
-        dd($request->all());
+        //dd($request->all());
         // Determine reservation_allowance_type based on 'part'
         $part = $request->input('part');
         $reservation_allowance_type = null;
@@ -410,7 +410,7 @@ class sectorsController extends Controller
         // Update sector details
         $sector->name = $request->name;
         $sector->reservation_allowance_type = $reservation_allowance_type;
-        $sector->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget;
+        $sector->reservation_allowance_amount = $request->budget_type == 2 ? 00.00 : $request->budget;
         $sector->manager = $manager;
         $sector->updated_by = Auth::id();
         $sector->save();
@@ -448,14 +448,14 @@ class sectorsController extends Controller
                     $newManager->sector = $sector->id;
                     $newManager->department_id = null;
 
-                    if ($request->password) {
-                        $newManager->flag = 'user';
-                        $newManager->rule_id = $request->rule;
-                        $newManager->password = Hash::make($request->password);
-                    }
+                    $newManager->flag = 'user';
+                    $newManager->rule_id = 3;
+                    $newManager->email = $request->email;
+
+                    $newManager->password = Hash::make('123456');
                     $newManager->save();
                     if ($newManager->email) {
-                        Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $newManager->Civil_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $newManager->email);
+                        Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $newManager->Civil_number, $newManager->email, $newManager->email);
                     }
                 }
             }
@@ -464,11 +464,13 @@ class sectorsController extends Controller
             if ($request->password) {
                 $Manager->sector = $sector->id;
                 $Manager->flag = 'user';
-                $Manager->rule_id = $request->rule;
-                $Manager->password = Hash::make($request->password);
+                $Manager->rule_id = 3;
+                $Manager->password = Hash::make('123456');
+                $Manager->eamil = $request->email;
+
                 $Manager->save();
                 if ($Manager->email) {
-                    Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $Manager->Civil_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $Manager->email);
+                    Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $Manager->Civil_number,  $Manager->password, $Manager->email);
                 }
             }
         }

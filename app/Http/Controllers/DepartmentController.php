@@ -62,10 +62,9 @@ class DepartmentController extends Controller
 
     public function getDepartment($id)
     {
-
+        $sectors = get_by_md5_id($id, 'sectors');
         if (in_array(Auth::user()->rule->id, [1, 2, 4])) {
 
-            $sectors = get_by_md5_id($id, 'sectors');
 
             $data = departements::where('parent_id', null)
                 ->where('sector_id', $sectors->id)

@@ -191,7 +191,7 @@
                 @else
                     <li
                         class="nav-item {{ request()->routeIs('departments.index') ? 'active' : '' }} @isset($search) @if ($search == 'dept') active @endif @endisset">
-                        <a href="{{ route('departments.index', ['id' => Auth::user()->sector]) }}">
+                        <a href="{{ route('departments.index', ['id' => Auth::user()->sector_hash_id]) }}">
                             <img src="{{ asset('frontend/images/managements.svg') }}" alt="logo">
                             <h6>الأدارات</h6>
                         </a>
