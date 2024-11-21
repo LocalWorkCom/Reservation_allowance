@@ -188,7 +188,7 @@ class UserController extends Controller
         } elseif ($filter == 'Officer') {
             $Officer = Grade::where('type', 2)->pluck('id')->toArray();
             $data->where('department_id', $department_id)->whereIn('grade_id', $Officer);
-            dd($data->get());
+            // dd($data->get());
         } elseif ($filter == 'Officer2') {
             $Officer2 = Grade::where('type', 1)->pluck('id')->toArray();
             $data->where('department_id', $department_id)->whereIn('grade_id', $Officer2);
