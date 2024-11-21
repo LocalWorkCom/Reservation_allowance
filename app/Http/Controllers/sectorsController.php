@@ -62,10 +62,10 @@ class sectorsController extends Controller
         return response()->json([
             'rank' => $manager->grade_id ? $manager->grade->name : 'لا يوجد رتبه',
             'job_title' => $manager->job_title ?? 'لا يوجد مسمى وظيفى',
-            'seniority' => $yearsOfService,
+
             'name' => $manager->name,
-            'phone' => $user->phone ?? 'لا يوجد رقم هاتف',
-            'email' => $user->email ?? 'لا يوجد بريد الكتروني',
+            'phone' => $manager->phone ?? 'لا يوجد رقم هاتف',
+            'email' => $manager->email ?? 'لا يوجد بريد الكتروني',
             'isEmployee' => $isEmployee,
         ]);
     }
@@ -207,7 +207,7 @@ class sectorsController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-
+        //dd($request->all());
         // Process Civil_numbers input into an array
         $Civil_numbers = str_replace(["\r", "\r\n", "\n"], ',', $request->Civil_number);
         $Civil_numbers = explode(',,', $Civil_numbers);
@@ -251,7 +251,7 @@ class sectorsController extends Controller
         $sector = new Sector();
         $sector->name = $request->name;
         $sector->reservation_allowance_type = $reservation_allowance_type;
-        $sector->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget;
+        $sector->reservation_allowance_amount = $request->budget_type == 2 ? 00.00 : $request->budget;
         $sector->manager = $manager;
         $sector->created_by = Auth::id();
         $sector->updated_by = Auth::id();
@@ -280,13 +280,10 @@ class sectorsController extends Controller
             $user->sector = $sector->id;
             $user->department_id = null;
 
-            // Update password and role if provided
-            if ($request->password) {
                 $user->flag = 'user';
-                $user->rule_id = $request->rule;
-                $user->password = Hash::make($request->password);
-            }
-
+                $user->rule_id = 3;
+                $user->email =$request->email;
+                $user->password = Hash::make('123456');
             $user->save();
             if ($user->email) {
                 Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع ' . $request->name, $user->file_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $user->email);
@@ -347,13 +344,18 @@ class sectorsController extends Controller
         $employees =  User::where('department_id', null)->Where('sector', $id)->whereNot('id', $data->manager)->get();
         $rules = Rule::whereNotIn('id', [1, 2, 3])->get();
         $manager = User::find($data->manager);
+
         $fileNumber = $manager->file_number ?? null;
         return view('sectors.edit', [
             'data' => $data,
             'users' => $users,
             'employees' => $employees,
             'rules' => $rules,
-            'fileNumber' => $fileNumber
+            'fileNumber' => $fileNumber,
+            'email' => $manager->email ?? null,
+            'budget' => $data->reservation_allowance_amount
+
+
         ]);
     }
 
@@ -363,10 +365,7 @@ class sectorsController extends Controller
         $sector = Sector::find($request->id);
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            // 'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
-            //'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.00.',
-            //'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
         ];
 
@@ -383,7 +382,7 @@ class sectorsController extends Controller
         $allowance = $this->getAllowance($request->budget, $request->id);
 
         if (!$allowance->original['is_allow']) {
-            $validator->errors()->add('budget', 'قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total']);
+            $validator->errors()->add('budget', '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من '. $allowance->original['total'].'لوجود بدلات حجز اكبر من القيمه المدخله'    );
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
@@ -394,7 +393,7 @@ class sectorsController extends Controller
         if ($request->mangered && $manager == null) {
             return redirect()->back()->withErrors('رقم هويه المدير غير موجود')->withInput();
         }
-
+        dd($request->all());
         // Determine reservation_allowance_type based on 'part'
         $part = $request->input('part');
         $reservation_allowance_type = null;

@@ -160,7 +160,47 @@ class ReservationReportController extends Controller
     }
     
     
-
+    public function showUserDetails(Request $request, $userId)
+    {
+        // Validate the dates
+        $validatedData = $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+        ]);
+    
+        // Parse the dates
+        try {
+            $startDate = Carbon::parse($validatedData['start_date'])->startOfDay();
+            $endDate = Carbon::parse($validatedData['end_date'])->endOfDay();
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Invalid date format.']);
+        }
+    
+        // Fetch user details
+        $user = User::with(['grade', 'department'])->findOrFail($userId);
+    
+        return view('reserv_report.user_details', compact('user', 'startDate', 'endDate'));
+    }
+    
+    
+    public function getUserDetailsData(Request $request, $userId)
+    {
+        $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
+        $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
+    
+        $reservations = ReservationAllowance::where('user_id', $userId)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->get();
+    
+        return DataTables::of($reservations)
+            ->addIndexColumn()
+            ->addColumn('day', fn($row) => Carbon::parse($row->date)->translatedFormat('l'))
+            ->addColumn('date', fn($row) => Carbon::parse($row->date)->format('Y-m-d'))
+            ->addColumn('type', fn($row) => $row->type == 1 ? 'حجز كلي' : 'حجز جزئي')
+            ->addColumn('amount', fn($row) => number_format($row->amount, 2) . ' د ك')
+            ->make(true);
+    }
+    
     
 // public function showDepartmentDetails(Request $request, $departmentId)
 // {
