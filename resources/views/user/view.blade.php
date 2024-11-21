@@ -226,7 +226,7 @@
                                 $Dataurl = 'search.user';
                             }
 
-                            $parms = [];
+                             $parms['flag'] = $flag;
                             if ($department_id) {
                                 $parms['department_id'] = $department_id;
                             }
@@ -337,6 +337,7 @@
                                         'd-none';
 
                                     return `
+
         <a href="` + usershow + `" class="btn btn-sm" style="background-color: #274373;">
             <i class="fa fa-eye"></i> عرض
         </a>
