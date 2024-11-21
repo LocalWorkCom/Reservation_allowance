@@ -100,13 +100,13 @@
                     onclick="toggleDropdown3(event)">
 
                     @if (Auth::user()->rule_id == 2)
-                        <a href="{{ route('user.employees') }}">
+                        <a href="{{ route('user.employees','employee') }}">
                             <img src="{{ asset('frontend/images/employees.svg') }}" alt="logo">
                             <h6 class="btn3">موظفين الوزارة</h6>
                         </a>
                     @endif
                     @if (Auth::user()->rule_id != 2)
-                        <a href="{{ route('user.employees') }}">
+                        <a href="{{ route('user.employees','employee') }}">
                             <img src="{{ asset('frontend/images/employees.svg') }}" alt="logo">
                             <h6 class="btn3">موظفين القوة</h6>
                         </a>
@@ -186,8 +186,8 @@
                         </a>
                     </li>
                     <li
-                    class="nav-item {{ request()->routeIs('user.employees') ? 'active' : '' }} @isset($search) @if ($search == 'emps') active @endif @endisset">
-                    <a href="{{ route('user.employees') }}">
+                    class="nav-item {{ request()->routeIs('user.departments') ? 'active' : '' }} @isset($search) @if ($search == 'emps') active @endif @endisset">
+                    <a href="{{ route('user.departments', 'user') }}">
                         <img src="{{ asset('frontend/images/managements.svg') }}" alt="logo">
                         <h6>المستخدمين والصلاحيات</h6>
                     </a>

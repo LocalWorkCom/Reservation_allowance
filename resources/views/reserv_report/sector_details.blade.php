@@ -42,6 +42,8 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
+        $.fn.dataTable.ext.classes.sPageButton =
+        'btn-pagination btn-sm';
         $('#users-table').DataTable({
             processing: true,
             serverSide: true,
