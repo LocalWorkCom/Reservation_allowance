@@ -65,7 +65,12 @@
                                         {{ $department['employee_count'] }}
                                     </a>
                                 </td>
-                                <td>{{ $department['reservation_amount'] }}</td> 
+                                <td>
+                                <a href="{{ route('reservation_report.main_department_employees', ['departmentId' => $department['id']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:blue !important;">
+
+                                    {{ $department['reservation_amount'] }}
+                                
+                                </td> 
                             </tr>
                         @endforeach
                     </tbody>
