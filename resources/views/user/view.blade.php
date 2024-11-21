@@ -57,60 +57,69 @@
 
         <div class="container welcome col-11">
             <div class="d-flex ">
+                @php
+                    // Get the department based on department_id from the request
+                    $department = \App\Models\departements::find(request()->get('department_id'));
+                @endphp
+
                 @if (request()->fullUrlIs('*employees?department_id=*'))
-                    <p>قوة وكيل الامن العام</p>
+                    {{-- Check if department and sector are available --}}
+                        <p>قوة/
+                            {{ $department->sectors->name }}/
+                            {{ $department->name }} <!-- Display department name -->
+                        </p>
+                   
                 @elseif (Auth::user()->rule_id != 2)
                     <p>موظفين القوة</p>
                 @elseif (Auth::user()->rule_id == 2)
                     <p>موظفين الوزارة</p>
                 @endif
 
+
                 <div class="form-group">
 
                     @if (Auth::user()->hasPermission('add_employee User'))
+                        <a href="{{ route('download-template') }}" class="btn-all text-info mx-2 p-2">تحميل
+                            القالب</a>
 
-                    <a href="{{ route('download-template') }}" class="btn-all text-info mx-2 p-2">تحميل
-                        القالب</a>
+                        <button type="button" class="wide-btn mx-2"
+                            onclick="window.location.href='{{ route('user.create') }}'" style="color: #0D992C;">
+                            اضافة موظف جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                        </button>
 
-                    <button type="button" class="wide-btn mx-2"
-                        onclick="window.location.href='{{ route('user.create') }}'" style="color: #0D992C;">
-                        اضافة موظف جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                    </button>
-        
-
-                     </div>
-                        @if (request()->fullUrlIs('*employees?department_id=*'))
-
-                            <form class="" action="{{ route('user.employees.add') }}" method="post">
-                                <input type="hidden" id="department_id" name="department_id" value="{{request()->get('department_id')}}" class="form-control" >
-                                @csrf
-                                <div class="row d-flex flex-wrap ">
-                                    <!-- 1 for sector , 2 for department -->
-                                    <div class="d-flex">
-                                        <input type="text" id="Civil_number" name="Civil_number" class="form-control" placeholder="الرقم المدني" style="border-radius:10px !important;">
-                                    </div>
-                                    <button class="btn-all py-2 mx-2" type="submit" style="color:green;">
-                                        <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                        اضافة موظف للادارة
-                                    </button>
-
-                               
-                            </form>
-                        @endif
-
-
-                    @endif
 
                 </div>
+                @if (request()->fullUrlIs('*employees?department_id=*'))
+                    <form class="" action="{{ route('user.employees.add') }}" method="post">
+                        <input type="hidden" id="department_id" name="department_id"
+                            value="{{ request()->get('department_id') }}" class="form-control">
+                        @csrf
+                        <div class="row d-flex flex-wrap ">
+                            <!-- 1 for sector , 2 for department -->
+                            <div class="d-flex">
+                                <input type="text" id="Civil_number" name="Civil_number" class="form-control"
+                                    placeholder="الرقم المدني" style="border-radius:10px !important;">
+                            </div>
+                            <button class="btn-all py-2 mx-2" type="submit" style="color:green;">
+                                <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                                اضافة موظف للادارة
+                            </button>
+
+
+                    </form>
+                @endif
+                @endif
 
             </div>
 
         </div>
-        <div class="row mb-4">
-            <div class="col-12">
 
-            </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-12">
+
         </div>
+    </div>
 
 
 
@@ -376,8 +385,6 @@
 
 
 <script>
-    
-
     function openTransferModal(id) {
         $('#TranferMdel').modal('show');
         document.getElementById('id_employee').value = id;
