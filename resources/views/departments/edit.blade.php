@@ -55,8 +55,7 @@
                                 {{-- {{ $department->name }} --}} الأدارات
                             </a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page"><a
-                                href=""> تعديل ادارة</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><a href=""> تعديل ادارة</a></li>
                     </ol>
                 </nav>
             </div>
@@ -72,11 +71,11 @@
                 <div class="container col-10 mt-5 mb-3 pb-5" style="border:0.5px solid #C7C7CC;">
                     <form action="{{ route('departments.update', $department->hash_id) }}" method="POST"
                         enctype="multipart/form-data">
-                <!-- <div class="container col-10 mt-5 mb-3 pb-5"
-                    style="border:0.5px solid #C7C7CC;">
-                    <form
-                        action="{{ route('departments.update', $department->id) }}"
-                        method="POST" enctype="multipart/form-data"> -->
+                        <!-- <div class="container col-10 mt-5 mb-3 pb-5"
+                        style="border:0.5px solid #C7C7CC;">
+                        <form
+                            action="{{ route('departments.update', $department->id) }}"
+                            method="POST" enctype="multipart/form-data"> -->
                         @csrf
                         @method('PUT')
 
@@ -89,16 +88,12 @@
                                 </ul>
                             </div>
                         @endif
-                        <div
-                            class="form-row mx-3 mt-4 d-flex justify-content-center">
+                        <div class="form-row mx-3 mt-4 d-flex justify-content-center">
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="sector">اختر القطاع </label>
-                                <input type="text" name="name" id="name"
-                                    class="form-control"
-                                    value="{{ $department->sectors->name }}"
-                                    disabled>
-                                <input type="hidden" name="sector" id="sector"
-                                    class="form-control"
+                                <input type="text" name="name" id="name" class="form-control"
+                                    value="{{ $department->sectors->name }}" disabled>
+                                <input type="hidden" name="sector" id="sector" class="form-control"
                                     value="{{ $department->sectors->id }}">
                                 @error('sector')
                                     <div class="alert alert-danger">{{ $message }}
@@ -107,60 +102,18 @@
                             </div>
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="name">أسم الأداره الرئيسية</label>
-                                <input type="text" name="name"
-                                    class="form-control"
-                                    autocomplete="one-time-code"
+                                <input type="text" name="name" class="form-control" autocomplete="one-time-code"
                                     value="{{ $department->name }}">
                                 @error('name')
                                     <div class="alert alert-danger">{{ $message }}
                                     </div>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-10 mx-md-2">
-                                <label for="budget">ميزانية بدل حجز</label>
-                                <input type="text" name="budget"
-                                    class="form-control"
-                                    autocomplete="one-time-code"
-                                    value="{{ $department->reservation_allowance_amount }}">
-                                @error('budget')
-                                    <div class="alert alert-danger">{{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                            <div class="form-group col-md-10 mx-md-2">
-                                <label for="">صلاحيه الحجز</label>
-                                <div class="d-flex mt-3 " dir="rtl">
-                                    <input type="checkbox"
-                                        class="toggle-radio-buttons mx-2"
-                                        value="1" id="fullBooking"
-                                        @if (
-                                            $department->reservation_allowance_type == 1 ||
-                                                $department->reservation_allowance_type == 3) checked @endif
-                                        name="part[]">
-                                    <label for="fullBooking"> حجز كلى</label>
-                                    <input type="checkbox"
-                                        class="toggle-radio-buttons mx-2"
-                                        value="2" name="part[]"
-                                        id="partialBooking"
-                                        @if (
-                                            $department->reservation_allowance_type == 2 ||
-                                                $department->reservation_allowance_type == 3) checked @endif>
-                                    <label for="partialBooking">حجز جزئى</label>
-                                    <input type="checkbox"
-                                        class="toggle-radio-buttons mx-2"
-                                        value="3" name="part[]" id="noBooking"
-                                        @if ($department->reservation_allowance_type == 4) checked @endif>
-                                    <label for="noBooking">لا يوجد بدل حجز</label>
-                                    {{-- @error('budget')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror --}}
-                                </div>
-                            </div>
-                            <div class="form-group col-md-10 mx-md-2"
-                                id="manager">
+
+
+                            <div class="form-group col-md-10 mx-md-2" id="manager">
                                 <label for="mangered">رقم ملف المدير</label>
-                                <input type="text" name="mangered" id="mangered"
-                                    class="form-control"
+                                <input type="text" name="mangered" id="mangered" class="form-control"
                                     autocomplete="one-time-code">
 
                                 @error('mangered')
@@ -168,55 +121,24 @@
                                     </div>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-10 mx-md-2"
-                                id="password_field" style="display: none;">
-                                <label for="password">كلمة المرور</label>
-                                <input type="password" name="password"
-                                    id="password" class="form-control">
-                                @error('password')
-                                    <div class="alert alert-danger">{{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                            <div class="form-group col-md-10 mx-md-2"
-                                id="rule_field" style="display: none;">
-                                <label for="rule">الصلاحيات</label>
-                                <select name="rule" id="rule"
-                                    class="form-control">
-                                    <option value="">اختار الصلاحية</option>
-                                    @foreach ($rules as $rule)
-                                        <option value="{{ $rule->id }}">
-                                            {{ $rule->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('rule')
-                                    <div class="alert alert-danger">
-                                        {{ $message }}</div>
+                            <div class="input-group moftsh px-md-5 px-3 pt-3" id="email_field" style="display: none;">
+                                <label class="pb-3" for="email">الأيميل</label>
+                                <input type="email" name="email" id="email" class="form-control" required>
+                                @error('email')
+                                    <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             </div>
 
-                            <div class="form-group col-md-10 mx-md-2"
-                                id="manager_details">
-                                <div class="col-12 div-info d-flex justify-content-between"
-                                    style="direction: rtl">
+                            <div class="form-group col-md-10 mx-md-2" id="manager_details">
+                                <div class="col-12 div-info d-flex justify-content-between" style="direction: rtl">
                                     <div class="col-7">
-                                        <div class="col-12 div-info-padding">
-                                            <b>الرتبه : <span></span></b></div>
-                                        <div class="col-12 div-info-padding">
-                                            <b>الأقدميه : <span></span></b></div>
-
-                                        <div class="col-12 div-info-padding">
-                                            <b>المسمى الوظيفى: <span></span></b>
-                                        </div>
+                                        <div class="col-12 div-info-padding"><b>الرتبه : <span></span></b></div>
+                                        <div class="col-12 div-info-padding"><b>المسمى الوظيفى: <span></span></b></div>
                                     </div>
                                     <div class="col-5">
-                                        <div class="col-12 div-info-padding">
-                                            <b>الأسم: <span></span></b></div>
-
-                                        <div class="col-12 div-info-padding">
-                                            <b>الهاتف: <span></span></b></div>
-                                        <div class="col-12 div-info-padding">
-                                            <b>الأيميل: <span></span></b></div>
+                                        <div class="col-12 div-info-padding"><b>الأسم: <span></span></b></div>
+                                        <div class="col-12 div-info-padding"><b>الهاتف: <span></span></b></div>
+                                        <div class="col-12 div-info-padding"><b>الأيميل: <span></span></b></div>
 
                                     </div>
                                 </div>
@@ -228,10 +150,8 @@
 
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="description">الوصف </label>
-                                <input type="text" name="description"
-                                    class="form-control"
-                                    autocomplete="one-time-code"
-                                    value="{{ $department->description }}">
+                                <input type="text" name="description" class="form-control"
+                                    autocomplete="one-time-code" value="{{ $department->description }}">
                                 @error('description')
                                     <div class="alert alert-danger">
                                         {{ $message }}</div>
@@ -242,8 +162,7 @@
                             <div class="input-group moftsh col-md-10 mx-md-2">
                                 <label for="file_number" class="col-12"> أرقام
                                     الملفات</label>
-                                <textarea class="form-control" name="file_number" id="file_number"
-                                    style="height: 100px">
+                                <textarea class="form-control" name="file_number" id="file_number" style="height: 100px">
                                             @foreach ($employees as $employee)
 {{ $employee->file_number }}
 @endforeach
@@ -251,6 +170,44 @@
 
                             </div>
 
+                            <div class="input-group moftsh px-md-5 px-3 pt-3">
+                                <label for="" class="col-12">ميزانيه الحجز</label>
+                                <div class="d-flex mt-3" dir="rtl">
+                                    <input type="radio" class="toggle-radio-buttons mx-2" {{ (float)$department->reservation_allowance_amount > 0.00 ? 'checked' : '' }} name="budget_type"  value="1" id="notFree"
+                                        style="height:30px;">
+                                    <label for="notFree" class="col-12">ميزانيه محدده</label>
+
+                                    <input type="radio" class="toggle-radio-buttons mx-2" name="budget_type"  {{ (float)$department->reservation_allowance_amount == 0.00 ? 'checked' : '' }} value="2" id="free"
+                                        style="height:30px;">
+                                    <label for="free" class="col-12">ميزانيه غير محدده</label>
+                                </div>
+                            </div>
+
+                            <div class="input-group moftsh px-md-5 px-3 pt-3" id="budgetField" style= {{ (float)$department->reservation_allowance_amount > 0.00 ? "display: block": "display: none;" }}>
+                                <label class="d-flex pb-3" for="budget">ميزانية بدل حجز</label>
+                                <input type="text" name="budget" class="form-control" value=" {{ (float)$department->reservation_allowance_amount > 0.00 ? $department->reservation_allowance_amount : 00.00 }}"
+                                    id="budget" autocomplete="one-time-code">
+                                @error('budget')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="form-group col-md-10 mx-md-2">
+                                <label for="">صلاحيه الحجز</label>
+                                <div class="d-flex mt-3 " dir="rtl">
+                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="fullBooking"
+                                        @if ($department->reservation_allowance_type == 1 || $department->reservation_allowance_type == 3) checked @endif name="part[]">
+                                    <label for="fullBooking"> حجز كلى</label>
+                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="2" name="part[]"
+                                        id="partialBooking" @if ($department->reservation_allowance_type == 2 || $department->reservation_allowance_type == 3) checked @endif>
+                                    <label for="partialBooking">حجز جزئى</label>
+                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="3" name="part[]"
+                                        id="noBooking" @if ($department->reservation_allowance_type == 4) checked @endif>
+                                    <label for="noBooking">لا يوجد بدل حجز</label>
+                                    {{-- @error('budget')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror --}}
+                                </div>
+                            </div>
                         </div>
 
                 </div>
@@ -275,7 +232,42 @@
         $('.select2').select2({
             dir: "rtl"
         });
+        $(document).ready(function() {
+            var selectedManagerId = $('#mangered').val();
+            console.log(selectedManagerId);
 
+            if (selectedManagerId) {
+                // Show the email field
+                $('#email_field').show();
+                fetchManagerDetails(selectedManagerId, false);
+
+                var existingEmail = "{{ old('email', $department->manager ? $email : '') }}";
+                var existingBudget =
+                    "{{ old('budget', $department->reservation_allowance_amount ? $department->reservation_allowance_amount : '') }}";
+
+
+                if (existingEmail) {
+                    $('#email_field').css('display', 'block');
+
+                    $('#email_field').show();
+                    $('#email').val(existingEmail);
+
+                }
+                // If a budget exists, check the radio button for specific budget and display the budget field
+                if (existingBudget) {
+                    $('#notFree').attr('checked', true);
+                    $('#budgetField').show();
+                    $('#budget').val(existingBudget);
+                } else {
+                    // If no specific budget, check the "free" option
+                    $('#Free').attr('checked', true);
+                }
+
+            } else {
+                $('#manager_details').hide();
+                $('#email_field').hide();
+            }
+        });
         function fetchManagerDetails(managerId) {
 
             if (managerId) {
@@ -291,26 +283,30 @@
                         $('#manager_details').find('span').eq(0).text(
                             data.rank);
                         $('#manager_details').find('span').eq(1).text(
-                            data.seniority);
-                        $('#manager_details').find('span').eq(2).text(
                             data.job_title);
-                        $('#manager_details').find('span').eq(3).text(
+                        $('#manager_details').find('span').eq(2).text(
                             data.name);
-                        $('#manager_details').find('span').eq(4).text(
+                        $('#manager_details').find('span').eq(3).text(
                             data.phone);
-                        $('#manager_details').find('span').eq(5).text(
+                        $('#manager_details').find('span').eq(4).text(
                             data.email);
                         $('#manager_details').show();
 
                         // Show password and rule fields for employees
-                        if (data.isEmployee) {
-                            $('#password_field').show();
-                            $('#rule_field').show();
+                        if (data.email) {
+                            $('#email_field').show();
+
+                            if (data.email === 'لا يوجد بريد الكتروني') {
+                                $('#email').val('');
+
+                            } else {
+                                $('#email').val(data.email);
+
+                            }
+                            $('#email').val(data.email);
                         } else {
-                            $('#password_field').hide();
-                            $('#rule_field').hide();
-                            $('#password').val('');
-                            $('#rule').val('');
+                            $('#email_field').hide();
+                            $('#email').val('');
                         }
                         // Handle transfer logic
                         if (data.transfer) {
@@ -327,12 +323,9 @@
 
                                 } else {
                                     // Handle cancel action: clear the manager input field
-                                    $('#mangered').val(
-                                    ''); // Clear the input field
-                                    $('#manager_details')
-                                .hide(); // Hide the manager details
-                                    $('#password_field').hide();
-                                    $('#rule_field').hide();
+                                    $('#mangered').val(''); // Clear the input field
+                                    $('#manager_details').hide(); // Hide the manager details
+                                    $('#email_field').hide();
                                 }
                             });
                         }
@@ -352,10 +345,8 @@
                                 // User clicked "إلغاء", clear the input field
                                 $('#mangered').val('');
                                 $('#manager_details').hide();
-                                $('#password_field').hide();
-                                $('#rule_field').hide();
-                                $('#password').val('');
-                                $('#rule').val('');
+                                $('#email_field').hide();
+                                $('#email').val('');
                             });
                         }
                     }
@@ -363,22 +354,18 @@
             } else {
                 // Reset the manager details if no manager ID is provided
                 $('#manager_details').hide();
-                $('#password_field').hide();
-                $('#rule_field').hide();
-                $('#password').val('');
-                $('#rule').val('');
+                $('#email_field').hide();
+                $('#email').hide();
             }
         }
 
         $('#manager_details').hide();
-        $('#password_field').hide();
-        $('#rule_field').hide();
+        $('#email_field').hide();
 
         // Use 'blur' event to trigger the check when the input field loses focus
         $('#mangered').on('blur', function() {
             var managerId = $(this).val();
-            $('#password').val('');
-            $('#rule').val('');
+            $('#email').val('');
             fetchManagerDetails(managerId);
         });
 
@@ -410,6 +397,53 @@
                         }
                     });
                 });
+        });
+        window.addEventListener('load', function() {
+            const notFree = document.getElementById('notFree');
+            const free = document.getElementById('free');
+            const budgetField = document.getElementById('budgetField');
+            const budget = document.getElementById('budget'); // Input field for budget
+
+            // Check initial state of radio buttons on page load
+            if (notFree.checked) {
+                budgetField.style.display = 'block'; // Show the budget field
+            } else if (free.checked) {
+                budgetField.style.display = 'none'; // Hide the budget field
+                budget.value = ''; // Clear the budget field
+            }
+
+            // Listen for changes on the radio buttons
+            notFree.addEventListener('change', function() {
+                if (notFree.checked) {
+                    budgetField.style.display = 'block'; // Show the budget field
+                }
+            });
+
+            free.addEventListener('change', function() {
+                if (free.checked) {
+                    budgetField.style.display = 'none'; // Hide the budget field
+                    budget.value = ''; // Clear the budget field
+                }
+            });
+        });
+
+        window.addEventListener('load', function() {
+            const emailField = document.getElementById('email_field');
+            const emailInput = document.getElementById('email');
+
+            // Function to toggle the 'required' attribute based on email field visibility
+            function toggleEmailRequired() {
+                if (emailField.style.display === 'block') {
+                    emailInput.setAttribute('required', 'required');
+                } else {
+                    emailInput.removeAttribute('required');
+                }
+            }
+
+
+            // Call toggle function after changing visibility
+            toggleEmailRequired();
+
         });
     </script>
 @endsection

@@ -34,7 +34,7 @@ return [
  'Groups'=>'مجموعة',
  'InspectorGroupHistory'=>'احصائيات مفتش المحجموعة',
  'InspectorMission'=>'مهام المفتش',
- 'Notification'=>'رسائل',
+ 'Notification'=>'اشعارات',
  'PersonalMission'=>'مهام شخصيه',
  'PointDays'=>'نقاط اليوم',
  'Setting'=>'الاعدادات',
@@ -44,6 +44,8 @@ return [
  'WorkingTree'=>'نظام العمل',
  'WorkingTreeTime'=>'وقت نظام العمل',
  'instantmission'=>'امر خدمة',
+ 'ReservationAllowance'=>'بدل حجز'
+
 
     // Add more permissions as needed
 ];

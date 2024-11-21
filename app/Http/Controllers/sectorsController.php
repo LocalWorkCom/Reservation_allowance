@@ -62,10 +62,10 @@ class sectorsController extends Controller
         return response()->json([
             'rank' => $manager->grade_id ? $manager->grade->name : 'لا يوجد رتبه',
             'job_title' => $manager->job_title ?? 'لا يوجد مسمى وظيفى',
-            'seniority' => $yearsOfService,
+
             'name' => $manager->name,
-            'phone' => $user->phone ?? 'لا يوجد رقم هاتف',
-            'email' => $user->email ?? 'لا يوجد بريد الكتروني',
+            'phone' => $manager->phone ?? 'لا يوجد رقم هاتف',
+            'email' => $manager->email ?? 'لا يوجد بريد الكتروني',
             'isEmployee' => $isEmployee,
         ]);
     }
@@ -164,12 +164,12 @@ class sectorsController extends Controller
             })
             ->addColumn('employees', function ($row) {
                 $emp_num = User::where('sector', $row->id)->where('department_id', null)->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('user.employees', ['sector_id' => $row->id, 'type' => 0]) . '> ' . $emp_num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('user.employees', ['sector_id' => $row->id, 'type' => 0, 'flag' => 'user']) . '> ' . $emp_num . '</a>';
                 return $btn;
             })
             ->addColumn('employeesdep', function ($row) {
                 $emp_num = User::where('sector', $row->id)->whereNotNull('department_id')->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15p" href=' . route('user.employees', ['sector_id' => $row->id, 'type' => 1]) . '> ' . $emp_num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15p" href=' . route('user.employees', ['sector_id' => $row->id, 'type' => 1, 'flag' => 'user']) . '> ' . $emp_num . '</a>';
                 return $btn;
             })
             ->rawColumns(['action', 'departments', 'employees', 'login_info', 'employeesdep'])
@@ -192,9 +192,9 @@ class sectorsController extends Controller
             'name.required' => 'اسم الحقل مطلوب.',
             // 'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
-           // 'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.00.',
+            // 'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.00.',
             //'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
-             'part.required' => 'نوع بدل الحجز مطلوب.',
+            'part.required' => 'نوع بدل الحجز مطلوب.',
         ];
 
         // Validation rules
@@ -207,7 +207,7 @@ class sectorsController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-
+        //dd($request->all());
         // Process Civil_numbers input into an array
         $Civil_numbers = str_replace(["\r", "\r\n", "\n"], ',', $request->Civil_number);
         $Civil_numbers = explode(',,', $Civil_numbers);
@@ -251,7 +251,7 @@ class sectorsController extends Controller
         $sector = new Sector();
         $sector->name = $request->name;
         $sector->reservation_allowance_type = $reservation_allowance_type;
-        $sector->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget;
+        $sector->reservation_allowance_amount = $request->budget_type == 2 ? 00.00 : $request->budget;
         $sector->manager = $manager;
         $sector->created_by = Auth::id();
         $sector->updated_by = Auth::id();
@@ -280,16 +280,15 @@ class sectorsController extends Controller
             $user->sector = $sector->id;
             $user->department_id = null;
 
-            // Update password and role if provided
-            if ($request->password) {
-                $user->flag = 'user';
-                $user->rule_id = $request->rule;
-                $user->password = Hash::make($request->password);
-            }
-
+            $user->flag = 'user';
+            $user->rule_id = 4;
+            $user->email = $request->email;
+            $user->password = Hash::make('123456');
             $user->save();
-            if ($user->email) {
-                Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع ' . $request->name, $user->file_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $user->email);
+            if ($user->email && isValidEmail($manager->email)) {
+                Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع ' . $request->name, $user->file_number, 123456, $user->email);
+            }else {
+                return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
             }
         }
 
@@ -347,13 +346,18 @@ class sectorsController extends Controller
         $employees =  User::where('department_id', null)->Where('sector', $id)->whereNot('id', $data->manager)->get();
         $rules = Rule::whereNotIn('id', [1, 2, 3])->get();
         $manager = User::find($data->manager);
+
         $fileNumber = $manager->file_number ?? null;
         return view('sectors.edit', [
             'data' => $data,
             'users' => $users,
             'employees' => $employees,
             'rules' => $rules,
-            'fileNumber' => $fileNumber
+            'fileNumber' => $fileNumber,
+            'email' => $manager->email ?? null,
+            'budget' => $data->reservation_allowance_amount
+
+
         ]);
     }
 
@@ -363,10 +367,7 @@ class sectorsController extends Controller
         $sector = Sector::find($request->id);
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            // 'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
-            //'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.00.',
-            //'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
         ];
 
@@ -383,7 +384,7 @@ class sectorsController extends Controller
         $allowance = $this->getAllowance($request->budget, $request->id);
 
         if (!$allowance->original['is_allow']) {
-            $validator->errors()->add('budget', 'قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total']);
+            $validator->errors()->add('budget',  '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total'] . 'لوجود بدلات حجز اكبر من القيمه المدخله');
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
@@ -394,7 +395,7 @@ class sectorsController extends Controller
         if ($request->mangered && $manager == null) {
             return redirect()->back()->withErrors('رقم هويه المدير غير موجود')->withInput();
         }
-
+        //dd($request->all());
         // Determine reservation_allowance_type based on 'part'
         $part = $request->input('part');
         $reservation_allowance_type = null;
@@ -411,7 +412,7 @@ class sectorsController extends Controller
         // Update sector details
         $sector->name = $request->name;
         $sector->reservation_allowance_type = $reservation_allowance_type;
-        $sector->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget;
+        $sector->reservation_allowance_amount = $request->budget_type == 2 ? 00.00 : $request->budget;
         $sector->manager = $manager;
         $sector->updated_by = Auth::id();
         $sector->save();
@@ -449,14 +450,15 @@ class sectorsController extends Controller
                     $newManager->sector = $sector->id;
                     $newManager->department_id = null;
 
-                    if ($request->password) {
-                        $newManager->flag = 'user';
-                        $newManager->rule_id = $request->rule;
-                        $newManager->password = Hash::make($request->password);
-                    }
+                    $newManager->flag = 'user';
+                    $newManager->rule_id = 4;
+                    $newManager->email = $request->email;
+                    $newManager->password = Hash::make('123456');
                     $newManager->save();
-                    if ($newManager->email) {
-                        Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $newManager->Civil_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $newManager->email);
+                    if ($newManager->email && isValidEmail($manager->email))  {
+                        Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $newManager->Civil_number, 123456, $newManager->email);
+                    }else {
+                        return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
                     }
                 }
             }
@@ -465,11 +467,15 @@ class sectorsController extends Controller
             if ($request->password) {
                 $Manager->sector = $sector->id;
                 $Manager->flag = 'user';
-                $Manager->rule_id = $request->rule;
-                $Manager->password = Hash::make($request->password);
+                $Manager->rule_id = 4;
+                $Manager->password = Hash::make('123456');
+                $Manager->eamil = $request->email;
+
                 $Manager->save();
-                if ($Manager->email) {
-                    Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $Manager->Civil_number, $request->password ? $request->password : 'عفوا لن يتم السماح لك بدخول السيستم', $Manager->email);
+                if ($Manager->email && isValidEmail($manager->email)) {
+                    Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $Manager->Civil_number,  123456, $Manager->email);
+                }else {
+                    return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
                 }
             }
         }

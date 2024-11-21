@@ -196,10 +196,9 @@ class DepartmentController extends Controller
         return response()->json([
             'rank' => $user->grade_id ? $user->grade->name : 'لا يوجد رتبه',
             'job_title' => $user->job_title ?? 'لا يوجد مسمى وظيفى',
-            'seniority' => $yearsOfService,
             'name' => $user->name,
             'phone' => $user->phone,
-            'email' => $user->email,
+            'email' => $user->email ?? null,
             'isEmployee' => $isEmployee,
             'transfer' => false  // No transfer needed if they're not in any department or sector
         ], 200);
@@ -316,7 +315,7 @@ class DepartmentController extends Controller
      */
     public function create($id)
     {
-         $sectors = get_by_md5_id($id, 'sectors');
+        $sectors = get_by_md5_id($id, 'sectors');
         //$sectors = Sector::findOrFail($id);
         $managers = User::where('id', '!=', auth()->user()->id)
             ->whereNot('id', $sectors->manager)
@@ -380,16 +379,13 @@ class DepartmentController extends Controller
     {
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            // 'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
-            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
-            'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
         ];
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'budget' => 'nullable|numeric|min:0|max:1000000',
+            'budget' => 'nullable|numeric',
             'part' => 'required',
         ], $messages);
 
@@ -425,7 +421,7 @@ class DepartmentController extends Controller
         $departements->manger = $manager ? $manager->id : null; // Assign the user's ID as manager
         $departements->sector_id = $request->sector;
         $departements->description = $request->description;
-        $departements->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget;
+        $departements->reservation_allowance_amount =  $request->budget_type == 2 ? 00.00 : $request->budget;
         $departements->reservation_allowance_type = $reservation_allowance_type;
         $departements->created_by = Auth::user()->id;
         $departements->save();
@@ -453,11 +449,9 @@ class DepartmentController extends Controller
 
             $manager->sector = $request->sector;
             $manager->department_id = $departements->id;
-            if ($request->password) {
-                $manager->flag = 'user';
-                $manager->rule_id = $request->rule;
-                $manager->password = Hash::make($request->password);
-            }
+            $manager->flag = 'user';
+            $manager->rule_id = 3;
+            $manager->password = Hash::make('123456');
             $manager->save();
 
             // Send email to new manager
@@ -467,7 +461,7 @@ class DepartmentController extends Controller
                     'مدير ادارة',
                     'تم أضافتك كمدير ادارة',
                     $manager->file_number,
-                    $request->password ? $request->password : null,
+                    $manager->password,
                     $manager->email
                 );
             } else {
@@ -507,17 +501,14 @@ class DepartmentController extends Controller
     {
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            // 'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
-            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
-            'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
         ];
 
         // Validate the input fields
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'budget' => 'nullable|numeric|min:0|max:1000000',
+            'budget' => 'nullable|numeric',
             'part' => 'required',
         ], $messages);
 
@@ -545,7 +536,7 @@ class DepartmentController extends Controller
         $departements->sector_id = $request->sector;
         $departements->parent_id = $request->parent;
         $departements->description = $request->description;
-        $departements->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget;
+        $departements->reservation_allowance_amount = $request->budget_type == 2 ? 00.00 : $request->budget;
         $departements->reservation_allowance_type = $reservation_allowance_type;
         $departements->created_by = Auth::user()->id;
 
@@ -567,12 +558,25 @@ class DepartmentController extends Controller
 
             $manager->sector = $request->sector;
             $manager->department_id = $departements->id;
-            if ($request->password) {
-                $manager->flag = 'user';
-                $manager->rule_id = $request->rule;
-                $manager->password = Hash::make($request->password);
-            }
+            $manager->flag = 'user';
+            $manager->rule_id = 3;
+            $manager->email = $request->email;
+
+            $manager->password = Hash::make('123456');
+
             $manager->save();
+            if ($manager->email && isValidEmail($manager->email)) {
+                // Send email to the new manager
+                Sendmail(
+                    'مدير ادارة',
+                    'تم أضافتك كمدير ادارة',
+                    $manager->file_number,
+                    $manager->password,
+                    $manager->email
+                );
+            } else {
+                return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
+            }
         }
 
         $departements->save();
@@ -617,9 +621,9 @@ class DepartmentController extends Controller
 
     //public function edit(departements $department)
     public function edit($id)
-    {     
-        $department = get_by_md5_id($id, 'departements');   
-        $department = departements::findOrFail($department->id);   
+    {
+        $department = get_by_md5_id($id, 'departements');
+        $department = departements::findOrFail($department->id);
         $id = $department->sector_id;
         $managers = User::where('id', '!=', auth()->user()->id)
             ->where(function ($query) use ($id) {
@@ -669,8 +673,8 @@ class DepartmentController extends Controller
     //public function update(Request $request, departements $department)
     public function update(Request $request, $id)
     {
-        $department = get_by_md5_id($id, 'departements');   
-        $department = departements::findOrFail($department->id);   
+        $department = get_by_md5_id($id, 'departements');
+        $department = departements::findOrFail($department->id);
         // Add a log or debugging output
         Log::info('Starting department update for department ID: ' . $department->id);
 
@@ -678,14 +682,12 @@ class DepartmentController extends Controller
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
-            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
-            'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
         ];
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'budget' => 'nullable|numeric|min:0|max:1000000',
+            'budget' => 'nullable|numeric',
             'part' => 'required',
         ], $messages);
 
@@ -698,7 +700,7 @@ class DepartmentController extends Controller
         $allowance = $this->getAllowancedepart($request->budget, $department->id);
 
         if (!$allowance->original['is_allow']) {
-            $validator->errors()->add('budget', 'قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total']);
+            $validator->errors()->add('budget',  '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total'] . 'لوجود بدلات حجز اكبر من القيمه المدخله');
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
@@ -727,7 +729,7 @@ class DepartmentController extends Controller
         $department->description = $request->description;
         $department->manger = $manager;
         $department->reservation_allowance_type = $reservation_allowance_type;
-        $department->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget;
+        $department->reservation_allowance_amount =  $request->budget_type == 2 ? 00.00 : $request->budget;
         $department->created_by = Auth::user()->id;
         $department->save();
         saveHistory($department->reservation_allowance_amount, $department->sector_id, $department->id);
@@ -759,11 +761,12 @@ class DepartmentController extends Controller
                     $newManager->department_id = $department->id;
                     $newManager->sector = $request->sector;
 
-                    if ($request->password) {
                         $newManager->flag = 'user';
-                        $newManager->rule_id = $request->rule;
-                        $newManager->password = Hash::make($request->password);
-                    }
+                        $newManager->email = $request->email;
+                        $newManager->rule_id =3;
+
+                        $newManager->password = Hash::make('123456');
+
                     $newManager->save();
 
                     if ($newManager->email && isValidEmail($newManager->email)) {
@@ -772,37 +775,35 @@ class DepartmentController extends Controller
                             'مدير ادارة', // Subject
                             'تم أضافتك كمدير ادارة', // Email body
                             $newManager->file_number,
-                            $request->password ? $request->password : null,
+                            123456,
                             $newManager->email
                         );
                     } else {
-                        return redirect()->route('departments.index', ['id' => $sectors_details->hash_id]);
-                        return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
+                        return redirect()->route('departments.index', ['id' => $sectors_details->hash_id])->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
                     }
                 }
             }
-
-
         } else {
             $sector = Sector::find($request->id);
             $Manager = User::find($manager);
             if ($request->password) {
                 $Manager->sector = $sector->id;
                 $Manager->flag = 'user';
-                $Manager->rule_id = $request->rule;
-                $Manager->password = Hash::make($request->password);
+                $Manager->rule_id = 3;
+                $Manager->email = $request->email;
+
+                $Manager->password = Hash::make('123456');
                 $Manager->save();
                 if ($Manager->email && isValidEmail($Manager->email)) {
                     // Send email to the new manager
-                    Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, $request->password ? $request->password : null, $Manager->email);
+                    Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, 123456, $Manager->email);
                 } else {
-                    return redirect()->route('departments.index', ['id' => $sectors_details->hash_id]);
-                    return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
+                    return redirect()->route('departments.index', ['id' => $sectors_details->hash_id])->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
                 }
             }
         }
 
-        
+
         // Handle employee updates
         $currentEmployees = User::where('sector', $request->sector)
             ->where('department_id', null)
@@ -838,7 +839,7 @@ class DepartmentController extends Controller
 
         // Redirect after successful update
         //return redirect()->route('departments.index', ['id' => $request->sector])
-        return redirect()->route('departments.index', $sectors_details->hash_id)->with('success', 'Department updated successfully.');
+        return redirect()->route('departments.index', $sectors_details->hash_id)->with('success', 'تم تعديل الأداره بنجاح');
     }
 
 
@@ -852,16 +853,13 @@ class DepartmentController extends Controller
         // Validation rules and error messages
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            // 'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
-            'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.',
-            'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
         ];
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'budget' => 'nullable|numeric|min:0|max:1000000',
+            'budget' => 'nullable|numeric',
             'part' => 'required',
         ], $messages);
 
@@ -870,7 +868,7 @@ class DepartmentController extends Controller
         }
         $allowance = $this->getAllowancedepart($request->budget, $department->id);
         if (!$allowance->original['is_allow']) {
-            $validator->errors()->add('budget', 'قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total']);
+            $validator->errors()->add('budget',  '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total'] . 'لوجود بدلات حجز اكبر من القيمه المدخله');
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
@@ -897,7 +895,7 @@ class DepartmentController extends Controller
         $department->description = $request->description;
         $department->manger = $manager;
         $department->reservation_allowance_type = $reservation_allowance_type;
-        $department->reservation_allowance_amount = $request->budget == null ? 0.00 : $request->budget;
+        $department->reservation_allowance_amount = $request->budget_type == 2 ? 00.00 : $request->budget;
         $department->created_by = Auth::user()->id;
         $department->save();
         saveHistory($department->reservation_allowance_amount, $department->sector_id, $department->id);
@@ -930,8 +928,9 @@ class DepartmentController extends Controller
 
                     if ($request->password) {
                         $newManager->flag = 'user';
-                        $newManager->rule_id = $request->rule;
-                        $newManager->password = Hash::make($request->password);
+                        $newManager->rule_id = 3;
+                        $newManager->email = $request->email;
+                        $newManager->password = Hash::make(123456);
                     }
                     $newManager->save();
                     if ($newManager->email && isValidEmail($newManager->email)) {
@@ -940,7 +939,7 @@ class DepartmentController extends Controller
                             'مدير ادارة فرعية', // Subject
                             'تم أضافتك كمدير ادارة فرعية', // Email body
                             $newManager->file_number,
-                            $request->password ? $request->password : null,
+                            123456,
                             $newManager->email
                         );
                     } else {
@@ -954,11 +953,13 @@ class DepartmentController extends Controller
             if ($request->password) {
                 $Manager->sector = $department->sector_id;
                 $Manager->flag = 'user';
-                $Manager->rule_id = $request->rule;
-                $Manager->password = Hash::make($request->password);
+                $Manager->rule_id = 3;
+                $Manager->email = $request->email;
+
+                $Manager->password = Hash::make(123456);
                 $Manager->save();
                 if ($Manager->email && isValidEmail($Manager->email)) {
-                    Sendmail('مدير ادارة فرعية', 'تم أضافتك كمدير ادارة فرعية ' . $request->name, $Manager->file_number, $request->password ? $request->password : null, $Manager->email);
+                    Sendmail('مدير ادارة فرعية', 'تم أضافتك كمدير ادارة فرعية ' . $request->name, $Manager->file_number, 123456, $Manager->email);
                 } else {
                     return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
                 }
@@ -993,7 +994,7 @@ class DepartmentController extends Controller
         }
 
         return redirect()->route('sub_departments.index', ['id' => $department->parent_id])
-            ->with('success', 'Sub-department updated successfully.');
+            ->with('success', 'تم تعديل الاداره الفرعيه');
     }
 
     /**
@@ -1002,7 +1003,7 @@ class DepartmentController extends Controller
     public function destroy(departements $department)
     {
         $department->delete();
-        return redirect()->route('departments.index')->with('success', 'Department deleted successfully.');
+        return redirect()->route('departments.index')->with('success', 'تم حذف الاداره بنجاح');
         // return response()->json(null, 204);
     }
 }
