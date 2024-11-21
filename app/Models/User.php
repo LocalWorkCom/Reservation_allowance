@@ -84,6 +84,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    protected $appends = ['sector_hash_id'];
+
+    public function getSectorHashIdAttribute()
+    {
+        return md5($this->sector);
+    }
+
     public function getIsVerifiedAttribute()
     {
         return $this->code === $this->verfication_code; // Adjust logic as needed
