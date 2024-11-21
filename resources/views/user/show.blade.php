@@ -12,11 +12,11 @@
                     <li class="breadcrumb-item "><a href="/">الرئيسيه</a></li>
 
                         @if (Auth::user()->rule_id == 2)
-                            <li class="breadcrumb-item"><a href="{{ route('user.employees', 1) }}">موظفين الوزارة</a>
+                            <li class="breadcrumb-item"><a href="{{ route('user.employees', 'employee') }}">موظفين الوزارة</a>
                             </li>
                         @endif
                         @if (Auth::user()->rule_id != 2)
-                            <li class="breadcrumb-item"><a href="{{ route('user.employees', 1) }}">موظفين القوة</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('user.employees', 'employee') }}">موظفين القوة</a></li>
                         @endif
                     <li class="breadcrumb-item active" aria-current="page"> <a href=""> عرض </a></li>
                 </ol>

@@ -211,7 +211,7 @@
                                         $Dataurl = 'search.user';
                                     }
 
-                                    $parms = [];
+                                    $parms['flag'] = $flag;
                                     if ($department_id) {
                                         $parms['department_id'] = $department_id;
                                     }
@@ -224,6 +224,7 @@
                                     if ($Civil_number) {
                                         $parms['Civil_number'] = $Civil_number; // Add Civil_number to parameters
                                     }
+
                                 @endphp
                                 /*
                                   $('#users-table tfoot th').each(function (i) {
