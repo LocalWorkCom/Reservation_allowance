@@ -153,180 +153,91 @@
     <br>
     <div class="row">
         <div class="container col-11 p-4">
+            <div class="d-flex gap-2 flex-wrap" style="direction: rtl;">
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="file_number" id="last_month_file_number">
+                    <button type="submit" class="btn mx-1" style="background-color: #3c7327; color:white; border-radius:10px;">يناير</button>
+                </form>
 
-            <ul class="nav nav-tabs " id="myTab" role="tablist" style="direction: rtl;">
-                <li class="nav-item " role="presentation ">
-                    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
-                        role="tab" aria-controls="home" aria-selected="true">
-                        يناير
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link " id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
-                        role="tab" aria-controls="profile" aria-selected="false">
-                        فبراير
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link " id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
-                        role="tab" aria-controls="contact" aria-selected="false">
-                        مارس
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link " id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
-                        role="tab" aria-controls="contact" aria-selected="false">
-                        ابريل
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link " id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
-                        role="tab" aria-controls="contact" aria-selected="false">
-                        مايو
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link " id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
-                        role="tab" aria-controls="contact" aria-selected="false">
-                        يونيو
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link " id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
-                        role="tab" aria-controls="contact" aria-selected="false">
-                        يوليو
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link " id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
-                        role="tab" aria-controls="contact" aria-selected="false">
-                        اغسطس
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link " id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
-                        role="tab" aria-controls="contact" aria-selected="false">
-                        سبتمبر
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link " id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
-                        role="tab" aria-controls="contact" aria-selected="false">
-                        اكتوبر
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link " id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
-                        role="tab" aria-controls="contact" aria-selected="false">
-                        نوفمبر
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link " id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
-                        role="tab" aria-controls="contact" aria-selected="false">
-                        ديسمبر
-                    </button>
-                </li>
-            </ul>
-            <div class="tab-content mt-3" id="myTabContent" style="direction: rtl;">
-                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                    <h3 class="text-center text-info"> لا يوجد</h3>
-                </div>
-                <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                    <table class="table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th>الترتيب</th>
-                                <th>الرتبة</th>
-                                <th>الاسم</th>
-                                <th>رقم الملف</th>
-                                <th>نوع بدل الحجز</th>
-                                <th>اليومية</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <th>1</th>
-                                <th>الرتبة</th>
-                                <th>هند</th>
-                                <th>111</th>
-                                <th>كلى</th>
-                                <th>اليومية</th>
-                            </tr>
-                            <tr>
-                                <th>1</th>
-                                <th>الرتبة</th>
-                                <th>هند</th>
-                                <th>111</th>
-                                <th>كلى</th>
-                                <th>اليومية</th>
-                            </tr>
-                            <tr>
-                                <th>1</th>
-                                <th>الرتبة</th>
-                                <th>هند</th>
-                                <th>111</th>
-                                <th>كلى</th>
-                                <th>اليومية</th>
-                            </tr>
-                            <tr>
-                                <th>1</th>
-                                <th>الرتبة</th>
-                                <th>هند</th>
-                                <th>111</th>
-                                <th>كلى</th>
-                                <th>اليومية</th>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-                    <table class="table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th>الترتيب</th>
-                                <th>الرتبة</th>
-                                <th>الاسم</th>
-                                <th>رقم الملف</th>
-                                <th>نوع بدل الحجز</th>
-                                <th>اليومية</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <th>1</th>
-                                <th>الرتبة</th>
-                                <th>هند</th>
-                                <th>111</th>
-                                <th>كلى</th>
-                                <th>اليومية</th>
-                            </tr>
-                            <tr>
-                                <th>1</th>
-                                <th>الرتبة</th>
-                                <th>هند</th>
-                                <th>111</th>
-                                <th>كلى</th>
-                                <th>اليومية</th>
-                            </tr>
-                            <tr>
-                                <th>1</th>
-                                <th>الرتبة</th>
-                                <th>هند</th>
-                                <th>111</th>
-                                <th>كلى</th>
-                                <th>اليومية</th>
-                            </tr>
-                            <tr>
-                                <th>1</th>
-                                <th>الرتبة</th>
-                                <th>هند</th>
-                                <th>111</th>
-                                <th>كلى</th>
-                                <th>اليومية</th>
-                            </tr>
-                        </tbody>
-                    </table>
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="file_number" id="last_month_file_number">
+                    <button type="submit" class="btn mx-1" style="background-color: #732b27; color:white; border-radius:10px;">فبراير</button>
+                </form>
+
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="file_number" id="last_month_file_number">
+                    <button type="submit" class="btn mx-1" style="background-color: #273b73; color:white; border-radius:10px;">مارس</button>
+                </form>
+
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="file_number" id="last_month_file_number">
+                    <button type="submit" class="btn mx-1" style="background-color: #6a98d1; color:white; border-radius:10px;">ابريل</button>
+                </form>
+
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="file_number" id="last_month_file_number">
+                    <button type="submit" class="btn mx-1" style="background-color: #cacd2b; color:white; border-radius:10px;">مايو</button>
+                </form>
+
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="file_number" id="last_month_file_number">
+                    <button type="submit" class="btn mx-1" style="background-color: #56e71f; color:white; border-radius:10px;">يونيو</button>
+                </form>
+
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="file_number" id="last_month_file_number">
+                    <button type="submit" class="btn mx-1" style="background-color: #bf2c8b; color:white; border-radius:10px;">يوليو</button>
+                </form>
+
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="file_number" id="last_month_file_number">
+                    <button type="submit" class="btn mx-1" style="background-color: #585bc3; color:white; border-radius:10px;">اغسطس</button>
+                </form>
+
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="file_number" id="last_month_file_number">
+                    <button type="submit" class="btn mx-1" style="background-color: #e34848; color:white; border-radius:10px;">سبتمبر</button>
+                </form>
+
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="file_number" id="last_month_file_number">
+                    <button type="submit" class="btn mx-1" style="background-color: #61e5ba; color:white; border-radius:10px;">اكتوبر</button>
+                </form>
+
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="file_number" id="last_month_file_number">
+                    <button type="submit" class="btn mx-1" style="background-color: #a76ae9; color:white; border-radius:10px;">نوفمبر</button>
+                </form>
+
+                <form id="last-month-form" method="get" action="">
+                    <input type="hidden" name="file_number" id="last_month_file_number">
+                    <button type="submit" class="btn mx-1" style="background-color: #db770f; color:white; border-radius:10px;">ديسمبر</button>
+                </form>
+            </div>
+
+            <div class="col-lg-12">
+                <div class="bg-white">
+                    @if (session()->has('message'))
+                        <div class="alert alert-info">
+                            {{ session('message') }}
+                        </div>
+                    @endif
+
+                    <div>
+                        <table id="users-table" class="display table table-responsive-sm  table-bordered table-hover dataTable">
+                            <thead>
+                                <tr>
+                                    <th>الترتيب</th>
+                                    <th>الرتبة</th>
+                                    <th>الاسم</th>
+                                    <th>رقم الملف</th>
+                                    <th>نوع بدل الحجز</th>
+                                    <th>اليومية</th>
+                                    <!-- <th style="width:150px;">العمليات</th>-->
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
                 </div>
             </div>
 
