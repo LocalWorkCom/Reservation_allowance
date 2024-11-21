@@ -69,7 +69,7 @@
                     { data: 'name', sWidth: '60px',name: 'name' },
                     { data: 'permissions', name: 'permissions' },
                     { data: 'department', sWidth: '60px', name: 'department' },
-                    { data: 'action', name: 'action',  sWidth: '100px', orderable: false, searchable: false }
+                    { data: 'action', name: 'action',  sWidth: '50px', orderable: false, searchable: false }
                 ],
                 columnDefs: [{
                     targets: -1,
@@ -81,8 +81,11 @@
                         var ruleshow = '{{ route('rule_show', ':id') }}';
                         ruleshow = ruleshow.replace(':id', row.id);
                         return `
+                         
                             <a href="` + ruleshow + `" class="btn  btn-sm" style="background-color: #375A97;"> <i class="fa fa-eye"></i> عرض</a>
-                            <a href="` + ruleedit + `" class="btn  btn-sm" style="background-color: #F7AF15;"> <i class="fa fa-edit"></i> تعديل </a>`;
+                            <a href="` + ruleedit + `" class="btn  btn-sm" style="background-color: #F7AF15;"> <i class="fa fa-edit"></i> تعديل </a>
+                            
+                           `;
                     }
 
                 }],
