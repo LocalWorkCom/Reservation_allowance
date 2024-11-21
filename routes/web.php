@@ -413,12 +413,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/statistics_credit/search', [ReservationStaticsCreditController::class, 'getFilteredData'])->name('Reserv_statistic_credit.search');
     Route::any('/statistics_credit/getAll', [ReservationStaticsCreditController::class, 'getAll'])->name('Reserv_statistic_credit.getAll');
     Route::get('/reservation_statics_credit/print', [ReservationStaticsCreditController::class, 'printReport'])->name('Reserv_statistic_credit.print');
+});
     Route::get('/get-manager-details/{id}', [DepartmentController::class, 'getManagerDetails']);
     Route::get('/get-manager-sector-details/{id}/{sector}', [sectorsController::class, 'getManagerSectorDetails']);
     Route::get('/get-allowance-sector', [SectorsController::class, 'getAllowance']);
     Route::get('/get-allowance-department', [DepartmentController::class, 'getAllowancedepart']);
     Route::any('/employee_search/getAll', [UserController::class, 'getAll'])->name('employee_search.getAll');
-});
+
     //reserv search
 Route::group(['middleware' => ['check.permission:search ReservationAllowance']], function () {
     Route::get('/reservation_fetch', [ReserveFetchController::class, 'static'])->name('reservation_fetch.index');
