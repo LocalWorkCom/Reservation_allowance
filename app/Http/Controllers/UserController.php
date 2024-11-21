@@ -87,25 +87,31 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $department_id = $request->get('department_id'); // Fetch department_id from the request
-    
+
         // Fetch all users in the specified department
         $users = User::where('department_id', $department_id)->get();
-    
+        
         // Fetch grade counts based on user associations
         $gradeIds = $users->pluck('grade_id'); // Get all grade IDs from users in this department
-        $all = grade::whereIn('id', $gradeIds)->count();
 
-        $Officer = Grade::whereIn('id', $gradeIds)->where('type', 2)->count();
-        $Officer2 = Grade::whereIn('id', $gradeIds)->where('type', 1)->count();
-        $person = Grade::whereIn('id', $gradeIds)->where('type', 3)->count();
-    
+        $gradeall = Grade::whereIn('id', $gradeIds)->pluck('id')->toArray();
+        $all = User::whereIn('grade_id', $gradeall)->count();
+
+        $gradeperson = Grade::whereIn('id', $gradeIds)->where('type', 3)->pluck('id')->toArray();
+        $person = User::whereIn('grade_id', $gradeperson)->count();
+
+        $gradeOfficer = Grade::whereIn('id', $gradeIds)->where('type', 2)->pluck('id')->toArray();
+        $Officer = User::whereIn('grade_id', $gradeOfficer)->count();
+
+        $graseOfficer2 = Grade::whereIn('id', $gradeIds)->where('type', 1)->pluck('id')->toArray();
+        $Officer2 = User::whereIn('grade_id', $graseOfficer2)->count();
+
         // Fetch related departments and sectors
         $departments = departements::all();
         $sectors = Sector::all();
-    
-        return view('user.view', compact('departments', 'department_id', 'sectors', 'Officer', 'Officer2', 'person','all'));
+
+        return view('user.view', compact('departments', 'department_id', 'sectors', 'Officer', 'Officer2', 'person', 'all'));
     }
-    
 
     public function add_employees(Request $request)
     {
@@ -132,6 +138,13 @@ class UserController extends Controller
     {
         // dd(request());
         $parentDepartment = Departements::find(Auth()->user()->department_id);
+
+        $filter = $request->get('filter'); // Retrieve filter
+        $department_id = $request->get('department_id'); // Fetch department_id from the request
+
+
+        // Apply the filter based on the type
+
 
         if (Auth::user()->rule->name == "localworkadmin") {
             $data = User::query(); // Start as a query
@@ -183,6 +196,23 @@ class UserController extends Controller
                 $data = $data->where('Civil_number', request()->get('Civil_number'));
         }
 
+        $users = User::where('department_id', $department_id)->get();
+
+        $gradeIds = $users->pluck('grade_id'); // Get all grade IDs from users in this department
+        if ($filter == 'all') {
+
+            $all = Grade::whereIn('id', $gradeIds)->pluck('id')->toArray();
+            $data->whereIn('grade_id', $all);
+        } elseif ($filter == 'person') {
+            $person = Grade::whereIn('id', $gradeIds)->where('type', 3)->pluck('id')->toArray();
+            $data->whereIn('grade_id', $person);
+        } elseif ($filter == 'Officer') {
+            $Officer = Grade::whereIn('id', $gradeIds)->where('type', 2)->pluck('id')->toArray();
+            $data->whereIn('grade_id', $Officer);
+        } elseif ($filter == 'Officer2') {
+            $Officer2 = Grade::whereIn('id', $gradeIds)->where('type', 1)->pluck('id')->toArray();
+            $data->whereIn('grade_id', $Officer2);
+        }
         // Finally, fetch the results
         $data = $data->orderby('grade_id', 'asc')->get();
 
