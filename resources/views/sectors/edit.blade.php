@@ -63,9 +63,9 @@
         @csrf
         @method('POST') <!-- This line indicates it's an update -->
         <div class="row" dir="rtl">
-            <div id="first-container" class="container moftsh col-11 mt-3 p-0 pb-3">
+            <div id="first-container" class="container moftsh col-11 py-3">
                 <div class="form-row mx-2 mb-2">
-                    <h3 class="pt-3 px-md-5 px-3">اضف قطاع</h3>
+                    <h3 class=" px-md-5 px-3">اضف قطاع</h3>
                     <div class="input-group moftsh px-md-5 px-3 pt-3">
                         <label class="pb-3" for="name">ادخل اسم القطاع</label>
                         <input type="hidden" name="id" value="{{ $data->id }}">
@@ -86,7 +86,7 @@
                 </div>
 
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="email_field" style="display: none;">
-                    <label class="pb-3" for="email">الأيميل</label>
+                    <label  for="email">الأيميل</label>
                     <input type="email" name="email" id="email" class="form-control" required>
                     @error('email')
                         <div class="alert alert-danger">{{ $message }}</div>
@@ -112,9 +112,9 @@
                     </div>
                 </div>
 
-                <div class="input-group moftsh px-md-4 px-3 pt-3">
+                <div class="input-group moftsh px-md-5 px-3 pt-3">
                     <label for="Civil_number" class="col-12"> أرقام الملفات</label>
-                    <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px">
+                    <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px;background-color: #F8F8F8;border-radius: 10px !important;">
                         @foreach ($employees as $employee)
 {{ $employee->file_number }}
 @endforeach
@@ -134,7 +134,7 @@
                 </div>
 
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="budgetField" style= {{ (float)$data->reservation_allowance_amount > 0.00 ? "display: block": "display: none;" }}>
-                    <label class="pb-3" for="budget">ميزانية بدل حجز</label>
+                    <label class="d-flex pb-3" for="budget">ميزانية بدل حجز</label>
                     <input type="text" name="budget" class="form-control" value=" {{ (float)$data->reservation_allowance_amount > 0.00 ? $data->reservation_allowance_amount : 00.00 }}"
                         id="budget" autocomplete="one-time-code">
                     @error('budget')
@@ -160,7 +160,7 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
-                </div>
+
 
                 <div class="container col-11">
                     <div class="form-row d-flex justify-content-end mt-4 mb-3">
@@ -245,6 +245,14 @@
                         // Show/hide password and rule fields
                         if (data.isEmployee) {
                             $('#email_field').show();
+
+                            if (data.email === 'لا يوجد بريد الكتروني') {
+                                $('#email').val('');
+
+                            } else {
+                                $('#email').val(data.email);
+
+                            }
                             $('#email').val(data.email);
                         } else {
                             $('#email_field').hide();

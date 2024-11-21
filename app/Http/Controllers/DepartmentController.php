@@ -196,7 +196,6 @@ class DepartmentController extends Controller
         return response()->json([
             'rank' => $user->grade_id ? $user->grade->name : 'لا يوجد رتبه',
             'job_title' => $user->job_title ?? 'لا يوجد مسمى وظيفى',
-            'seniority' => $yearsOfService,
             'name' => $user->name,
             'phone' => $user->phone,
             'email' => $user->email ?? null,

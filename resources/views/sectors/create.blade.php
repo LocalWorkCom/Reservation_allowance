@@ -60,7 +60,7 @@
     <form class="edit-grade-form" id="Qta3-form" action=" {{ route('sectors.store') }}" method="POST">
         @csrf
         <div class="row" dir="rtl">
-            <div id="first-container" class="container moftsh col-11 mt-3 p-0 pb-3">
+            <div id="first-container" class="container moftsh col-11 py-3">
                 @if (session('success'))
                     <div class="alert alert-success">
                         {{ session('success') }}
@@ -76,7 +76,7 @@
                     </div>
                 @endif
                 <div class="form-row mx-2 mb-2">
-                    <h3 class="pt-3 px-md-5 px-3">اضف قطاع</h3>
+                    <h3 class=" px-md-5 px-3">اضف قطاع</h3>
                     <div class="input-group moftsh px-md-5 px-3 pt-3">
                         <label class="pb-3" for="name">ادخل اسم القطاع</label>
                         <input type="text" id="name" name="name" class="form-control" placeholder="قطاع واحد"
@@ -96,7 +96,7 @@
                 </div>
 
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="email_field" style="display: none;">
-                    <label class="pb-3" for="email"> الايميل</label>
+                    <label class="pb-3 w-100" for="email"> الايميل</label>
                     <input type="email" name="email" id="email" class="form-control" required>
                     @error('email')
                         <div class="alert alert-danger">{{ $message }}</div>
@@ -119,9 +119,10 @@
 
                 <div class="form-row mx-2 d-flex justify-content-center">
 
-                    <div class="input-group moftsh px-md-4 px-3 pt-3">
+                    <div class="input-group moftsh px-md-5 px-3 pt-3">
                         <label for="Civil_number" class="col-12"> أرقام الملفات</label>
-                        <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px"></textarea>
+                        <textarea class="form-control" name="Civil_number" id="Civil_number"
+                            style="height: 100px;background-color: #F8F8F8;border-radius: 10px !important;"></textarea>
                     </div>
                 </div>
                 <div class="input-group moftsh px-md-5 px-3 pt-3">
@@ -138,7 +139,7 @@
                 </div>
 
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="budgetField" style="display: none;">
-                    <label class="pb-3" for="budget">ميزانية بدل حجز</label>
+                    <label class="d-flex pb-3" for="budget">ميزانية بدل حجز</label>
                     <input type="text" name="budget" class="form-control" value="{{ old('budget') }}"
                         autocomplete="one-time-code">
                     @error('budget')
@@ -164,18 +165,18 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                         @enderror --}}
                 </div>
-            </div>
-            <div class="container col-11">
-                <div class="form-row d-flex justify-content-end mt-4 mb-3">
-                    <button type="submit" class="btn-blue">
-                        <img src="{{ asset('frontend/images/white-add.svg') }}" alt="img" height="20px"
-                            width="20px">
-                        اضافة
-                    </button>
-                </div>
-            </div>
 
-        </div>
+                <div class="container col-11">
+                    <div class="form-row d-flex justify-content-end mt-4 mb-3">
+                        <button type="submit" class="btn-blue">
+                            <img src="{{ asset('frontend/images/white-add.svg') }}" alt="img" height="20px"
+                                width="20px">
+                            اضافة
+                        </button>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </form>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -201,8 +202,7 @@
                         $('#manager_details').find('span').eq(4).text(data.email);
 
                         $('#manager_details').show();
-                        if (data.isEmployee) {
-                            console.log(data.email);
+                        if (data.email) {
                             $('#email_field').show();
                             if (data.email === 'لا يوجد بريد الكتروني') {
                                 $('#email').val('');
@@ -213,7 +213,7 @@
                             }
                         } else {
                             // $('#email_field').hide();
-                            $('#email').val('');
+                            $('#email').val(data.email);
 
                         }
                     },
@@ -233,6 +233,13 @@
                                     fetchManagerDetails(managerId, false);
                                     $('#email_field').show();
                                     $('#email').show();
+                                    if (data.email === 'لا يوجد بريد الكتروني') {
+                                        $('#email').val('');
+
+                                    } else {
+                                        $('#email').val(data.email);
+
+                                    }
                                     $('#manager_details').show();
                                     // Populate manager details
                                     $('#manager_details').find('span').eq(0).text(result.rank);

@@ -25,13 +25,13 @@
 
 <br>
 
-<div class="row">
-    <div class="container col-11 mt-3 p-0 pt-5 pb-4">
-    <div class="row " dir="rtl">
+<div class="row" dir="rtl">
+    <div class="container col-11  pt-5 pb-4">
+    <div class="row ">
         
-    </div>
-        <div class="col-lg-12">
-        <div class="bg-white">
+  
+        <div class="col-12">
+        
                     @if (session()->has('message'))
                         <div class="alert alert-info">
                             {{ session('message') }}
@@ -39,25 +39,37 @@
                     @endif
                 
                 <!-- Month and Year Selection Form -->
-                <form id="filter-form" class="d-flex align-items-center mb-4">
-                    <label for="month-select" class="me-2">الشهر:</label>
-                    <select id="month-select" name="month" class="form-select me-3">
-                        @for ($m = 1; $m <= 12; $m++)
-                            <option value="{{ $m }}" {{ $m == now()->month ? 'selected' : '' }}>
+             
+              <form id="filter-form" class="pb-3">
+                 <div class="d-flex justify-content-between">
+                   <div class="d-flex">
+                   <!-- <label for="month-select" class="me-2">الشهر : </label> -->
+                    <select id="month-select" name="month" class="btn-all mx-2">
+                       <option selected disabled>
+                        الشهر
+                            </option> 
+                             @for ($m = 1; $m <= 12; $m++)
+                       
+                            <option value="{{ $m }}" {{ $m == now()->month ?  : '' }}>
                                 {{ DateTime::createFromFormat('!m', $m)->format('F') }}
                             </option>
                         @endfor
                     </select>
 
-                    <label for="year-select" class="me-2">السنة:</label>
-                    <select id="year-select" name="year" class="form-select me-3">
+                    <!-- <label for="year-select" class="me-2">السنة :</label> -->
+                    <select id="year-select" name="year" class="btn-all  mx-2">
+                    <option selected disabled>
+                    السنة
+                            </option> 
                         @for ($y = 2020; $y <= date('Y'); $y++)
-                            <option value="{{ $y }}" {{ $y == now()->year ? 'selected' : '' }}>{{ $y }}</option>
+                            <option value="{{ $y }}" {{ $y == now()->year ?  : '' }}>{{ $y }}</option>
                         @endfor
                     </select>
+                   </div>
 
-                    <button type="submit" class="btn btn-primary">عرض الإحصائيات</button>
-                </form>
+                    <button type="submit" class="btn-all text-info">عرض الإحصائيات</button>
+               </div> </form>
+              
 
                 <div>
                     <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
@@ -65,20 +77,20 @@
                             <tr>
                                 <th>الترتيب</th>
                                 <th>القطاع</th>
-                                <th>عدد الادارات الرئيسيه</th>
-                                <th>عدد الادارات الفرعيه</th>
+                                <th> الادارات الرئيسيه</th>
+                                <th> الادارات الفرعيه</th>
                                 <th>ميزانيه بدل حجز</th>
                                 <th>المسجل</th>
                                 <th>المتبقى</th>
                                 <th>عدد الموظفين</th>
-                                <th>الحاصلين على بدل الحجز</th>
-                                <th>لم يحصل على بدل الحجز</th>
+                                <th>حاصل  بدل حجز</th>
+                                <th>لم يحصل  بدل حجز</th>
                             </tr>
                         </thead>
                     </table>
                 </div>
             </div>
-        </div>
+        
     </div>
 </div>
 @endsection
@@ -114,7 +126,7 @@
                         render: function (data, type, row) {
                             const month = $('#month-select').val();
                             const year = $('#year-select').val();
-                            return `<a href="/sector-employees/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                            return `<a href="/sector-employees/${row.id}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
                         },
                     },
                     { 
@@ -123,14 +135,14 @@
                     render: function(data, type, row) {
                         const month = $('#month-select').val(); 
                         const year = $('#year-select').val();   
-                        return `<a href="/statistics_department/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                        return `<a href="/statistics_department/${row.id}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
                     }
                 },
                     { data: 'sub_departments_count', name: 'sub_departments_count',
                         render: function(data, type, row) {
                         const month = $('#month-select').val(); 
                         const year = $('#year-select').val();   
-                        return `<a href="/statistics_department/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                        return `<a href="/statistics_department/${row.id}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
                     }
                      },
                     { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' },
@@ -138,7 +150,7 @@
                         render: function (data, type, row) {
                             const month = $('#month-select').val();
                             const year = $('#year-select').val();
-                            return `<a href="/sector-employees/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                            return `<a href="/sector-employees/${row.id}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
                         },
                      },
                     { data: 'remaining_amount', name: 'remaining_amount' },
@@ -148,7 +160,7 @@
                         render: function(data, type, row) {
                             const month = $('#month-select').val();
                             const year = $('#year-select').val();
-                            return `<a href="/sector-users/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                            return `<a href="/sector-users/${row.id}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
                         }
                     },
                     { 
@@ -157,7 +169,7 @@
                         render: function (data, type, row) {
                             const month = $('#month-select').val();
                             const year = $('#year-select').val();
-                            return `<a href="/sector-employees/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                            return `<a href="/sector-employees/${row.id}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
                         },
                     },
 
@@ -167,7 +179,7 @@
                         render: function (data, type, row) {
                             const month = $('#month-select').val();
                             const year = $('#year-select').val();
-                            return `<a href="/sector-employees/${row.id}/not-reserved?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                            return `<a href="/sector-employees/${row.id}/not-reserved?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
                         }
                     },
 
