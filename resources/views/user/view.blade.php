@@ -110,9 +110,9 @@
 
             </div>
 
-           
+
         </div>
-       
+
     </div>
     <div class="row mb-4">
         <div class="col-12">
@@ -174,163 +174,170 @@
                 <div class="row d-flex justify-content-between " dir="rtl">
                     <div class="form-group moftsh mt-4  mx-4  d-flex">
                         <p class="filter "> تصفية حسب :</p>
-                        <button class="btn-all px-3 mx-2 btn-filter btn-active" data-filter="all" style="color: #274373;">
+                        <button class="btn-all px-3 mx-2 btn-filter btn-active" data-filter="all"
+                            style="color: #274373;">
                             الكل ({{ $all }})
                         </button>
-                        <button class="btn-all px-3 mx-2 btn-filter" data-filter="assigned" style="color: #274373;">
+                        <button class="btn-all px-3 mx-2 btn-filter" data-filter="Officer" style="color: #274373;">
                             رتب الضباط ({{ $Officer }})
                         </button>
-                        <button class="btn-all px-3 mx-2 btn-filter" data-filter="unassigned" style="color: #274373;">
+                        <button class="btn-all px-3 mx-2 btn-filter" data-filter="Officer2" style="color: #274373;">
                             رتب المهنيين ({{ $Officer2 }})
                         </button>
-                        
-                        <button class="btn-all px-3 mx-2 btn-filter" data-filter="unassigned" style="color: #274373;">
-                            رتب الأفراد   ({{ $person }})
+
+                        <button class="btn-all px-3 mx-2 btn-filter" data-filter="person" style="color: #274373;">
+                            رتب الأفراد ({{ $person }})
                         </button>
                     </div>
                 </div>
-                        <table id="users-table"
-                            class="display table table-responsive-sm  table-bordered table-hover dataTable">
-                            <thead>
-                                <tr>
-                                    <th>رقم المسلسل</th>
-                                    <th>الرتبه</th>
-                                    <th>الاسم</th>
-                                    <th>رقم الملف</th>
-                                    <th>الرقم المدني</th>
-                                    <th>الهاتف</th>
-                                    <th>الادارة</th>
-                                    <th>القطاع</th>
-                                    <th style="width:150px !important;">العمليات</th>
-                                </tr>
-                            </thead>
-                        </table>
+                <table id="users-table" class="display table table-responsive-sm  table-bordered table-hover dataTable">
+                    <thead>
+                        <tr>
+                            <th>رقم المسلسل</th>
+                            <th>الرتبه</th>
+                            <th>الاسم</th>
+                            <th>رقم الملف</th>
+                            <th>الرقم المدني</th>
+                            <th>الهاتف</th>
+                            <th>الادارة</th>
+                            <th>القطاع</th>
+                            <th style="width:150px !important;">العمليات</th>
+                        </tr>
+                    </thead>
+                </table>
 
 
 
 
-                        <script>
-                            $(document).ready(function() {
-                                $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
-                                // var filter = 'all'; // Default filter
+                <script>
+                    $(document).ready(function() {
+                        $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
+                        var filter = 'all'; // Default filter
 
-                                @php
-                                    $department_id = request()->get('department_id');
-                                    $parent_department_id = request()->get('parent_department_id');
-                                    $sector_id = request()->get('sector_id');
-                                    $type = request()->get('type');
-                                    $Civil_number = request()->get('Civil_number'); // Get Civil_number from request
-                                    $Dataurl = 'api.users'; // Default URL
+                        @php
+                            $department_id = request()->get('department_id');
+                            $parent_department_id = request()->get('parent_department_id');
+                            $sector_id = request()->get('sector_id');
+                            $type = request()->get('type');
+                            $Civil_number = request()->get('Civil_number'); // Get Civil_number from request
+                            $Dataurl = 'api.users'; // Default URL
 
-                                    if (isset($mode) && $mode == 'search') {
-                                        $Dataurl = 'search.user';
+                            if (isset($mode) && $mode == 'search') {
+                                $Dataurl = 'search.user';
+                            }
+
+                             $parms['flag'] = $flag;
+                            if ($department_id) {
+                                $parms['department_id'] = $department_id;
+                            }
+                            if ($parent_department_id) {
+                                $parms['parent_department_id'] = $parent_department_id;
+                            }
+                            if ($sector_id) {
+                                $parms['sector_id'] = $sector_id;
+                            }
+                            if ($Civil_number) {
+                                $parms['Civil_number'] = $Civil_number; // Add Civil_number to parameters
+                            }
+                        @endphp
+                        /*
+                          $('#users-table tfoot th').each(function (i) {
+                              var title = $('#users-table thead th')
+                                  .eq($(this).index())
+                                  .text();
+                              $(this).html(
+                                  '<input type="text" placeholder="' + title + '" data-index="' + i + '" />'
+                              );
+                          }); */
+                        var table = $('#users-table').DataTable({
+                            processing: true,
+                            serverSide: true,
+                            ajax: {
+                                url: '{{ route($Dataurl, $parms) }}' +
+                                '{{ isset($q) ? '/' . $q : '' }}',
+                                data: function(d) {
+                                    d.filter = filter;
+                                    // d.department_id = department_id; // Use the global filter variable
+                                     // Use the global filter variable
+                                }
+                            },
+                            bAutoWidth: false,
+
+                            columns: [{
+                                    data: null, // Using 'null' here as we will populate it manually
+                                    sWidth: '50px',
+                                    orderable: false,
+                                    searchable: false,
+                                    render: function(data, type, row, meta) {
+                                        return meta.row + 1; // Display the sequential index
                                     }
+                                },
+                                // {
+                                //     data: 'id',
+                                //     sWidth: '50px',
+                                //     name: 'id'
+                                // },
+                                {
+                                    data: 'grade',
+                                    name: 'grade'
+                                },
+                                {
+                                    data: 'name',
+                                    name: 'name'
+                                },
+                                /*     {
+                                        data: 'Civil_number',
+                                        name: 'Civil_number'
+                                    },
+                                    {
+                                        data: 'military_number',
+                                        name: 'military_number'
+                                    }, */
+                                {
+                                    data: 'file_number',
+                                    name: 'file_number'
+                                },
+                                {
+                                    data: 'Civil_number',
+                                    name: 'Civil_number'
+                                },
+                                {
+                                    data: 'phone',
+                                    name: 'phone'
+                                },
+                                {
+                                    data: 'department',
+                                    name: 'department'
+                                },
+                                {
+                                    data: 'sector',
+                                    name: 'sector'
+                                },
+                                {
+                                    data: 'action',
+                                    name: 'action',
 
-                                    $parms['flag'] = $flag;
-                                    if ($department_id) {
-                                        $parms['department_id'] = $department_id;
-                                    }
-                                    if ($parent_department_id) {
-                                        $parms['parent_department_id'] = $parent_department_id;
-                                    }
-                                    if ($sector_id) {
-                                        $parms['sector_id'] = $sector_id;
-                                    }
-                                    if ($Civil_number) {
-                                        $parms['Civil_number'] = $Civil_number; // Add Civil_number to parameters
-                                    }
+                                    sWidth: '200px',
+                                    orderable: false,
+                                    searchable: false
+                                }
+                            ],
+                            columnDefs: [{
+                                targets: -1,
+                                render: function(data, type, row) {
+                                    // Using route generation correctly in JavaScript
+                                    var useredit = '{{ route('user.edit', ':id') }}';
+                                    useredit = useredit.replace(':id', row.id);
+                                    var usershow = '{{ route('user.show', ':id') }}';
+                                    usershow = usershow.replace(':id', row.id);
+                                    var vacation = '';
+                                    var unsigned = '{{ route('user.unsigned', ':id') }}';
+                                    unsigned = unsigned.replace(':id', row.id);
+                                    var visibility = row.department_id != null ? 'd-block-inline' :
+                                        'd-none';
 
-                                @endphp
-                                /*
-                                  $('#users-table tfoot th').each(function (i) {
-                                      var title = $('#users-table thead th')
-                                          .eq($(this).index())
-                                          .text();
-                                      $(this).html(
-                                          '<input type="text" placeholder="' + title + '" data-index="' + i + '" />'
-                                      );
-                                  }); */
-                                var table = $('#users-table').DataTable({
-                                    processing: true,
-                                    serverSide: true,
-                                    ajax: '{{ route($Dataurl, $parms) }}' +
-                                        '{{ isset($q) ? '/' . $q : '' }}', // Correct URL concatenation
-                                    bAutoWidth: false,
+                                    return `
 
-                                    columns: [{
-                                            data: null, // Using 'null' here as we will populate it manually
-                                            sWidth: '50px',
-                                            orderable: false,
-                                            searchable: false,
-                                            render: function(data, type, row, meta) {
-                                                return meta.row + 1; // Display the sequential index
-                                            }
-                                        },
-                                        // {
-                                        //     data: 'id',
-                                        //     sWidth: '50px',
-                                        //     name: 'id'
-                                        // },
-                                        {
-                                            data: 'grade',
-                                            name: 'grade'
-                                        },
-                                        {
-                                            data: 'name',
-                                            name: 'name'
-                                        },
-                                        /*     {
-                                                data: 'Civil_number',
-                                                name: 'Civil_number'
-                                            },
-                                            {
-                                                data: 'military_number',
-                                                name: 'military_number'
-                                            }, */
-                                        {
-                                            data: 'file_number',
-                                            name: 'file_number'
-                                        },
-                                        {
-                                            data: 'Civil_number',
-                                            name: 'Civil_number'
-                                        },
-                                        {
-                                            data: 'phone',
-                                            name: 'phone'
-                                        },
-                                        {
-                                            data: 'department',
-                                            name: 'department'
-                                        },
-                                        {
-                                            data: 'sector',
-                                            name: 'sector'
-                                        },
-                                        {
-                                            data: 'action',
-                                            name: 'action',
-
-                                            sWidth: '200px',
-                                            orderable: false,
-                                            searchable: false
-                                        }
-                                    ],
-                                    columnDefs: [{
-                                        targets: -1,
-                                        render: function(data, type, row) {
-                                            // Using route generation correctly in JavaScript
-                                            var useredit = '{{ route('user.edit', ':id') }}';
-                                            useredit = useredit.replace(':id', row.id);
-                                            var usershow = '{{ route('user.show', ':id') }}';
-                                            usershow = usershow.replace(':id', row.id);
-                                            var vacation = '';
-                                            var unsigned = '{{ route('user.unsigned', ':id') }}';
-                                            unsigned = unsigned.replace(':id', row.id);
-                                            var visibility = row.department_id != null ? 'd-block-inline' :
-                                                'd-none';
-
-                                            return `
         <a href="` + usershow + `" class="btn btn-sm" style="background-color: #274373;">
             <i class="fa fa-eye"></i> عرض
         </a>
@@ -341,72 +348,72 @@
             <i class="fa-solid fa-user-tie"></i>  الغاء التعيين
         </a>
     `;
-                                        }
+                                }
 
 
-                                    }],
-                                    "oLanguage": {
-                                        "sSearch": "",
-                                        "sSearchPlaceholder": "بحث",
-                                        "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
-                                        "sInfoEmpty": 'لا توجد بيانات متاحه',
-                                        "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
-                                        "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
-                                        "sZeroRecords": 'نأسف لا توجد نتيجة',
-                                        "oPaginate": {
-                                            "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
-                                            "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
-                                            "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
-                                            "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
-                                        }
-                                    },
-                                    layout: {
-                                        bottomEnd: {
-                                            paging: {
-                                                firstLast: false
-                                            }
-                                        }
-                                    },
-                                    "pagingType": "full_numbers",
-                                    "fnDrawCallback": function(oSettings) {
-                                        var api = this.api();
-                                        var pageInfo = api.page.info();
-                                        // Check if the total number of records is less than or equal to the number of entries per page
-                                        if (pageInfo.recordsTotal <= 10) { // Adjust this number based on your page length
-                                            $('.dataTables_paginate').css('visibility', 'hidden'); // Hide pagination
-                                        } else {
-                                            $('.dataTables_paginate').css('visibility', 'visible'); // Show pagination
-                                        }
+                            }],
+                            "oLanguage": {
+                                "sSearch": "",
+                                "sSearchPlaceholder": "بحث",
+                                "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
+                                "sInfoEmpty": 'لا توجد بيانات متاحه',
+                                "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
+                                "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
+                                "sZeroRecords": 'نأسف لا توجد نتيجة',
+                                "oPaginate": {
+                                    "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
+                                    "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
+                                    "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
+                                    "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
+                                }
+                            },
+                            layout: {
+                                bottomEnd: {
+                                    paging: {
+                                        firstLast: false
                                     }
-                                });
+                                }
+                            },
+                            "pagingType": "full_numbers",
+                            "fnDrawCallback": function(oSettings) {
+                                var api = this.api();
+                                var pageInfo = api.page.info();
+                                // Check if the total number of records is less than or equal to the number of entries per page
+                                if (pageInfo.recordsTotal <= 10) { // Adjust this number based on your page length
+                                    $('.dataTables_paginate').css('visibility', 'hidden'); // Hide pagination
+                                } else {
+                                    $('.dataTables_paginate').css('visibility', 'visible'); // Show pagination
+                                }
+                            }
+                        });
 
-                                $(table.table().container()).on('keyup', 'tfoot input', function() {
-                                    table
-                                        .column($(this).data('index'))
-                                        .search(this.value)
-                                        .draw();
-                                });
-                                // $('.btn-filter').on('click', function() {
-                                //     filter = $(this).data('filter'); // Get the filter value from the clicked button
-                                //     table.ajax.reload(); // Reload the DataTable with the new filter
-                                // });
-                                // // Filter buttons click event
-                                // $('.btn-filter').click(function() {
-                                //     filter = $(this).data('filter'); // Update filter
-                                //     $('.btn-filter').removeClass('btn-active'); // Remove active class from all
-                                //     $(this).addClass('btn-active'); // Add active class to clicked button
+                        $(table.table().container()).on('keyup', 'tfoot input', function() {
+                            table
+                                .column($(this).data('index'))
+                                .search(this.value)
+                                .draw();
+                        });
+                        $('.btn-filter').on('click', function() {
+                            filter = $(this).data('filter'); // Get the filter value from the clicked button
+                            table.ajax.reload(); // Reload the DataTable with the new filter
+                        });
+                        // Filter buttons click event
+                        $('.btn-filter').click(function() {
+                            filter = $(this).data('filter'); // Update filter
+                            $('.btn-filter').removeClass('btn-active'); // Remove active class from all
+                            $(this).addClass('btn-active'); // Add active class to clicked button
 
-                                //     table.page(0).draw(false); // Reset to first page and redraw the table
-                                // });
-                            });
-                        </script>
+                            table.page(0).draw(false); // Reset to first page and redraw the table
+                        });
+                    });
+                </script>
 
 
-                    </div>
-                </div>
             </div>
-
         </div>
+    </div>
+
+    </div>
 
     </div>
 </section>
