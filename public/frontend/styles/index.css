@@ -682,6 +682,7 @@ color: #999595;
     line-height: 26.78px;
     text-align: center;
     border: 0.5px solid #D7D8D9;
+    color: #274373;
 }
 .btn-all-new {
     width: auto;
@@ -1655,4 +1656,10 @@ color: #2A2726;
 }
 .nav-tabs .nav-link {
     border: 1px solid #00000030 !important;
+}
+.data-show {
+    border: 0.5px solid #e3e6eb;
+    /* box-shadow: rgb(149 157 165 / 13%) 0px 8px 24px; */
+    border-radius: 10px;
+    padding: 5px;
 }
