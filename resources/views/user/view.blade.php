@@ -29,7 +29,7 @@
                         <div class="container pt-5 pb-2" style="border: 0.2px solid rgb(166, 165, 165);">
                             <form id="transfer-form" action="{{ route('user.unsigned') }}" method="POST">
                                 @csrf
-                                <input type="hidden" name="id_employee" id="id_employee" value="">
+                                <input type="text" name="id_employee" id="id_employee" value="">
                                 <div class="mb-3">
                                     <label style="justify-content: flex-end;"> هل انت متاكد من الغاء التعييين
                                         ؟ </label>
@@ -335,13 +335,13 @@
                                 targets: -1,
                                 render: function(data, type, row) {
                                     // Using route generation correctly in JavaScript
-                                    var useredit = '{{ route('user.edit', ':id') }}';
-                                    useredit = useredit.replace(':id', row.id);
-                                    var usershow = '{{ route('user.show', ':id') }}';
-                                    usershow = usershow.replace(':id', row.id);
+                                    var useredit = '{{ route('user.edit', ':uuid') }}';
+                                    useredit = useredit.replace(':uuid', row.uuid);
+                                    var usershow = '{{ route('user.show', ':uuid') }}';
+                                    usershow = usershow.replace(':uuid', row.uuid);
                                     var vacation = '';
-                                    var unsigned = '{{ route('user.unsigned', ':id') }}';
-                                    unsigned = unsigned.replace(':id', row.id);
+                                    var unsigned = '{{ route('user.unsigned', ':uuid') }}';
+                                    unsigned = unsigned.replace(':uuid', row.uuid);
                                     var visibility = row.department_id != null ? 'd-block-inline' :
                                         'd-none';
 
