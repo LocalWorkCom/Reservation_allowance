@@ -69,22 +69,31 @@
                         {{ $department->name }} <!-- Display department name -->
                     </p>
                 @elseif (Auth::user()->rule_id != 2)
-                    <p>موظفين القوة</p>
+                    @if ($flag == 'employee')
+                        <p>موظفين القوة</p>
+                    @else
+                        <p>المستخدمين والصلاحيات</p>
+                    @endif
                 @elseif (Auth::user()->rule_id == 2)
-                    <p>موظفين الوزارة</p>
+                    @if ($flag == 'employee')
+                        <p>موظفين الوزارة</p>
+                    @else
+                        <p>المستخدمين والصلاحيات</p>
+                    @endif
                 @endif
 
                 <div class="form-group">
 
                     @if (Auth::user()->hasPermission('add_employee User'))
-                        <a href="{{ route('download-template') }}" class="btn-all text-info mx-2 p-2">تحميل
-                            القالب</a>
+                        @if ($flag == 'employee')
+                            <a href="{{ route('download-template') }}" class="btn-all text-info mx-2 p-2">تحميل
+                                القالب</a>
 
-                        <button type="button" class="wide-btn mx-2"
-                            onclick="window.location.href='{{ route('user.create') }}'" style="color: #0D992C;">
-                            اضافة موظف جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                        </button>
-
+                            <button type="button" class="wide-btn mx-2"
+                                onclick="window.location.href='{{ route('user.create') }}'" style="color: #0D992C;">
+                                اضافة موظف جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                            </button>
+                        @endif
 
                 </div>
                 @if (request()->fullUrlIs('*employees/employee?department_id=*'))
@@ -226,7 +235,7 @@
                                 $Dataurl = 'search.user';
                             }
 
-                             $parms['flag'] = $flag;
+                            $parms['flag'] = $flag;
                             if ($department_id) {
                                 $parms['department_id'] = $department_id;
                             }
@@ -254,11 +263,11 @@
                             serverSide: true,
                             ajax: {
                                 url: '{{ route($Dataurl, $parms) }}' +
-                                '{{ isset($q) ? '/' . $q : '' }}',
+                                    '{{ isset($q) ? '/' . $q : '' }}',
                                 data: function(d) {
                                     d.filter = filter;
                                     // d.department_id = department_id; // Use the global filter variable
-                                     // Use the global filter variable
+                                    // Use the global filter variable
                                 }
                             },
                             bAutoWidth: false,
