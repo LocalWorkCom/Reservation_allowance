@@ -59,7 +59,7 @@
             <div class="d-flex ">
                 @php
                     // Get the department based on department_id from the request
-                    $department = \App\Models\departements::find(request()->get('department_id'));
+                    $department = \App\Models\departements::where('uuid',request()->get('department_id'))->first();
                 @endphp
 
                 @if (request()->fullUrlIs('*employees/employee?department_id=*'))
