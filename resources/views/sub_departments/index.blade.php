@@ -16,7 +16,7 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('home') }}">الرئيسيه</a></li>
                     <li class="breadcrumb-item"><a
-                            href="{{ route('departments.index', ['id' => $sectors->id]) }}">الادارات</a>
+                            href="{{ route('departments.index', $sectors->uuid) }}">الادارات</a>
                     </li>
 
                     @foreach ($breadcrumbs as $breadcrumb)
@@ -27,13 +27,13 @@
                         @else
                             @if ($breadcrumb->parent_id)
                                 <li class="breadcrumb-item">
-                                    <a href="{{ route('sub_departments.index', ['id' => $breadcrumb->id]) }}">
+                                    <a href="{{ route('sub_departments.index', $breadcrumb->uuid) }}">
                                         {{ $breadcrumb->name }}
                                     </a>
                                 </li>
                             @else
                                 <li class="breadcrumb-item">
-                                    <a href="{{ route('sub_departments.index', ['id' => $breadcrumb->id]) }}">
+                                    <a href="{{ route('sub_departments.index', $breadcrumb->uuid) }}">
                                         {{ $breadcrumb->name }}
                                     </a>
                                 </li>
@@ -52,7 +52,7 @@
                 <div class="form-group">
                     @if (Auth::user()->rule->id == 3 || Auth::user()->department_id == $parentDepartment->id)
                         <button type="button" class="wide-btn "
-                            onclick="window.location.href='{{ route('sub_departments.create', ['id' => $parentDepartment->id]) }}'"
+                            onclick="window.location.href='{{ route('sub_departments.create', $parentDepartment->uuid) }}'"
                             style="    color: #0D992C;">
                             اضافة جديد
                             <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
@@ -118,9 +118,9 @@
             ajax: '/api/sub_department/' + departmentId,
 
             columns: [{
-                    data: 'id',
-                    sWidth: '50px',
-                    name: 'id'
+                sWidth: '50px',
+                    data: null,
+                    name: 'order', orderable: false, searchable: false
                 },
                 {
                     data: 'name',
@@ -150,9 +150,7 @@
                     data: 'subDepartment',
                     name: 'subDepartment',
                     render: function(data, type, row) {
-                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showSubDepartments(' +
-                            row
-                            .id + ')">' + data +
+                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showSubDepartments(\'' + row.uuid + '\')">' + data +
                             '</button>';
                     }
                 },
@@ -160,8 +158,7 @@
                     data: 'num_managers',
                     name: 'num_managers',
                     render: function(data, type, row) {
-                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showUsers(' +
-                            row.id + ')">' + data +
+                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showUsers(\'' + row.uuid + '\')">' + data +
                             '</button>';
                     }
                 },
@@ -169,8 +166,7 @@
                     data: 'num_subdepartment_managers',
                     name: 'num_subdepartment_managers',
                     render: function(data, type, row) {
-                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showSubUsers(' +
-                            row.id + ')">' + data +
+                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showSubUsers(\'' + row.uuid + '\')">' + data +
                             '</button>';
                     }
                 },
@@ -182,23 +178,24 @@
                     searchable: false
                 }
             ],
+            order: [0, 'asc'],
             columnDefs: [{
                 targets: -1,
                 render: function(data, type, row) {
                     console.log(row);
                     var subdepartmentEdit =
-                        '{{ route('sub_departments.edit', ':id') }}';
+                        '{{ route('sub_departments.edit', ':uuid') }}';
                     subdepartmentEdit =
                         subdepartmentEdit.replace(
-                            ':id', row.id);
+                            ':uuid', row.uuid);
                     var subdepartment =
-                        '{{ route('sub_departments.create', ':id') }}';
+                        '{{ route('sub_departments.create', ':uuid') }}';
                     subdepartment = subdepartment
-                        .replace(':id', row.id);
+                        .replace(':uuid', row.uuid);
                     var departmentShow =
-                        '{{ route('departments.show', ':id') }}';
+                        '{{ route('departments.show', ':uuid') }}';
                     departmentShow = departmentShow
-                        .replace(':id', row.id);
+                        .replace(':uuid', row.uuid);
                     // var addReservation = '{{ route('departments.show', ':id') }}';
                     /*    var addReservation =
                             '{{ route('reservation_allowances.search_employee_new', 'sector_id=:sector&departement_id=:id') }}';
@@ -255,7 +252,10 @@
                     } else {
                         $('.dataTables_paginate').css('visibility', 'visible'); // Show pagination
                     }
-                }
+            },
+            createdRow: function(row, data, dataIndex) {
+                $('td', row).eq(0).html(dataIndex + 1); // Automatic numbering in the first column
+            }
         });
 
     });

@@ -52,7 +52,7 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item "><a href="{{ route('home') }}">الرئيسيه</a></li>
                         <li class="breadcrumb-item"><a
-                                href="{{ route('departments.index', ['id' => $sectors->id]) }}">الادارات</a></li>
+                        href="{{ route('departments.index',  $sectors->uuid) }}">الادارات</a></li>
 
                         <li class="breadcrumb-item active" aria-current="page"> <a href="">
                                 اضافة ادارة</a></li>

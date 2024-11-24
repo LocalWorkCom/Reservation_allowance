@@ -6,15 +6,9 @@ use App\Models\User;
 use App\Models\departements;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
-
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\DataTables\DepartmentDataTable;
 use Illuminate\Support\Facades\Validator;
-use App\DataTables\subDepartmentsDataTable;
-use App\Http\Requests\StoreDepartmentRequest;
 use App\Models\ReservationAllowance;
-// use App\Models\Rule;
 use App\Models\Sector;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\log;
@@ -24,10 +18,10 @@ use Illuminate\Validation\Rule;
 
 class DepartmentController extends Controller
 {
-    public function index($id)
+    public function index($uuid)
     {
+        addUuidToTable('departements');
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
-            // dd('d');
             $departments = departements::all();
         } elseif (Auth::user()->rule->id == 4) {
             $departments = departements::where('sector_id', auth()->user()->sector);
@@ -35,8 +29,7 @@ class DepartmentController extends Controller
             $departments = departements::where('id', auth()->user()->department_id);
         }
         // Fetch the related sector information
-        //$sectors = Sector::findOrFail($id);
-        $sectors = get_by_md5_id($id, 'sectors');
+        $sectors = Sector::where('uuid',$uuid)->first();
         $departments = departements::where('sector_id', $sectors->id)->get();
 
         return view('departments.index', compact('departments', 'sectors'));
@@ -62,9 +55,9 @@ class DepartmentController extends Controller
         ]);
     }
 
-    public function getDepartment($id)
+    public function getDepartment($uuid)
     {
-        $sectors = get_by_md5_id($id, 'sectors');
+        $sectors = Sector::where('uuid',$uuid)->first();
         if (in_array(Auth::user()->rule->id, [1, 2, 4])) {
 
 
@@ -139,7 +132,6 @@ class DepartmentController extends Controller
     public function getManagerDetails($id)
     {
         // Fetch manager data from the database
-        // $user = User::where('Civil_number', $id)->first();
         $user = User::where('file_number', $id)->first();
         if (!$user) {
             return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 404);
@@ -210,17 +202,13 @@ class DepartmentController extends Controller
 
 
 
-    public function index_1($id)
+    public function index_1($uuid)
     {
 
         $users = User::where('flag', 'employee')->where('department_id', NULL)->get();
-        // $parentDepartment = get_by_md5_id($id, 'departements');
-
-        $departments = departements::where('parent_id', $id)->get();
-        $parentDepartment = departements::findOrFail($id);
-
+        $parentDepartment = departements::where('uuid', $uuid)->first();
+        $departments = departements::where('parent_id', $parentDepartment->id)->get();
         $breadcrumbs = $this->getDepartmentBreadcrumbs($parentDepartment);
-
         $sectors = Sector::findOrFail($parentDepartment->sector_id);
 
         return view('sub_departments.index', compact('users', 'departments', 'sectors', 'parentDepartment', 'breadcrumbs'));
@@ -237,17 +225,18 @@ class DepartmentController extends Controller
         return array_reverse($breadcrumbs);
     }
 
-    public function getSub_Department(Request $request, $id)
+    public function getSub_Department(Request $request, $uuid)
     {
         // $parentDepartment = get_by_md5_id($id, 'departments');
+        $departement = departements::where('uuid', $uuid)->first();
 
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
-            $data = departements::where('parent_id', $request->id)
+            $data = departements::where('parent_id', $departement->id)
                 ->withCount('iotelegrams', 'outgoings', 'children')
                 ->with(['children'])
                 ->orderBy('id', 'desc')->get();
         } else {
-            $data = departements::where('parent_id', $request->id)
+            $data = departements::where('parent_id', $departement->id)
                 ->withCount('iotelegrams', 'outgoings', 'children')
                 ->where(function ($query) {
                     $query->where('id', Auth::user()->department_id)
@@ -317,33 +306,31 @@ class DepartmentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create($id)
+    public function create($uuid)
     {
-        $sectors = get_by_md5_id($id, 'sectors');
-        //$sectors = Sector::findOrFail($id);
+        $sectors = Sector::where('uuid',$uuid)->first();
+        $sector_id = $sectors->id;
         $managers = User::where('id', '!=', auth()->user()->id)
             ->whereNot('id', $sectors->manager)
-            ->where(function ($query) use ($id) {
-                $query->where('sector', $id)
+            ->where(function ($query) use ($sector_id) {
+                $query->where('sector', $sector_id)
                     ->orWhereNull('sector');
             })
             ->whereNull('department_id')
             ->get();
 
-        $rules = Rule::where('id', 3)->get();
 
-        return view('departments.create', compact('sectors', 'managers', 'rules'));
+        return view('departments.create', compact('sectors', 'managers'));
     }
 
 
-    public function create_1($id)
+    public function create_1($uuid)
     {
-        $department = departements::findOrFail($id);
-
-        // $department = get_by_md5_id($id, 'departments');
+        $department = departements::where('uuid', $uuid)->first();
+        $department_id = $department->id;
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
-            $employees = User::where(function ($query) use ($id) {
-                $query->where('department_id', $id)
+            $employees = User::where(function ($query) use ($department_id) {
+                $query->where('department_id', $department_id)
                     ->orWhere('department_id', null);
             })
                 ->where('flag', 'employee')
@@ -352,22 +339,20 @@ class DepartmentController extends Controller
                 ->get();
             $managers = User::where('rule_id', 3)->get();
         } else {
-            $employees = User::where(function ($query) use ($id) {
-                $query->where('department_id', $id);
+            $employees = User::where(function ($query) use ($department_id) {
+                $query->where('department_id', $department_id);
             })
                 ->where('flag', 'employee')
                 ->whereNot('id', $department->manager)
                 ->whereNot('id', auth()->user()->id)
                 ->get();
-            $managers = User::where('department_id', $id)->whereNot('id', auth()->user()->id)->get();
+            $managers = User::where('department_id', $department_id)->whereNot('id', auth()->user()->id)->get();
         }
         return view('sub_departments.create', compact('department', 'employees', 'managers'));
     }
 
     public function getEmployeesByDepartment($departmentId)
     {
-        // $currentEmployees = $department->employees()->pluck('id')->toArray();
-
         try {
             $employees = User::where('department_id', $departmentId)->get();
             return response()->json($employees);
@@ -477,10 +462,6 @@ class DepartmentController extends Controller
                 );
             }
         }
-        // } else {
-        //     return redirect()->back()->withErrors('هذا المدير غير موجود')->withInput();
-        // }
-
         // Handle employee assignment
         $failed_file_numbers = [];
         foreach ($file_numbers as $file_number) { //file_number
@@ -558,6 +539,7 @@ class DepartmentController extends Controller
         $departements->reservation_allowance_amount = $request->budget_type == 2 ? 00.00 : $request->budget;
         $departements->reservation_allowance_type = $reservation_allowance_type;
         $departements->created_by = Auth::user()->id;
+        $departements->save();
 
         if ($manager) {
             // Assign the manager and handle the previous department/sector association
@@ -569,20 +551,18 @@ class DepartmentController extends Controller
                 $old_department->save();
             }
 
-            $old_sector = Sector::find($manager->sector);
-            if ($old_sector) {
-                $old_sector->manager = null;
-                $old_sector->save();
-            }
+            // $old_sector = Sector::find($manager->sector);
+            // if ($old_sector) {
+            //     $old_sector->manager = null;
+            //     $old_sector->save();
+            // }
 
             $manager->sector = $request->sector;
             $manager->department_id = $departements->id;
             $manager->flag = 'user';
             $manager->rule_id = 3;
             $manager->email = $request->email;
-
             $manager->password = Hash::make('123456');
-
             $manager->save();
             if ($manager->email && isValidEmail($manager->email)) {
                 // Send email to the new manager
@@ -596,7 +576,6 @@ class DepartmentController extends Controller
             }
         }
 
-        $departements->save();
         UpdateUserHistory($request->mangered);
         addUserHistory($request->mangered, $departements->id,  $request->sector);
         saveHistory($departements->reservation_allowance_amount, $departements->sector_id, $departements->id);
@@ -626,20 +605,14 @@ class DepartmentController extends Controller
 
         return redirect()->route('sub_departments.index', ['id' => $request->parent])->with('message', $message);
     }
-    public function show($id)
+    public function show(departements $department)
     {
-        // $department = get_by_md5_id_relation($id, 'sectors', array('manager', 'managerAssistant', 'children', 'parent'));
-        $department = get_by_md5_id($id, 'departements');
-        $department = departements::with(['manager', 'managerAssistant', 'children', 'parent'])->findOrFail($department->id);
         return view('departments.show', compact('department'));
     }
 
     //public function edit(departements $department)
-    public function edit($id)
+    public function edit(departements $department)
     {
-        $department = get_by_md5_id($id, 'departements');
-        $department = departements::findOrFail($department->id);
-
         $id = $department->sector_id;
         $employees =  User::Where('department_id', $department->id)->whereNot('id', $department->manger)->get();
 
@@ -660,10 +633,7 @@ class DepartmentController extends Controller
         $sect = departements::with(['sectors'])->findOrFail($department->parent_id);
         if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
 
-            $employees = User::where(function ($query) use ($department) {
-                $query->where('department_id', $department->id)
-                    ->orWhere('department_id', null);
-            })
+            $employees = User::where('department_id', $department->id)
                 ->where('flag', 'employee')
                 ->whereNot('id', $department->manager)
                 ->whereNot('id', auth()->user()->id)
@@ -681,13 +651,9 @@ class DepartmentController extends Controller
      * Update the specified resource in storage.
      */
     //public function update(Request $request, departements $department)
-    public function update(Request $request, $id)
+    public function update(Request $request, departements $department)
     {
-        $department = get_by_md5_id($id, 'departements');
         $department = departements::findOrFail($department->id);
-        // Add a log or debugging output
-        // Log::info('Starting department update for department ID: ' . $department->id);
-
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
@@ -725,10 +691,7 @@ class DepartmentController extends Controller
 
         // Retrieve the old manager before updating
         $oldManager = $department->manger; //file_number
-        // $manager = $request->mangered ? User::where('Civil_number', $request->mangered)->value('id') : null;
         $manager = $request->mangered ? User::where('file_number', $request->mangered)->value('id') : null;
-
-
         // Handle reservation allowance type
         $part = $request->input('part');
         $reservation_allowance_type = null;
@@ -857,8 +820,7 @@ class DepartmentController extends Controller
         }
 
         // Redirect after successful update
-        //return redirect()->route('departments.index', ['id' => $request->sector])
-        return redirect()->route('departments.index', $sectors_details->hash_id)->with('success', 'تم تعديل الأداره بنجاح');
+        return redirect()->route('departments.index', $sectors_details->uuid)->with('success', 'تم تعديل الأداره بنجاح');
     }
 
 
@@ -866,9 +828,6 @@ class DepartmentController extends Controller
 
     public function update_1(Request $request, departements $department)
     {
-        // Log the update process for sub-departments
-        Log::info('Starting sub-department update for department ID: ' . $department->id);
-
         // Validation rules and error messages
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
@@ -903,7 +862,6 @@ class DepartmentController extends Controller
 
         // Retrieve old manager before updating
         $oldManager = $department->manger; //file_number
-        // $manager = $request->mangered ? User::where('Civil_number', $request->mangered)->value('id') : null;
         $manager = $request->mangered ? User::where('file_number', $request->mangered)->value('id') : null;
         // Handle reservation allowance type
         $part = $request->input('part');
@@ -996,7 +954,6 @@ class DepartmentController extends Controller
         $file_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->file_number);
         $file_numbers = array_filter(explode(',', $file_numbers)); // Convert to array of file Numbers
         //file_number
-        // $currentEmployees = User::where('department_id', $department->id)->pluck('Civil_number')->toArray();
         $currentEmployees = User::where('department_id', $department->id)->pluck('file_number')->toArray();
 
         $employeesToRemove = array_diff($currentEmployees, $file_numbers);
@@ -1020,9 +977,8 @@ class DepartmentController extends Controller
                 addUserHistory($employee->id, $department->id,  $request->sector);
             }
         }
-
-        return redirect()->route('sub_departments.index', ['id' => $department->parent_id])
-            ->with('success', 'تم تعديل الاداره الفرعيه');
+        $parent_uuid = $department->parent->uuid;
+        return redirect()->route('sub_departments.index',  $parent_uuid)->with('success', 'تم تعديل الاداره الفرعيه');
     }
 
     /**
@@ -1032,6 +988,5 @@ class DepartmentController extends Controller
     {
         $department->delete();
         return redirect()->route('departments.index')->with('success', 'تم حذف الاداره بنجاح');
-        // return response()->json(null, 204);
     }
 }

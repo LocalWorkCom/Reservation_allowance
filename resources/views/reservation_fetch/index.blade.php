@@ -159,7 +159,7 @@
                     <th>الاسم</th>
                     <th>قطاع</th>
                     <th>الادارة</th>
-                    <th>نوع</th>  
+                    <!-- <th>نوع</th>   -->
                     <th>رتبه</th>
                     <th>نوع الحجز</th>
                     <th>القيمة</th>
@@ -210,7 +210,7 @@
                 { data: 'sector', name: 'sector' },
                 { data: 'department', name: 'department' },
                 { data: 'grade', name: 'grade' },
-                { data: 'grade_type', name: 'grade_type' },
+                // { data: 'grade_type', name: 'grade_type' },
                 { data: 'type', name: 'type' },
                 { data: 'amount', name: 'amount' },
             ],
@@ -313,9 +313,9 @@
 });
 
 
-        function printPDF() {
-            let file_number = $('#file_number').val();
-            window.open('{{ route('reservation_fetch.print') }}' + '?file_number=' + file_number, '_blank');
-        }
+         function printPDF() {
+             let file_number = $('#file_number').val();
+             window.open('{{ route('reservation_fetch.print') }}' + '?file_number=' + file_number, '_blank');
+         }
     </script>
 @endpush

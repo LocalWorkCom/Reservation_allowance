@@ -50,7 +50,7 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item "><a href="{{ route('home') }}">الرئيسيه</a></li>
                         <li class="breadcrumb-item"><a
-                                href="{{ route('sub_departments.index', ['id' => $department->parent_id]) }}">
+                                href="{{ route('sub_departments.index', $department->parent->uuid) }}">
                                 {{-- {{ $department->name }} --}} الأدارات
                             </a>
                         </li>
@@ -69,7 +69,7 @@
         <div class="row">
             <div class="container  col-11 mt-3 p-0 ">
                 <div class="container col-10 mt-5 mb-3 pb-5" style="border:0.5px solid #C7C7CC;">
-                    <form action="{{ route('sub_departments.update', $department->id) }}" method="POST"
+                    <form action="{{ route('sub_departments.update', $department) }}" method="POST"
                         enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
@@ -145,7 +145,7 @@
                             </div>
                             <div class="form-group col-md-10 mx-md-2" id="email_field" style="display: none;">
                                 <label class="pb-3 w-100" for="email"> الايميل</label>
-                                <input type="email" name="email" id="email" class="form-control" required>
+                                <input type="email" name="email" id="email" class="form-control">
                                 @error('email')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror

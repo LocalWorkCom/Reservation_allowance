@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\Uuid;
 
 
 class departements extends Model
 {
-    use HasFactory , SoftDeletes;
+    use HasFactory , SoftDeletes, Uuid;
 
     protected $fillable = [
         'name',
@@ -21,7 +22,14 @@ class departements extends Model
 
     protected $appends = ['hash_id'];
 
-
+    protected $hidden = [
+        'id'
+    ];
+    
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
    
     public function employees()
     {
