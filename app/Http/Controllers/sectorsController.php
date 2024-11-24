@@ -354,17 +354,11 @@ class sectorsController extends Controller
     public function edit(Sector $sector)
     {
         // $data = Sector::findOrFail($id);
-<<<<<<< HEAD
         $data = $sector;
         $users = User::where('department_id', null)->where('sector', null)->orWhere('sector', $data->id)->get();
         $employees =  User::where('department_id', null)->Where('sector', $data->id)->whereNot('id', $data->manager)->get();
-        $rules = Rule::whereNotIn('id', [1, 2, 3])->get();
-=======
-        $data = get_by_md5_id($id, 'sectors');
-        $users = User::where('department_id', null)->where('sector', null)->orWhere('sector', $id)->get();
-        $employees =  User::where('department_id', null)->Where('sector', $id)->whereNot('id', $data->manager)->get();
->>>>>>> ed566dc637c9085aa3ecfddda31e12f9bc49c725
-        $manager = User::find($data->manager);
+        //$rules = Rule::whereNotIn('id', [1, 2, 3])->get();
+        //$data = get_by_md5_id($id, 'sectors');
 
         $fileNumber = $manager->file_number ?? null;
         return view('sectors.edit', [

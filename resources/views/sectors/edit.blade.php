@@ -84,18 +84,11 @@
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
-<<<<<<< HEAD
-
-                <div class="input-group moftsh px-md-5 px-3 pt-3" id="email_field" style="display: none;">
-                    <label  for="email">الأيميل</label>
-                    <input type="email" name="email" id="email" class="form-control">
-=======
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="email_field"
                     style= "{{ old('mangered', $data->manager ? 'display: block;' : 'display: none;') }}">
                     <label for="email">الأيميل</label>
                     <input type="email" name="email" id="email"
                         value="{{ old('mangered', $data->manager ? $email : null) }}" class="form-control" required>
->>>>>>> ed566dc637c9085aa3ecfddda31e12f9bc49c725
                     @error('email')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror

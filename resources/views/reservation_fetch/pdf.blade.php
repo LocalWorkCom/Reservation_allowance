@@ -36,7 +36,6 @@
         <p>القطاع: {{ $sector }}</p>
         <p>الإدارة: {{ $department }}</p>
         <p>الرتبة: {{ $grade }}</p>
-        <p>نوع الرتبة: {{ $gradeType }}</p>
     </div>
 
     <table>
@@ -57,7 +56,7 @@
                     <td>{{ \Carbon\Carbon::parse($reservation->date)->translatedFormat('l') }}</td>
                     <td>{{ \Carbon\Carbon::parse($reservation->date)->format('Y-m-d') }}</td>
                     <td>{{ $reservation->type == 1 ? 'حجز كلي' : 'حجز جزئي' }}</td>
-                    <td>{{ number_format($reservation->amount, 2) }}</td>
+                    <td>{{ number_format((float) $reservation->amount, 2) }}</td>
                     <td>{{ $reservation->departements->name ?? 'N/A' }}</td>
                 </tr>
             @endforeach
@@ -65,15 +64,21 @@
         <tfoot>
             <tr>
                 <td colspan="4" style="font-weight: bold; text-align: center;">المجموع الكلي</td>
-                <td colspan="2" style="font-weight: bold; text-align: center;">{{ number_format($totalAmount, 2) }}</td>
-            </tr>
+                <td colspan="2" style="font-weight: bold; text-align: center;">
+                    {{ number_format((float) $totalAmount, 2) }}
+                </td>          
+              </tr>
             <tr>
                 <td colspan="4" style="font-weight: bold; text-align: center;">المجموع للحجز الكلي</td>
-            <td colspan="2" style="font-weight: bold; text-align: center;"> {{ number_format($totalFullReservation, 2) }}</td>
-        </tr>
+                <td colspan="2" style="font-weight: bold; text-align: center;">
+                    {{ number_format((float) $totalFullReservation, 2) }}
+                </td>        
+            </tr>
 
         <tr><td colspan="4" style="font-weight: bold; text-align: center;">المجموع للحجز الجزئي</td>
-            <td colspan="2" style="font-weight: bold; text-align: center;">  {{ number_format($totalPartialReservation, 2) }}</td>
+        <td colspan="2" style="font-weight: bold; text-align: center;">
+            {{ number_format((float) $totalPartialReservation, 2) }}
+        </td>
         </tr>
         </tfoot>
     </table>

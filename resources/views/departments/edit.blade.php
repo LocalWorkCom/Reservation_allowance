@@ -70,11 +70,7 @@
         <div class="row">
             <div class="container  col-11 mt-3 p-0 ">
                 <div class="container col-10 mt-5 mb-3 pb-5" style="border:0.5px solid #C7C7CC;">
-<<<<<<< HEAD
                     <form action="{{ route('departments.update', $department) }}" method="POST"
-=======
-                    <form action="{{ route('departments.update', $department->id) }}" method="POST"
->>>>>>> ed566dc637c9085aa3ecfddda31e12f9bc49c725
                         enctype="multipart/form-data">
                         <!-- <div class="container col-10 mt-5 mb-3 pb-5"
                         style="border:0.5px solid #C7C7CC;">
