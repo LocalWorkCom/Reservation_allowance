@@ -101,6 +101,7 @@ class UserController extends Controller
         $sector_id = departements::find($department_id)->sector_id;
         // Find the user by Civil_number
         $user = User::where('Civil_number', $Civil_number)->first();
+
         if (!$user) {
             return redirect()->back()->withErrors(['error' => 'لا يوجد موظف باهذا الرقم المدني.']);
         }
@@ -125,6 +126,8 @@ class UserController extends Controller
         // If the user is found, assign the department_id and save
         $user->department_id = $department_id;
         $user->save();
+        UpdateUserHistory($user->id);
+        addUserHistory($user->id, $department_id, $sector_id);
 
         return redirect()->route('user.employees', ['department_id' => $department_id, 'flag' => 'employee']);
     }
@@ -673,12 +676,7 @@ class UserController extends Controller
     {
         //
         $user = User::find($request->id_employee);
-        $log = DB::table('user_departments')->insert([
-            'user_id' => $user->id,
-            'department_id' => $user->department_id,
-            'flag' => "0",
-            'created_at' => now(),
-        ]);
+        UpdateUserHistory($user->id);
         $user = User::find($request->id_employee);
         $user->department_id  = Null;
         $user->sector  = Null;
@@ -695,6 +693,7 @@ class UserController extends Controller
             $sector->manager = null;
             $sector->save();
         }
+        // addUserHistory($user->id, $department_id, $sector_id);
 
 
         return redirect()->back()->with('success', 'تم الغاء التعيين بنجاح');
@@ -865,8 +864,9 @@ class UserController extends Controller
 
             Sendmail('بيانات دخولك على نظام القوة المطور', 'هذه بيانات دخولك على نظام القوة المطور',  $request->Civil_number, $request->password, $request->email);
         }
-
-        $id = $request->type;
+        UpdateUserHistory($newUser->id);
+        addUserHistory($newUser->id,  $request->department_id,  $request->sector);
+        // $id = $request->type;
         return redirect()->route('user.employees', $request->flag);
     }
 
@@ -1083,6 +1083,8 @@ class UserController extends Controller
             $sector->manager = null;
             $sector->save();
         }
+        UpdateUserHistory($user->id);
+        addUserHistory($user->id,  $request->department_id,  $request->sector);
         session()->flash('success', 'تم الحفظ بنجاح.');
         return redirect()->route('user.employees', $request->flag);
     }

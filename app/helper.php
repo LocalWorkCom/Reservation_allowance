@@ -10,8 +10,6 @@ use App\Models\Io_file;
 use App\Models\Inspector;
 use App\Models\Government;
 use App\Models\departements;
-use App\Models\VacationType;
-use App\Models\EmployeeVacation;
 use App\Models\GroupSectorHistory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -20,6 +18,7 @@ use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Google\Client as GoogleClient;
 use App\Mail\SendEmail;
+use App\Models\UserDepartment;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -292,10 +291,7 @@ function getDepartments()
 {
     return departements::all();
 }
-function getVactionTypes()
-{
-    return VacationType::all();
-}
+
 function getCountries()
 {
     return  Country::all();
@@ -310,96 +306,7 @@ function getsectores()
 
     return  Sector::all();
 }
-function getgroups()
-{
 
-    return  Groups::all();
-}
-############################################## Vacation #######################################################################
-function CheckStartVacationDate($id)
-{
-    $EmployeeVaction =  EmployeeVacation::find($id);
-    if ($EmployeeVaction->date_from > date('Y-m-d')) {
-        return true;
-    }
-    return false;
-}
-function GetEmployeeVacationType($employeeVacation)
-{
-    $introduce = 'مقدمة';
-    $rejected = 'مرفوضة';
-    $exceeded = 'متجاوزة';
-    $current = 'حالية';
-    $notBegin = 'لم تبدأ بعد';
-    $finished = 'منتهية';
-    $today = date('Y-m-d');
-    $expectedEndDate = ExpectedEndDate($employeeVacation)[0];
-
-    // Save the calculated end date to  model
-    // $expected_date->toDateString();
-
-    if ($employeeVacation->status == 'Pending') {
-        return $introduce;
-    } else if ($employeeVacation->status == 'Rejected') {
-        return $rejected;
-    } else {
-        if ($employeeVacation->start_date > $today) {
-            return $notBegin;
-        } else if ($employeeVacation->start_date < $today && $expectedEndDate < $today) {
-            if ($employeeVacation->end_data || $employeeVacation->end_date > $expectedEndDate) {
-                return $finished;
-            } else {
-
-                if ($employeeVacation->is_exceeded) {
-                    if ($employeeVacation->end_date) {
-                        return $finished;
-                    } else {
-
-                        return $exceeded;
-                    }
-                } else {
-                    return $finished;
-                }
-            }
-        } else {
-            if ($employeeVacation->is_cut) {
-                return $finished;
-            } else {
-
-                return $current;
-            }
-        }
-    }
-}
-function VacationDaysLeft($employeeVacation)
-{
-    $startDate = $employeeVacation->start_date;
-    $daysNumber = $employeeVacation->days_number;
-    $today = date('Y-m-d');
-
-
-    $startDate = Carbon::parse($employeeVacation->start_date);
-    $daysNumber = $employeeVacation->days_number;
-
-    // Calculate the end date
-    $endDate = AddDays($startDate, $daysNumber);
-    $today = Carbon::today();
-    $daysLeft = $today->diffInDays($endDate, false);
-
-    if ($daysLeft < 0) {
-        return -1;
-    }
-    return $daysLeft;
-}
-function ExpectedEndDate($employeeVacation)
-{
-    $startDate = Carbon::parse($employeeVacation->start_date);
-    $daysNumber = $employeeVacation->days_number - 1;
-
-    $expectedEndDate = AddDays($startDate, $daysNumber);
-    $workStartdDate = AddDays($expectedEndDate, 1);
-    return [$expectedEndDate, $workStartdDate];
-}
 function AddDays($date, $daysNumber)
 {
     $startDate = Carbon::parse($date);
@@ -421,32 +328,27 @@ function convertToArabicNumerals($number)
 
     return str_replace($westernArabicNumerals, $easternArabicNumerals, $number);
 }
-function addInspectorHistory($inspector_id, $group_id, $team_id, $is_working = 1)
+function addUserHistory($user_id, $department_id, $sector_id)
+{
+    DB::table('user_departments')->insert([
+        'user_id' => $user_id,
+        'department_id' => $department_id,
+        'sector_id' => $sector_id,
+        'flag' => "1",
+        'created_at' => now(),
+    ]);
+}
+function UpdateUserHistory($user_id)
 {
 
-    $today = date('Y-m-d');
-    $inspector_group = new InspectorGroupHistory();
-    $inspector_group->inspector_id = $inspector_id;
-    $inspector_group->group_id = $group_id;
-    $inspector_group->group_team_id = $team_id;
-    $inspector_group->date = $today;
-    $inspector_group->is_working = $is_working;
-    $inspector_group->save();
-}
-function addGroupHistory($group_id, $sector_id)
-{
-    $today = date('Y-m-d');
-    $group_sector = new GroupSectorHistory();
-    $group_sector->group_id = $group_id;
-    $group_sector->sector_id = $sector_id;
-    $group_sector->date = $today;
-    $group_sector->save();
-}
-function getTokenDevice($inspector_id)
-{
-    $user_id = Inspector::find($inspector_id)->user_id;
-    $device_token = User::find($user_id)->device_token;
-    return $device_token;
+    $all_rec = UserDepartment::where('user_id', $user_id)->get();
+    if ($all_rec->count()) {
+
+        foreach ($all_rec as $value) {
+            $value->flag = '0';
+            $value->save();
+        }
+    }
 }
 function Sendmail($title, $body, $username, $password, $email)
 {
@@ -533,8 +435,8 @@ if (!function_exists('send_push_notification')) {
     {
         $id = Crypt::decryptString($id);
         return DB::table($table)
-                ->where('id', $id)
-                ->first();
+            ->where('id', $id)
+            ->first();
     }
 
     function get_by_decrypt_id($id)

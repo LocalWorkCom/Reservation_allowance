@@ -229,64 +229,7 @@
             </div>
         </div>
     </div>
-    {{-- this for vacation type add --}}
-    <div class="modal fade" id="add-type" tabindex="-1" aria-labelledby="extern-departmentLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header d-flex justify-content-center">
-                    <div class="title d-flex flex-row align-items-center">
-                        <h5 class="modal-title" id="extern-departmentLabel">إضافة نوع اجازه جديد </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                            &times;</button>
-                    </div>
-                </div>
-                <div class="modal-body  d-flex justify-content-center mt-5 mb-5">
-                    <form id="saveExternalUser" action="{{ route('vacationType.add') }}" method="POST">
-                        @csrf
 
-                        <div class="form-group">
-                            <label for="nameus"> الاسم</label>
-                            <input type="text" id="nameus" name="name" class="form-control" required>
-                        </div>
-
-                        <!-- Save button -->
-                        <div class="text-end">
-                            <button type="submit" class="btn-blue">اضافة</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    {{-- this for government type add --}}
-    <div class="modal fade" id="add-gover" tabindex="-1" aria-labelledby="extern-departmentLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header d-flex justify-content-center">
-                    <div class="title d-flex flex-row align-items-center">
-                        <h5 class="modal-title" id="extern-departmentLabel">إضافة نوع اجازه جديد </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                            &times;</button>
-                    </div>
-                </div>
-                <div class="modal-body  d-flex justify-content-center mt-5 mb-5">
-                    <form id="saveExternalUser" action="{{ route('vacationType.add') }}" method="POST">
-                        @csrf
-
-                        <div class="form-group">
-                            <label for="nameus"> الاسم</label>
-                            <input type="text" id="nameus" name="name" class="form-control" required>
-                        </div>
-
-                        <!-- Save button -->
-                        <div class="text-end">
-                            <button type="submit" class="btn-blue">اضافة</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
     {{-- this for edit form --}}
     <div class="modal fade" id="edit" tabindex="-1" aria-labelledby="representativeLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -418,9 +361,9 @@
                 document.getElementById('lable').innerHTML = 'تعديل الوظيفه';
 
             } else {
-                document.getElementById('edit-form').setAttribute('action', '/vacationType');
+                // document.getElementById('edit-form').setAttribute('action', '/vacationType');
 
-                document.getElementById('lable').innerHTML = 'تعديل مسمى الاجازه';
+                // document.getElementById('lable').innerHTML = 'تعديل مسمى الاجازه';
 
             }
 
@@ -440,7 +383,7 @@
                 document.getElementById('delete-form').setAttribute('action', '/jobs/delete');
 
             } else {
-                document.getElementById('delete-form').setAttribute('action', 'vacationType/delete');
+                // document.getElementById('delete-form').setAttribute('action', 'vacationType/delete');
 
             }
             $('#delete').modal('show');
@@ -495,48 +438,48 @@
     </script>
     {{-- for vacation table --}}
     <script>
-        $(document).ready(function() {
-            $('#vacation-table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: '{{ url('setting/all/vacation') }}', // Correct URL concatenation
-                columns: [{
-                        data: 'id',
-                        name: 'id'
-                    },
-                    {
-                        data: 'name',
-                        name: 'name'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    }
-                ],
-                columnDefs: [{
-                    targets: -1,
-                    render: function(data, type, row) {
-                        return `
-                               <div class="form-row" dir="rtl">
-                    <button type="button" class="btn-all mt-3" onclick=openedit(${row.id},'${row.name}',3)
-                    style="background-color: #FAFBFD; border: none;">
-                  <i class="fa fa-edit"></i>
-                </button>
-                </div>
-                   <div class="form-row" dir="rtl">
-                    <button type="button" class="btn-all mt-3" onclick=opendelete(${row.id},3)
-                    style="background-color: #FAFBFD; border: none;">
-                  <i class="fa fa-delete"></i>
-                </button>
-                </div>
-                        `;
-                    }
-                }]
-            });
+        // $(document).ready(function() {
+        //     $('#vacation-table').DataTable({
+        //         processing: true,
+        //         serverSide: true,
+        //         ajax: '{{ url('setting/all/vacation') }}', // Correct URL concatenation
+        //         columns: [{
+        //                 data: 'id',
+        //                 name: 'id'
+        //             },
+        //             {
+        //                 data: 'name',
+        //                 name: 'name'
+        //             },
+        //             {
+        //                 data: 'action',
+        //                 name: 'action',
+        //                 orderable: false,
+        //                 searchable: false
+        //             }
+        //         ],
+        //         columnDefs: [{
+        //             targets: -1,
+        //             render: function(data, type, row) {
+        //                 return `
+        //                        <div class="form-row" dir="rtl">
+        //             <button type="button" class="btn-all mt-3" onclick=openedit(${row.id},'${row.name}',3)
+        //             style="background-color: #FAFBFD; border: none;">
+        //           <i class="fa fa-edit"></i>
+        //         </button>
+        //         </div>
+        //            <div class="form-row" dir="rtl">
+        //             <button type="button" class="btn-all mt-3" onclick=opendelete(${row.id},3)
+        //             style="background-color: #FAFBFD; border: none;">
+        //           <i class="fa fa-delete"></i>
+        //         </button>
+        //         </div>
+        //                 `;
+        //             }
+        //         }]
+        //     });
 
-        });
+        // });
     </script>
     {{-- for gavernment table --}}
     <script>
