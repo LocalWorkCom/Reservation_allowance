@@ -76,7 +76,7 @@ class DepartmentController extends Controller
                 ->orderBy('id', 'desc')
                 ->get();
         }
-        
+
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
                 return '<button class="btn btn-primary btn-sm">Edit</button>';
@@ -122,10 +122,10 @@ class DepartmentController extends Controller
             })
 
             ->addColumn('num_managers', function ($row) {
-             
+
                 return User::where('department_id', $row->id)->where('flag', 'employee')
                     ->count();
-       
+
             })
             ->addColumn('num_subdepartment_managers', function ($row) {
                 $subdepartment_ids = departements::where('parent_id', $row->id)->pluck('id');
@@ -384,19 +384,28 @@ class DepartmentController extends Controller
             'name.required' => 'اسم الحقل مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
+            'email.required' => 'الايميل مطلوب',
+            'budget_type.required' => 'يجب اختيار نوع الميزانيه',
+            'email.unique' => 'عفوا هذا الايميل مأخوذ مسبقا',
         ];
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'budget' => 'nullable|numeric',
+            'budget_type' => 'required',
             'part' => 'required',
+            'email' =>  'required',
+            'email',
+            Rule::unique('users', 'email')->ignore($request->mangered),
         ], $messages);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-
+        if (!isValidEmail($request->email)) {
+            return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
+        }
         // Process file Numbers for employees
         $file_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->file_number);
         $file_numbers = array_filter(explode(',', $file_numbers)); // Ensure it's an array of valid numbers
@@ -414,10 +423,7 @@ class DepartmentController extends Controller
         }
 
         // Retrieve the user by file_number and set the manager
-        // $manager = $request->mangered ? User::where('Civil_number', $request->mangered)->first() : null;
         $manager = $request->mangered ? User::where('file_number', $request->mangered)->first() : null;
-
-        // if ($manager) {
         // Create a new department
         $departements = new Departements();
         $departements->name = $request->name;
@@ -429,7 +435,8 @@ class DepartmentController extends Controller
         $departements->created_by = Auth::user()->id;
         $departements->save();
         saveHistory($departements->reservation_allowance_amount, $departements->sector_id, $departements->id);
-
+        UpdateUserHistory($manager->id);
+        addUserHistory($manager->id, $departements->id,  $request->sector);
         if ($manager) {
             // Handle manager assignment
             if ($manager->department_id != $departements->id || $manager->department_id != null) {
@@ -467,8 +474,6 @@ class DepartmentController extends Controller
                     $manager->password,
                     $manager->email
                 );
-            } else {
-                return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
             }
         }
         // } else {
@@ -487,6 +492,8 @@ class DepartmentController extends Controller
                     $employee->sector = $request->sector;
                     $employee->department_id = $departements->id;
                     $employee->save();
+                    UpdateUserHistory($employee->id);
+                    addUserHistory($employee->id, $departements->id,  $request->sector);
                 }
             }
         }
@@ -627,23 +634,21 @@ class DepartmentController extends Controller
     {
         $department = get_by_md5_id($id, 'departements');
         $department = departements::findOrFail($department->id);
+
         $id = $department->sector_id;
-        $managers = User::where('id', '!=', auth()->user()->id)
-            ->where(function ($query) use ($id) {
-                $query->where('sector', $id)
-                    ->orWhere(function ($subQuery) {
-                        $subQuery->whereNull('sector');
-                    });
-            })
-            // Ensure all users do not have a department
-            ->get();
-        $employees =  User::Where('department_id', $department->id)->whereNot('id', $department->manager)->get();
+        $employees =  User::Where('department_id', $department->id)->whereNot('id', $department->manger)->get();
 
-        $rules = Rule::where('id', 3)->get();
+        $manager = User::find($department->manger);
+        $fileNumber = $manager->file_number ?? null;
+        return view('departments.edit', [
+            'department' => $department,
+            'employees' => $employees,
+            'fileNumber' => $fileNumber,
+            'email' => $manager->email ?? null,
+            'budget' => $department->reservation_allowance_amount
 
-        return view('departments.edit', compact('department', 'managers', 'rules', 'employees'));
-        // dd($employee);
-        // return view('departments.edit', compact('department', 'users', 'employee'));
+
+        ]);
     }
     public function edit_1(departements $department)
     {
@@ -679,7 +684,7 @@ class DepartmentController extends Controller
         $department = get_by_md5_id($id, 'departements');
         $department = departements::findOrFail($department->id);
         // Add a log or debugging output
-        Log::info('Starting department update for department ID: ' . $department->id);
+        // Log::info('Starting department update for department ID: ' . $department->id);
 
         // Define validation rules and messages
         $messages = [
@@ -736,7 +741,8 @@ class DepartmentController extends Controller
         $department->created_by = Auth::user()->id;
         $department->save();
         saveHistory($department->reservation_allowance_amount, $department->sector_id, $department->id);
-
+        UpdateUserHistory($manager->id);
+        addUserHistory($manager->id, $department->id,  $request->sector);
         // Handle old and new manager updates
         if ($oldManager != $manager) {
             if ($oldManager) {
@@ -797,6 +803,7 @@ class DepartmentController extends Controller
 
                 $Manager->password = Hash::make('123456');
                 $Manager->save();
+
                 if ($Manager->email && isValidEmail($Manager->email)) {
                     // Send email to the new manager
                     Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, 123456, $Manager->email);

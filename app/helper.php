@@ -345,7 +345,7 @@ function UpdateUserHistory($user_id)
     if ($all_rec->count()) {
 
         foreach ($all_rec as $value) {
-            $value->flag = 0;
+            $value->flag = '0';
             $value->save();
         }
     }
