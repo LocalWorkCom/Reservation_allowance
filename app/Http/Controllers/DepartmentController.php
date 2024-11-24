@@ -643,14 +643,11 @@ class DepartmentController extends Controller
     //public function edit(departements $department)
     public function edit(departements $department)
     {
-<<<<<<< HEAD
         // $department = get_by_md5_id($id, 'departements');
         // $department = departements::findOrFail($department->id);
-=======
-        $department = get_by_md5_id($id, 'departements');
-        $department = departements::findOrFail($department->id);
+        // $department = get_by_md5_id($id, 'departements');
+        // $department = departements::findOrFail($department->id);
 
->>>>>>> ed566dc637c9085aa3ecfddda31e12f9bc49c725
         $id = $department->sector_id;
         $employees =  User::Where('department_id', $department->id)->whereNot('id', $department->manger)->get();
 
