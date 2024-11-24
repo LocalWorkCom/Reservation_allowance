@@ -95,10 +95,13 @@ class UserController extends Controller
 
     public function add_employees(Request $request)
     {
-        $department_id = $request->department_id;
+        // $department_id = $request->department_id;
+        $uuid = $request->department_id;
         $Civil_number = $request->Civil_number;
 
-        $sector_id = departements::find($department_id)->sector_id;
+        $department_details = departements::where('uuid', $uuid)->first();
+        $department_id = $department_details->id;
+        $sector_id = $department_details->sector_id;
         // Find the user by Civil_number
         $user = User::where('Civil_number', $Civil_number)->first();
 
