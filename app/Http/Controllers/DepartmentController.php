@@ -603,7 +603,7 @@ class DepartmentController extends Controller
             $message .= ' لكن بعض الموظفين لم يتم إضافتهم بسبب عدم تأكيد النقل أو عدم العثور على ارقام الملفات: ' . implode(', ', $failed_file_numbers);
         }
 
-        return redirect()->route('sub_departments.index', ['id' => $request->parent])->with('message', $message);
+        return redirect()->route('sub_departments.index', $departements->parent->uuid)->with('message', $message);
     }
     public function show(departements $department)
     {
@@ -638,13 +638,15 @@ class DepartmentController extends Controller
                 ->whereNot('id', $department->manager)
                 ->whereNot('id', auth()->user()->id)
                 ->get();
-            $managers = User::where('department_id', 1)->orWhere('id', $department->manger)->orWhere('department_id', null)->where('rule_id', 3)->get();
+            $manager = User::find( $department->manger);
         } else {
             $employees = User::where('flag', 'employee')->where('department_id', $department->id)->whereNot('id', $department->manager)->get();
-            $managers = User::where('department_id', 1)->get();
+            $manager = User::find( $department->manger);
         }
+        
+        $fileNumber = $manager->file_number ?? null;
 
-        return view('sub_departments.edit', compact('department', 'managers', 'employees', 'sect'));
+        return view('sub_departments.edit', compact('department','fileNumber', 'manager', 'employees', 'sect'));
     }
 
     /**
