@@ -14,11 +14,13 @@ use Illuminate\Support\Facades\Validator;
 use App\DataTables\subDepartmentsDataTable;
 use App\Http\Requests\StoreDepartmentRequest;
 use App\Models\ReservationAllowance;
-use App\Models\Rule;
+// use App\Models\Rule;
 use App\Models\Sector;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\log;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+
 
 class DepartmentController extends Controller
 {
