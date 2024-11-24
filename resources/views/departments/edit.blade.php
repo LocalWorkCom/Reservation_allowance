@@ -183,7 +183,7 @@
                                 </div>
                             </div>
 
-                            <div class="input-group moftsh px-md-5 px-3 pt-3" id="budgetField" style= {{ (float)$department->reservation_allowance_amount > 0.00 ? "display: block": "display: none;" }}>
+                            <div class="input-group moftsh col-md-10 mx-md-2" id="budgetField" style= {{ (float)$department->reservation_allowance_amount > 0.00 ? "display: block": "display: none;" }}>
                                 <label class="d-flex pb-3" for="budget">ميزانية بدل حجز</label>
                                 <input type="text" name="budget" class="form-control" value=" {{ (float)$department->reservation_allowance_amount > 0.00 ? $department->reservation_allowance_amount : 00.00 }}"
                                     id="budget" autocomplete="one-time-code">
