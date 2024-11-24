@@ -20,6 +20,7 @@ use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Google\Client as GoogleClient;
 use App\Mail\SendEmail;
+use App\Models\UserDepartment;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -310,11 +311,7 @@ function getsectores()
 
     return  Sector::all();
 }
-function getgroups()
-{
 
-    return  Groups::all();
-}
 ############################################## Vacation #######################################################################
 function CheckStartVacationDate($id)
 {
@@ -421,33 +418,23 @@ function convertToArabicNumerals($number)
 
     return str_replace($westernArabicNumerals, $easternArabicNumerals, $number);
 }
-function addInspectorHistory($inspector_id, $group_id, $team_id, $is_working = 1)
+function addUserHistory($user_id, $department_id, $sector_id)
 {
 
-    $today = date('Y-m-d');
-    $inspector_group = new InspectorGroupHistory();
-    $inspector_group->inspector_id = $inspector_id;
-    $inspector_group->group_id = $group_id;
-    $inspector_group->group_team_id = $team_id;
-    $inspector_group->date = $today;
-    $inspector_group->is_working = $is_working;
-    $inspector_group->save();
+    $all_rec = UserDepartment::where('user_id', $user_id)->get();
+    foreach ($all_rec as $value) {
+        $value->flag = 0;
+        $value->save();
+    }
+    DB::table('user_departments')->insert([
+        'user_id' => $user_id,
+        'department_id' => $department_id,
+        'sector_id' => $sector_id,
+        'flag' => "1",
+        'created_at' => now(),
+    ]);
 }
-function addGroupHistory($group_id, $sector_id)
-{
-    $today = date('Y-m-d');
-    $group_sector = new GroupSectorHistory();
-    $group_sector->group_id = $group_id;
-    $group_sector->sector_id = $sector_id;
-    $group_sector->date = $today;
-    $group_sector->save();
-}
-function getTokenDevice($inspector_id)
-{
-    $user_id = Inspector::find($inspector_id)->user_id;
-    $device_token = User::find($user_id)->device_token;
-    return $device_token;
-}
+
 function Sendmail($title, $body, $username, $password, $email)
 {
     $details = [
@@ -533,8 +520,8 @@ if (!function_exists('send_push_notification')) {
     {
         $id = Crypt::decryptString($id);
         return DB::table($table)
-                ->where('id', $id)
-                ->first();
+            ->where('id', $id)
+            ->first();
     }
 
     function get_by_decrypt_id($id)
