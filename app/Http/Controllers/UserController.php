@@ -195,8 +195,6 @@ class UserController extends Controller
                 $data = $data->where('Civil_number', request()->get('Civil_number'));
         }
 
-        // $users = User::where('department_id', $department_id)->get();
-
         // $gradeIds = $users->pluck('grade_id'); // Get all grade IDs from users in this department
         if ($filter == 'all') {
 
