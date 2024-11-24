@@ -89,7 +89,7 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/getRegion/{id}', [UserController::class, 'getRegion'])->name('user.getRegion')->middleware('check.permission:view Region');
 
     Route::any('/employees/{flag}', [UserController::class, 'index'])->name('user.employees')->middleware('check.permission:view User');
-    Route::post('/employees/add', [UserController::class, 'add_employees'])->name('user.employees.add')->middleware('check.permission:create User');
+    Route::post('/employees-add', [UserController::class, 'add_employees'])->name('user.employees.add')->middleware('check.permission:create User');
     Route::get('/edit/{id}', [UserController::class, 'edit'])->name('user.edit')->middleware('check.permission:edit User');
     Route::get('/show/{id}', [UserController::class, 'show'])->name('user.show')->middleware('check.permission:view User');
     Route::post('/update/{id}', [UserController::class, 'update'])->name('user.update')->middleware('check.permission:edit User');
@@ -197,18 +197,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('setting/jobs/show/{id}', [settingController::class, 'showjob'])->name('job.show')->middleware('check.permission:view job');
     Route::post('setting/jobs/delete', [settingController::class, 'deletejob'])->name('job.delete')->middleware('check.permission:delete job');
     //end jobs
-    //start vacation type
-    Route::get('setting/vacationType', [settingController::class, 'getAllvacationType'])->name('setting.getAllvacationType')->middleware('check.permission:view VacationType');
-    Route::get('setting/vacationType/all', [settingController::class, 'indexvacationType'])->name('vacationType.index')->middleware('check.permission:view VacationType');
-    Route::post('setting/vacationType/add', [settingController::class, 'addvacationType'])->name('vacationType.add')->middleware('check.permission:create VacationType');
-    //Route::get('setting/vacationType/create', [settingController::class,'createvacationType'])->name('vacationType.create');
-    Route::post('setting/vacationType/update', [settingController::class, 'updatevacationType'])->name('vacationType.update')->middleware('check.permission:edit VacationType');
-    //Route::post('setting/vacationType/edit', [settingController::class,'editvacationType'])->name('vacationType.edit');
-    Route::get('setting/vacationType/show/{id}', [settingController::class, 'showvacationType'])->name('vacationType.show')->middleware('check.permission:view VacationType');
-    Route::post('setting/vacationType/delete', [settingController::class, 'deletevacationType'])->name('vacationType.delete')->middleware('check.permission:delete VacationType');
-    //end vacation type
 
-    //settings
 
 
     Route::get('/settings', [settingController::class, 'allSettings'])->name('settings.index')->middleware('check.permission:view Setting');
@@ -340,32 +329,28 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/statistics/search', [statisticController::class, 'getFilteredData'])->name('statistic.search');
 
     //reservation_allowances
-    Route::any('/reservation_allowances', [ReservationAllowanceController::class, 'index'])->name('reservation_allowances.index');
-    Route::any('/reservation_allowances/create', [ReservationAllowanceController::class, 'create'])->name('reservation_allowances.create');
-    Route::any('/reservation_allowances/store', [ReservationAllowanceController::class, 'store'])->name('reservation_allowances.store');
-    Route::any('/reservation_allowances/create_all', [ReservationAllowanceController::class, 'create_all'])->name('reservation_allowances.create.all');
-    Route::any('/reservation_allowances/get_crate_all_form/{sector}/{department}', [ReservationAllowanceController::class, 'get_crate_all_form'])->name('reservation_allowances.get_crate_all_form');
-    Route::any('/reservation_allowances/get_check_sector_department/{sector}/{department}/{civilNumber}', [ReservationAllowanceController::class, 'get_check_sector_department'])->name('reservation_allowances.get_check_sector_department');
-    Route::any('/reservation_allowances/index_data/{sector}/{departement}/{date}', [ReservationAllowanceController::class, 'index_data'])->name('reservation_allowances.index_data');
-    Route::any('/reservation_allowances/check_store', [ReservationAllowanceController::class, 'check_store'])->name('reservation_allowances.check_store');
-
-
-
-    Route::any('/reservation_allowances/store_all', [ReservationAllowanceController::class, 'store_all'])->name('reservation_allowances.store.all');
-
-    Route::any('/reservation_allowances/update', [ReservationAllowanceController::class, 'update'])->name('reservation_allowances.edit');
-    Route::any('/reservation_allowances/edit/{id}', [ReservationAllowanceController::class, 'edit'])->name('reservation_allowances.update');
-    Route::any('/reservation_allowances/getAll', [ReservationAllowanceController::class, 'getAll'])->name('reservation_allowances.getAll');
-    Route::any('/reservation_allowances/getAllWithMonth', [ReservationAllowanceController::class, 'getAllWithMonth'])->name('reservation_allowances.getAllWithMonth');
-    Route::any('/reservation_allowances/get_departement/{id}/{type}', [ReservationAllowanceController::class, 'get_departement'])->name('reservation_allowances.get_departement');
-    Route::any('/reservation_allowances/search_employee', [ReservationAllowanceController::class, 'search_employee'])->name('reservation_allowances.search_employee');
-    Route::any('/reservation_allowances/get_search_employee/{sector_id}/{departement_id}', [ReservationAllowanceController::class, 'get_search_employee'])->name('reservation_allowances.get_search_employee');
-    Route::any('/reservation_allowances/search_employee_new', [ReservationAllowanceController::class, 'search_employee_new'])->name('reservation_allowances.search_employee_new');
-    Route::any('/reservation_allowances/add_reservation_allowances_employess/{type}/{id}', [ReservationAllowanceController::class, 'add_reservation_allowances_employess'])->name('reservation_allowances.add_reservation_allowances_employess');
-    Route::any('/reservation_allowances/view_reservation_allowances_employess', [ReservationAllowanceController::class, 'view_reservation_allowances_employess'])->name('reservation_allowances.view_reservation_allowances_employess');
-    Route::any('/reservation_allowances/confirm_reservation_allowances/{date}/{sector_id}/{departement_id}', [ReservationAllowanceController::class, 'confirm_reservation_allowances'])->name('reservation_allowances.confirm_reservation_allowances');
-    Route::any('/reservation_allowances/create_employee_new', [ReservationAllowanceController::class, 'create_employee_new'])->name('reservation_allowances.create_employee_new');
-    Route::any('/reservation_allowances/create_employee_all', [ReservationAllowanceController::class, 'create_employee_all'])->name('reservation_allowances.create_employee_all');
+    Route::any('/reservation_allowances', [ReservationAllowanceController::class, 'index'])->name('reservation_allowances.index')->middleware('check.permission:view ReservationAllowance');
+    Route::any('/reservation_allowances/create', [ReservationAllowanceController::class, 'create'])->name('reservation_allowances.create')->middleware('check.permission:create ReservationAllowance');
+    Route::any('/reservation_allowances/store', [ReservationAllowanceController::class, 'store'])->name('reservation_allowances.store')->middleware('check.permission:store ReservationAllowance');
+    Route::any('/reservation_allowances/create_all', [ReservationAllowanceController::class, 'create_all'])->name('reservation_allowances.create.all')->middleware('check.permission:create ReservationAllowance');
+    Route::any('/reservation_allowances/get_crate_all_form/{sector}/{department}', [ReservationAllowanceController::class, 'get_crate_all_form'])->name('reservation_allowances.get_crate_all_form')->middleware('check.permission:create ReservationAllowance');
+    Route::any('/reservation_allowances/get_check_sector_department/{sector}/{department}/{civilNumber}', [ReservationAllowanceController::class, 'get_check_sector_department'])->name('reservation_allowances.get_check_sector_department')->middleware('check.permission:view ReservationAllowance');
+    Route::any('/reservation_allowances/index_data/{sector}/{departement}/{date}', [ReservationAllowanceController::class, 'index_data'])->name('reservation_allowances.index_data')->middleware('check.permission:view ReservationAllowance');
+    Route::any('/reservation_allowances/check_store', [ReservationAllowanceController::class, 'check_store'])->name('reservation_allowances.check_store')->middleware('check.permission:view ReservationAllowance');
+    Route::any('/reservation_allowances/store_all', [ReservationAllowanceController::class, 'store_all'])->name('reservation_allowances.store.all')->middleware('check.permission:store ReservationAllowance');
+    Route::any('/reservation_allowances/update', [ReservationAllowanceController::class, 'update'])->name('reservation_allowances.edit')->middleware('check.permission:update ReservationAllowance');
+    Route::any('/reservation_allowances/edit/{id}', [ReservationAllowanceController::class, 'edit'])->name('reservation_allowances.update')->middleware('check.permission:edit ReservationAllowance');
+    Route::any('/reservation_allowances/getAll', [ReservationAllowanceController::class, 'getAll'])->name('reservation_allowances.getAll')->middleware('check.permission:view ReservationAllowance');
+    Route::any('/reservation_allowances/getAllWithMonth', [ReservationAllowanceController::class, 'getAllWithMonth'])->name('reservation_allowances.getAllWithMonth')->middleware('check.permission:view ReservationAllowance');
+    Route::any('/reservation_allowances/get_departement/{id}/{type}', [ReservationAllowanceController::class, 'get_departement'])->name('reservation_allowances.get_departement')->middleware('check.permission:view ReservationAllowance');
+    Route::any('/reservation_allowances/search_employee', [ReservationAllowanceController::class, 'search_employee'])->name('reservation_allowances.search_employee')->middleware('check.permission:view ReservationAllowance');
+    Route::any('/reservation_allowances/get_search_employee/{sector_id}/{departement_id}', [ReservationAllowanceController::class, 'get_search_employee'])->name('reservation_allowances.get_search_employee')->middleware('check.permission:view ReservationAllowance');
+    Route::any('/reservation_allowances/search_employee_new', [ReservationAllowanceController::class, 'search_employee_new'])->name('reservation_allowances.search_employee_new')->middleware('check.permission:view ReservationAllowance');
+    Route::any('/reservation_allowances/add_reservation_allowances_employess/{type}/{id}', [ReservationAllowanceController::class, 'add_reservation_allowances_employess'])->name('reservation_allowances.add_reservation_allowances_employess')->middleware('check.permission:create ReservationAllowance');
+    Route::any('/reservation_allowances/view_reservation_allowances_employess', [ReservationAllowanceController::class, 'view_reservation_allowances_employess'])->name('reservation_allowances.view_reservation_allowances_employess')->middleware('check.permission:creategit  ReservationAllowance');
+    Route::any('/reservation_allowances/confirm_reservation_allowances/{date}/{sector_id}/{departement_id}', [ReservationAllowanceController::class, 'confirm_reservation_allowances'])->name('reservation_allowances.confirm_reservation_allowances')->middleware('check.permission:view ReservationAllowance');
+    Route::any('/reservation_allowances/create_employee_new', [ReservationAllowanceController::class, 'create_employee_new'])->name('reservation_allowances.create_employee_new')->middleware('check.permission:create ReservationAllowance');
+    Route::any('/reservation_allowances/create_employee_all', [ReservationAllowanceController::class, 'create_employee_all'])->name('reservation_allowances.create_employee_all')->middleware('check.permission:create ReservationAllowance');
 
 
  Route::group(['middleware' => ['check.permission:statistic ReservationAllowance']], function () {
