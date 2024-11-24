@@ -69,7 +69,7 @@
         <div class="row">
             <div class="container  col-11 mt-3 p-0 ">
                 <div class="container col-10 mt-5 mb-3 pb-5" style="border:0.5px solid #C7C7CC;">
-                    <form action="{{ route('departments.update', $department->hash_id) }}" method="POST"
+                    <form action="{{ route('departments.update', $department->id) }}" method="POST"
                         enctype="multipart/form-data">
                         <!-- <div class="container col-10 mt-5 mb-3 pb-5"
                         style="border:0.5px solid #C7C7CC;">
@@ -114,14 +114,14 @@
                             <div class="form-group col-md-10 mx-md-2" id="manager">
                                 <label for="mangered">رقم ملف المدير</label>
                                 <input type="text" name="mangered" id="mangered" class="form-control"
-                                    autocomplete="one-time-code">
+                                    autocomplete="one-time-code" value="{{ old('mangered', $department->manager ? $fileNumber : null) }}">
 
                                 @error('mangered')
                                     <div class="alert alert-danger">{{ $message }}
                                     </div>
                                 @enderror
                             </div>
-                            <div class="input-group moftsh px-md-5 px-3 pt-3" id="email_field" style="display: none;">
+                            <div class="input-group moftsh px-md-5 px-3 pt-3" id="email_field" style="display: none;" @error('email') style="display: block;" @enderror>
                                 <label class="pb-3" for="email">الأيميل</label>
                                 <input type="email" name="email" id="email" class="form-control" required>
                                 @error('email')
@@ -241,7 +241,6 @@
                 $('#email_field').show();
                 fetchManagerDetails(selectedManagerId, false);
 
-                var existingEmail = "{{ old('email', $department->manager ? $email : '') }}";
                 var existingBudget =
                     "{{ old('budget', $department->reservation_allowance_amount ? $department->reservation_allowance_amount : '') }}";
 

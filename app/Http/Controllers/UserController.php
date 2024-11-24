@@ -65,30 +65,31 @@ class UserController extends Controller
         $department_id = $request->get('department_id'); // Fetch department_id from the request
 
         // Fetch all users in the specified department
-        $users = User::where('department_id', $department_id)->get();
-        
+        // $users = User::where('department_id', $department_id)->get();
+
         // Fetch grade counts based on user associations
-        $gradeIds = $users->pluck('grade_id'); // Get all grade IDs from users in this department
+        // $gradeIds = $users->pluck('grade_id'); // Get all grade IDs from users in this department
 
         $gradeall = Grade::pluck('id')->toArray();
-        $all = User::where('department_id', $department_id)->whereIn('grade_id', $gradeall)->count();
+        $all = User::where('department_id', $department_id)->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
 
+        // dd($all);
         $gradeperson = Grade::where('type', 3)->pluck('id')->toArray();
-        $person = User::where('department_id', $department_id)->whereIn('grade_id', $gradeperson)->count();
+        $person = User::where('department_id', $department_id)->where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
 
         $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
-        $Officer = User::where('department_id', $department_id)->whereIn('grade_id', $gradeOfficer)->count();
+        $Officer = User::where('department_id', $department_id)->where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
 
         $graseOfficer2 = Grade::where('type', 1)->pluck('id')->toArray();
-        $Officer2 = User::where('department_id', $department_id)->whereIn('grade_id', $graseOfficer2)->count();
+        $Officer2 = User::where('department_id', $department_id)->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
 
         // Fetch related departments and sectors
         $departments = departements::all();
         $sectors = Sector::all();
 
 
-    
-        return view('user.view', compact('departments', 'department_id', 'sectors', 'Officer', 'Officer2', 'person','all','flag'));
+
+        return view('user.view', compact('departments', 'department_id', 'sectors', 'Officer', 'Officer2', 'person', 'all', 'flag'));
     }
 
 
@@ -97,19 +98,35 @@ class UserController extends Controller
         $department_id = $request->department_id;
         $Civil_number = $request->Civil_number;
 
+        $sector_id = departements::find($department_id)->sector_id;
         // Find the user by Civil_number
         $user = User::where('Civil_number', $Civil_number)->first();
-
-        // Check if the user exists
         if (!$user) {
             return redirect()->back()->withErrors(['error' => 'لا يوجد موظف باهذا الرقم المدني.']);
         }
+        $department = departements::where('manger', $user->id)->first();
+        if ($department) {
+            $department->manger = null;
+            $department->save();
+        }
+        $sector = sector::where('manager', $user->id)->first();
+        if ($sector) {
+            return redirect()->back()->withErrors(['error' => 'لا يمكن نقل المدير الي الموظف']);
+        }
+
+        $user->sector = $sector_id;
+        $user->flag = 'employee';
+        $user->password = null;
+        $user->rule_id = null;
+
+        // Check if the user exists
+
 
         // If the user is found, assign the department_id and save
         $user->department_id = $department_id;
         $user->save();
 
-        return redirect()->route('user.employees', ['department_id' => $department_id, 'flag'=>'user']);
+        return redirect()->route('user.employees', ['department_id' => $department_id, 'flag' => 'employee']);
     }
 
 
@@ -175,9 +192,9 @@ class UserController extends Controller
                 $data = $data->where('Civil_number', request()->get('Civil_number'));
         }
 
-        $users = User::where('department_id', $department_id)->get();
+        // $users = User::where('department_id', $department_id)->get();
 
-        $gradeIds = $users->pluck('grade_id'); // Get all grade IDs from users in this department
+        // $gradeIds = $users->pluck('grade_id'); // Get all grade IDs from users in this department
         if ($filter == 'all') {
 
             $all = Grade::pluck('id')->toArray();

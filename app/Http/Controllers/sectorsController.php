@@ -7,7 +7,9 @@ use App\Models\departements;
 use App\Models\Government;
 use App\Models\history_allawonce;
 use App\Models\ReservationAllowance;
-use App\Models\Rule;
+// use App\Models\Rule;
+use Illuminate\Validation\Rule;
+
 use App\Models\Sector;
 use App\Models\User;
 use Carbon\Carbon;
@@ -190,25 +192,30 @@ class sectorsController extends Controller
         // Custom error messages for validation
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
-            // 'budget.required' => 'مبلغ بدل الحجز مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
-            // 'budget.min' => 'مبلغ بدل الحجز يجب ألا يقل عن 0.00.',
-            //'budget.max' => 'مبلغ بدل الحجز يجب ألا يزيد عن 1000000.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
+            'email.required' =>'الايميل مطلوب',
+            'budget_type.required' =>'يجب اختيار نوع الميزانيه',
+            'email.unique' =>'عفوا هذا الايميل مأخوذ مسبقا',
         ];
 
         // Validation rules
         $validator = Validator::make($request->all(), [
             'name' => 'required',
+            'budget_type' => 'required',
             'budget' => 'nullable|numeric',
             'part' => 'required',
+            'email' =>  'required',
+            'email',
+            Rule::unique('users', 'email')->ignore($request->mangered),
         ], $messages);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        //dd($request->all());
-        // Process Civil_numbers input into an array
+        if (!isValidEmail($request->email)) {
+            return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
+        }       // Process Civil_numbers input into an array
         $Civil_numbers = str_replace(["\r", "\r\n", "\n"], ',', $request->Civil_number);
         $Civil_numbers = explode(',,', $Civil_numbers);
 
@@ -285,11 +292,12 @@ class sectorsController extends Controller
             $user->email = $request->email;
             $user->password = Hash::make('123456');
             $user->save();
-            if ($user->email && isValidEmail($manager->email)) {
+            if ($user->email && isValidEmail($user->email)) {
                 Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع ' . $request->name, $user->file_number, 123456, $user->email);
-            }else {
-                return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
-            }
+             }
+            //else {
+            //     return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
+            // }
         }
 
         // Track Civil numbers that could not be added
@@ -369,13 +377,20 @@ class sectorsController extends Controller
             'name.required' => 'اسم الحقل مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
+            'email.required' =>'الايميل مطلوب',
+            'budget_type.required' =>'يجب اختيار نوع الميزانيه',
+            'email.unique' =>'عفوا هذا الايميل مأخوذ مسبقا',
         ];
 
         // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required',
+           'budget_type' => 'required',
             'budget' => 'nullable|numeric',
             'part' => 'required',
+            'email' =>  'required',
+            'email',
+            Rule::unique('users', 'email')->ignore($request->mangered),
         ], $messages);
 
         if ($validator->fails()) {

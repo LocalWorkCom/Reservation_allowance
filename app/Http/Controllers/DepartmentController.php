@@ -76,6 +76,7 @@ class DepartmentController extends Controller
                 ->orderBy('id', 'desc')
                 ->get();
         }
+
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
                 return '<button class="btn btn-primary btn-sm">Edit</button>';
@@ -121,8 +122,10 @@ class DepartmentController extends Controller
             })
 
             ->addColumn('num_managers', function ($row) {
-                return User::where('department_id', $row->id)
+
+                return User::where('department_id', $row->id)->where('flag', 'employee')
                     ->count();
+
             })
             ->addColumn('num_subdepartment_managers', function ($row) {
                 $subdepartment_ids = departements::where('parent_id', $row->id)->pluck('id');
@@ -296,7 +299,7 @@ class DepartmentController extends Controller
             })
 
             ->addColumn('num_managers', function ($row) {
-                return User::where('department_id', $row->id)
+                return User::where('department_id', $row->id)->where('flag', 'employee')
                     ->count();
             })
             ->addColumn('num_subdepartment_managers', function ($row) {
@@ -624,23 +627,21 @@ class DepartmentController extends Controller
     {
         $department = get_by_md5_id($id, 'departements');
         $department = departements::findOrFail($department->id);
+
         $id = $department->sector_id;
-        $managers = User::where('id', '!=', auth()->user()->id)
-            ->where(function ($query) use ($id) {
-                $query->where('sector', $id)
-                    ->orWhere(function ($subQuery) {
-                        $subQuery->whereNull('sector');
-                    });
-            })
-            // Ensure all users do not have a department
-            ->get();
-        $employees =  User::Where('department_id', $department->id)->whereNot('id', $department->manager)->get();
+        $employees =  User::Where('department_id', $department->id)->whereNot('id', $department->manger)->get();
 
-        $rules = Rule::where('id', 3)->get();
+        $manager = User::find($department->manger);
+        $fileNumber = $manager->file_number ?? null;
+        return view('departments.edit', [
+            'department' => $department,
+            'employees' => $employees,
+            'fileNumber' => $fileNumber,
+            'email' => $manager->email ?? null,
+            'budget' => $department->reservation_allowance_amount
 
-        return view('departments.edit', compact('department', 'managers', 'rules', 'employees'));
-        // dd($employee);
-        // return view('departments.edit', compact('department', 'users', 'employee'));
+
+        ]);
     }
     public function edit_1(departements $department)
     {
@@ -761,11 +762,11 @@ class DepartmentController extends Controller
                     $newManager->department_id = $department->id;
                     $newManager->sector = $request->sector;
 
-                        $newManager->flag = 'user';
-                        $newManager->email = $request->email;
-                        $newManager->rule_id =3;
+                    $newManager->flag = 'user';
+                    $newManager->email = $request->email;
+                    $newManager->rule_id = 3;
 
-                        $newManager->password = Hash::make('123456');
+                    $newManager->password = Hash::make('123456');
 
                     $newManager->save();
 
