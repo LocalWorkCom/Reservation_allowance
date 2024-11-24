@@ -591,3 +591,15 @@ function isValidEmail($email)
     }
     return true;
 }
+
+function addUuidToTable($table){
+    $get_all_data = DB::table($table)->get();
+    foreach($get_all_data as $get_data){
+        if($get_data->uuid == null){
+            $uuid = Str::uuid();  // Generate UUID
+            DB::table($table)->where('id', $get_data->id)->update([
+                'uuid' => $uuid  // Update the UUID for this record
+            ]);
+        } 
+    }
+}

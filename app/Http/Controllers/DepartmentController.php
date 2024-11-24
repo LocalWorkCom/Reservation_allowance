@@ -22,8 +22,9 @@ use Illuminate\Support\Facades\Hash;
 
 class DepartmentController extends Controller
 {
-    public function index($id)
+    public function index($uuid)
     {
+        addUuidToTable('departements');
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
             // dd('d');
             $departments = departements::all();
@@ -34,7 +35,7 @@ class DepartmentController extends Controller
         }
         // Fetch the related sector information
         //$sectors = Sector::findOrFail($id);
-        $sectors = get_by_md5_id($id, 'sectors');
+        $sectors = Sector::where('uuid',$uuid)->first();
         $departments = departements::where('sector_id', $sectors->id)->get();
 
         return view('departments.index', compact('departments', 'sectors'));
@@ -60,9 +61,9 @@ class DepartmentController extends Controller
         ]);
     }
 
-    public function getDepartment($id)
+    public function getDepartment($uuid)
     {
-        $sectors = get_by_md5_id($id, 'sectors');
+        $sectors = Sector::where('uuid',$uuid)->first();
         if (in_array(Auth::user()->rule->id, [1, 2, 4])) {
 
 
@@ -209,14 +210,18 @@ class DepartmentController extends Controller
 
 
 
-    public function index_1($id)
+    public function index_1($uuid)
     {
 
         $users = User::where('flag', 'employee')->where('department_id', NULL)->get();
         // $parentDepartment = get_by_md5_id($id, 'departements');
 
-        $departments = departements::where('parent_id', $id)->get();
-        $parentDepartment = departements::findOrFail($id);
+        // $departments = departements::where('parent_id', $id)->get();
+        // $parentDepartment = departements::findOrFail($id);
+
+        $parentDepartment = departements::where('uuid', $uuid)->first();
+        $departments = departements::where('parent_id', $parentDepartment->id)->get();
+
 
         $breadcrumbs = $this->getDepartmentBreadcrumbs($parentDepartment);
 
@@ -236,17 +241,18 @@ class DepartmentController extends Controller
         return array_reverse($breadcrumbs);
     }
 
-    public function getSub_Department(Request $request, $id)
+    public function getSub_Department(Request $request, $uuid)
     {
         // $parentDepartment = get_by_md5_id($id, 'departments');
+        $departement = departements::where('uuid', $uuid)->first();
 
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
-            $data = departements::where('parent_id', $request->id)
+            $data = departements::where('parent_id', $departement->id)
                 ->withCount('iotelegrams', 'outgoings', 'children')
                 ->with(['children'])
                 ->orderBy('id', 'desc')->get();
         } else {
-            $data = departements::where('parent_id', $request->id)
+            $data = departements::where('parent_id', $departement->id)
                 ->withCount('iotelegrams', 'outgoings', 'children')
                 ->where(function ($query) {
                     $query->where('id', Auth::user()->department_id)
@@ -316,14 +322,15 @@ class DepartmentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create($id)
+    public function create($uuid)
     {
-        $sectors = get_by_md5_id($id, 'sectors');
+        $sectors = Sector::where('uuid',$uuid)->first();
+        $sector_id = $sectors->id;
         //$sectors = Sector::findOrFail($id);
         $managers = User::where('id', '!=', auth()->user()->id)
             ->whereNot('id', $sectors->manager)
-            ->where(function ($query) use ($id) {
-                $query->where('sector', $id)
+            ->where(function ($query) use ($sector_id) {
+                $query->where('sector', $sector_id)
                     ->orWhereNull('sector');
             })
             ->whereNull('department_id')
@@ -335,14 +342,15 @@ class DepartmentController extends Controller
     }
 
 
-    public function create_1($id)
+    public function create_1($uuid)
     {
-        $department = departements::findOrFail($id);
-
+        //$department = departements::findOrFail($id);
+        $department = departements::where('uuid', $uuid)->first();
+        $department_id = $department->id;
         // $department = get_by_md5_id($id, 'departments');
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
-            $employees = User::where(function ($query) use ($id) {
-                $query->where('department_id', $id)
+            $employees = User::where(function ($query) use ($department_id) {
+                $query->where('department_id', $department_id)
                     ->orWhere('department_id', null);
             })
                 ->where('flag', 'employee')
@@ -351,14 +359,14 @@ class DepartmentController extends Controller
                 ->get();
             $managers = User::where('rule_id', 3)->get();
         } else {
-            $employees = User::where(function ($query) use ($id) {
-                $query->where('department_id', $id);
+            $employees = User::where(function ($query) use ($department_id) {
+                $query->where('department_id', $department_id);
             })
                 ->where('flag', 'employee')
                 ->whereNot('id', $department->manager)
                 ->whereNot('id', auth()->user()->id)
                 ->get();
-            $managers = User::where('department_id', $id)->whereNot('id', auth()->user()->id)->get();
+            $managers = User::where('department_id', $department_id)->whereNot('id', auth()->user()->id)->get();
         }
         return view('sub_departments.create', compact('department', 'employees', 'managers'));
     }
@@ -614,19 +622,19 @@ class DepartmentController extends Controller
 
         return redirect()->route('sub_departments.index', ['id' => $request->parent])->with('message', $message);
     }
-    public function show($id)
+    public function show(departements $department)
     {
         // $department = get_by_md5_id_relation($id, 'sectors', array('manager', 'managerAssistant', 'children', 'parent'));
-        $department = get_by_md5_id($id, 'departements');
-        $department = departements::with(['manager', 'managerAssistant', 'children', 'parent'])->findOrFail($department->id);
+        // $department = get_by_md5_id($id, 'departements');
+        // $department = departements::with(['manager', 'managerAssistant', 'children', 'parent'])->findOrFail($department->id);
         return view('departments.show', compact('department'));
     }
 
     //public function edit(departements $department)
-    public function edit($id)
+    public function edit(departements $department)
     {
-        $department = get_by_md5_id($id, 'departements');
-        $department = departements::findOrFail($department->id);
+        // $department = get_by_md5_id($id, 'departements');
+        // $department = departements::findOrFail($department->id);
         $id = $department->sector_id;
         $managers = User::where('id', '!=', auth()->user()->id)
             ->where(function ($query) use ($id) {
@@ -674,9 +682,9 @@ class DepartmentController extends Controller
      * Update the specified resource in storage.
      */
     //public function update(Request $request, departements $department)
-    public function update(Request $request, $id)
+    public function update(Request $request, departements $department)
     {
-        $department = get_by_md5_id($id, 'departements');
+        //$department = get_by_md5_id($id, 'departements');
         $department = departements::findOrFail($department->id);
         // Add a log or debugging output
         Log::info('Starting department update for department ID: ' . $department->id);
@@ -842,7 +850,7 @@ class DepartmentController extends Controller
 
         // Redirect after successful update
         //return redirect()->route('departments.index', ['id' => $request->sector])
-        return redirect()->route('departments.index', $sectors_details->hash_id)->with('success', 'تم تعديل الأداره بنجاح');
+        return redirect()->route('departments.index', $sectors_details->uuid)->with('success', 'تم تعديل الأداره بنجاح');
     }
 
 
@@ -996,8 +1004,11 @@ class DepartmentController extends Controller
             }
         }
 
-        return redirect()->route('sub_departments.index', ['id' => $department->parent_id])
-            ->with('success', 'تم تعديل الاداره الفرعيه');
+        $parent_uuid = $department->parent->uuid;
+
+        // return redirect()->route('sub_departments.index', ['id' => $department->parent_id])
+        //     ->with('success', 'تم تعديل الاداره الفرعيه');
+        return redirect()->route('sub_departments.index',  $parent_uuid)->with('success', 'تم تعديل الاداره الفرعيه');
     }
 
     /**

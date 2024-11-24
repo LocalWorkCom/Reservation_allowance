@@ -94,6 +94,7 @@ class sectorsController extends Controller
 
     public function index()
     {
+        addUuidToTable('sectors');
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
             $sectors = Sector::all();
         } elseif (Auth::user()->rule->id == 4) {
@@ -112,10 +113,10 @@ class sectorsController extends Controller
 
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
-                $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;" href=' . route('sectors.edit', $row->hash_id) . '><i class="fa fa-edit"></i> تعديل</a>';
-                $add_permission = '<a class="btn btn-sm" style="background-color: #bb5207;" href="' .  route('department.create', ['id' => $row->hash_id]) . '"><i class="fa fa-plus"></i> أضافة أداره</a>';
+                $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;" href=' . route('sectors.edit', $row->uuid) . '><i class="fa fa-edit"></i> تعديل</a>';
+                $add_permission = '<a class="btn btn-sm" style="background-color: #bb5207;" href="' .  route('department.create', $row->uuid) . '"><i class="fa fa-plus"></i> أضافة أداره</a>';
                 $reservationAllowence = '<a class="btn btn-sm" style="background-color: #1d88a1;" href=' . route('reservation_allowances.search_employee_new', 'sector_id=' . $row->hash_id) . '><i class="fa fa-plus"></i> اضافة بدل حجز جماعى</a>';
-                $show_permission = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('sectors.show', $row->hash_id) . '> <i class="fa fa-eye"></i>عرض</a>';
+                $show_permission = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('sectors.show', $row->uuid) . '> <i class="fa fa-eye"></i>عرض</a>';
                 // $addbadal_permission = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('sectors.show', $row->id) . '> <i class="fa fa-plus"></i>أضافه بدل</a>';
 
                 return $show_permission . ' ' . $edit_permission . '' . $add_permission; //$reservationAllowence;
@@ -145,7 +146,7 @@ class sectorsController extends Controller
             })
             ->addColumn('departments', function ($row) {
                 $num = departements::where('sector_id', $row->id)->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('departments.index', ['id' => $row->hash_id]) . '> ' . $num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('departments.index', ['uuid' => $row->uuid]) . '> ' . $num . '</a>';
                 return $btn;
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
@@ -164,12 +165,12 @@ class sectorsController extends Controller
             })
             ->addColumn('employees', function ($row) {
                 $emp_num = User::where('sector', $row->id)->where('department_id', null)->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('user.employees', ['sector_id' => $row->id, 'type' => 0, 'flag' => 'user']) . '> ' . $emp_num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('user.employees', ['sector_id' => $row->uuid, 'type' => 0, 'flag' => 'user']) . '> ' . $emp_num . '</a>';
                 return $btn;
             })
             ->addColumn('employeesdep', function ($row) {
                 $emp_num = User::where('sector', $row->id)->whereNotNull('department_id')->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15p" href=' . route('user.employees', ['sector_id' => $row->id, 'type' => 1, 'flag' => 'user']) . '> ' . $emp_num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15p" href=' . route('user.employees', ['sector_id' => $row->uuid, 'type' => 1, 'flag' => 'user']) . '> ' . $emp_num . '</a>';
                 return $btn;
             })
             ->rawColumns(['action', 'departments', 'employees', 'login_info', 'employeesdep'])
@@ -324,26 +325,26 @@ class sectorsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Sector $sector)
     {
-        $data = get_by_md5_id($id, 'sectors');
+        $data = $sector;
         $manager = User::find($data->manager);
         $managerName = $manager->name ?? 'لا يوجد مدير';
         // $data = Sector::find($id);
         $users = User::where('department_id', null)->whereNot('id', $data->manager ?? null)->Where('sector', $data->id)->get();
-        $departments = departements::where('sector_id', $id)->get();
+        $departments = departements::where('sector_id', $data->id)->get();
         return view('sectors.showdetails', compact('data', 'managerName', 'users', 'departments'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Sector $sector)
     {
         // $data = Sector::findOrFail($id);
-        $data = get_by_md5_id($id, 'sectors');
-        $users = User::where('department_id', null)->where('sector', null)->orWhere('sector', $id)->get();
-        $employees =  User::where('department_id', null)->Where('sector', $id)->whereNot('id', $data->manager)->get();
+        $data = $sector;
+        $users = User::where('department_id', null)->where('sector', null)->orWhere('sector', $data->id)->get();
+        $employees =  User::where('department_id', null)->Where('sector', $data->id)->whereNot('id', $data->manager)->get();
         $rules = Rule::whereNotIn('id', [1, 2, 3])->get();
         $manager = User::find($data->manager);
 
@@ -362,7 +363,7 @@ class sectorsController extends Controller
     }
 
 
-    public function update(Request $request)
+    public function update(Request $request, Sector $sector)
     {
         $sector = Sector::find($request->id);
         $messages = [

@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Hashids\Hashids;
+use App\Traits\Uuid;
 
 class Sector extends Model
 {
-    use HasFactory;
+    use HasFactory, Uuid;
     protected $table = 'sectors';
     public $timestamps = false;
 
@@ -19,9 +20,14 @@ class Sector extends Model
         'updated_by',
     ];
 
-    // protected $hidden = [
-    //     'id'
-    // ];
+    protected $hidden = [
+        'id'
+    ];
+    
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
 
     protected $casts = [
         'governments_IDs' => 'array', // Automatically cast the attribute to an array

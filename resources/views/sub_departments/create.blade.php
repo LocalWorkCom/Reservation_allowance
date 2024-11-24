@@ -51,12 +51,12 @@
                         <li class="breadcrumb-item "><a href="{{ route('home') }}">الرئيسيه</a></li>
                         @if ($department->parent_id)
                             <li class="breadcrumb-item"><a
-                                    href="{{ route('sub_departments.index', ['id' => $department->parent_id]) }}">
+                                    href="{{ route('sub_departments.index', $department->uuid) }}">
                                     {{-- {{ $department->name }} --}} الأدارات
                                 </a></li>
                         @else
                             <li class="breadcrumb-item"><a
-                                    href="{{ route('departments.index', ['id' => $department->sector_id]) }}">
+                                    href="{{ route('departments.index', $department->sectors->uuid) }}">
                                     {{-- {{ $department->name }} --}} الأدارات
                                 </a></li>
                         @endif

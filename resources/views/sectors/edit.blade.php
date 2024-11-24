@@ -59,7 +59,7 @@
 
     <br>
 
-    <form class="edit-grade-form" id="Qta3-form" action="{{ route('sectors.update', $data->id) }}" method="POST">
+    <form class="edit-grade-form" id="Qta3-form" action="{{ route('sectors.update', $data) }}" method="POST">
         @csrf
         @method('POST') <!-- This line indicates it's an update -->
         <div class="row" dir="rtl">
@@ -87,7 +87,7 @@
 
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="email_field" style="display: none;">
                     <label  for="email">الأيميل</label>
-                    <input type="email" name="email" id="email" class="form-control" required>
+                    <input type="email" name="email" id="email" class="form-control">
                     @error('email')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror

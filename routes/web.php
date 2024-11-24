@@ -162,20 +162,20 @@ Route::middleware(['auth'])->group(function () {
 
 
     // getDepartment
-    Route::get('api/department/{id}', [DepartmentController::class, 'getDepartment'])->name('api.department')->middleware('check.permission:view departements');
-    Route::get('api/sub_department/{id}', [DepartmentController::class, 'getSub_Department'])
+    Route::get('api/department/{uuid}', [DepartmentController::class, 'getDepartment'])->name('api.department')->middleware('check.permission:view departements');
+    Route::get('api/sub_department/{uuid}', [DepartmentController::class, 'getSub_Department'])
         ->name('api.sub_department')
         ->middleware('check.permission:view departements');
-    Route::get('/sub_departments/{id}', [DepartmentController::class, 'index_1'])->name('sub_departments.index')->middleware('check.permission:view departements');
-    Route::get('/sub_departments/create/{id}', [DepartmentController::class, 'create_1'])->name('sub_departments.create')->middleware('check.permission:create departements');
+    Route::get('/sub_departments/{uuid}', [DepartmentController::class, 'index_1'])->name('sub_departments.index')->middleware('check.permission:view departements');
+    Route::get('/sub_departments/create/{uuid}', [DepartmentController::class, 'create_1'])->name('sub_departments.create')->middleware('check.permission:create departements');
     Route::post('/sub_departments', [DepartmentController::class, 'store_1'])->name('sub_departments.store')->middleware('check.permission:edit departements');
     Route::get('/sub_departments/{department}/edit', [DepartmentController::class, 'edit_1'])->name('sub_departments.edit')->middleware('check.permission:edit departements');
     Route::put('/sub_departments/{department}', [DepartmentController::class, 'update_1'])->name('sub_departments.update')->middleware('check.permission:edit departements');
     // Route::post('departments_store', [DepartmentController::class, 'store'])->middleware('check.permission:view departements');
     // Route::put('departments_update/{department}', [DepartmentController::class, 'update']);
     // Route::delete('departments_delete/{department}', [DepartmentController::class, 'destroy']);
-    Route::get('/departments/{id}', [DepartmentController::class, 'index'])->name('departments.index')->middleware('check.permission:view departements');
-    Route::get('/department/add/create/{id}', [DepartmentController::class, 'create'])->name('department.create')->middleware('check.permission:create departements');
+    Route::get('/departments/{uuid}', [DepartmentController::class, 'index'])->name('departments.index')->middleware('check.permission:view departements');
+    Route::get('/department/add/create/{uuid}', [DepartmentController::class, 'create'])->name('department.create')->middleware('check.permission:create departements');
     Route::get('/departments/show/{department}', [DepartmentController::class, 'show'])->name('departments.show')->middleware('check.permission:view departements');
     Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store')->middleware('check.permission:edit departements');
     Route::get('/departments/{department}/edit', [DepartmentController::class, 'edit'])->name('departments.edit')->middleware('check.permission:edit departements');
@@ -282,12 +282,12 @@ Route::middleware(['auth'])->group(function () {
     //End sectors
     Route::get('sectors/all', [sectorsController::class, 'index'])->name('sectors.index')->middleware('check.permission:view Sector');
     Route::get('sectors/ajax', [sectorsController::class, 'getsectors'])->name('getAllsectors')->middleware('check.permission:view Sector');
-    Route::get('sectors/show/{id}', [sectorsController::class, 'show'])->name('sectors.show')->middleware('check.permission:view Sector');
+    Route::get('sectors/show/{sector}', [sectorsController::class, 'show'])->name('sectors.show')->middleware('check.permission:view Sector');
     Route::get('sectors/create', [sectorsController::class, 'create'])->name('sectors.create')->middleware('check.permission:create Sector');
     Route::post('sectors/add', [sectorsController::class, 'store'])->name('sectors.store')->middleware('check.permission:create Sector');
-    Route::get('sectors/edit/{id}', [sectorsController::class, 'edit'])->name('sectors.edit')->middleware('check.permission:edit Sector');
+    Route::get('sectors/edit/{sector}', [sectorsController::class, 'edit'])->name('sectors.edit')->middleware('check.permission:edit Sector');
 
-    Route::post('sectors/update', [sectorsController::class, 'update'])->name('sectors.update')->middleware('check.permission:edit Sector');
+    Route::post('sectors/update/{sector}', [sectorsController::class, 'update'])->name('sectors.update')->middleware('check.permission:edit Sector');
     // //End sectors
 
 

@@ -50,9 +50,10 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/">الرئيسيه</a>
                         </li>
-                        <li class="breadcrumb-item"><a
-                                href="{{ route('departments.index', ['id' => $department->sector_id]) }}">
-                                {{-- {{ $department->name }} --}} الأدارات
+                        <li class="breadcrumb-item">
+                        <?php /* <a href="{{ route('departments.index', ['id' => $department->sector_id]) }}"> */?>
+                        <a href="{{ route('departments.index', $department->uuid) }}">
+                        {{-- {{ $department->name }} --}} الأدارات
                             </a>
                         </li>
                         <li class="breadcrumb-item active" aria-current="page"><a href=""> تعديل ادارة</a></li>
@@ -69,7 +70,7 @@
         <div class="row">
             <div class="container  col-11 mt-3 p-0 ">
                 <div class="container col-10 mt-5 mb-3 pb-5" style="border:0.5px solid #C7C7CC;">
-                    <form action="{{ route('departments.update', $department->hash_id) }}" method="POST"
+                    <form action="{{ route('departments.update', $department) }}" method="POST"
                         enctype="multipart/form-data">
                         <!-- <div class="container col-10 mt-5 mb-3 pb-5"
                         style="border:0.5px solid #C7C7CC;">
