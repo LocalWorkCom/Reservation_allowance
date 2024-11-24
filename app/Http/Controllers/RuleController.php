@@ -180,28 +180,48 @@ class RuleController extends Controller
      */
     public function edit($id)
     {
-
-        // dd( $id);
+        // Find the rule/role by ID
         $rule_permission = Rule::find($id);
+    
+        // Fetch all permissions from the database
         $allpermission = Permission::get();
-
+    
+        // Get the permission IDs from the role and convert them into an array
         $permission_ids = explode(',', $rule_permission->permission_ids);
-
-        // Fetch all permissions that the user has access to based on their role
+    
+        // Fetch the permissions assigned to the role, ordered by 'guard_name'
+        $allPermission = Permission::whereIn('id', $permission_ids)
+            ->orderby('guard_name')
+            ->get();
+    
+        // Group the permissions by the first part of the 'guard_name' (i.e., categories like 'employees')
+        $groupedPermissions = $allpermission->groupBy(function ($permission) {
+            return explode('.', $permission->guard_name)[0];
+        });
+    
+        // Fetch the permissions assigned to the user, if needed for comparison
         $hisPermissions = Permission::whereIn('id', $permission_ids)->get();
+    
+        // Fetch the authenticated user
         $user = User::find(Auth::user()->id);
+    
+        // Get the departments the user has access to based on their role
         if ($user->flag == "user") {
-            $alldepartment = departements::where('id', $user->department_id)->orwhere('parent_id', $user->department_id)->get();
+            // User can see their department and any child departments
+            $alldepartment = departements::where('id', $user->department_id)
+                ->orWhere('parent_id', $user->department_id)
+                ->get();
         } else {
-            $alldepartment = departements::where('id', $user->public_administration)->orwhere('parent_id', $user->public_administration)->get();
+            // Admin can see their public administration and related departments
+            $alldepartment = departements::where('id', $user->public_administration)
+                ->orWhere('parent_id', $user->public_administration)
+                ->get();
         }
-        // $alldepartment =$user->createdDepartments;
-
-        // dd($allPermissions);
-
-        return view('role.edit', compact('allpermission', 'alldepartment', 'hisPermissions', 'rule_permission'));
+    
+        // Return the view with all necessary data for the edit page
+        return view('role.edit', compact('allpermission', 'alldepartment', 'hisPermissions', 'rule_permission', 'groupedPermissions'));
     }
-
+    
     /**
      * Update the specified resource in storage.
      */
