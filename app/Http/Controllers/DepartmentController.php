@@ -630,7 +630,7 @@ class DepartmentController extends Controller
             $message .= ' لكن بعض الموظفين لم يتم إضافتهم بسبب عدم تأكيد النقل أو عدم العثور على ارقام الملفات: ' . implode(', ', $failed_file_numbers);
         }
 
-        return redirect()->route('sub_departments.index', ['id' => $request->parent])->with('message', $message);
+        return redirect()->route('sub_departments.index', $departements->parent->uuid)->with('message', $message);
     }
     public function show(departements $department)
     {
