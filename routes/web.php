@@ -398,7 +398,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/get-allowance-department', [DepartmentController::class, 'getAllowancedepart']);
     Route::any('/employee_search/getAll', [UserController::class, 'getAll'])->name('employee_search.getAll');
 
-    //reserv search
+    //reserv fetch
 Route::group(['middleware' => ['check.permission:search ReservationAllowance']], function () {
     Route::get('/reservation_fetch', [ReserveFetchController::class, 'static'])->name('reservation_fetch.index');
     Route::get('/reservation_fetch/search', [ReserveFetchController::class, 'getFilteredData'])->name('reservation_fetch.search');
