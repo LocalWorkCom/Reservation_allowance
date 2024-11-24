@@ -125,7 +125,6 @@ class DepartmentController extends Controller
 
                 return User::where('department_id', $row->id)->where('flag', 'employee')
                     ->count();
-
             })
             ->addColumn('num_subdepartment_managers', function ($row) {
                 $subdepartment_ids = departements::where('parent_id', $row->id)->pluck('id');
@@ -513,19 +512,27 @@ class DepartmentController extends Controller
             'name.required' => 'اسم الحقل مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
+            'email.required' => 'الايميل مطلوب',
+            'budget_type.required' => 'يجب اختيار نوع الميزانيه',
+            'email.unique' => 'عفوا هذا الايميل مأخوذ مسبقا',
         ];
 
-        // Validate the input fields
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'budget' => 'nullable|numeric',
+            'budget_type' => 'required',
             'part' => 'required',
+            'email' =>  'required',
+            'email',
+            Rule::unique('users', 'email')->ignore($request->mangered),
         ], $messages);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-
+        if (!isValidEmail($request->email)) {
+            return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
+        }
         $part = $request->input('part');
         if (in_array('1', $part) && in_array('2', $part)) {
             $reservation_allowance_type = 3; // Both '1' and '2' selected
@@ -584,24 +591,18 @@ class DepartmentController extends Controller
                     $manager->password,
                     $manager->email
                 );
-            } else {
-                return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
             }
         }
 
         $departements->save();
+        UpdateUserHistory($request->mangered);
+        addUserHistory($request->mangered, $departements->id,  $request->sector);
         saveHistory($departements->reservation_allowance_amount, $departements->sector_id, $departements->id);
-
-        // } else {
-        //     return redirect()->back()->withErrors('هذا المدير غير موجود')->withInput();
-        // }
 
         // Handle employee assignment
         $failed_file_numbers = [];
         foreach ($file_numbers as $file_number) { //file_number
-            // $employee = User::where('Civil_number', $Civil_number)->first();
             $employee = User::where('file_number', $file_number)->first();
-
             if ($employee) {
                 if ($employee->department_id && !$request->has('confirm_transfer')) {
                     $failed_file_numbers[] = $file_number; // Add to failed list if transfer not confirmed
@@ -609,6 +610,8 @@ class DepartmentController extends Controller
                     $employee->sector = $request->sector;
                     $employee->department_id = $departements->id;
                     $employee->save();
+                    UpdateUserHistory($employee->id);
+                    addUserHistory($employee->id, $departements->id,  $request->sector);
                 }
             }
         }
@@ -652,8 +655,6 @@ class DepartmentController extends Controller
     }
     public function edit_1(departements $department)
     {
-        // $department = get_by_md5_id_relation($department->parent_id, 'departments', array('sectors'));
-
         $sect = departements::with(['sectors'])->findOrFail($department->parent_id);
         if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
 
@@ -670,9 +671,8 @@ class DepartmentController extends Controller
             $employees = User::where('flag', 'employee')->where('department_id', $department->id)->whereNot('id', $department->manager)->get();
             $managers = User::where('department_id', 1)->get();
         }
-        $rules = Rule::where('id', 3)->get();
 
-        return view('sub_departments.edit', compact('department', 'managers', 'employees', 'sect', 'rules'));
+        return view('sub_departments.edit', compact('department', 'managers', 'employees', 'sect'));
     }
 
     /**
@@ -686,21 +686,30 @@ class DepartmentController extends Controller
         // Add a log or debugging output
         // Log::info('Starting department update for department ID: ' . $department->id);
 
-        // Define validation rules and messages
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
+            'email.required' => 'الايميل مطلوب',
+            'budget_type.required' => 'يجب اختيار نوع الميزانيه',
+            'email.unique' => 'عفوا هذا الايميل مأخوذ مسبقا',
         ];
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'budget' => 'nullable|numeric',
+            'budget_type' => 'required',
             'part' => 'required',
+            'email' =>  'required',
+            'email',
+            Rule::unique('users', 'email')->ignore($request->mangered),
         ], $messages);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
+        }
+        if (!isValidEmail($request->email)) {
+            return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
         }
 
         $sectors_details = Sector::where('id', $request->sector)->first();
@@ -787,8 +796,6 @@ class DepartmentController extends Controller
                             123456,
                             $newManager->email
                         );
-                    } else {
-                        return redirect()->route('departments.index', ['id' => $sectors_details->hash_id])->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
                     }
                 }
             }
@@ -807,8 +814,6 @@ class DepartmentController extends Controller
                 if ($Manager->email && isValidEmail($Manager->email)) {
                     // Send email to the new manager
                     Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, 123456, $Manager->email);
-                } else {
-                    return redirect()->route('departments.index', ['id' => $sectors_details->hash_id])->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
                 }
             }
         }
@@ -844,6 +849,8 @@ class DepartmentController extends Controller
                 $employee->sector = $request->sector;
                 $employee->department_id = $department->id;
                 $employee->save();
+                UpdateUserHistory($employee->id);
+                addUserHistory($employee->id, $department->id,  $request->sector);
             }
         }
 
@@ -865,16 +872,26 @@ class DepartmentController extends Controller
             'name.required' => 'اسم الحقل مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
+            'email.required' => 'الايميل مطلوب',
+            'budget_type.required' => 'يجب اختيار نوع الميزانيه',
+            'email.unique' => 'عفوا هذا الايميل مأخوذ مسبقا',
         ];
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'budget' => 'nullable|numeric',
+            'budget_type' => 'required',
             'part' => 'required',
+            'email' =>  'required',
+            'email',
+            Rule::unique('users', 'email')->ignore($request->mangered),
         ], $messages);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
+        }
+        if (!isValidEmail($request->email)) {
+            return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
         }
         $allowance = $this->getAllowancedepart($request->budget, $department->id);
         if (!$allowance->original['is_allow']) {
@@ -909,7 +926,8 @@ class DepartmentController extends Controller
         $department->created_by = Auth::user()->id;
         $department->save();
         saveHistory($department->reservation_allowance_amount, $department->sector_id, $department->id);
-
+        UpdateUserHistory($manager);
+        addUserHistory($manager, $department->id,  $request->sector);
         // Handle old and new manager updates for sub-department
         if ($oldManager != $manager) {
             if ($oldManager) {
@@ -952,8 +970,6 @@ class DepartmentController extends Controller
                             123456,
                             $newManager->email
                         );
-                    } else {
-                        return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
                     }
                 }
             }
@@ -970,8 +986,6 @@ class DepartmentController extends Controller
                 $Manager->save();
                 if ($Manager->email && isValidEmail($Manager->email)) {
                     Sendmail('مدير ادارة فرعية', 'تم أضافتك كمدير ادارة فرعية ' . $request->name, $Manager->file_number, 123456, $Manager->email);
-                } else {
-                    return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
                 }
             }
         }
@@ -1000,6 +1014,8 @@ class DepartmentController extends Controller
                 $employee->department_id = $department->id;
                 $employee->sector = $department->sector_id;
                 $employee->save();
+                UpdateUserHistory($employee->id);
+                addUserHistory($employee->id, $department->id,  $request->sector);
             }
         }
 
