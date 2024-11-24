@@ -76,6 +76,7 @@ class DepartmentController extends Controller
                 ->orderBy('id', 'desc')
                 ->get();
         }
+        
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
                 return '<button class="btn btn-primary btn-sm">Edit</button>';
@@ -121,8 +122,10 @@ class DepartmentController extends Controller
             })
 
             ->addColumn('num_managers', function ($row) {
-                return User::where('department_id', $row->id)
+             
+                return User::where('department_id', $row->id)->where('flag', 'employee')
                     ->count();
+       
             })
             ->addColumn('num_subdepartment_managers', function ($row) {
                 $subdepartment_ids = departements::where('parent_id', $row->id)->pluck('id');
@@ -296,7 +299,7 @@ class DepartmentController extends Controller
             })
 
             ->addColumn('num_managers', function ($row) {
-                return User::where('department_id', $row->id)
+                return User::where('department_id', $row->id)->where('flag', 'employee')
                     ->count();
             })
             ->addColumn('num_subdepartment_managers', function ($row) {
@@ -761,11 +764,11 @@ class DepartmentController extends Controller
                     $newManager->department_id = $department->id;
                     $newManager->sector = $request->sector;
 
-                        $newManager->flag = 'user';
-                        $newManager->email = $request->email;
-                        $newManager->rule_id =3;
+                    $newManager->flag = 'user';
+                    $newManager->email = $request->email;
+                    $newManager->rule_id = 3;
 
-                        $newManager->password = Hash::make('123456');
+                    $newManager->password = Hash::make('123456');
 
                     $newManager->save();
 

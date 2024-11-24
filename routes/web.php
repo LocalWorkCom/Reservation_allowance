@@ -89,7 +89,7 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/getRegion/{id}', [UserController::class, 'getRegion'])->name('user.getRegion')->middleware('check.permission:view Region');
 
     Route::any('/employees/{flag}', [UserController::class, 'index'])->name('user.employees')->middleware('check.permission:view User');
-    Route::post('/employees/add', [UserController::class, 'add_employees'])->name('user.employees.add')->middleware('check.permission:create User');
+    Route::post('/employees-add', [UserController::class, 'add_employees'])->name('user.employees.add')->middleware('check.permission:create User');
     Route::get('/edit/{id}', [UserController::class, 'edit'])->name('user.edit')->middleware('check.permission:edit User');
     Route::get('/show/{id}', [UserController::class, 'show'])->name('user.show')->middleware('check.permission:view User');
     Route::post('/update/{id}', [UserController::class, 'update'])->name('user.update')->middleware('check.permission:edit User');
