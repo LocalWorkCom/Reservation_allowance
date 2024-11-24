@@ -32,4 +32,9 @@ class ReservationAllowance extends Model
     {
         return $this->belongsTo(Grade::class, 'grade_id');
     }
+
+    public function sector()
+{
+    return $this->belongsTo(Sector::class, 'sector_id');
+}
 }
