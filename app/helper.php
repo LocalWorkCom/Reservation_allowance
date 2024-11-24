@@ -10,8 +10,6 @@ use App\Models\Io_file;
 use App\Models\Inspector;
 use App\Models\Government;
 use App\Models\departements;
-use App\Models\VacationType;
-use App\Models\EmployeeVacation;
 use App\Models\GroupSectorHistory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -293,10 +291,7 @@ function getDepartments()
 {
     return departements::all();
 }
-function getVactionTypes()
-{
-    return VacationType::all();
-}
+
 function getCountries()
 {
     return  Country::all();
@@ -312,91 +307,6 @@ function getsectores()
     return  Sector::all();
 }
 
-############################################## Vacation #######################################################################
-function CheckStartVacationDate($id)
-{
-    $EmployeeVaction =  EmployeeVacation::find($id);
-    if ($EmployeeVaction->date_from > date('Y-m-d')) {
-        return true;
-    }
-    return false;
-}
-function GetEmployeeVacationType($employeeVacation)
-{
-    $introduce = 'مقدمة';
-    $rejected = 'مرفوضة';
-    $exceeded = 'متجاوزة';
-    $current = 'حالية';
-    $notBegin = 'لم تبدأ بعد';
-    $finished = 'منتهية';
-    $today = date('Y-m-d');
-    $expectedEndDate = ExpectedEndDate($employeeVacation)[0];
-
-    // Save the calculated end date to  model
-    // $expected_date->toDateString();
-
-    if ($employeeVacation->status == 'Pending') {
-        return $introduce;
-    } else if ($employeeVacation->status == 'Rejected') {
-        return $rejected;
-    } else {
-        if ($employeeVacation->start_date > $today) {
-            return $notBegin;
-        } else if ($employeeVacation->start_date < $today && $expectedEndDate < $today) {
-            if ($employeeVacation->end_data || $employeeVacation->end_date > $expectedEndDate) {
-                return $finished;
-            } else {
-
-                if ($employeeVacation->is_exceeded) {
-                    if ($employeeVacation->end_date) {
-                        return $finished;
-                    } else {
-
-                        return $exceeded;
-                    }
-                } else {
-                    return $finished;
-                }
-            }
-        } else {
-            if ($employeeVacation->is_cut) {
-                return $finished;
-            } else {
-
-                return $current;
-            }
-        }
-    }
-}
-function VacationDaysLeft($employeeVacation)
-{
-    $startDate = $employeeVacation->start_date;
-    $daysNumber = $employeeVacation->days_number;
-    $today = date('Y-m-d');
-
-
-    $startDate = Carbon::parse($employeeVacation->start_date);
-    $daysNumber = $employeeVacation->days_number;
-
-    // Calculate the end date
-    $endDate = AddDays($startDate, $daysNumber);
-    $today = Carbon::today();
-    $daysLeft = $today->diffInDays($endDate, false);
-
-    if ($daysLeft < 0) {
-        return -1;
-    }
-    return $daysLeft;
-}
-function ExpectedEndDate($employeeVacation)
-{
-    $startDate = Carbon::parse($employeeVacation->start_date);
-    $daysNumber = $employeeVacation->days_number - 1;
-
-    $expectedEndDate = AddDays($startDate, $daysNumber);
-    $workStartdDate = AddDays($expectedEndDate, 1);
-    return [$expectedEndDate, $workStartdDate];
-}
 function AddDays($date, $daysNumber)
 {
     $startDate = Carbon::parse($date);
@@ -420,12 +330,6 @@ function convertToArabicNumerals($number)
 }
 function addUserHistory($user_id, $department_id, $sector_id)
 {
-
-    $all_rec = UserDepartment::where('user_id', $user_id)->get();
-    foreach ($all_rec as $value) {
-        $value->flag = 0;
-        $value->save();
-    }
     DB::table('user_departments')->insert([
         'user_id' => $user_id,
         'department_id' => $department_id,
@@ -434,7 +338,18 @@ function addUserHistory($user_id, $department_id, $sector_id)
         'created_at' => now(),
     ]);
 }
+function UpdateUserHistory($user_id)
+{
 
+    $all_rec = UserDepartment::where('user_id', $user_id)->get();
+    if ($all_rec->count()) {
+
+        foreach ($all_rec as $value) {
+            $value->flag = 0;
+            $value->save();
+        }
+    }
+}
 function Sendmail($title, $body, $username, $password, $email)
 {
     $details = [

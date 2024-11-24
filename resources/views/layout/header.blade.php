@@ -204,12 +204,11 @@
 
                 {{-- @endif --}}
                 @if (Auth::user()->hasPermission('view job') ||
-                        Auth::user()->hasPermission('view VacationType') ||
                         Auth::user()->hasPermission('view grade') ||
                         Auth::user()->hasPermission('view Government') ||
                         Auth::user()->hasPermission('view Rule') ||
                         Auth::user()->hasPermission('view Permission'))
-                    <li class="nav-item {{ request()->routeIs('grads.index') || request()->routeIs('job.index') || request()->routeIs('qualifications.index') || request()->routeIs('government.all') || request()->routeIs('regions.index') || request()->routeIs('sectors.index') || request()->routeIs('points.index') || request()->routeIs('vacationType.index') || request()->routeIs('violations.index') || request()->routeIs('rule.index') || request()->routeIs('permission.index') || request()->routeIs('working_time.index') || request()->routeIs('working_trees.list') || request()->routeIs('absence.index') ? 'active' : '' }}"
+                    <li class="nav-item {{ request()->routeIs('grads.index') || request()->routeIs('job.index') || request()->routeIs('qualifications.index') || request()->routeIs('government.all') || request()->routeIs('regions.index') || request()->routeIs('sectors.index') || request()->routeIs('points.index') ||  request()->routeIs('violations.index') || request()->routeIs('rule.index') || request()->routeIs('permission.index') || request()->routeIs('working_time.index') || request()->routeIs('working_trees.list') || request()->routeIs('absence.index') ? 'active' : '' }}"
                         onclick="toggleDropdown4(event)">
                         <a href="#">
                             <img src="{{ asset('frontend/images/settings.svg') }}" alt="logo">
@@ -260,22 +259,13 @@
 
                                     </div>
                                     <div class="col-6">
-                                        @if (Auth::user()->hasPermission('view VacationType'))
-                                            <li
-                                                class="{{ request()->routeIs('vacationType.index') ? 'active' : '' }}">
-                                                <img src="{{ asset('frontend/images/holidays.svg') }}" alt="logo"
-                                                    style="margin-left: 7px;">
-                                                <a href="{{ route('vacationType.index') }}">أنواع الأجازات</a>
-                                            </li>
-                                        @endif
+                           
 
-                                        @if (Auth::user()->hasPermission('view VacationType'))
                                             <li class="{{ request()->routeIs('nationality.index') ? 'active' : '' }}">
                                                 <img src="{{ asset('frontend/images/holidays.svg') }}" alt="logo"
                                                     style="margin-left: 7px;">
                                                 <a href="{{ route('nationality.index') }}">الدول والجنسيات</a>
                                             </li>
-                                        @endif
 
 
                                         @if (Auth::user()->hasPermission('view Rule'))
