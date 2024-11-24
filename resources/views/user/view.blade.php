@@ -62,7 +62,7 @@
                     $department = \App\Models\departements::find(request()->get('department_id'));
                 @endphp
 
-                @if (request()->fullUrlIs('*employees/user?department_id=*'))
+                @if (request()->fullUrlIs('*employees/employee?department_id=*'))
                     {{-- Check if department and sector are available --}}
                     <p>قوة/
                         {{ $department->sectors->name }}/
@@ -87,7 +87,7 @@
 
 
                 </div>
-                @if (request()->fullUrlIs('*employees/user?department_id=*'))
+                @if (request()->fullUrlIs('*employees/employee?department_id=*'))
                     <form class="" action="{{ route('user.employees.add') }}" method="post">
                         <input type="hidden" id="department_id" name="department_id"
                             value="{{ request()->get('department_id') }}" class="form-control">
