@@ -13,56 +13,66 @@
 @section('title', 'تقارير بدل حجز')
 
 @section('content')
-<div class="row">
+<div class="row" >
     <div class="container welcome col-11">
         <div class="d-flex justify-content-between">
             <p>تقارير بدل حجز</p>
+          
         </div>
-    </div>
-    <button id="print-report" class="btn btn-secondary mx-2">طباعة</button>
-
+   
+    
+ </div>
 </div>
 
-<div class="row">
-    <div class="container col-11 mt-3 p-0 pt-5 pb-4">
-        <!-- Form Section -->
-        <form id="filter-form" class="d-flex align-items-center mb-4">
-            <label for="start-date" class="me-2">من تاريخ:</label>
-            <input type="date" id="start-date" name="start_date" class="form-control me-3" required>
-            <label for="end-date" class="me-2">إلى تاريخ:</label>
-            <input type="date" id="end-date" name="end_date" class="form-control me-3" required>
-            <button type="submit" class="btn btn-primary">عرض التقرير</button>
-        </form>
 
-        <!-- Info Boxes for Summary -->
-        <div class="row mt-4">
-            <div class="col-md-3">
-                <div class="info-box">
-                    <h5>عدد القطاعات المحجوزة</h5>
-                    <p id="total-sectors">0</p>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="info-box">
-                    <h5>عدد الإدارات</h5>
-                    <p id="total-departments">0</p>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="info-box">
-                    <h5>عدد الموظفين</h5>
-                    <p id="total-users">0</p>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="info-box">
-                    <h5>الإجمالي</h5>
-                    <p id="total-amount">0 د.ك</p>
-                </div>
-            </div>
-        </div>
+    <div class="container col-11 mt-3 py-5  " >
+       <!-- Info Boxes for Summary -->
+       <div class="d-flex justify-content-between">
+          
+        
+         
+             <!-- Form Section -->
+      
 
-        <!-- Data Table for Detailed Report -->
+       
+             <div class="d-flex"dir="rtl">
+        
+        <form id="filter-form" class="d-flex align-items-center mb-4" >
+
+<label for="start-date" class="text-dark ">من </label>
+<input type="date" id="start-date" name="start_date" class="btn-all  mx-2" required>
+
+<label for="end-date" class="text-dark ">إلى </label>
+<input type="date" id="end-date" name="end_date" class="btn-all  mx-1" required>
+<button type="submit" class=" btn-all mx-2">عرض التقرير</button>
+</form>
+<button id="print-report" class="btn btn-blue mx-1 ">طباعة</button>
+</div>
+<div class="d-flex  ">
+                <div class="btn-all mx-1">
+                    <h4 class="p-1">عدد القطاعات المحجوزة : <span class="text-info" id="total-sectors">0</span> </h4>
+                  
+                </div>
+           
+                <div class="btn-all mx-1">
+                    <h4 class="p-1">عدد الإدارات : <span class="text-info" id="total-departments">0</span></h4>
+          
+                </div>
+         
+                <div class="btn-all mx-1">
+                    <h4 class="p-1">عدد الموظفين : <span class="text-info" id="total-users">0</span> </h4>
+                    
+                </div>
+           
+                <div class="btn-all mx-1">
+                    <h4 class="p-1">الإجمالي : <span class="text-info" id="total-amount">0 د.ك</span></h4>
+                
+                </div>  
+                </div> 
+
+
+</div>
+             <!-- Data Table for Detailed Report -->
         <div class="mt-4 bg-white">
             <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
                 <thead>
@@ -109,28 +119,28 @@
     data: 'sector_name',
     name: 'sector_name',
     render: function(data, type, row) {
-        return `<a href="/reservation_report/sector/${row.sector_id}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:blue !important;">${data}</a>`;
+        return `<a href="/reservation_report/sector/${row.sector_id}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#17a2b8 !important;">${data}</a>`;
     }
 },
 
        { data: 'main_departments_count',
         name: 'main_departments_count',
         render: function(data, type, row) {
-            return `<a href="/reservation_report/sector/${row.sector_id}/departments?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:blue !important;">${data}</a>`;
+            return `<a href="/reservation_report/sector/${row.sector_id}/departments?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#17a2b8 !important;">${data}</a>`;
         }},
             { data: 'sub_departments_count', name: 'sub_departments_count', searchable: true ,render: function(data, type, row) {
-            return `<a href="/reservation_report/sector/${row.sector_id}/departments?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:blue !important;">${data}</a>`;
+            return `<a href="/reservation_report/sector/${row.sector_id}/departments?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#17a2b8 !important;">${data}</a>`;
         }},
             { 
     data: 'employee_count', 
     name: 'employee_count',
     render: function(data, type, row) {
-        return `<a href="/reservation_report/sector/${row.sector_id}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:blue !important;">${data}</a>`;
+        return `<a href="/reservation_report/sector/${row.sector_id}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#17a2b8 !important;">${data}</a>`;
     }
 },
             { data: 'total_amount', name: 'total_amount', searchable: true,
                 render: function(data, type, row) {
-        return `<a href="/reservation_report/sector/${row.sector_id}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:blue !important;">${data}</a>`;
+        return `<a href="/reservation_report/sector/${row.sector_id}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#17a2b8 !important;">${data}</a>`;
     }
             }
         ],  order: [
