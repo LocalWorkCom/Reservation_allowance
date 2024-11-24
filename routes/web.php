@@ -356,6 +356,7 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/reservation_allowances/update', [ReservationAllowanceController::class, 'update'])->name('reservation_allowances.edit');
     Route::any('/reservation_allowances/edit/{id}', [ReservationAllowanceController::class, 'edit'])->name('reservation_allowances.update');
     Route::any('/reservation_allowances/getAll', [ReservationAllowanceController::class, 'getAll'])->name('reservation_allowances.getAll');
+    Route::any('/reservation_allowances/getAllWithMonth', [ReservationAllowanceController::class, 'getAllWithMonth'])->name('reservation_allowances.getAllWithMonth');
     Route::any('/reservation_allowances/get_departement/{id}/{type}', [ReservationAllowanceController::class, 'get_departement'])->name('reservation_allowances.get_departement');
     Route::any('/reservation_allowances/search_employee', [ReservationAllowanceController::class, 'search_employee'])->name('reservation_allowances.search_employee');
     Route::any('/reservation_allowances/get_search_employee/{sector_id}/{departement_id}', [ReservationAllowanceController::class, 'get_search_employee'])->name('reservation_allowances.get_search_employee');

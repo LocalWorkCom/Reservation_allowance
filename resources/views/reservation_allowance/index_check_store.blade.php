@@ -166,24 +166,33 @@
     <div class="container col-11 p-4">
         <div class=" d-flex flex-wrap justify-content-between">
             <div class=" col-5 d-flex justify-content-between">
-                <h5 class="text-dark">التاريخ : <span class="text-info">11-11</span></h5>
-                <h5 class="text-dark">القوة : <span class="text-info">211</span></h5>
-                <h5 class="text-dark">التكلفة : <span class="text-info">211</span></h5>
+                <h5 class="text-dark">التاريخ : <span class="text-info">{{$to_day}}</span></h5>
+                <h5 class="text-dark">القوة : <span class="text-info">{{count($employee_new_add)}}</span></h5>
+                <h5 class="text-dark">التكلفة : <span class="text-info">{{$total_grade_value}}</span></h5>
 
-                <h5 class="text-dark">ملاحظات الملف : <span class="text-info">211</span></h5>
+                <!-- <h5 class="text-dark">ملاحظات الملف : <span class="text-info">211</span></h5> -->
             </div>
             <div class="col-5 d-flex align-items-end justify-content-end">
-                <select class="form-select form-select-lg select2 w-50 mx-3" name="sector_id" id="sector_id" required>
+                <!-- <select class="form-select form-select-lg select2 w-50 mx-3" name="sector_id" id="sector_id" required>
                     <option selected disabled>وكيل الوزارة المساعد لشئون امن المنافذ</option>
                     <option>1</option>
-                </select>
-                <button class="btn btn-success py-2 px-3 mx-2" type="submit">اعتماد الكشف</button>
-                <button class="btn btn-danger py-2 px-3" type="submit">الغاء</button>
+                </select> -->
+                @if(Cache::get(auth()->user()->id."_employee_new_add") != null)
+                    <div class="col-lg-12" style="text-align: right">
+                        <form method="post" action="{{ route('reservation_allowances.store.all') }}">
+                            @csrf
+                            <input type="hidden" name="date" value="{{$to_day}}">
+                            <input type="hidden" name="type" value="{{$type}}">
+                            <input type="hidden" name="sector_id" value="{{$sector_id}}">
+                            <input type="hidden" name="departement_id" value="{{$department_id}}">
+                            <button class="btn btn-success py-2 px-3 mx-2" type="submit">اعتماد الكشف</button>
+                            <button class="btn btn-danger py-2 px-3" onclick="history.back()" type="button">الغاء</button>
+                        </from>
+                    </div>
+                @endif
             </div>
-
-
-
         </div>
+
         <ul class="nav nav-tabs " id="myTab" role="tablist">
             <li class="nav-item " role="presentation ">
                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
@@ -191,12 +200,14 @@
                     الموظفين الذين سيتم اضافتهم
                 </button>
             </li>
+
             <li class="nav-item" role="presentation">
                 <button class="nav-link " id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
                     role="tab" aria-controls="profile" aria-selected="false">
                     الموظفين غير مسجلين فى الادارة او القطاع
                 </button>
             </li>
+
             <li class="nav-item" role="presentation">
                 <button class="nav-link " id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
                     role="tab" aria-controls="contact" aria-selected="false">
@@ -204,59 +215,87 @@
                 </button>
             </li>
         </ul>
+
         <div class="tab-content mt-3" id="myTabContent">
             <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                <!-- <table class="table table-bordered table-hover">
-                <thead>
-                    <tr>
-                        <th>الترتيب</th>
-                        <th>الاسم</th>
-                        <th>رقم الملف</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>اسم الموظف</td>
-                        <td>123</td>
-                    </tr>
-                </tbody>
-            </table> -->
-                <h3 class="text-center text-info"> لا يوجد</h3>
+                @if($employee_new_add)
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>ت</th>
+                                <th>رقم الملف</th>
+                                <th>الرتبة</th>
+                                <th>الاسم</th>
+                                <th>التكلفة</th>
+                                <th>الادارة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($employee_new_add as $K_employee_newadd=>$employee_newadd)
+                                <tr>
+                                    <td>{{$K_employee_newadd+1}}</td>
+                                    <td>{{$employee_newadd->file_number}}</td>
+                                    <td>{{$employee_newadd->grade != null ? $employee_newadd->grade->name : ""}}</td>
+                                    <td>{{$employee_newadd->name}}</td>
+                                    <td>{{$employee_newadd->grade_value}}</td>
+                                    <td>{{$employee_newadd->department_id != null ? $employee_newadd->department->name : ""}}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <h3 class="text-center text-info"> لا يوجد بيانات</h3>
+                @endif
             </div>
             <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                <table class="table table-bordered table-hover">
-                    <thead>
-                        <tr>
-                            <th>الترتيب</th>
-                            <th>الاسم</th>
-                            <th>رقم الملف</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>اسم الموظف</td>
-                            <td>456</td>
-                        </tr>
-                    </tbody>
-                </table>
+                @if($employee_not_dept)                
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>ت</th>
+                                <th>رقم الملف</th>
+                                <th>الرتبة</th>
+                                <th>الاسم</th>
+                                <th>الادارة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($employee_not_dept as $K_employee_notdept=>$employee_notdept)
+                                <tr>
+                                    <td>{{$K_employee_notdept+1}}</td>
+                                    <td>{{$employee_notdept->file_number}}</td>
+                                    <td>{{$employee_notdept->grade != null ? $employee_notdept->grade->name : ""}}</td>
+                                    <td>{{$employee_notdept->name}}</td>
+                                    <td>{{$employee_notdept->department_id != null ? $employee_notdept->department->name : ""}}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <h3 class="text-center text-info"> لا يوجد بيانات</h3>
+                @endif
             </div>
             <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-                <table class="table table-bordered table-hover">
-                    <thead>
-                        <tr>
-                            <th>الترتيب</th>
-                            <th>رقم الملف</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>789</td>
-                        </tr>
-                    </tbody>
-                </table>
+                @if($employee_not_found)
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>ت</th>
+                                <th>رقم الملف</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($employee_not_found as $K_employee_notfound=>$employee_notfound)
+                                <tr>
+                                    <td>{{$K_employee_notfound+1}}</td>
+                                    <td>{{$employee_notfound['Civil_number']}}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <h3 class="text-center text-info"> لا يوجد بيانات</h3>
+                @endif
             </div>
         </div>
 
