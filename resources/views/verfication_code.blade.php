@@ -67,15 +67,15 @@
                     <input type="hidden" name="number" value="{{ $number }}">
                     <input type="hidden" name="password" value="{{ $password }}">
                     <h4> ادخل كود التفعيل</h1>
-                        <p>تم ارسال كود لرقم الهاتف المسجل وهو :</p>
+                        <p>تم ارسال كود للأيميل المسجل وهو :</p>
                         @php
-                            $user = App\Models\User::where('military_number', $number)->orwhere('Civil_number',$number)->first();
+                            $user = App\Models\User::where('email',$number)->first();
                         @endphp
 
-                        <h6>{{ $user->phone }}</h6>
+                        <h6>{{ $user->email }}</h6>
 
 
-                        {{-- 
+                        {{--
                         <div class="row col-12 d-flex">
                           <form class="code-input d-flex justify-content-center" id="codeInputForm" dir="ltr">
                               <input type="text" maxlength="1" size="1" id="digit1" onkeyup="moveToNext(this, 'digit2')">
@@ -101,7 +101,7 @@
                         <input type="hidden" name="password" value="{{ $password }}">
                         <button class="btn2" type="submit">إعادة الإرسال</button>
                     </form> --}}
-                 
+
                     <form id="resendForm" action="{{ route('resend_code') }}" method="POST">
                               @csrf
                               <input type="hidden" name="number" value="{{ $number }}">
