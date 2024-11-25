@@ -186,25 +186,6 @@
         </div>
     </form>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        // Function to toggle the 'required' attribute of the email field based on the 'mangered' field value
-        document.getElementById('mangered').addEventListener('input', function() {
-            var managerId = this.value; // Get the value of the 'mangered' field
-            var emailField = document.getElementById('email'); // Get the 'email' input field
-            var emailFieldContainer = document.getElementById('email_field'); // Get the email field container
-
-            if (managerId) {
-                emailField.setAttribute('required', 'required'); // Make email required
-                emailFieldContainer.style.display = 'block'; // Show the email field container
-            } else {
-                emailField.removeAttribute('required'); // Remove the required attribute
-                emailFieldContainer.style.display = 'none'; // Hide the email field container
-            }
-        });
-
-        // Trigger the event once on page load to handle pre-filled values
-        document.getElementById('mangered').dispatchEvent(new Event('input'));
-    </script>
 
     <script>
         $('.select2').select2({
