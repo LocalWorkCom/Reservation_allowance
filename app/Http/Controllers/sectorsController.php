@@ -40,7 +40,7 @@ class sectorsController extends Controller
         if ($isDepartmentCheck && ($manager->department_id != null || $manager->sector != null || ($sector != $manager->sector && $manager->sector != null))) {
             return response()->json([
                 'error' => 'هذا المستخدم موجود فى قطاع مسبقا . هل تريد نقله ?'
-            ], 404);
+            ], 405);
         }
 
         // Calculate seniority (years of service)
@@ -188,13 +188,12 @@ class sectorsController extends Controller
             'name.required' => 'اسم الحقل مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
-            'email.required' => 'الايميل مطلوب',
-            'email.unique' => 'الايميل مأخوذ مسبقا و يرجى أدخال أيميل أخر',
-            'budget_type.required' => 'يجب اختيار نوع الميزانيه',
-            'email.valid_email' => 'البريد الإلكتروني للمدير غير صالح.' // Custom error message for email format
+            'email.required' => 'الايميل مطلوب.',
+            'email.unique' => 'الايميل مأخوذ مسبقا و يرجى أدخال أيميل أخر.',
+            'budget_type.required' => 'يجب اختيار نوع الميزانيه.',
+            'email.invalid_format' => 'البريد الإلكتروني للمدير غير صالح.', // Custom error message
         ];
-
-        // Validation rules
+        
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'budget_type' => 'required',
@@ -202,19 +201,20 @@ class sectorsController extends Controller
             'part' => 'required',
             'email' => [
                 'nullable', // Allow email to be null unless manager is set
-                'email', // Ensure valid email format
                 Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
-                function ($attribute, $value, $fail) use ($request) {
-                    if ($request->mangered && !$value) {
-                        return $fail('البريد الإلكتروني للمدير مطلوب.');
+                function ($attribute, $value, $fail) {
+                    // Check if email format is invalid
+                    if ($value && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                        $fail('البريد الإلكتروني للمدير غير صالح.'); // Custom failure message
                     }
                 },
             ],
         ], $messages);
-
+        
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
+        
 
 
 
@@ -371,13 +371,12 @@ class sectorsController extends Controller
             'name.required' => 'اسم الحقل مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
-            'email.required' => 'الايميل مطلوب',
-            'email.unique' => 'الايميل مأخوذ مسبقا و يرجى أدخال أيميل أخر',
-            'budget_type.required' => 'يجب اختيار نوع الميزانيه',
-            'email.valid_email' => 'البريد الإلكتروني للمدير غير صالح.' // Custom error message for email format
+            'email.required' => 'الايميل مطلوب.',
+            'email.unique' => 'الايميل مأخوذ مسبقا و يرجى أدخال أيميل أخر.',
+            'budget_type.required' => 'يجب اختيار نوع الميزانيه.',
+            'email.invalid_format' => 'البريد الإلكتروني للمدير غير صالح.', // Custom error message
         ];
-
-        // Validation rules
+        
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'budget_type' => 'required',
@@ -385,18 +384,16 @@ class sectorsController extends Controller
             'part' => 'required',
             'email' => [
                 'nullable', // Allow email to be null unless manager is set
-                'email', // Ensure valid email format
                 Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
-                function ($attribute, $value, $fail) use ($request) {
-                    // If manager is set, email must not be empty
-                    if ($request->mangered !== null && empty($value)) {
-                        return $fail('البريد الإلكتروني للمدير مطلوب.');
+                function ($attribute, $value, $fail) {
+                    // Check if email format is invalid
+                    if ($value && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                        $fail('البريد الإلكتروني للمدير غير صالح.'); // Custom failure message
                     }
                 },
             ],
         ], $messages);
-
-        // If initial validation fails
+        
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
