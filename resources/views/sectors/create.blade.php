@@ -46,7 +46,7 @@
 @endsection
 @section('content')
     <div class="row " dir="rtl">
-        <div class="container  col-11" style="background-color:transparent;">
+        <div class="container  col-11" style="background-color:transparent; ">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item "><a href="/">الرئيسيه</a></li>
@@ -126,7 +126,7 @@
                     </div>
                 </div>
              {{-- {{   dd( old('budget_type'))}} --}}
-                <div class="input-group moftsh px-md-5 px-3 pt-3">
+                <div class="input-group moftsh px-md-5 px-3 pt-4">
                     <label for="" class="col-12">ميزانيه الحجز</label>
                     <div class="d-flex mt-3" dir="rtl">
                         <input type="radio" class="toggle-radio-buttons mx-2" name="budget_type" {{ old('budget_type') == 1 ?? 'checked' }} value="1"

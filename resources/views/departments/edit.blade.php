@@ -68,8 +68,8 @@
         </div>
         <br>
         <div class="row">
-            <div class="container  col-11 mt-3 p-0 ">
-                <div class="container col-10 mt-5 mb-3 pb-5" style="border:0.5px solid #C7C7CC;">
+        <div class="container  col-11 mt-3 py-4 ">
+        <div class="container col-11" style="border:0.5px solid #C7C7CC;">
                     <form action="{{ route('departments.update', $department) }}" method="POST"
                         enctype="multipart/form-data">
                         <!-- <div class="container col-10 mt-5 mb-3 pb-5"
@@ -90,7 +90,7 @@
                             </div>
                         @endif
                         <div class="form-row mx-3 mt-4 d-flex justify-content-center">
-                            <div class="form-group col-md-10 mx-md-2">
+                            <div class="form-group col-md-12 mx-md-2">
                                 <label for="sector">اختر القطاع </label>
                                 <input type="text" name="name" id="name" class="form-control"
                                     value="{{ $department->sectors->name }}" disabled>
@@ -103,7 +103,7 @@
                                     </div>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-10 mx-md-2">
+                            <div class="form-group col-md-12 mx-md-2">
                                 <label for="name">أسم الأداره الرئيسية</label>
                                 <input type="text" name="name" class="form-control" autocomplete="one-time-code"
                                     value="{{ $department->name }}">
@@ -114,7 +114,7 @@
                             </div>
 
 
-                            <div class="form-group col-md-10 mx-md-2" id="manager">
+                            <div class="form-group col-md-12 mx-md-2" id="manager">
                                 <label for="mangered">رقم ملف المدير</label>
                                 <input type="text" name="mangered" id="mangered" class="form-control"
                                     autocomplete="one-time-code" value="{{ old('mangered', $department->manager ? $fileNumber : null) }}">
@@ -124,7 +124,9 @@
                                     </div>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-10 mx-md-2" id="email_field" style="display: none;" @error('email') style="display: block;" @enderror>
+
+                            <div class="form-group col-md-12 mx-md-2" id="email_field" style="display: none;" @error('email') style="display: block;" @enderror>
+
                                 <label class="pb-3" for="email">الأيميل</label>
                                 <input type="email" name="email" id="email" class="form-control" required>
                                 @error('email')
@@ -132,7 +134,7 @@
                                 @enderror
                             </div>
 
-                            <div class="form-group col-md-10 mx-md-2" id="manager_details">
+                            <div class="form-group col-md-12 mx-md-2" id="manager_details">
                                 <div class="col-12 div-info d-flex justify-content-between" style="direction: rtl">
                                     <div class="col-7">
                                         <div class="col-12 div-info-padding"><b>الرتبه : <span></span></b></div>
@@ -147,11 +149,7 @@
                                 </div>
                             </div>
 
-
-                        </div>
-                        <div class="form-row mx-2 d-flex justify-content-center">
-
-                            <div class="form-group col-md-10 mx-md-2">
+                            <div class="form-group col-md-12 mx-md-2">
                                 <label for="description">الوصف </label>
                                 <input type="text" name="description" class="form-control"
                                     autocomplete="one-time-code" value="{{ $department->description }}">
@@ -161,8 +159,7 @@
                                 @enderror
                             </div>
 
-
-                            <div class="input-group moftsh col-md-10 mx-md-2">
+                            <div class="form-group col-md-12 mx-md-2">
                                 <label for="file_number" class="col-12"> أرقام
                                     الملفات</label>
                                 <textarea class="form-control" name="file_number" id="file_number" style="height: 100px">
@@ -173,28 +170,8 @@
 
                             </div>
 
-                            <div class="form-group col-md-10 mx-md-2">
-                                <label for="" class="col-12">ميزانيه الحجز</label>
-                                <div class="d-flex mt-3" dir="rtl">
-                                    <input type="radio" class="toggle-radio-buttons mx-2" {{ (float)$department->reservation_allowance_amount > 0.00 ? 'checked' : '' }} name="budget_type"  value="1" id="notFree"
-                                       >
-                                    <label for="notFree">ميزانيه محدده</label>
+  <div class="form-group col-md-12 mx-md-2">
 
-                                    <input type="radio" class="toggle-radio-buttons mx-2" name="budget_type"  {{ (float)$department->reservation_allowance_amount == 0.00 ? 'checked' : '' }} value="2" id="free"
-                                        >
-                                    <label for="free" >ميزانيه غير محدده</label>
-                                </div>
-                            </div>
-
-                            <div class="form-group col-md-10 mx-md-2" id="budgetField" style= {{ (float)$department->reservation_allowance_amount > 0.00 ? "display: block": "display: none;" }}>
-                                <label class="d-flex pb-3" for="budget">ميزانية بدل حجز</label>
-                                <input type="text" name="budget" class="form-control" value=" {{ (float)$department->reservation_allowance_amount > 0.00 ? $department->reservation_allowance_amount : 00.00 }}"
-                                    id="budget" autocomplete="one-time-code">
-                                @error('budget')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="form-group col-md-10 mx-md-2">
                                 <label for="">صلاحيه الحجز</label>
                                 <div class="d-flex mt-3 " dir="rtl">
                                     <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="fullBooking"
@@ -211,19 +188,44 @@
                                     @enderror --}}
                                 </div>
                             </div>
-                        </div>
+                           
 
-                </div>
-                <div class="container col-10 mt-5 mb-3 ">
-                    <div class="form-row col-10 " dir="ltr">
-                        <button class="btn-blue " type="submit">
-                            اضافة </button>
-                    </div>
+
+                              <div class="form-group col-md-12 mx-md-2" dir="rtl">
+
+                <h4 class="mb-3 d-flex justify-content-start">ميزانيه الحجز</h4>
+
+
+                <div class="d-flex mt-3">
+                    <label for="notFree" class="d-flex align-items-center">
+                    <input type="radio" class="toggle-radio-buttons mx-2" {{ (float)$department->reservation_allowance_amount > 0.00 ? 'checked' : '' }} name="budget_type"  value="1" id="notFree"
+                    style="height:20px;"> ميزانيه محدده
+
+                    </label>
+
+                    <label for="free" class="d-flex align-items-center">
+                    <input type="radio" class="toggle-radio-buttons mx-2" name="budget_type"  {{ (float)$department->reservation_allowance_amount == 0.00 ? 'checked' : '' }} value="2" id="free"
+                    style="height:20px;">ميزانيه غير محدده
+
+                    </label>
                 </div>
             </div>
 
+                            <div class="form-group col-md-12 mx-md-2" id="budgetField" style= {{ (float)$department->reservation_allowance_amount > 0.00 ? "display: block": "display: none;" }}>
+                                <label class="d-flex pb-3" for="budget">ميزانية بدل حجز</label>
+                                <input type="text" name="budget" class="form-control" value=" {{ (float)$department->reservation_allowance_amount > 0.00 ? $department->reservation_allowance_amount : 00.00 }}"
+                                    id="budget" autocomplete="one-time-code">
+                                @error('budget')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                          
+                            </div>
+        <div class="form-group col-md-12 mx-md-2">
+            <button class="btn-blue " type="submit"> اضافة </button>
         </div>
-        <br>
+       
+
         </form>
         </div>
         </div>
