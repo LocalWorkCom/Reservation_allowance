@@ -9,7 +9,7 @@ use App\Traits\Uuid;
 
 class Sector extends Model
 {
-    use HasFactory, Uuid;
+     use HasFactory, Uuid;
     protected $table = 'sectors';
     public $timestamps = false;
 
