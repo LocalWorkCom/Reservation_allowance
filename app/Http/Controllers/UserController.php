@@ -58,7 +58,7 @@ class UserController extends Controller
 
 
     // }
-    public function index($flag, $type = 0, $id = 0)
+    public function index($flag, $type = 0, $id = 0, $status = 0)
 
     {
         addUuidToTable('users');
@@ -154,7 +154,7 @@ class UserController extends Controller
 
 
 
-        return view('user.view', compact('departments', 'sectors', 'Officer', 'Officer2', 'person', 'all', 'flag', 'type', 'id'));
+        return view('user.view', compact('departments', 'sectors', 'Officer', 'Officer2', 'person', 'all', 'flag', 'type', 'id', 'status'));
     }
 
 
@@ -205,7 +205,7 @@ class UserController extends Controller
     {
         $flag = $request->flag;
         $parentDepartment = Departements::find(Auth()->user()->department_id);
-
+        $status =  $request->get('status');
         $filter = $request->get('filter'); // Retrieve filter
         $parent_department_id = 0;
         $sector_id = 0;
@@ -263,7 +263,12 @@ class UserController extends Controller
         }
         //dd($request->amp;type);
         if ($sector_id) {
-            $data = $data->where('sector', $sector_id);
+            if ($status == 'null') {
+
+                $data = $data->whereNull('department_id')->where('sector', $sector_id);
+            } else if ($status == 'not_null') {
+                $data = $data->whereNotNull('department_id')->where('sector', $sector_id);
+            }
         }
 
 

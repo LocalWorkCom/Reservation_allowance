@@ -238,6 +238,7 @@
                             $parms['flag'] = $flag;
                             $parms['id'] = $id;
                             $parms['type'] = $type;
+                            $parms['status'] = $status;
                             // if ($department_id) {
                             //     $parms['id'] = $department_id;
                             // $parms['type'] = 'department';
@@ -271,7 +272,7 @@
 
                         // Manually append the parameters
                         var fullUrl = url + query +
-                            '?flag={{ urlencode($parms['flag']) }}&id={{ urlencode($parms['id']) }}&type={{ urlencode($parms['type']) }}';
+                            '?flag={{ urlencode($parms['flag']) }}&id={{ urlencode($parms['id']) }}&type={{ urlencode($parms['type']&status={{ urlencode($parms['status']) }}';
 
                         var table = $('#users-table').DataTable({
                             processing: true,
