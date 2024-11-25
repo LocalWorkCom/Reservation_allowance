@@ -19,20 +19,23 @@
 @endpush
 
 @section('content')
-    <div class="row" style="direction: rtl;">
+<div class="row" >
         <div class="container welcome col-11">
             <div class="d-flex justify-content-between">
-                <p>تفاصيل الإدارات الفرعية للإدارة الرئيسية: {{ $mainDepartment->name }}  الفترة من: {{ $startDate->format('Y-m-d') }} إلى: {{ $endDate->format('Y-m-d') }}</p>
+                <p> الإدارات الفرعية للإدارة الرئيسية: {{ $mainDepartment->name }}    </p>
 
             </div>
-            <button id="print-report" class="btn btn-secondary">طباعة</button>
+        
 
         </div>
     </div>
 
-    <div class="row" style="direction: rtl;">
-        <div class="container col-11 mt-3 p-0 pt-5 pb-4">
+    <div class="container col-11 mt-3 py-5  " >
+    <div class="d-flex justify-content-between pb-3"dir="rtl">
+    <h4> الفترة من: <span class="text-info">{{ $startDate->format('Y-m-d') }}</span> إلى: <span class="text-info">{{ $endDate->format('Y-m-d') }}</span></h4>
 
+    <button id="print-report" class="btn-blue">طباعة</button>
+    </div>
             <!-- Data Table -->
             <div class="mt-4 bg-white">
                 <table id="users-table" class="display table table-bordered table-hover dataTable">
@@ -50,14 +53,14 @@
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $subDepartment['sub_department_name'] }}</td>
                                 <td>
-                                    <a href="{{ route('reservation_report.sub_department_employees', ['subDepartmentId' => $subDepartment['id']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:blue !important;">
+                                    <a href="{{ route('reservation_report.sub_department_employees', ['subDepartmentId' => $subDepartment['id']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8  !important;">
                                         {{ $subDepartment['employee_count'] }}
                                     </a>
                                 </td>
                              
 
                                 <td>
-                                <a href="{{ route('reservation_report.sub_department_employees', ['subDepartmentId' => $subDepartment['id']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:blue !important;">    
+                                <a href="{{ route('reservation_report.sub_department_employees', ['subDepartmentId' => $subDepartment['id']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8  !important;">    
                                 {{ $subDepartment['reservation_amount'] }}
                                 </a>
                             

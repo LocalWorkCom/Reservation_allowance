@@ -72,26 +72,22 @@
             <p> بدل الحجز</p>
         </div>
         <form class="" action="{{ route('reservation_allowances.search_employee_new') }}" method="post">
+            
             @csrf
-            <div class="row d-flex flex-wrap ">
+            <div class="row d-flex flex-wrap " >
                 <!-- 1 for sector , 2 for department -->
+                <div class="d-flex mx-2">
+                        <label for="Civil_number">
+                            <button class="btn-all py-2 px-2" type="submit" >
+                                اضافة بدل حجز اختياري
+                            </button>
+                    </div>
                 <input name="department_type" id="department_type" type="hidden"
                     value="{{ Auth::user()->department_id == null ? 1 : 2 }}">
-                <div class="d-flex">
-                    {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                    <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
-                    <select class="custom-select custom-select-lg" name="sector_id" id="sector_id" required>
-                        <option value="0" selected>اختار القطاع</option>
-                        @foreach ($sectors as $sector)
-                        <option value="{{ $sector->id }}" {{ $sector->id == $sector_id ? 'selected' : '' }}>
-                            {{ $sector->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
                 <div class="d-flex mx-2">
                     {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                     <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
-                    <select class="custom-select custom-select-lg" name="departement_id" id="departement_id">
+                    <select class="btn-all" name="departement_id" id="departement_id">
                         <option value="0" selected>اختار الادارة</option>
                         @if ($get_departements)
                         @foreach ($get_departements as $departement)
@@ -107,19 +103,25 @@
                         @endforeach
                         @endif
                     </select>
+                </div>  
+                  <div class="d-flex">
+                    {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
+                    <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
+                    <select class="btn-all" name="sector_id" id="sector_id" required>
+                        <option value="0" selected>اختار القطاع</option>
+                        @foreach ($sectors as $sector)
+                        <option value="{{ $sector->id }}" {{ $sector->id == $sector_id ? 'selected' : '' }}>
+                            {{ $sector->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
+            
           
-                    <div class="form-group  mx-2">
-                        <input class="form-control" type="date" name="date" id="date" max="{{$today}}"
+                <div class="d-flex mx-2">
+                        <input class="btn-all" type="date" name="date" id="date" max="{{$today}}"
                             value="{{$today}}" required>
                     </div>
-                    <div class="d-flex mx-2">
-                        <label for="Civil_number">
-                            <button class="btn-all py-2 px-2" type="submit" style="color:green;">
-                                <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                اضافة بدل حجز اختياري
-                            </button>
-                    </div>
+                   
                 </div>
             </div>
         </form>
@@ -144,7 +146,7 @@
 </div>
 
 
-    <div class="container  col-11 mt-3 p-0  pt-5 pb-4">
+    <div class="container col-11 mt-3 py-5  " >
 
         <div class="col-lg-12">
             <div class="bg-white">
@@ -155,6 +157,7 @@
                 @endif
 
                 <div>
+                <div class="mt-4 bg-white">
                     <table id="users-table"
                         class="display table table-responsive-sm  table-bordered table-hover dataTable"
                         style="direction:rtl">
@@ -254,15 +257,15 @@
                 </div>
 
                 @if ($reservation_allowance_type != 4)
-                <div class="" style="margin-top:20px">
-                    <button class="btn-all py-2 px-2" style="color:#ffffff; background-color:#274373 !important;"
-                        onclick="confirm_reservation()" class="menu-link px-3">
+                <div >
+                    <button class="btn-blue px-2" 
+                        onclick="confirm_reservation()" class="menu-link ">
 
                         اضف بدل حجز</button>
                 </div>
                 @endif
 
-            </div>
+            </div></div>
         </div>
 
     </div>

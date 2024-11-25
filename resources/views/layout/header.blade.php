@@ -216,8 +216,8 @@
                         </a>
                         <div id="dropdownMenu4" class="dropdown-menu4">
                             <ul>
-                                <div class="row col-12 d-flex justify-content-around">
-                                    <div class="col-6">
+                             
+                                
                                         @if (Auth::user()->hasPermission('view Setting'))
                                             <li class="{{ request()->routeIs('settings.index') ? 'active' : '' }}">
                                                 <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
@@ -257,8 +257,7 @@
 
 
 
-                                    </div>
-                                    <div class="col-6">
+                                  
                            
 
                                             <li class="{{ request()->routeIs('nationality.index') ? 'active' : '' }}">
@@ -324,8 +323,7 @@
 
 
 
-                                    </div>
-                                </div>
+                                    
                             </ul>
                         </div>
                     </li>
@@ -350,7 +348,7 @@
             </ul>
         </div>
     </div>
-</div>
+    </div>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Close dropdowns on page load
