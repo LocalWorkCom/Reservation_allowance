@@ -692,13 +692,7 @@ class UserController extends Controller
 
         // Fetch grades based on the selected violation type
         $grades = Grade::where('type', $selectedViolationType)->get();
-        // dd($user->department_id);
-        // if ($flag == "0") {
-        //     $alldepartment = departements::where('id', $user->department_id)->orwhere('parent_id', $user->department_id)->get();
-        // } else {
-        //     $alldepartment = departements::where('id', $user->public_administration)->orwhere('parent_id', $user->public_administration)->get();
-        // }
-
+        
         if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
             $alluser = User::where('flag', 'employee')->get();
         } else {
