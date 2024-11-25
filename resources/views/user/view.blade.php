@@ -272,7 +272,7 @@
 
                         // Manually append the parameters
                         var fullUrl = url + query +
-                            '?flag={{ urlencode($parms['flag']) }}&id={{ urlencode($parms['id']) }}&type={{ urlencode($parms['type']&status={{ urlencode($parms['status']) }}';
+                            '?flag={{ urlencode($parms['flag']) }}&id={{ urlencode($parms['id']) }}&type={{ urlencode($parms['type']) }}&status={{ urlencode($parms['status']) }}';
 
                         var table = $('#users-table').DataTable({
                             processing: true,

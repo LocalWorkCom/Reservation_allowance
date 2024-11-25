@@ -415,15 +415,13 @@ class DepartmentController extends Controller
 
         // Handle reservation allowance type
         $part = $request->input('part');
-        if (in_array('1', $part) && in_array('2', $part)) {
-            $reservation_allowance_type = 3; // Both '1' and '2' selected
-        } elseif (in_array('1', $part)) {
-            $reservation_allowance_type = 1; // Only '1' selected
-        } elseif (in_array('2', $part)) {
-            $reservation_allowance_type = 2; // Only '2' selected
-        } elseif (in_array('3', $part)) {
-            $reservation_allowance_type = 4; // Only '3' selected
-        }
+        $reservation_allowance_type = match (true) {
+            in_array('1', $part) && in_array('2', $part) => 3,
+            in_array('1', $part) => 1,
+            in_array('2', $part) => 2,
+            in_array('3', $part) => 4,
+            default => null,
+        };
 
         // Retrieve the user by file_number and set the manager
         $manager = $request->mangered ? User::where('file_number', $request->mangered)->first() : null;
@@ -538,15 +536,13 @@ class DepartmentController extends Controller
         }
 
         $part = $request->input('part');
-        if (in_array('1', $part) && in_array('2', $part)) {
-            $reservation_allowance_type = 3; // Both '1' and '2' selected
-        } elseif (in_array('1', $part)) {
-            $reservation_allowance_type = 1; // Only '1' selected
-        } elseif (in_array('2', $part)) {
-            $reservation_allowance_type = 2; // Only '2' selected
-        } elseif (in_array('3', $part)) {
-            $reservation_allowance_type = 4; // Only '3' selected
-        }
+        $reservation_allowance_type = match (true) {
+            in_array('1', $part) && in_array('2', $part) => 3,
+            in_array('1', $part) => 1,
+            in_array('2', $part) => 2,
+            in_array('3', $part) => 4,
+            default => null,
+        };
 
         $file_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->file_number);
         $file_numbers = array_filter(explode(',', $file_numbers)); // Ensure it's an array of valid numbers

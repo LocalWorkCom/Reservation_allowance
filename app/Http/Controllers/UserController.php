@@ -97,17 +97,21 @@ class UserController extends Controller
             $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
             $Officer2 = User::where('department_id', $search_id)->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
         } elseif ($type == "sector") {
-            $all = User::where('sector', $search_id)->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
-
+            if ($status == 'null') {
+                $cond_dep = array('department_id' => null);
+            }else{
+                $cond_dep = array('department_id !=' => null);
+            }
+            $all = User::where('sector', $search_id)->where($cond_dep)->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
             // dd($all);
             $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
-            $person = User::where('sector', $search_id)->where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
+            $person = User::where('sector', $search_id)->where($cond_dep)->where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
 
             $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
-            $Officer = User::where('sector', $search_id)->where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
+            $Officer = User::where('sector', $search_id)->where($cond_dep)->where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
 
             $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
-            $Officer2 = User::where('sector', $search_id)->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
+            $Officer2 = User::where('sector', $search_id)->where($cond_dep)->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
         } elseif ($type == "parent") {
             $subdepartment_ids = Departements::where('parent_id', $search_id)->pluck('id');
             $all = User::whereIn('department_id', $subdepartment_ids)->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
@@ -135,6 +139,7 @@ class UserController extends Controller
             // $Officer2 = User::where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
 
         } else {
+            
             $all = User::where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
 
             // dd($all);

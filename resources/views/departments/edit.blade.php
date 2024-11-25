@@ -52,7 +52,7 @@
                         </li>
                         <li class="breadcrumb-item">
                         <?php /* <a href="{{ route('departments.index', ['id' => $department->sector_id]) }}"> */?>
-                        <a href="{{ route('departments.index', $department->uuid) }}">
+                        <a href="{{ route('departments.index', $department->sectors->uuid) }}">
                         {{-- {{ $department->name }} --}} الأدارات
                             </a>
                         </li>
