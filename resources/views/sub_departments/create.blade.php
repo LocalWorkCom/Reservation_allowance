@@ -129,6 +129,7 @@
                                 <label for="budget">ميزانية بدل حجز</label>
                                 <input type="text" name="budget" class="form-control" autocomplete="one-time-code"
                                     value="{{ old('budget') }}">
+
                         @error('budget')
                         <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
@@ -150,6 +151,7 @@
                         <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
+
 
                     <div class="form-group col-md-12 mx-md-2" id="manager_details">
                         <div class="col-12 div-info d-flex justify-content-between" style="direction: rtl">
@@ -240,7 +242,6 @@
     </div>
 
 
-
     </div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -314,7 +315,10 @@ function fetchManagerDetails(managerId) {
                                 }
                             }
                         } else {
-                            $('#email').val('');
+                            // Handle cancel action: clear the manager input field
+                            $('#mangered').val(''); // Clear the input field
+                            $('#manager_details').hide(); // Hide the manager details
+                            $('#email_field').hide();
                         }
                     });
                 }
