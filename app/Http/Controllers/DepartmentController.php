@@ -144,9 +144,9 @@ class DepartmentController extends Controller
         $manager = User::where('file_number', $id)->first();
 
         // Handle if no manager is found
-        if (!$manager) {
-            return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 405);
-        }
+        // if (!$manager) {
+        //     return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 405);
+        // }
         // Prevent sector managers from being transferred or added
         if ($isSectorManager) {
             return response()->json(['error' => 'لا يمكن تعيين مدير قطاع كمدير أو موظف.'], 403);
