@@ -66,15 +66,56 @@
                         {{ session('success') }}
                     </div>
                 @endif
-                {{-- @if ($errors->any())
-                    <div class="alert alert-danger">
+               {{-- {{ dd($errors->all())}} --}}
+                @if ($errors->any())
+                    <script>
+                        $(document).ready(function() {
+                            var selectedManagerId = $('#mangered').val();
+                            console.log("Selected Manager ID:", selectedManagerId);
+
+                            if (selectedManagerId) {
+                                $('#email_field').show();
+                                fetchManagerDetails(selectedManagerId, false);
+
+                                var existingEmail = @json(old('email'));
+                                var existingBudget = @json(old('budget'));
+
+
+                                if (existingEmail) {
+                                    // $('#email_field').css({
+                                    //     display: 'block',
+                                    //     visibility: 'visible',
+                                    //     opacity: 1
+                                    // });
+                                    $('#email_field').show();
+                                    $('#email').val(@json(old('email')));
+                                }
+
+                                if (existingBudget) {
+                                    $('#notFree').prop('checked', true);
+                                    $('#budgetField').css({
+                                        display: 'block',
+                                        visibility: 'visible',
+                                        opacity: 1
+                                    });
+                                    $('#budget').val(existingBudget);
+                                } else {
+                                    $('#Free').prop('checked', true);
+                                }
+                            } else {
+                                $('#manager_details').hide();
+                                $('#email_field').hide();
+                            }
+                        });
+                    </script>
+                    {{-- <div class="alert alert-danger">
                         <ul>
                             @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
                             @endforeach
                         </ul>
-                    </div>
-                @endif --}}
+                    </div> --}}
+                @endif
                 <div class="form-row mx-2 mb-2">
                     <h3 class=" px-md-5 px-3">اضف قطاع</h3>
                     <div class="input-group moftsh px-md-5 px-3 pt-3">
@@ -202,7 +243,6 @@
             }
         });
 
-        // Trigger the event once on page load to handle pre-filled values
         document.getElementById('mangered').dispatchEvent(new Event('input'));
     </script>
 
@@ -210,22 +250,8 @@
         $('.select2').select2({
             dir: "rtl"
         });
-        // $(document).ready(function() {
-        //     var selectedManagerId = $('#mangered').val();
-        //     let validationType = @json(session('validation_type', null));
 
-        //     if (selectedManagerId) {
-        //         $('#email_field').show();
-        //         fetchManagerDetails(selectedManagerId, false);
-        //         $('#manager_details').show();
-
-
-        //     } else {
-        //         $('#manager_details').hide();
-        //         $('#email_field').hide();
-        //     }
-        // });
-        function fetchManagerDetails(managerId, skipDepartmentCheck = false) {
+        function fetchManagerDetails(managerId, skipDepartmentCheck = true) {
             var oldManagerId = $('#mangered').val();
             var oldEmail = $('#email').val();
             if (managerId) {
@@ -259,62 +285,62 @@
                         }
                     },
                     error: function(xhr) {
-                        if (xhr) {
-                            fetchManagerDetails(managerId, false);
-                            $('#email_field').show();
-                            $('#email').show();
-                            $('#email').val(oldEmail);
+                        if (xhr.status == 405) {
+                            // fetchManagerDetails(managerId, false);
+                            // $('#email_field').show();
+                            // $('#email').show();
+                            // $('#email').val(oldEmail);
 
-                            // if (xhr.error) {
+                            // // if (xhr.error) {
 
-                            // } else {
-                            //     $('#email').val(oldEmail);
+                            // // } else {
+                            // //     $('#email').val(oldEmail);
 
-                            // }
-                            $('#manager_details').show();
-                            // Populate manager details
-                            $('#manager_details').find('span').eq(0).text(result.rank);
-                            $('#manager_details').find('span').eq(1).text(result.job_title);
-                            $('#manager_details').find('span').eq(2).text(result.name);
-                            $('#manager_details').find('span').eq(3).text(result.phone);
-                            $('#manager_details').find('span').eq(4).text(result.email);
-                            // Swal.fire({
-                            //     title: 'تحذير',
-                            //     text: xhr.responseJSON.error || 'عفوا هذا المستخدم غير موجود',
-                            //     icon: 'warning',
-                            //     showCancelButton: true,
-                            //     confirmButtonText: 'نعم, استمر',
-                            //     cancelButtonText: 'لا',
-                            //     confirmButtonColor: '#3085d6',
-                            //     cancelButtonColor: '#d33'
-                            // }).then((result) => {
-                            //     if (result.isConfirmed) {
-                            //         fetchManagerDetails(managerId, false);
-                            //         $('#email_field').show();
-                            //         $('#email').show();
-                            //         if (data.email === 'لا يوجد بريد الكتروني') {
-                            //             $('#email').val('');
+                            // // }
+                            // $('#manager_details').show();
+                            // // Populate manager details
+                            // $('#manager_details').find('span').eq(0).text(result.rank);
+                            // $('#manager_details').find('span').eq(1).text(result.job_title);
+                            // $('#manager_details').find('span').eq(2).text(result.name);
+                            // $('#manager_details').find('span').eq(3).text(result.phone);
+                            // $('#manager_details').find('span').eq(4).text(result.email);
+                            Swal.fire({
+                                title: 'تحذير',
+                                text: xhr.responseJSON.error,
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: 'نعم, استمر',
+                                cancelButtonText: 'لا',
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    fetchManagerDetails(managerId, false);
+                                    $('#email_field').show();
+                                    $('#email').show();
+                                    if (data.email === 'لا يوجد بريد الكتروني') {
+                                        $('#email').val('');
 
-                            //         } else {
-                            //             $('#email').val(data.email);
+                                    } else {
+                                        $('#email').val(data.email);
 
-                            //         }
-                            //         $('#manager_details').show();
-                            //         // Populate manager details
-                            //         $('#manager_details').find('span').eq(0).text(result.rank);
-                            //         $('#manager_details').find('span').eq(1).text(result.job_title);
-                            //         $('#manager_details').find('span').eq(2).text(result.name);
-                            //         $('#manager_details').find('span').eq(3).text(result.phone);
-                            //         $('#manager_details').find('span').eq(4).text(result.email);
+                                    }
+                                    $('#manager_details').show();
+                                    // Populate manager details
+                                    $('#manager_details').find('span').eq(0).text(result.rank);
+                                    $('#manager_details').find('span').eq(1).text(result.job_title);
+                                    $('#manager_details').find('span').eq(2).text(result.name);
+                                    $('#manager_details').find('span').eq(3).text(result.phone);
+                                    $('#manager_details').find('span').eq(4).text(result.email);
 
-                            //     } else {
-                            //         // Hide details if user cancels
-                            //         $('#mangered').val(''); // Clear manager input field
-                            //         $('#manager_details').hide();
-                            //         $('#email_field').hide();
-                            //         $('#email').val(''); // Clear password field
-                            //     }
-                            // });
+                                } else {
+                                    // Hide details if user cancels
+                                    $('#mangered').val(''); // Clear manager input field
+                                    $('#manager_details').hide();
+                                    $('#email_field').hide();
+                                    $('#email').val(''); // Clear password field
+                                }
+                            });
                         } else {
                             Swal.fire({
                                 title: 'خطأ',
@@ -338,13 +364,15 @@
         $('#mangered').bind('blur', function() {
             var managerId = $(this).val();
             $('#email').val('');
+            $('#email_field').hide();
+
 
             fetchManagerDetails(managerId, true);
         });
-        var selectedManagerId = $('#mangered').val();
-        if (selectedManagerId) {
-            fetchManagerDetails(selectedManagerId, true);
-        }
+        // var selectedManagerId = $('#mangered').val();
+        // if (selectedManagerId) {
+        //     fetchManagerDetails(selectedManagerId, true);
+        // }
     </script>
     <script>
         // Select the checkboxes by their IDs
