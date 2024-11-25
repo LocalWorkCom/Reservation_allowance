@@ -40,13 +40,18 @@ class DepartmentController extends Controller
         $startDate = now()->startOfMonth()->toDateString();
         $endDate = now()->toDateString();
 
-        $employees = ReservationAllowance::where('sector_id', $departement_id)
+        $employees = ReservationAllowance::where('departement_id', $departement_id)
             ->whereBetween('date', [$startDate, $endDate])
             ->get();
 
         // Calculate total amount for the specified sector and date range
         $totalAmount = $employees->sum('amount');
-        $is_allow = $totalAmount < $amount;
+
+        if ($totalAmount == 0) {
+            $is_allow = true;
+        } else {
+            $is_allow = $totalAmount < $amount;
+        }
 
         // Return total amount and is_allow status
         return response()->json([
@@ -689,10 +694,18 @@ class DepartmentController extends Controller
             'budget' => 'nullable|numeric',
             'budget_type' => 'required',
             'part' => 'required',
-            'email',
-            Rule::unique('users', 'email')->ignore($request->mangered),
+            'email' => [
+                'nullable', // Allow email to be null unless manager is set
+                'email', // Ensure valid email format
+                Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
+                function ($attribute, $value, $fail) use ($request) {
+                    // If manager is set, email must not be empty
+                    if ($request->mangered !== null && empty($value)) {
+                        return $fail('البريد الإلكتروني للمدير مطلوب.');
+                    }
+                },
+            ],
         ], $messages);
-
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
@@ -701,8 +714,11 @@ class DepartmentController extends Controller
 
         $allowance = $this->getAllowancedepart($request->budget, $department->id);
 
-        if ($allowance->original['is_allow']) {
-            $validator->errors()->add('budget',  '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total'] . 'لوجود بدلات حجز اكبر من القيمه المدخله');
+        $allowanceData = json_decode($allowance->getContent(), true);  // Decode JSON response
+
+        // Now you can check the 'is_allow' value as expected
+        if ($allowanceData['is_allow'] === false) {
+            $validator->errors()->add('budget',  '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowanceData['total'] . ' لوجود بدلات حجز اكبر من القيمه المدخله');
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
@@ -732,8 +748,8 @@ class DepartmentController extends Controller
         $department->created_by = Auth::user()->id;
         $department->save();
         saveHistory($department->reservation_allowance_amount, $department->sector_id, $department->id);
-        UpdateUserHistory($manager->id);
-        addUserHistory($manager->id, $department->id,  $request->sector);
+        UpdateUserHistory($manager);
+        addUserHistory($manager, $department->id,  $request->sector);
         // Handle old and new manager updates
         if ($oldManager != $manager) {
             if ($oldManager) {
@@ -845,6 +861,7 @@ class DepartmentController extends Controller
 
     public function update_1(Request $request, departements $department)
     {
+        $department = departements::findOrFail($department->id);
         // Validation rules and error messages
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
@@ -860,8 +877,17 @@ class DepartmentController extends Controller
             'budget' => 'nullable|numeric',
             'budget_type' => 'required',
             'part' => 'required',
-            'email',
-            Rule::unique('users', 'email')->ignore($request->mangered),
+            'email' => [
+                'nullable', // Allow email to be null unless manager is set
+                'email', // Ensure valid email format
+                Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
+                function ($attribute, $value, $fail) use ($request) {
+                    // If manager is set, email must not be empty
+                    if ($request->mangered !== null && empty($value)) {
+                        return $fail('البريد الإلكتروني للمدير مطلوب.');
+                    }
+                },
+            ],
         ], $messages);
 
         if ($validator->fails()) {
@@ -869,8 +895,11 @@ class DepartmentController extends Controller
         }
 
         $allowance = $this->getAllowancedepart($request->budget, $request->id);
-        if ($allowance->original['is_allow']) {
-            $validator->errors()->add('budget',  '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total'] . 'لوجود بدلات حجز اكبر من القيمه المدخله');
+        $allowanceData = json_decode($allowance->getContent(), true);  // Decode JSON response
+
+        // Now you can check the 'is_allow' value as expected
+        if ($allowanceData['is_allow'] === false) {
+            $validator->errors()->add('budget',  '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowanceData['total'] . ' لوجود بدلات حجز اكبر من القيمه المدخله');
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
