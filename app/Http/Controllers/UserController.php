@@ -756,9 +756,9 @@ $all=0;
     public function unsigned(Request $request)
     {
         //
-        $user = User::find($request->id_employee);
+        $user = User::where('uuid',$request->id_employee)->first();
         UpdateUserHistory($user->id);
-        $user = User::find($request->id_employee);
+        $user = User::where('uuid',$request->id_employee)->first();
         $user->department_id  = Null;
         $user->sector  = Null;
         $user->flag  = 'employee';

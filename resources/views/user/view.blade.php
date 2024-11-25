@@ -29,7 +29,7 @@
                         <div class="container pt-5 pb-2" style="border: 0.2px solid rgb(166, 165, 165);">
                             <form id="transfer-form" action="{{ route('user.unsigned') }}" method="POST">
                                 @csrf
-                                <input type="text" name="id_employee" id="id_employee" value="">
+                                <input type="hidden" name="id_employee" id="id_employee" value="">
                                 <div class="mb-3">
                                     <label style="justify-content: flex-end;"> هل انت متاكد من الغاء التعييين
                                         ؟ </label>
@@ -366,7 +366,7 @@ var fullUrl = url + query + '?flag=employee&id={{ urlencode($parms['id']) }}&typ
         <a href="` + useredit + `" class="btn btn-sm" style="background-color: #F7AF15;">
             <i class="fa fa-edit"></i> تعديل
         </a>
-        <a class="btn btn-sm ${visibility}" style="background-color: #E3641E;" onclick="openTransferModal(${row.id})">
+        <a class="btn btn-sm ${visibility}" style="background-color: #E3641E;" onclick="openTransferModal('${row.uuid}')">
             <i class="fa-solid fa-user-tie"></i>  الغاء التعيين
         </a>
     `;
