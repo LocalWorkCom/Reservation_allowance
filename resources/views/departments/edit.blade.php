@@ -281,7 +281,7 @@
                 var departmentId = $('#department_id').val();
 
                 $.ajax({
-                    url: '/get-manager-details/' +  managerId  + '?skipDepartmentCheck=' + skipDepartmentCheck,
+                    url: '/get-manager-details/' +  managerId  + '?skipDepartmentCheck=' + skipDepartmentCheck+ '?isEditPage=' + true,
                     type: 'GET',
                     data: {
                         department_id: departmentId
