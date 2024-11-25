@@ -181,7 +181,7 @@ class SectorEmployeesDetailsController extends Controller
         }
     
         // Fetch users belonging to the sector
-        $users = User::where('sector_uuid', $sectorUuid) 
+        $users = User::where('sector', $sector->id )
             ->with(['grade', 'department']) 
             ->get();
     
@@ -194,6 +194,7 @@ class SectorEmployeesDetailsController extends Controller
             ->addIndexColumn()
             ->make(true);
     }
+    
 
 
 public function printReport($sectorUuid, Request $request)
