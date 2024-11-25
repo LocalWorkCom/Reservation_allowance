@@ -96,6 +96,8 @@
                                     value="{{ $department->sectors->name }}" disabled>
                                 <input type="hidden" name="sector" id="sector" class="form-control"
                                     value="{{ $department->sectors->id }}">
+                                    <input type="hidden" name="department_id" id="department_id" class="form-control"
+                                    value="{{ $department->id }}">
                                 @error('sector')
                                     <div class="alert alert-danger">{{ $message }}
                                     </div>
@@ -122,7 +124,9 @@
                                     </div>
                                 @enderror
                             </div>
+
                             <div class="form-group col-md-12 mx-md-2" id="email_field" style="display: none;" @error('email') style="display: block;" @enderror>
+
                                 <label class="pb-3" for="email">الأيميل</label>
                                 <input type="email" name="email" id="email" class="form-control" required>
                                 @error('email')
@@ -165,7 +169,9 @@
                                         </textarea>
 
                             </div>
+
   <div class="form-group col-md-12 mx-md-2">
+
                                 <label for="">صلاحيه الحجز</label>
                                 <div class="d-flex mt-3 " dir="rtl">
                                     <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="fullBooking"
@@ -233,49 +239,54 @@
         });
         $(document).ready(function() {
             var selectedManagerId = $('#mangered').val();
-            console.log(selectedManagerId);
+            console.log("Selected Manager ID:", selectedManagerId);
 
             if (selectedManagerId) {
-                // Show the email field
+                console.log("About to show #email_field and fetch manager details...");
                 $('#email_field').show();
                 fetchManagerDetails(selectedManagerId, false);
 
-                var existingBudget =
-                    "{{ old('budget', $department->reservation_allowance_amount ? $department->reservation_allowance_amount : '') }}";
+                var existingEmail = @json(old('mangered', $department->manager ? $email : null));
+                var existingBudget = @json(old('budget', $department->reservation_allowance_amount ? $department->reservation_allowance_amount : ''));
 
+                console.log("Existing Email:", existingEmail);
+                console.log("Existing Budget:", existingBudget);
 
                 if (existingEmail) {
-                    $('#email_field').css('display', 'block');
-
-                    $('#email_field').show();
+                    $('#email_field').css({
+                        display: 'block',
+                        visibility: 'visible',
+                        opacity: 1
+                    });
                     $('#email').val(existingEmail);
-
                 }
-                // If a budget exists, check the radio button for specific budget and display the budget field
+
                 if (existingBudget) {
-                    $('#notFree').attr('checked', true);
-                    $('#budgetField').show();
+                    $('#notFree').prop('checked', true);
+                    $('#budgetField').css({
+                        display: 'block',
+                        visibility: 'visible',
+                        opacity: 1
+                    });
                     $('#budget').val(existingBudget);
                 } else {
-                    // If no specific budget, check the "free" option
-                    $('#Free').attr('checked', true);
+                    $('#Free').prop('checked', true);
                 }
-
             } else {
                 $('#manager_details').hide();
                 $('#email_field').hide();
             }
         });
-        function fetchManagerDetails(managerId) {
+        function fetchManagerDetails(managerId, skipDepartmentCheck = true) {
 
             if (managerId) {
-                var sectorId = $('#sector').val();
+                var departmentId = $('#department_id').val();
 
                 $.ajax({
-                    url: '/get-manager-details/' + managerId,
+                    url: '/get-manager-details/' +  managerId  + '?skipDepartmentCheck=' + skipDepartmentCheck+ '?isEditPage=' + true,
                     type: 'GET',
                     data: {
-                        sector_id: sectorId
+                        department_id: departmentId
                     }, // Send sector_id to the backend
                     success: function(data) {
                         $('#manager_details').find('span').eq(0).text(

@@ -129,6 +129,7 @@
                                 <label for="budget">ميزانية بدل حجز</label>
                                 <input type="text" name="budget" class="form-control" autocomplete="one-time-code"
                                     value="{{ old('budget') }}">
+
                         @error('budget')
                         <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
@@ -150,6 +151,7 @@
                         <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
                     </div>
+
 
                     <div class="form-group col-md-12 mx-md-2" id="manager_details">
                         <div class="col-12 div-info d-flex justify-content-between" style="direction: rtl">
@@ -239,6 +241,107 @@
 
     </div>
 
+
+        function fetchManagerDetails(managerId) {
+
+            if (managerId) {
+                var sectorId = $('#sector').val();
+
+                $.ajax({
+                    url: '/get-manager-details/' + managerId,
+                    type: 'GET',
+                    data: {
+                        sector_id: sectorId
+                    }, // Send sector_id to the backend
+                    success: function(data) {
+                        $('#manager_details').find('span').eq(0).text(data.rank);
+                        $('#manager_details').find('span').eq(1).text(data.job_title);
+                        $('#manager_details').find('span').eq(2).text(data.name);
+                        $('#manager_details').find('span').eq(3).text(data.phone);
+                        $('#manager_details').find('span').eq(4).text(data.email);
+                        $('#manager_details').show();
+                        $('#email_field').show();
+
+                        // Show password and rule fields for employees
+                        if (data.email) {
+                            if (data.email === 'لا يوجد بريد الكتروني') {
+                                $('#email').val('');
+
+                            } else {
+                                $('#email').val(data.email);
+
+                            }
+                        } else {
+                            $('#email').val('');
+                        }
+                        // Handle transfer logic
+                        if (data.transfer) {
+                            Swal.fire({
+                                title: 'تحذير',
+                                text: data.warning,
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: 'نعم, نقل',
+                                cancelButtonText: 'إلغاء',
+                                confirmButtonColor: '#3085d6'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    $('#manager_details').find('span').eq(0).text(data.rank);
+                                    $('#manager_details').find('span').eq(1).text(data.job_title);
+                                    $('#manager_details').find('span').eq(2).text(data.name);
+                                    $('#manager_details').find('span').eq(3).text(data.phone);
+                                    $('#manager_details').find('span').eq(4).text(data.email);
+                                    $('#manager_details').show();
+
+                                    // Show password and rule fields for employees
+                                    if (data.email) {
+                                        $('#email_field').show();
+                                        if (data.email === 'لا يوجد بريد الكتروني') {
+                                            $('#email').val('');
+
+                                        } else {
+                                            $('#email').val(data.email);
+
+                                        }
+                                    }
+                                } else {
+                                    // Handle cancel action: clear the manager input field
+                                    $('#mangered').val(''); // Clear the input field
+                                    $('#manager_details').hide(); // Hide the manager details
+                                    $('#email_field').hide();
+                                }
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Display error or warning message based on the response
+                        var response = JSON.parse(xhr.responseText);
+
+                        // Handle error message
+                        if (response.error) {
+                            Swal.fire({
+                                title: 'تحذير',
+                                text: response.error,
+                                icon: 'error',
+                                confirmButtonText: 'إلغاء',
+                                confirmButtonColor: '#3085d6'
+                            }).then((result) => {
+                                // User clicked "إلغاء", clear the input field
+                                $('#mangered').val('');
+                                $('#manager_details').hide();
+                                $('#email_field').hide();
+                                $('#email').val('');
+                            });
+                        }
+                    }
+                });
+            } else {
+                // Reset the manager details if no manager ID is provided
+                $('#manager_details').hide();
+                $('#email_field').hide();
+                $('#email').val('');
+            }
+        }
 
 
     </div>
