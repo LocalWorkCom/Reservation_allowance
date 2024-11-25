@@ -64,7 +64,7 @@ Route::get('/login', function () {
 });
 Route::post('/login', [UserController::class, 'login'])->name('login');
 Route::any('/logout', [UserController::class, 'logout'])->name('logout');
-Route::post('/verfication_code', [UserController::class, 'verfication_code'])->name('verfication_code');
+Route::any('/verfication_code', [UserController::class, 'verfication_code'])->name('verfication_code');
 Route::post('/resend_code', [UserController::class, 'resend_code'])->name('resend_code');
 
 Route::get('/forget-password', function () {
@@ -304,7 +304,7 @@ Route::middleware(['auth'])->group(function () {
 
     // ->middleware('check.permission:fetch ReservationAllowance');
     // ->middleware('check.permission:statistic ReservationAllowance');
-    
+
     // ->middleware('check.permission:report ReservationAllowance');
     Route::get('/employees/by-department/{departmentId}', [DepartmentController::class, 'getEmployeesByDepartment'])->middleware('check.permission:view departements');
 

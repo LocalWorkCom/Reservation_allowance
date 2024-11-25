@@ -35,14 +35,13 @@ use App\Imports\ImportUser;
 use App\Exports\ExportUser;
 use App\Exports\UsersExport;
 use App\Exports\UsersImportTemplate;
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendEmail;
 
 /**
  * Send emails
  */
 
-use App\Mail\SendEmail;
-use Illuminate\Support\Facades\Mail;
 use TCPDF;
 
 class UserController extends Controller
@@ -473,27 +472,26 @@ class UserController extends Controller
 
     public function resend_code(Request $request)
     {
-        // dd($request);
+        $user = User::where('email', $request->number)->first();
+        // Generate a verification code
         $set = '123456789';
         $code = substr(str_shuffle($set), 0, 4);
-        // $msg = trans('message.please verified your account') . "\n" . trans('message.code activation') . "\n" . $code;
         $msg  = "يرجى التحقق من حسابك\nتفعيل الكود\n" . $code;
-        $user = User::where('military_number', $request->number)->orwhere('Civil_number', $request->number)->first();
-        // Send activation code via WhatsApp (assuming this is your preferred method)
-        $response = send_sms_code($msg, $user->phone, $user->country_code);
-        $result = json_decode($response, true);
-        // $code = $request->code;
-        $military_number = $request->military_number;
-        $number = $request->number;
-        $password = $request->password;
-        $sent = $result['sent'];
-        if ($sent === 'true') {
-            // dd("true");
-            return  view('verfication_code', compact('code', 'number', 'military_number', 'password'));
-        } else {
+        $password = 123456;
+        // Retrieve the user's email (assuming it's stored in the 'email' column)
+        $number = $user->email;
+        $user->code = $code;
+        $user->save();
+        $details = [
+            'title' => 'كود التفعيل',
+            'body' => "هذا هو كود التفعيل ",
+            'username' => $user->file_number,
+            'password' => null, // Pass the password if needed
+            'code' => $code, // Pass code
+        ];
 
-            return back()->with('error', 'سجل الدخول مرة أخرى');
-        }
+        Mail::to($number)->send(new SendEmail($details));
+        return  view('verfication_code', compact('code', 'number', 'password'));
     }
 
     public function verfication_code(Request $request)
@@ -516,11 +514,12 @@ class UserController extends Controller
         $code = $request->code;
         $number = $request->number;
         $password = $request->password;
-
+        // dd($request->verfication_code);
+        // dd($request->code, $request->verfication_code);
         // Check if the provided verification code matches the expected code
         if ($request->code === $request->verfication_code) {
             // Find the user by military number
-            $user = User::where('military_number', $number)->orwhere('Civil_number', $number)->first();
+            $user = User::where('email', $number)->first();
 
             // Save the activation code and password
             $user->code = $request->code;
@@ -528,21 +527,21 @@ class UserController extends Controller
 
 
             // dd($user);
-            $firstlogin = 0;
+            // $firstlogin = 0;
 
             // Coming from forget_password2
-            if ($user->token == null) {
-                $firstlogin = 1;
-                return view('resetpassword', compact('number', 'firstlogin'));
-                // }
+            // if ($user->token == null) {
+            //     $firstlogin = 1;
+            //     return view('resetpassword', compact('number', 'firstlogin'));
+            //     // }
 
+            // } else {
+            if (url()->previous() == route('forget_password2') || url()->previous() == route('resend_code') || url()->previous() == route('verfication_code')) {
+                return view('resetpassword', compact('number'));
             } else {
-                if (url()->previous() == route('forget_password2') || url()->previous() == route('resend_code') || url()->previous() == route('verfication_code')) {
-                    return view('resetpassword', compact('number', 'firstlogin'));
-                } else {
-                    return redirect()->route('home');
-                }
+                return redirect()->route('home');
             }
+            // }
         } else {
             // If verification code does not match, return back with error message and input values
             return view('verfication_code')->withErrors('الكود خاطئ.')
@@ -553,11 +552,11 @@ class UserController extends Controller
     }
 
 
+
     public function forget_password2(Request $request)
     {
-        // dd($request);
         $messages = [
-            'number.required' => 'رقم العسكري /الرقم المدنى مطلوب.',
+            'number.required' => 'رقم الملف مطلوب.',
         ];
 
         $validatedData = Validator::make($request->all(), [
@@ -568,36 +567,39 @@ class UserController extends Controller
             return back()->withErrors($validatedData)->withInput();
         }
 
-        $user = User::where('military_number', $request->number)->orwhere('Civil_number', $request->number)->first();
+        $user = User::where('file_number', $request->number)->first();
 
         if (!$user) {
-            return back()->with('error', 'الرقم العسكري لا يتطابق مع سجلاتنا');
+            return back()->with('error', 'الرقم الملف لا يتطابق مع سجلاتنا');
         } elseif ($user->flag !== 'user') {
             return back()->with('error', 'لا يسمح لك بدخول الهيئة');
         } else {
-            // Generate and send verification code
+            // Generate a verification code
             $set = '123456789';
             $code = substr(str_shuffle($set), 0, 4);
             $msg  = "يرجى التحقق من حسابك\nتفعيل الكود\n" . $code;
-            // $msg = trans('message.please verified your account') . "\n" . trans('message.code activation') . "\n" . $code;
-            $user = User::where('military_number', $request->number)->orwhere('Civil_number', $request->number)->first();
-            // Send activation code via WhatsApp (assuming this is your preferred method)
-            $response = send_sms_code($msg, $user->phone, $user->country_code);
-            $result = json_decode($response, true);
-            // $code = $request->code;
-            $number = $request->number;
-            $password = $request->password;
-            $sent = $result['sent'];
-            if ($sent === 'true') {
+            $password = 123456;
+            // Retrieve the user's email (assuming it's stored in the 'email' column)
+            $number = $user->email;
+            $user->code = $code;
+            $user->save();
+            $details = [
+                'title' => 'كود التفعيل',
+                'body' => "هذا هو كود التفعيل ",
+                'username' => $user->file_number,
+                'password' => null, // Pass the password if needed
+                'code' => $code, // Pass code
+            ];
 
-                return  view('verfication_code', compact('code', 'number', 'password'));
-            } else {
+            Mail::to($number)->send(new SendEmail($details));
 
-                return back()->with('error', 'سجل الدخول مرة أخرى');
-            }
+            // Sendmail('تحديث الباسورد', ' تم تجديد الباسورد',  $request->number,  $code, $number);
+
+
+            // After sending the email, redirect to the verification page with the code and other data
+            return  view('verfication_code', compact('code', 'number', 'password'));
         }
     }
-
     public function reset_password(Request $request)
     {
         $messages = [
@@ -615,11 +617,10 @@ class UserController extends Controller
         if ($validatedData->fails()) {
             return view('resetpassword')
                 ->withErrors($validatedData)
-                ->with('number', $request->number)
-                ->with('firstlogin', $request->firstlogin);
+                ->with('number', $request->number);
         }
 
-        $user = User::where('military_number', $request->number)->orwhere('Civil_number', $request->number)->first();
+        $user = User::where('email', $request->number)->first();
 
         if (!$user) {
             return back()->with('error', 'الرقم العسكري المقدم لا يتطابق مع سجلاتنا');
@@ -627,15 +628,9 @@ class UserController extends Controller
         if (Hash::check($request->password, $user->password) == true) {
             return view('resetpassword')
                 ->withErrors('لا يمكن أن تكون كلمة المرور الجديدة هي نفس كلمة المرور الحالية')
-                ->with('number', $request->number)
-                ->with('firstlogin', $request->firstlogin); // Define $firstlogin here if needed
+                ->with('number', $request->number); // Define $firstlogin here if needed
         }
 
-        // Update password and set token for first login if applicable
-
-        if ($request->firstlogin == 1) {
-            $user->token = "logined";
-        }
         $user->password = Hash::make($request->password);
         $user->save();
         Auth::login($user); // Log the user in
