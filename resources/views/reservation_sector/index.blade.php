@@ -145,7 +145,7 @@
                     render: function (data, type, row) {
                         const month = $('#month-select').val();
                         const year = $('#year-select').val();
-                        return `<a href="/statistics_department/${row.sub_department_uuid}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
+                        return `<a href="/statistics_department/${row.uuid}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
                     }
                 },
                 { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' },
