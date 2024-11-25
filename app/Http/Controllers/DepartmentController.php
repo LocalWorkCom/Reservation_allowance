@@ -243,20 +243,16 @@ class DepartmentController extends Controller
 
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
             $data = departements::where('parent_id', $departement->id)
-                ->withCount('iotelegrams', 'outgoings', 'children')
+                ->withCount( 'children')
                 ->with(['children'])
-                ->orderBy('id', 'desc')->get();
+                ->orderBy('id', 'desc');
         } else {
             $data = departements::where('parent_id', $departement->id)
-                ->withCount('iotelegrams', 'outgoings', 'children')
-                ->where(function ($query) {
-                    $query->where('id', Auth::user()->department_id)
-                        ->orWhere('parent_id', Auth::user()->department_id);
-                })
+                ->withCount( 'children')
                 ->with(['children'])
-                ->orderBy('id', 'desc')->get();
-        }
+                ->orderBy('id', 'desc');
 
+        }
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
                 return '<button class="btn btn-primary btn-sm">Edit</button>';

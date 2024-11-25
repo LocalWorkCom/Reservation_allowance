@@ -108,9 +108,8 @@
         $.fn.dataTable.ext.classes.sPageButton =
             'btn-pagination btn-sm'; // Change Pagination Button Class
         var pathArray = window.location.pathname.split('/');
-        var departmentId = pathArray[pathArray.length -
-            1]; // Get the last segment of the URL, which is the ID
-
+        var departmentId = pathArray[pathArray.length - 1]; // Get the last segment of the URL, which is the ID
+console.log(departmentId);
         // Update DataTables configuration
         $('#users-table').DataTable({
             processing: true,
