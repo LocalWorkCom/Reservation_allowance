@@ -124,9 +124,7 @@
                                     </div>
                                 @enderror
                             </div>
-
                             <div class="form-group col-md-12 mx-md-2" id="email_field" style="display: none;" @error('email') style="display: block;" @enderror>
-
                                 <label class="pb-3" for="email">الأيميل</label>
                                 <input type="email" name="email" id="email" class="form-control" required>
                                 @error('email')
@@ -169,9 +167,7 @@
                                         </textarea>
 
                             </div>
-
   <div class="form-group col-md-12 mx-md-2">
-
                                 <label for="">صلاحيه الحجز</label>
                                 <div class="d-flex mt-3 " dir="rtl">
                                     <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="fullBooking"
