@@ -141,7 +141,7 @@
                                     <div class="col-5">
                                         <div class="col-12 div-info-padding"><b>الأسم: <span></span></b></div>
                                         <div class="col-12 div-info-padding"><b>الهاتف: <span></span></b></div>
-                                        <div class="col-12 div-info-padding"><b>الأيميل: <span></span></b></div>
+                                        <div class="col-12 div-info-padding" style="direction: rtl"><b>الأيميل: <span></span></b></div>
 
                                     </div>
                                 </div>
@@ -184,7 +184,7 @@
                                     @enderror --}}
                                 </div>
                             </div>
-                           
+
 
 
                               <div class="form-group col-md-12 mx-md-2" dir="rtl">
@@ -215,12 +215,12 @@
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             </div>
-                          
+
                             </div>
         <div class="form-group col-md-12 mx-md-2">
             <button class="btn-blue " type="submit"> اضافة </button>
         </div>
-       
+
 
         </form>
         </div>

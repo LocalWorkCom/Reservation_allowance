@@ -112,7 +112,7 @@
                         <div class="col-5">
                             <div class="col-12 div-info-padding"><b>الأسم: <span></span></b></div>
                             <div class="col-12 div-info-padding"><b>الهاتف: <span></span></b></div>
-                            <div class="col-12 div-info-padding"><b>الأيميل: <span></span></b></div>
+                            <div class="col-12 div-info-padding" style="direction: rtl"><b>الأيميل: <span></span></b></div>
                         </div>
                     </div>
                 </div>
