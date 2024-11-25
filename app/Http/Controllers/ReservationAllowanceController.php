@@ -770,15 +770,19 @@ class ReservationAllowanceController extends Controller
         if($request->sector_id){
             $sector_id = $request->sector_id;
         }
+
         if($request->departement_id){
             $departement_id = $request->departement_id;
             if($user->department_id == null){
                 $get_departements = departements::where('id', '!=', 1)->where('sector_id', $sector_id)->where('parent_id', null)->get();
             }else{
-                $user = auth()->user();
+                //$user = auth()->user();
                 $get_departements = departements::where('id', '!=', 1)->where('id', $user->department_id)->get();
             }
+        }else{
+            $get_departements = departements::where('id', '!=', 1)->where('sector_id', $sector_id)->get();  
         }
+
 
         $reservation_allowance_type = 0;
         if($sector_id != 0){
