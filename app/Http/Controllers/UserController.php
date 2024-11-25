@@ -62,6 +62,8 @@ class UserController extends Controller
     public function index(Request $request, $flag)
 
     {
+        addUuidToTable('users');
+
         $department_id = $request->get('department_id'); // Fetch department_id from the request
 
         // Fetch all users in the specified department
