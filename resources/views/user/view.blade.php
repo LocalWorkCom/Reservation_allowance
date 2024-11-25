@@ -270,7 +270,7 @@
 var query = '{{ isset($q) ? '/' . $q : '' }}';
 
 // Manually append the parameters
-var fullUrl = url + query + '?flag=employee&id={{ urlencode($parms['id']) }}&type={{ urlencode($parms['type']) }}';
+var fullUrl = url + query + '?flag={{ urlencode($parms['flag']) }}&id={{ urlencode($parms['id']) }}&type={{ urlencode($parms['type']) }}';
 
                         var table = $('#users-table').DataTable({
                             processing: true,
