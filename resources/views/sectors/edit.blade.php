@@ -58,7 +58,20 @@
     </div>
 
     <br>
-
+    @if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
     <form class="edit-grade-form" id="Qta3-form" action="{{ route('sectors.update', $data) }}" method="POST">
         @csrf
         @method('POST') <!-- This line indicates it's an update -->
@@ -95,7 +108,7 @@
                 </div> --}}
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="email_field" style= "{{ old('mangered', $data->manager ? 'display: block;' : 'display: none;') }}">
                     <label class="pb-3 w-100" for="email"> الايميل</label>
-                    <input type="email" name="email" id="email" value="{{ old('mangered', $data->manager ? $email : null) }}"  class="form-control" required>
+                    <input type="email" name="email" id="email" value="{{ old('mangered', $data->manager ? $email : null) }}"  class="form-control" >
                     @error('email')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
@@ -132,27 +145,27 @@
                     <label for="" class="col-12">ميزانيه الحجز</label>
                     <div class="d-flex mt-3" dir="rtl">
                         <input type="radio" class="toggle-radio-buttons mx-2"
-                            {{ (float) $data->reservation_allowance_amount > 0.0 ? 'checked' : '' }} name="budget_type"
+                            {{ $data->reservation_allowance_amount !='0.00' ? 'checked' : '' }} name="budget_type"
                             value="1" id="notFree" style="height:30px;">
                         <label for="notFree" class="col-12">ميزانيه محدده</label>
 
                         <input type="radio" class="toggle-radio-buttons mx-2" name="budget_type"
-                            {{ (float) $data->reservation_allowance_amount == 0.0 ? 'checked' : '' }} value="2"
+                            {{ $data->reservation_allowance_amount == '0.00' ? 'checked' : '' }} value="2"
                             id="free" style="height:30px;">
                         <label for="free" class="col-12">ميزانيه غير محدده</label>
                     </div>
                 </div>
 
-                <div class="input-group moftsh px-md-5 px-3 pt-3" id="budgetField"
-                    style={{ (float) $data->reservation_allowance_amount > 0.0 ? 'display: block' : 'display: none;' }}>
+                <div class="input-group moftsh px-md-5 px-3 pt-3" id="budgetField"  style={{ (float) $data->reservation_allowance_amount > 0.0 ? 'display: block' : 'display: none;' }}>
                     <label class="d-flex pb-3" for="budget">ميزانية بدل حجز</label>
                     <input type="text" name="budget" class="form-control"
-                        value=" {{ (float) $data->reservation_allowance_amount > 0.0 ? $data->reservation_allowance_amount : 00.0 }}"
+                        value="{{ $data->reservation_allowance_amount > 0.00 ? $data->reservation_allowance_amount : '' }}"
                         id="budget" autocomplete="one-time-code">
                     @error('budget')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
+
                 <div class="input-group moftsh px-md-5 px-3 pt-3">
                     <label for="" class="col-12">صلاحيه الحجز</label>
                     <div class="d-flex mt-3" dir="rtl">
@@ -187,6 +200,25 @@
             </div>
     </form>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Function to toggle the 'required' attribute of the email field based on the 'mangered' field value
+        document.getElementById('mangered').addEventListener('input', function() {
+            var managerId = this.value; // Get the value of the 'mangered' field
+            var emailField = document.getElementById('email'); // Get the 'email' input field
+            var emailFieldContainer = document.getElementById('email_field'); // Get the email field container
+
+            if (managerId) {
+                emailField.setAttribute('required', 'required'); // Make email required
+                emailFieldContainer.style.display = 'block'; // Show the email field container
+            } else {
+                emailField.removeAttribute('required'); // Remove the required attribute
+                emailFieldContainer.style.display = 'none'; // Hide the email field container
+            }
+        });
+
+        // Trigger the event once on page load to handle pre-filled values
+        document.getElementById('mangered').dispatchEvent(new Event('input'));
+    </script>
 
     <script>
         // Initialize select2 for RTL
