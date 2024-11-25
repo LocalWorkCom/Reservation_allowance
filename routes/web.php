@@ -88,7 +88,7 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/getGoverment/{id}', [UserController::class, 'getGoverment'])->name('user.getGoverment')->middleware('check.permission:view Government');
     Route::any('/getRegion/{id}', [UserController::class, 'getRegion'])->name('user.getRegion')->middleware('check.permission:view Region');
 
-    Route::any('/employees/{flag}', [UserController::class, 'index'])->name('user.employees')->middleware('check.permission:view User');
+    Route::any('/employees/{flag}/{type?}/{id?}', [UserController::class, 'index'])->name('user.employees')->middleware('check.permission:view User');
     Route::post('/employees-add', [UserController::class, 'add_employees'])->name('user.employees.add')->middleware('check.permission:create User');
     Route::get('/edit/{user}', [UserController::class, 'edit'])->name('user.edit')->middleware('check.permission:edit User');
     Route::get('/show/{user}', [UserController::class, 'show'])->name('user.show')->middleware('check.permission:view User');
