@@ -113,78 +113,80 @@
                     }
                 },
                 columns: [
-                    {
-                        data: null,
-                        orderable: false,
-                        searchable: false,
-                        render: function (data, type, row, meta) {
-                            return meta.row + 1; // Auto-generate row numbers
-                        }
-                    },
-
-                    { data: 'sector', name: 'sector',
-                        render: function (data, type, row) {
-                            const month = $('#month-select').val();
-                            const year = $('#year-select').val();
-                            return `<a href="/sector-employees/${row.id}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
-                        },
-                    },
-                    { 
-                    data: 'main_departments_count', 
-                    name: 'main_departments_count', 
-                    render: function(data, type, row) {
-                        const month = $('#month-select').val(); 
-                        const year = $('#year-select').val();   
-                        return `<a href="/statistics_department/${row.id}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
+                {
+                    data: null,
+                    orderable: false,
+                    searchable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + 1; // Auto-generate row numbers
                     }
                 },
-                    { data: 'sub_departments_count', name: 'sub_departments_count',
-                        render: function(data, type, row) {
-                        const month = $('#month-select').val(); 
-                        const year = $('#year-select').val();   
-                        return `<a href="/statistics_department/${row.id}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
+                {
+                    data: 'sector',
+                    name: 'sector',
+                    render: function (data, type, row) {
+                        const month = $('#month-select').val();
+                        const year = $('#year-select').val();
+                        return `<a href="/sector-employees/${row.uuid}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
                     }
-                     },
-                    { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' },
-                    { data: 'registered_amount', name: 'registered_amount',
-                        render: function (data, type, row) {
-                            const month = $('#month-select').val();
-                            const year = $('#year-select').val();
-                            return `<a href="/sector-employees/${row.id}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
-                        },
-                     },
-                    { data: 'remaining_amount', name: 'remaining_amount' },
-                    {
-                        data: 'employees_count',
-                        name: 'employees_count',
-                        render: function(data, type, row) {
-                            const month = $('#month-select').val();
-                            const year = $('#year-select').val();
-                            return `<a href="/sector-users/${row.id}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
-                        }
-                    },
-                    { 
-                        data: 'received_allowance_count', 
-                        name: 'received_allowance_count', 
-                        render: function (data, type, row) {
-                            const month = $('#month-select').val();
-                            const year = $('#year-select').val();
-                            return `<a href="/sector-employees/${row.id}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
-                        },
-                    },
-
-                    {
-                        data: 'did_not_receive_allowance_count',
-                        name: 'did_not_receive_allowance_count',
-                        render: function (data, type, row) {
-                            const month = $('#month-select').val();
-                            const year = $('#year-select').val();
-                            return `<a href="/sector-employees/${row.id}/not-reserved?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
-                        }
-                    },
-
-
-                ],
+                },
+                {
+                    data: 'main_departments_count',
+                    name: 'main_departments_count',
+                    render: function (data, type, row) {
+                        const month = $('#month-select').val();
+                        const year = $('#year-select').val();
+                        return `<a href="/statistics_department/${row.uuid}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
+                    }
+                },
+                {
+                    data: 'sub_departments_count',
+                    name: 'sub_departments_count',
+                    render: function (data, type, row) {
+                        const month = $('#month-select').val();
+                        const year = $('#year-select').val();
+                        return `<a href="/statistics_department/${row.sub_department_uuid}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
+                    }
+                },
+                { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' },
+                {
+                    data: 'registered_amount',
+                    name: 'registered_amount',
+                    render: function (data, type, row) {
+                        const month = $('#month-select').val();
+                        const year = $('#year-select').val();
+                        return `<a href="/sector-employees/${row.uuid}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
+                    }
+                },
+                { data: 'remaining_amount', name: 'remaining_amount' },
+                {
+                    data: 'employees_count',
+                    name: 'employees_count',
+                    render: function (data, type, row) {
+                        const month = $('#month-select').val();
+                        const year = $('#year-select').val();
+                        return `<a href="/sector-users/${row.uuid}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
+                    }
+                },
+                {
+                    data: 'received_allowance_count',
+                    name: 'received_allowance_count',
+                    render: function (data, type, row) {
+                        const month = $('#month-select').val();
+                        const year = $('#year-select').val();
+                        return `<a href="/sector-employees/${row.uuid}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
+                    }
+                },
+                {
+                    data: 'did_not_receive_allowance_count',
+                    name: 'did_not_receive_allowance_count',
+                    render: function (data, type, row) {
+                        const month = $('#month-select').val();
+                        const year = $('#year-select').val();
+                        return `<a href="/sector-employees/${row.uuid}/not-reserved?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
+                    }
+                }
+            ],
                 
                 order: [
                     [2, 'desc']

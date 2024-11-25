@@ -492,8 +492,9 @@ class DepartmentController extends Controller
         if (count($failed_file_numbers) > 0) {
             $message .= ' لكن بعض الموظفين لم يتم إضافتهم بسبب عدم تأكيد النقل أو عدم العثور على ارقام الملفات: ' . implode(', ', $failed_file_numbers);
         }
+        $sector = Sector::find($request->sector);
 
-        return redirect()->route('departments.index', ['id' => $request->sector])->with('message', $message);
+        return redirect()->route('departments.index', $sector->uuid)->with('message', $message);
     }
 
     public function store_1(Request $request)
