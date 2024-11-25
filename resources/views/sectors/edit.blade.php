@@ -84,7 +84,7 @@
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
-                <div class="input-group moftsh px-md-5 px-3 pt-3" id="email_field"
+                {{-- <div class="input-group moftsh px-md-5 px-3 pt-3" id="email_field"
                     style= "{{ old('mangered', $data->manager ? 'display: block;' : 'display: none;') }}">
                     <label for="email">الأيميل</label>
                     <input type="email" name="email" id="email"
@@ -92,8 +92,14 @@
                     @error('email')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
+                </div> --}}
+                <div class="input-group moftsh px-md-5 px-3 pt-3" id="email_field" style= "{{ old('mangered', $data->manager ? 'display: block;' : 'display: none;') }}">
+                    <label class="pb-3 w-100" for="email"> الايميل</label>
+                    <input type="email" name="email" id="email" value="{{ old('mangered', $data->manager ? $email : null) }}"  class="form-control" required>
+                    @error('email')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
                 </div>
-
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager_details" style="display: none;">
                     <div class="col-12 div-info d-flex justify-content-between" style="direction: rtl">
                         <div class="col-7">
@@ -107,7 +113,7 @@
                                     <span></span></b></div>
                             <div class="col-12 div-info-padding"><b>الهاتف:
                                     <span></span></b></div>
-                            <div class="col-12 div-info-padding"><b>الأيميل:
+                            <div class="col-12 div-info-padding" style="direction: rtl"><b>الأيميل:
                                     <span></span></b></div>
                         </div>
                     </div>
@@ -167,7 +173,7 @@
                         @enderror
                     </div>
 
-
+                </div>
                     <div class="container col-11">
                         <div class="form-row d-flex justify-content-end mt-4 mb-3">
                             <button type="submit" class="btn-blue">
@@ -177,7 +183,6 @@
                             </button>
                         </div>
                     </div>
-
                 </div>
             </div>
     </form>

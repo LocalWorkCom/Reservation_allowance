@@ -147,7 +147,7 @@
                                         <div class="col-12 div-info-padding">
                                             <b>الهاتف: <span></span></b>
                                         </div>
-                                        <div class="col-12 div-info-padding">
+                                        <div class="col-12 div-info-padding" style="direction: rtl">
                                             <b>الأيميل: <span></span></b>
                                         </div>
 
@@ -226,14 +226,14 @@
                             </div>
                         </div>
 
+                        <div class="container col-10 mt-5 mb-3 ">
+                            <div class="form-row col-10 " dir="ltr">
+                                <button class="btn-blue " type="submit">
+                                    اضافة </button>
+                            </div>
+                        </div>
+                </div>
 
-                </div>
-                <div class="container col-10 mt-5 mb-3 ">
-                    <div class="form-row col-10 " dir="ltr">
-                        <button class="btn-blue " type="submit">
-                            اضافة </button>
-                    </div>
-                </div>
                 <br>
                 </form>
             </div>
