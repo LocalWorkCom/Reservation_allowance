@@ -27,7 +27,6 @@ use App\Http\Controllers\ReserveFetchController;
 use App\Http\Controllers\ReserveSectorController;
 use App\Http\Controllers\SubDepartmentStatsController;
 use App\Http\Controllers\SubDepartmentReservationController;
-use App\Http\Controllers\PrisonersDetailsController;
 use App\Http\Controllers\SectorEmployeesDetailsController;
 use App\Http\Controllers\ReservationReportController;
 use App\Http\Controllers\DepartmentEmployeesDetailsController;
@@ -88,11 +87,11 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/getGoverment/{id}', [UserController::class, 'getGoverment'])->name('user.getGoverment')->middleware('check.permission:view Government');
     Route::any('/getRegion/{id}', [UserController::class, 'getRegion'])->name('user.getRegion')->middleware('check.permission:view Region');
 
-    Route::any('/employees/{flag}', [UserController::class, 'index'])->name('user.employees')->middleware('check.permission:view User');
+    Route::any('/employees/{flag}/{type?}/{id?}', [UserController::class, 'index'])->name('user.employees')->middleware('check.permission:view User');
     Route::post('/employees-add', [UserController::class, 'add_employees'])->name('user.employees.add')->middleware('check.permission:create User');
-    Route::get('/edit/{id}', [UserController::class, 'edit'])->name('user.edit')->middleware('check.permission:edit User');
-    Route::get('/show/{id}', [UserController::class, 'show'])->name('user.show')->middleware('check.permission:view User');
-    Route::post('/update/{id}', [UserController::class, 'update'])->name('user.update')->middleware('check.permission:edit User');
+    Route::get('/edit/{user}', [UserController::class, 'edit'])->name('user.edit')->middleware('check.permission:edit User');
+    Route::get('/show/{user}', [UserController::class, 'show'])->name('user.show')->middleware('check.permission:view User');
+    Route::post('/update/{user}', [UserController::class, 'update'])->name('user.update')->middleware('check.permission:edit User');
     Route::any('/unsigned', [UserController::class, 'unsigned'])->name('user.unsigned');
     Route::any('/get-deprt-sector', [UserController::class, 'GetDepartmentsBySector'])->name('user.department.sector');
     // permission
@@ -162,20 +161,20 @@ Route::middleware(['auth'])->group(function () {
 
 
     // getDepartment
-    Route::get('api/department/{id}', [DepartmentController::class, 'getDepartment'])->name('api.department')->middleware('check.permission:view departements');
-    Route::get('api/sub_department/{id}', [DepartmentController::class, 'getSub_Department'])
+    Route::get('api/department/{uuid}', [DepartmentController::class, 'getDepartment'])->name('api.department')->middleware('check.permission:view departements');
+    Route::get('api/sub_department/{uuid}', [DepartmentController::class, 'getSub_Department'])
         ->name('api.sub_department')
         ->middleware('check.permission:view departements');
-    Route::get('/sub_departments/{id}', [DepartmentController::class, 'index_1'])->name('sub_departments.index')->middleware('check.permission:view departements');
-    Route::get('/sub_departments/create/{id}', [DepartmentController::class, 'create_1'])->name('sub_departments.create')->middleware('check.permission:create departements');
+    Route::get('/sub_departments/{uuid}', [DepartmentController::class, 'index_1'])->name('sub_departments.index')->middleware('check.permission:view departements');
+    Route::get('/sub_departments/create/{uuid}', [DepartmentController::class, 'create_1'])->name('sub_departments.create')->middleware('check.permission:create departements');
     Route::post('/sub_departments', [DepartmentController::class, 'store_1'])->name('sub_departments.store')->middleware('check.permission:edit departements');
     Route::get('/sub_departments/{department}/edit', [DepartmentController::class, 'edit_1'])->name('sub_departments.edit')->middleware('check.permission:edit departements');
     Route::put('/sub_departments/{department}', [DepartmentController::class, 'update_1'])->name('sub_departments.update')->middleware('check.permission:edit departements');
     // Route::post('departments_store', [DepartmentController::class, 'store'])->middleware('check.permission:view departements');
     // Route::put('departments_update/{department}', [DepartmentController::class, 'update']);
     // Route::delete('departments_delete/{department}', [DepartmentController::class, 'destroy']);
-    Route::get('/departments/{id}', [DepartmentController::class, 'index'])->name('departments.index')->middleware('check.permission:view departements');
-    Route::get('/department/add/create/{id}', [DepartmentController::class, 'create'])->name('department.create')->middleware('check.permission:create departements');
+    Route::get('/departments/{uuid}', [DepartmentController::class, 'index'])->name('departments.index')->middleware('check.permission:view departements');
+    Route::get('/department/add/create/{uuid}', [DepartmentController::class, 'create'])->name('department.create')->middleware('check.permission:create departements');
     Route::get('/departments/show/{department}', [DepartmentController::class, 'show'])->name('departments.show')->middleware('check.permission:view departements');
     Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store')->middleware('check.permission:edit departements');
     Route::get('/departments/{department}/edit', [DepartmentController::class, 'edit'])->name('departments.edit')->middleware('check.permission:edit departements');
@@ -271,12 +270,12 @@ Route::middleware(['auth'])->group(function () {
     //End sectors
     Route::get('sectors/all', [sectorsController::class, 'index'])->name('sectors.index')->middleware('check.permission:view Sector');
     Route::get('sectors/ajax', [sectorsController::class, 'getsectors'])->name('getAllsectors')->middleware('check.permission:view Sector');
-    Route::get('sectors/show/{id}', [sectorsController::class, 'show'])->name('sectors.show')->middleware('check.permission:view Sector');
+    Route::get('sectors/show/{sector}', [sectorsController::class, 'show'])->name('sectors.show')->middleware('check.permission:view Sector');
     Route::get('sectors/create', [sectorsController::class, 'create'])->name('sectors.create')->middleware('check.permission:create Sector');
     Route::post('sectors/add', [sectorsController::class, 'store'])->name('sectors.store')->middleware('check.permission:create Sector');
-    Route::get('sectors/edit/{id}', [sectorsController::class, 'edit'])->name('sectors.edit')->middleware('check.permission:edit Sector');
+    Route::get('sectors/edit/{sector}', [sectorsController::class, 'edit'])->name('sectors.edit')->middleware('check.permission:edit Sector');
 
-    Route::post('sectors/update', [sectorsController::class, 'update'])->name('sectors.update')->middleware('check.permission:edit Sector');
+    Route::post('sectors/update/{sector}', [sectorsController::class, 'update'])->name('sectors.update')->middleware('check.permission:edit Sector');
     // //End sectors
 
 
@@ -324,9 +323,6 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-    //statistics
-    Route::get('/statistics', [statisticController::class, 'index'])->name('statistic.show');
-    Route::get('/statistics/search', [statisticController::class, 'getFilteredData'])->name('statistic.search');
 
     //reservation_allowances
     Route::any('/reservation_allowances', [ReservationAllowanceController::class, 'index'])->name('reservation_allowances.index')->middleware('check.permission:view ReservationAllowance');
@@ -352,9 +348,14 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/reservation_allowances/create_employee_new', [ReservationAllowanceController::class, 'create_employee_new'])->name('reservation_allowances.create_employee_new')->middleware('check.permission:create ReservationAllowance');
     Route::any('/reservation_allowances/create_employee_all', [ReservationAllowanceController::class, 'create_employee_all'])->name('reservation_allowances.create_employee_all')->middleware('check.permission:create ReservationAllowance');
 
-
+    //reserv statics
  Route::group(['middleware' => ['check.permission:statistic ReservationAllowance']], function () {
+    
+    //statistics
+    Route::get('/statistics', [statisticController::class, 'index'])->name('statistic.show');
+    Route::get('/statistics/search', [statisticController::class, 'getFilteredData'])->name('statistic.search');
     //reservation statics for departments per sector
+
     Route::get('/statistics_department/{sector_id}', [ReservationStaticsController::class, 'static'])->name('Reserv_statistic_department.index');
     Route::get('/statistics_department/getAll/{sector_id}', [ReservationStaticsController::class, 'getAll'])->name('Reserv_statistic.getAll');
     Route::get('/all-department-employees/{departmentId}', [ReservationStaticsController::class, 'departmentEmployeesPage'])->name('all.department.employees.page');
@@ -398,7 +399,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/get-allowance-department', [DepartmentController::class, 'getAllowancedepart']);
     Route::any('/employee_search/getAll', [UserController::class, 'getAll'])->name('employee_search.getAll');
 
-    //reserv search
+    //reserv fetch
 Route::group(['middleware' => ['check.permission:search ReservationAllowance']], function () {
     Route::get('/reservation_fetch', [ReserveFetchController::class, 'static'])->name('reservation_fetch.index');
     Route::get('/reservation_fetch/search', [ReserveFetchController::class, 'getFilteredData'])->name('reservation_fetch.search');
@@ -411,6 +412,7 @@ Route::group(['middleware' => ['check.permission:search ReservationAllowance']],
     Route::any('/reservations/other-dates', [ReserveFetchController::class, 'getCustomDateRange'])->name('reservation_fetch.getCustomDateRange');
 });
 
+    //reserv reports
 Route::group(['middleware' => ['check.permission:report ReservationAllowance']], function () {
 
     Route::get('reservation_report', [ReservationReportController::class, 'index'])->name('reserv_report.index');

@@ -29,7 +29,7 @@
                         <div class="container pt-5 pb-2" style="border: 0.2px solid rgb(166, 165, 165);">
                             <form id="transfer-form" action="{{ route('user.unsigned') }}" method="POST">
                                 @csrf
-                                <input type="hidden" name="id_employee" id="id_employee" value="">
+                                <input type="text" name="id_employee" id="id_employee" value="">
                                 <div class="mb-3">
                                     <label style="justify-content: flex-end;"> هل انت متاكد من الغاء التعييين
                                         ؟ </label>
@@ -59,7 +59,7 @@
             <div class="d-flex ">
                 @php
                     // Get the department based on department_id from the request
-                    $department = \App\Models\departements::find(request()->get('department_id'));
+                    $department = \App\Models\departements::where('uuid',request()->get('department_id'))->first();
                 @endphp
 
                 @if (request()->fullUrlIs('*employees/employee?department_id=*'))
@@ -224,11 +224,11 @@
                         var filter = 'all'; // Default filter
 
                         @php
-                            $department_id = request()->get('department_id');
-                            $parent_department_id = request()->get('parent_department_id');
-                            $sector_id = request()->get('sector_id');
-                            $type = request()->get('type');
-                            $Civil_number = request()->get('Civil_number'); // Get Civil_number from request
+                            // $department_id = request()->get('department_id');
+                            // $parent_department_id = request()->get('parent_department_id');
+                            // $sector_id = request()->get('sector_id');
+                            // $type = request()->get('type');
+                            // $Civil_number = request()->get('Civil_number'); // Get Civil_number from request
                             $Dataurl = 'api.users'; // Default URL
 
                             if (isset($mode) && $mode == 'search') {
@@ -236,18 +236,26 @@
                             }
 
                             $parms['flag'] = $flag;
-                            if ($department_id) {
-                                $parms['department_id'] = $department_id;
-                            }
-                            if ($parent_department_id) {
-                                $parms['parent_department_id'] = $parent_department_id;
-                            }
-                            if ($sector_id) {
-                                $parms['sector_id'] = $sector_id;
-                            }
-                            if ($Civil_number) {
-                                $parms['Civil_number'] = $Civil_number; // Add Civil_number to parameters
-                            }
+                            $parms['id'] = $id;
+                            $parms['type'] = $type;
+                            // if ($department_id) {
+                            //     $parms['id'] = $department_id;
+                            // $parms['type'] = 'department';
+
+                            // }
+                            // if ($parent_department_id) {
+                            //     $parms['id'] = $parent_department_id;
+                            // $parms['type'] = 'parent';
+
+                            // }
+                            // if ($sector_id) {
+                            //     $parms['id'] = $sector_id;
+                            // $parms['type'] = 'sector';
+
+                            // }
+                            // if ($Civil_number) {
+                            //     $parms['Civil_number'] = $Civil_number; // Add Civil_number to parameters
+                            // }
                         @endphp
                         /*
                           $('#users-table tfoot th').each(function (i) {
@@ -258,12 +266,17 @@
                                   '<input type="text" placeholder="' + title + '" data-index="' + i + '" />'
                               );
                           }); */
+                          var url = '{{ route($Dataurl) }}';
+var query = '{{ isset($q) ? '/' . $q : '' }}';
+
+// Manually append the parameters
+var fullUrl = url + query + '?flag=employee&id={{ urlencode($parms['id']) }}&type={{ urlencode($parms['type']) }}';
+
                         var table = $('#users-table').DataTable({
                             processing: true,
                             serverSide: true,
                             ajax: {
-                                url: '{{ route($Dataurl, $parms) }}' +
-                                    '{{ isset($q) ? '/' . $q : '' }}',
+                                url: fullUrl,
                                 data: function(d) {
                                     d.filter = filter;
                                     // d.department_id = department_id; // Use the global filter variable
@@ -335,13 +348,13 @@
                                 targets: -1,
                                 render: function(data, type, row) {
                                     // Using route generation correctly in JavaScript
-                                    var useredit = '{{ route('user.edit', ':id') }}';
-                                    useredit = useredit.replace(':id', row.id);
-                                    var usershow = '{{ route('user.show', ':id') }}';
-                                    usershow = usershow.replace(':id', row.id);
+                                    var useredit = '{{ route('user.edit', ':uuid') }}';
+                                    useredit = useredit.replace(':uuid', row.uuid);
+                                    var usershow = '{{ route('user.show', ':uuid') }}';
+                                    usershow = usershow.replace(':uuid', row.uuid);
                                     var vacation = '';
-                                    var unsigned = '{{ route('user.unsigned', ':id') }}';
-                                    unsigned = unsigned.replace(':id', row.id);
+                                    var unsigned = '{{ route('user.unsigned', ':uuid') }}';
+                                    unsigned = unsigned.replace(':uuid', row.uuid);
                                     var visibility = row.department_id != null ? 'd-block-inline' :
                                         'd-none';
 

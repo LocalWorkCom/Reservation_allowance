@@ -59,117 +59,47 @@ class UserController extends Controller
 
 
     // }
-    public function index($flag, $type=0, $id=0)
+    public function index(Request $request, $flag)
 
     {
-        addUuidToTable('users');
+        //return $request;
+        $department_id = $request->get('department_id'); // Fetch department_id from the request
 
-        // $department_id = $request->get('id'); // Fetch department_id from the request
-$Officer=0;
-$Officer2=0;
-$person=0;
-$all=0;
         // Fetch all users in the specified department
         // $users = User::where('department_id', $department_id)->get();
 
         // Fetch grade counts based on user associations
         // $gradeIds = $users->pluck('grade_id'); // Get all grade IDs from users in this department
 
-        if($type == "department"){
-            $search_id = Departements::where('uuid',$id)->first()->id;
-        }elseif($type == 'sector'){
-            $search_id = Sector::where('uuid',$id)->first()->id;
-        }elseif($type == 'parent'){
-            $search_id = Departements::where('uuid',$id)->first()->id;
-        }
-
-        
         $gradeall = Grade::pluck('id')->toArray();
-        if($type == "department"){
-            $all = User::where('department_id', $search_id)->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
+        $all = User::where('department_id', $department_id)->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
 
-            // dd($all);
-            $gradeperson = Grade::where('type', 3)->pluck('id')->toArray();
-            $person = User::where('department_id', $search_id)->where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
-    
-            $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
-            $Officer = User::where('department_id', $search_id)->where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
-    
-            $graseOfficer2 = Grade::where('type', 1)->pluck('id')->toArray();
-            $Officer2 = User::where('department_id', $search_id)->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
-    
-        }elseif($type == "sector"){
-            $all = User::where('sector', $search_id)->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
+        // dd($all);
+        $gradeperson = Grade::where('type', 3)->pluck('id')->toArray();
+        $person = User::where('department_id', $department_id)->where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
 
-            // dd($all);
-            $gradeperson = Grade::where('type', 3)->pluck('id')->toArray();
-            $person = User::where('sector', $search_id)->where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
-    
-            $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
-            $Officer = User::where('sector', $search_id)->where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
-    
-            $graseOfficer2 = Grade::where('type', 1)->pluck('id')->toArray();
-            $Officer2 = User::where('sector', $search_id)->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
-    
-        }elseif($type == "parent"){
-            $subdepartment_ids = Departements::where('parent_id', $search_id)->pluck('id');
-            $all = User::whereIn('department_id', $subdepartment_ids)->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
+        $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
+        $Officer = User::where('department_id', $department_id)->where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
 
-            $gradeperson = Grade::where('type', 3)->pluck('id')->toArray();
-            $person = User::whereIn('department_id', $subdepartment_ids)->where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
+        $graseOfficer2 = Grade::where('type', 1)->pluck('id')->toArray();
+        $Officer2 = User::where('department_id', $department_id)->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
 
-
-            $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
-            $Officer = User::whereIn('department_id', $subdepartment_ids)->where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
-
-            $graseOfficer2 = Grade::where('type', 1)->pluck('id')->toArray();
-            $Officer2 = User::whereIn('department_id', $subdepartment_ids)->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
-
-            // $all = User::where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
-
-            // // dd($all);
-            // $gradeperson = Grade::where('type', 3)->pluck('id')->toArray();
-            // $person = User::where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
-    
-            // $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
-            // $Officer = User::where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
-    
-            // $graseOfficer2 = Grade::where('type', 1)->pluck('id')->toArray();
-            // $Officer2 = User::where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
-    
-        }else{
-            $all = User::where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
-
-            // dd($all);
-            $gradeperson = Grade::where('type', 3)->pluck('id')->toArray();
-            $person = User::where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
-    
-            $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
-            $Officer = User::where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
-    
-            $graseOfficer2 = Grade::where('type', 1)->pluck('id')->toArray();
-            $Officer2 = User::where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
-        }
-       
         // Fetch related departments and sectors
         $departments = departements::all();
         $sectors = Sector::all();
 
 
 
-        return view('user.view', compact('departments', 'sectors', 'Officer', 'Officer2', 'person', 'all', 'flag', 'type', 'id'));
+        return view('user.view', compact('departments', 'department_id', 'sectors', 'Officer', 'Officer2', 'person', 'all', 'flag'));
     }
 
 
     public function add_employees(Request $request)
     {
-        // $department_id = $request->department_id;
-        $uuid = $request->department_id;
+        $department_id = $request->department_id;
         $Civil_number = $request->Civil_number;
 
-        $department_details = departements::where('uuid', $uuid)->first();
-        $department_id = $department_details->id;
-        $sector_id = $department_details->sector_id;
+        $sector_id = departements::find($department_id)->sector_id;
         // Find the user by Civil_number
         $user = User::where('Civil_number', $Civil_number)->first();
 
@@ -210,26 +140,8 @@ $all=0;
         $parentDepartment = Departements::find(Auth()->user()->department_id);
 
         $filter = $request->get('filter'); // Retrieve filter
-        $parent_department_id = 0;
-        $sector_id = 0;
-        $department_id = 0;
-        if(request()->has('type') && $request->get('type') == 'department'){
-            $id_department = $request->get('id'); // Fetch department_id from the request
-            $department_id = Departements::where('uuid',$id_department)->first()->id;
-        }
+        $department_id = $request->get('amp;department_id'); // Fetch department_id from the request
 
-        if(request()->has('type') && $request->get('type') == 'sector'){
-
-            $id_sector = $request->get('id'); // Fetch department_id from the request
-            $sector_id = Sector::where('uuid',$id_sector)->first()->id;
-
-        }
-
-        if(request()->has('type') && $request->get('type') == 'parent'){
-            $id_parent_department = $request->get('id'); // Fetch department_id from the request
-            $parent_department_id = Departements::where('uuid',$id_parent_department)->first()->id;
-
-        }
 
         // Apply the filter based on the type
 
@@ -257,47 +169,55 @@ $all=0;
                 }
             }
         }
-        // dd(Input::get('sector_id'));
+        // dd($request);
 
         // Apply additional filters using `request()->get()`
-        if ($department_id) {
-            $data = $data->where('department_id', $department_id);
-        } elseif ($parent_department_id) {
-            $subdepartment_ids = Departements::where('parent_id', $parent_department_id)->pluck('id');
+        if (request()->has('department_id')) {
+            $data = $data->where('department_id', request()->get('department_id'));
+        } elseif ($request->has('parent_department_id')) {
+            $subdepartment_ids = Departements::where('parent_id', $request->get('parent_department_id'))->pluck('id');
             $data = $data->whereIn('department_id', $subdepartment_ids);
         }
         //dd($request->amp;type);
-        if ($sector_id) {
-              $data = $data->where('sector',$sector_id);
+        if (request()->has('sector_id') && request()->has('amp;type')) {
+            if (request()->has('amp;type') == 0) {
+                $data = $data->where('sector', request()->get('sector_id'))->whereNull('department_id');
+            } else {
+                $data = $data->where('sector', request()->get('sector_id'))->whereNotNull('department_id');
+            }
         }
-
+        if (request()->has('sector_id')) {
+            if (request()->has('amp;type') != 1)
+                $data = $data->where('sector', request()->get('sector_id'))->whereNull('department_id');
+        }
 
         if (request()->has('Civil_number')) {
             if (request()->has('amp;Civil_number') != 1)
                 $data = $data->where('Civil_number', request()->get('Civil_number'));
         }
 
+        // $users = User::where('department_id', $department_id)->get();
 
         // $gradeIds = $users->pluck('grade_id'); // Get all grade IDs from users in this department
         if ($filter == 'all') {
 
             $all = Grade::pluck('id')->toArray();
-            $data->whereIn('grade_id', $all);
-            
+            $data->where('department_id', $department_id)->whereIn('grade_id', $all);
         } elseif ($filter == 'person') {
             $person = Grade::where('type', 3)->pluck('id')->toArray();
-            $data->whereIn('grade_id', $person);
+            $data->where('department_id', $department_id)->whereIn('grade_id', $person);
         } elseif ($filter == 'Officer') {
             $Officer = Grade::where('type', 2)->pluck('id')->toArray();
-            $data->whereIn('grade_id', $Officer);
+            $data->where('department_id', $department_id)->whereIn('grade_id', $Officer);
             // dd($data->get());
         } elseif ($filter == 'Officer2') {
             $Officer2 = Grade::where('type', 1)->pluck('id')->toArray();
-            $data->whereIn('grade_id', $Officer2);
+            $data->where('department_id', $department_id)->whereIn('grade_id', $Officer2);
         }
         // Finally, fetch the results
         $data = $data->orderby('grade_id', 'asc')->get();
 
+        // dd($data);
         return DataTables::of($data)->addColumn('action', function ($row) {
             return $row;
         })
@@ -954,10 +874,10 @@ $all=0;
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show($id)
     {
         //
-        //$user = User::find($id);
+        $user = User::find($id);
         $rule = Rule::where('hidden', '!=', "1")->get();
         $grade = grade::all();
         $joining_date = Carbon::parse($user->joining_date);
@@ -985,10 +905,10 @@ $all=0;
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(User $user)
+    public function edit(string $id)
     {
         //
-        //$user = User::find($id);
+        $user = User::find($id);
         $rule = Rule::where('hidden', '!=', "1")->get();
         $grade = grade::all();
         $joining_date = Carbon::parse($user->joining_date);
@@ -1032,9 +952,9 @@ $all=0;
      * Update the specified resource in storage.
      */
 
-    public function update(Request $request, User $user)
+    public function update(Request $request, $id)
     {
-        //$user = User::findOrFail($id);  // Ensure user is found or throw error
+        $user = User::findOrFail($id);  // Ensure user is found or throw error
         $military_number = $request->military_number;
 
         // Define validation messages
@@ -1154,12 +1074,12 @@ $all=0;
         // Save user data
         $user->save();
 
-        $department = departements::where('manger', $user->id)->where('id', '<>', $request->public_administration)->first();
+        $department = departements::where('manager', $id)->where('id', '<>', $request->public_administration)->first();
         if ($department) {
-            $department->manger = null;
+            $department->manager = null;
             $department->save();
         }
-        $sector = sector::where('manager', $user->id)->where('id', '<>', $request->sector)->first();
+        $sector = sector::where('manager', $id)->where('sector', '<>', $request->sector)->first();
         if ($sector) {
             $sector->manager = null;
             $sector->save();

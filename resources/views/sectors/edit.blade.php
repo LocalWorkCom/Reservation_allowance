@@ -59,7 +59,7 @@
 
     <br>
 
-    <form class="edit-grade-form" id="Qta3-form" action="{{ route('sectors.update', $data->id) }}" method="POST">
+    <form class="edit-grade-form" id="Qta3-form" action="{{ route('sectors.update', $data) }}" method="POST">
         @csrf
         @method('POST') <!-- This line indicates it's an update -->
         <div class="row" dir="rtl">
@@ -84,15 +84,22 @@
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
-
-                <div class="input-group moftsh px-md-5 px-3 pt-3" id="email_field" style="display: none;">
-                    <label  for="email">الأيميل</label>
-                    <input type="email" name="email" id="email" class="form-control" required>
+                {{-- <div class="input-group moftsh px-md-5 px-3 pt-3" id="email_field"
+                    style= "{{ old('mangered', $data->manager ? 'display: block;' : 'display: none;') }}">
+                    <label for="email">الأيميل</label>
+                    <input type="email" name="email" id="email"
+                        value="{{ old('mangered', $data->manager ? $email : null) }}" class="form-control" required>
+                    @error('email')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
+                </div> --}}
+                <div class="input-group moftsh px-md-5 px-3 pt-3" id="email_field" style= "{{ old('mangered', $data->manager ? 'display: block;' : 'display: none;') }}">
+                    <label class="pb-3 w-100" for="email"> الايميل</label>
+                    <input type="email" name="email" id="email" value="{{ old('mangered', $data->manager ? $email : null) }}"  class="form-control" required>
                     @error('email')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
-
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager_details" style="display: none;">
                     <div class="col-12 div-info d-flex justify-content-between" style="direction: rtl">
                         <div class="col-7">
@@ -106,7 +113,7 @@
                                     <span></span></b></div>
                             <div class="col-12 div-info-padding"><b>الهاتف:
                                     <span></span></b></div>
-                            <div class="col-12 div-info-padding"><b>الأيميل:
+                            <div class="col-12 div-info-padding" style="direction: rtl"><b>الأيميل:
                                     <span></span></b></div>
                         </div>
                     </div>
@@ -114,7 +121,8 @@
 
                 <div class="input-group moftsh px-md-5 px-3 pt-3">
                     <label for="Civil_number" class="col-12"> أرقام الملفات</label>
-                    <textarea class="form-control" name="Civil_number" id="Civil_number" style="height: 100px;background-color: #F8F8F8;border-radius: 10px !important;">
+                    <textarea class="form-control" name="Civil_number" id="Civil_number"
+                        style="height: 100px;background-color: #F8F8F8;border-radius: 10px !important;">
                         @foreach ($employees as $employee)
 {{ $employee->file_number }}
 @endforeach
@@ -123,19 +131,23 @@
                 <div class="input-group moftsh px-md-5 px-3 pt-3">
                     <label for="" class="col-12">ميزانيه الحجز</label>
                     <div class="d-flex mt-3" dir="rtl">
-                        <input type="radio" class="toggle-radio-buttons mx-2" {{ (float)$data->reservation_allowance_amount > 0.00 ? 'checked' : '' }} name="budget_type"  value="1" id="notFree"
-                            style="height:30px;">
+                        <input type="radio" class="toggle-radio-buttons mx-2"
+                            {{ (float) $data->reservation_allowance_amount > 0.0 ? 'checked' : '' }} name="budget_type"
+                            value="1" id="notFree" style="height:30px;">
                         <label for="notFree" class="col-12">ميزانيه محدده</label>
 
-                        <input type="radio" class="toggle-radio-buttons mx-2" name="budget_type"  {{ (float)$data->reservation_allowance_amount == 0.00 ? 'checked' : '' }} value="2" id="free"
-                            style="height:30px;">
+                        <input type="radio" class="toggle-radio-buttons mx-2" name="budget_type"
+                            {{ (float) $data->reservation_allowance_amount == 0.0 ? 'checked' : '' }} value="2"
+                            id="free" style="height:30px;">
                         <label for="free" class="col-12">ميزانيه غير محدده</label>
                     </div>
                 </div>
 
-                <div class="input-group moftsh px-md-5 px-3 pt-3" id="budgetField" style= {{ (float)$data->reservation_allowance_amount > 0.00 ? "display: block": "display: none;" }}>
+                <div class="input-group moftsh px-md-5 px-3 pt-3" id="budgetField"
+                    style={{ (float) $data->reservation_allowance_amount > 0.0 ? 'display: block' : 'display: none;' }}>
                     <label class="d-flex pb-3" for="budget">ميزانية بدل حجز</label>
-                    <input type="text" name="budget" class="form-control" value=" {{ (float)$data->reservation_allowance_amount > 0.00 ? $data->reservation_allowance_amount : 00.00 }}"
+                    <input type="text" name="budget" class="form-control"
+                        value=" {{ (float) $data->reservation_allowance_amount > 0.0 ? $data->reservation_allowance_amount : 00.0 }}"
                         id="budget" autocomplete="one-time-code">
                     @error('budget')
                         <div class="alert alert-danger">{{ $message }}</div>
@@ -161,19 +173,18 @@
                         @enderror
                     </div>
 
-
-                <div class="container col-11">
-                    <div class="form-row d-flex justify-content-end mt-4 mb-3">
-                        <button type="submit" class="btn-blue">
-                            <img src="{{ asset('frontend/images/white-add.svg') }}" alt="img" height="20px"
-                                width="20px">
-                            اضافة
-                        </button>
+                </div>
+                    <div class="container col-11">
+                        <div class="form-row d-flex justify-content-end mt-4 mb-3">
+                            <button type="submit" class="btn-blue">
+                                <img src="{{ asset('frontend/images/white-add.svg') }}" alt="img" height="20px"
+                                    width="20px">
+                                اضافة
+                            </button>
+                        </div>
                     </div>
                 </div>
-
             </div>
-        </div>
     </form>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -182,45 +193,48 @@
         $('.select2').select2({
             dir: "rtl"
         });
-
         $(document).ready(function() {
             var selectedManagerId = $('#mangered').val();
-            console.log(selectedManagerId);
+            console.log("Selected Manager ID:", selectedManagerId);
 
             if (selectedManagerId) {
-                // Show the email field
+                console.log("About to show #email_field and fetch manager details...");
                 $('#email_field').show();
                 fetchManagerDetails(selectedManagerId, false);
 
-                var existingEmail = "{{ old('email', $data->manager ? $email : '') }}";
-                var existingBudget =
-                    "{{ old('budget', $data->reservation_allowance_amount ? $data->reservation_allowance_amount : '') }}";
+                var existingEmail = @json(old('mangered', $data->manager ? $email : null));
+                var existingBudget = @json(old('budget', $data->reservation_allowance_amount ? $data->reservation_allowance_amount : ''));
 
-                console.log(existingEmail);
+                console.log("Existing Email:", existingEmail);
+                console.log("Existing Budget:", existingBudget);
 
                 if (existingEmail) {
-                    $('#email_field').css('display', 'block');
-
-                    $('#email_field').show();
+                    $('#email_field').css({
+                        display: 'block',
+                        visibility: 'visible',
+                        opacity: 1
+                    });
                     $('#email').val(existingEmail);
-
                 }
-                // If a budget exists, check the radio button for specific budget and display the budget field
+
                 if (existingBudget) {
-                    console.log(existingBudget)
-                    $('#notFree').attr('checked', true);
-                    $('#budgetField').show();
+                    $('#notFree').prop('checked', true);
+                    $('#budgetField').css({
+                        display: 'block',
+                        visibility: 'visible',
+                        opacity: 1
+                    });
                     $('#budget').val(existingBudget);
                 } else {
-                    // If no specific budget, check the "free" option
-                    $('#Free').attr('checked', true);
+                    $('#Free').prop('checked', true);
                 }
-
             } else {
                 $('#manager_details').hide();
                 $('#email_field').hide();
             }
         });
+
+
 
 
         // Modify fetchManagerDetails to accept an optional second parameter
@@ -243,7 +257,7 @@
                         $('#manager_details').find('span').eq(4).text(data.email);
 
                         // Show/hide password and rule fields
-                        if (data.isEmployee) {
+                        if (data.email) {
                             $('#email_field').show();
 
                             if (data.email === 'لا يوجد بريد الكتروني') {
