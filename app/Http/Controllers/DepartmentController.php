@@ -879,7 +879,6 @@ class DepartmentController extends Controller
             'part' => 'required',
             'email' => [
                 'nullable', // Allow email to be null unless manager is set
-                'email', // Ensure valid email format
                 Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
                 function ($attribute, $value, $fail) use ($request) {
                     // If manager is set, email must not be empty
