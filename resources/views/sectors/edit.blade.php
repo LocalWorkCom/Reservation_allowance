@@ -59,19 +59,59 @@
 
     <br>
     @if (session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+    @if ($errors->any())
+        <script>
+            $(document).ready(function() {
+                var selectedManagerId = $('#mangered').val();
+                console.log("Selected Manager ID:", selectedManagerId);
+
+                if (selectedManagerId) {
+                    $('#email_field').show();
+                    fetchManagerDetails(selectedManagerId, false);
+
+                    var existingEmail = @json(old('email'));
+                    var existingBudget = @json(old('budget'));
+
+
+                    if (existingEmail) {
+                        // $('#email_field').css({
+                        //     display: 'block',
+                        //     visibility: 'visible',
+                        //     opacity: 1
+                        // });
+                        $('#email_field').show();
+                        $('#email').val(@json(old('email')));
+                    }
+
+                    if (existingBudget) {
+                        $('#notFree').prop('checked', true);
+                        $('#budgetField').css({
+                            display: 'block',
+                            visibility: 'visible',
+                            opacity: 1
+                        });
+                        $('#budget').val(existingBudget);
+                    } else {
+                        $('#Free').prop('checked', true);
+                    }
+                } else {
+                    $('#manager_details').hide();
+                    $('#email_field').hide();
+                }
+            });
+        </script>
+        {{-- <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div> --}}
+    @endif
     <form class="edit-grade-form" id="Qta3-form" action="{{ route('sectors.update', $data) }}" method="POST">
         @csrf
         @method('POST') <!-- This line indicates it's an update -->
@@ -106,9 +146,11 @@
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div> --}}
-                <div class="input-group moftsh px-md-5 px-3 pt-3" id="email_field" style= "{{ old('mangered', $data->manager ? 'display: block;' : 'display: none;') }}">
+                <div class="input-group moftsh px-md-5 px-3 pt-3" id="email_field"
+                    style= "{{ old('mangered', $data->manager ? 'display: block;' : 'display: none;') }}">
                     <label class="pb-3 w-100" for="email"> الايميل</label>
-                    <input type="email" name="email" id="email" value="{{ old('mangered', $data->manager ? $email : null) }}"  class="form-control" >
+                    <input type="email" name="email" id="email"
+                        value="{{ old('mangered', $data->manager ? $email : null) }}" class="form-control">
                     @error('email')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
@@ -145,7 +187,7 @@
                     <label for="" class="col-12">ميزانيه الحجز</label>
                     <div class="d-flex mt-3" dir="rtl">
                         <input type="radio" class="toggle-radio-buttons mx-2"
-                            {{ $data->reservation_allowance_amount !='0.00' ? 'checked' : '' }} name="budget_type"
+                            {{ $data->reservation_allowance_amount != '0.00' ? 'checked' : '' }} name="budget_type"
                             value="1" id="notFree" style="height:30px;">
                         <label for="notFree" class="col-12">ميزانيه محدده</label>
 
@@ -156,10 +198,11 @@
                     </div>
                 </div>
 
-                <div class="input-group moftsh px-md-5 px-3 pt-3" id="budgetField"  style={{ (float) $data->reservation_allowance_amount > 0.0 ? 'display: block' : 'display: none;' }}>
+                <div class="input-group moftsh px-md-5 px-3 pt-3" id="budgetField"
+                    style={{ (float) $data->reservation_allowance_amount > 0.0 ? 'display: block' : 'display: none;' }}>
                     <label class="d-flex pb-3" for="budget">ميزانية بدل حجز</label>
                     <input type="text" name="budget" class="form-control"
-                        value="{{ $data->reservation_allowance_amount > 0.00 ? $data->reservation_allowance_amount : '' }}"
+                        value="{{ $data->reservation_allowance_amount > 0.0 ? $data->reservation_allowance_amount : '' }}"
                         id="budget" autocomplete="one-time-code">
                     @error('budget')
                         <div class="alert alert-danger">{{ $message }}</div>
@@ -187,17 +230,17 @@
                     </div>
 
                 </div>
-                    <div class="container col-11">
-                        <div class="form-row d-flex justify-content-end mt-4 mb-3">
-                            <button type="submit" class="btn-blue">
-                                <img src="{{ asset('frontend/images/white-add.svg') }}" alt="img" height="20px"
-                                    width="20px">
-                                اضافة
-                            </button>
-                        </div>
+                <div class="container col-11">
+                    <div class="form-row d-flex justify-content-end mt-4 mb-3">
+                        <button type="submit" class="btn-blue">
+                            <img src="{{ asset('frontend/images/white-add.svg') }}" alt="img" height="20px"
+                                width="20px">
+                            اضافة
+                        </button>
                     </div>
                 </div>
             </div>
+        </div>
     </form>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
@@ -307,7 +350,7 @@
                     },
                     error: function(xhr) {
                         // Handle different error responses
-                        if (xhr.status === 404) {
+                        if (xhr.status === 405) {
                             Swal.fire({
                                 title: 'تحذير',
                                 text: xhr.responseJSON.error || 'عفوا هذا المستخدم غير موجود',
