@@ -49,8 +49,7 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item "><a href="{{ route('home') }}">الرئيسيه</a></li>
-                        <li class="breadcrumb-item"><a
-                                href="{{ route('sub_departments.index', $department->parent->uuid) }}">
+                        <li class="breadcrumb-item"><a href="{{ route('sub_departments.index', $department->parent->uuid) }}">
                                 {{-- {{ $department->name }} --}} الأدارات
                             </a>
                         </li>
@@ -86,8 +85,8 @@
                         <div class="form-row mx-3 mt-4 d-flex justify-content-center">
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="sector">اختر القطاع </label>
-                                <input type="hidden" name="parent"
-                                    value="{{ $department->sector_id ? $department->sector_id : $sect->sector_id }}">
+                                {{-- <input type="hidden" name="parent"
+                                    value="{{ $department->sector_id ? $department->sector_id : $sect->sector_id }}"> --}}
 
                                 <input type="hidden" name="parent" value="{{ $department->id }}">
                                 <input type="hidden" name="sector" value="{{ $department->sector_id }}">
@@ -109,20 +108,22 @@
                                     </div>
                                 @enderror
                             </div>
-                            {{-- {{ dd( old('mangered', $department->manager ? $fileNumber : null)) }} --}}
                             <div class="form-group col-md-10 mx-md-2" id="manager">
                                 <label for="mangered">رقم ملف المدير</label>
-                                <input type="text" name="mangered" id="mangered" value="{{ old('mangered', $department->manager ? $fileNumber : null) }}"  class="form-control"
-                                    autocomplete="one-time-code">
 
+                                <input type="text" name="mangered" id="mangered" class="form-control"
+                                    autocomplete="one-time-code"
+                                    value="{{ old('mangered', $department->manager ? $fileNumber : null) }}">
                                 @error('mangered')
                                     <div class="alert alert-danger">{{ $message }}
                                     </div>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-10 mx-md-2" id="email_field"  style="display: none;" @error('email') style="display: block;" @enderror>
+                            <div class="form-group col-md-10 mx-md-2" id="email_field" style="display: none;"
+                                @error('email') style="display: block;" @enderror>
                                 <label class="pb-3 w-100" for="email"> الايميل</label>
-                                <input type="email" name="email" id="email" class="form-control"  value="{{ old('email') }}">
+                                <input type="email" name="email" id="email" class="form-control"
+                                    value="{{ old('email') }}">
                                 @error('email')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
@@ -146,7 +147,7 @@
                                         <div class="col-12 div-info-padding">
                                             <b>الهاتف: <span></span></b>
                                         </div>
-                                        <div class="col-12 div-info-padding">
+                                        <div class="col-12 div-info-padding" style="direction: rtl">
                                             <b>الأيميل: <span></span></b>
                                         </div>
 
@@ -160,8 +161,8 @@
 
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="description">الوصف </label>
-                                <input type="text" name="description" class="form-control"
-                                    autocomplete="one-time-code" value="{{ $department->description }}"  value="{{ old('description') }}">
+                                <input type="text" name="description" class="form-control" autocomplete="one-time-code"
+                                    value="{{ $department->description }}" value="{{ old('description') }}">
                                 @error('description')
                                     <div class="alert alert-danger">
                                         {{ $message }}</div>
@@ -173,61 +174,66 @@
                                     الملفات</label>
                                 <textarea class="form-control" name="file_number" id="file_number" style="height: 100px">
                                             @foreach ($employees as $employee)
-                                                 {{ $employee->file_number }}
-                                            @endforeach
+{{ $employee->file_number }}
+@endforeach
                                         </textarea>
                             </div>
                         </div>
+                        <div class="form-row mx-2 d-flex justify-content-center">
+                            <div class="form-group col-md-10 mx-md-2">
+                                <label for="" class="col-12">ميزانيه الحجز</label>
+                                <div class="d-flex mt-3" dir="rtl">
+                                    <input type="radio" class="toggle-radio-buttons mx-2"
+                                        {{ (float) $department->reservation_allowance_amount > 0.0 ? 'checked' : '' }}
+                                        name="budget_type" value="1" id="notFree">
+                                    <label for="notFree">ميزانيه محدده</label>
 
-                        <div class="input-group moftsh px-md-5 px-3 pt-3">
-                            <label for="" class="col-12">ميزانيه الحجز</label>
-                            <div class="d-flex mt-3" dir="rtl">
-                                <input type="radio" class="toggle-radio-buttons mx-2"
-                                {{ (float) $department->reservation_allowance_amount > 0.0 ? 'checked' : '' }} name="budget_type"
-                                value="1" id="notFree" style="height:30px;">
-                            <label for="notFree" class="col-12">ميزانيه محدده</label>
+                                    <input type="radio" class="toggle-radio-buttons mx-2" name="budget_type"
+                                        {{ (float) $department->reservation_allowance_amount == 0.0 ? 'checked' : '' }}
+                                        value="2" id="free">
+                                    <label for="free">ميزانيه غير محدده</label>
+                                </div>
+                            </div>
 
-                            <input type="radio" class="toggle-radio-buttons mx-2" name="budget_type"
-                                {{ (float) $department->reservation_allowance_amount == 0.0 ? 'checked' : '' }} value="2"
-                                id="free" style="height:30px;">
-                                <label for="free" class="col-12">ميزانيه غير محدده</label>
+                            <div class="form-group col-md-10 mx-md-2" id="budgetField"
+                                style={{ (float) $department->reservation_allowance_amount > 0.0 ? 'display: block' : 'display: none;' }}>
+                                <label class="d-flex pb-3" for="budget">ميزانية بدل حجز</label>
+                                <input type="text" name="budget" class="form-control"
+                                    value=" {{ (float) $department->reservation_allowance_amount > 0.0 ? $department->reservation_allowance_amount : 00.0 }}"
+                                    id="budget" autocomplete="one-time-code">
+                                @error('budget')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="form-row mx-2 d-flex justify-content-center">
+                            <div class="form-group col-md-10 mx-md-2">
+                                <label for="">صلاحيه الحجز</label>
+                                <div class="d-flex mt-3" dir="rtl">
+                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="1"
+                                        id="fullBooking" @if ($department->reservation_allowance_type == 1 || $department->reservation_allowance_type == 3) checked @endif name="part[]">
+                                    <label for="fullBooking">حجز كلى</label>
+
+                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="2"
+                                        id="partialBooking" @if ($department->reservation_allowance_type == 2 || $department->reservation_allowance_type == 3) checked @endif
+                                        name="part[]">
+                                    <label for="partialBooking">حجز جزئى</label>
+
+                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="3"
+                                        id="noBooking" @if ($department->reservation_allowance_type == 4) checked @endif name="part[]">
+                                    <label for="noBooking">لا يوجد بدل حجز</label>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="form-group col-md-10 mx-md-2" id="budgetField" style="display: none;">
-                            <label class="d-flex pb-3" for="budget">ميزانية بدل حجز</label>
-                            <input type="text" name="budget" class="form-control" value="{{ old('budget') }}"
-                                autocomplete="one-time-code">
-                            @error('budget')
-                                <div class="alert alert-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group col-md-10 mx-md-2">
-                            <label for="">صلاحيه الحجز</label>
-                            <div class="d-flex mt-3" dir="rtl">
-                                <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="fullBooking"
-                                    @if ($department->reservation_allowance_type == 1 || $department->reservation_allowance_type == 3) checked @endif name="part[]">
-                                <label for="fullBooking">حجز كلى</label>
-
-                                <input type="checkbox" class="toggle-radio-buttons mx-2" value="2" id="partialBooking"
-                                    @if ($department->reservation_allowance_type == 2 || $department->reservation_allowance_type == 3) checked @endif name="part[]">
-                                <label for="partialBooking">حجز جزئى</label>
-
-                                <input type="checkbox" class="toggle-radio-buttons mx-2" value="3" id="noBooking"
-                                    @if ($department->reservation_allowance_type == 4) checked @endif name="part[]">
-                                <label for="noBooking">لا يوجد بدل حجز</label>
+                        <div class="container col-10 mt-5 mb-3 ">
+                            <div class="form-row col-10 " dir="ltr">
+                                <button class="btn-blue " type="submit">
+                                    اضافة </button>
                             </div>
                         </div>
-
-
-
                 </div>
-                <div class="container col-10 mt-5 mb-3 ">
-                    <div class="form-row col-10 " dir="ltr">
-                        <button class="btn-blue " type="submit">
-                            اضافة </button>
-                    </div>
-                </div>
+
                 <br>
                 </form>
             </div>
@@ -245,50 +251,57 @@
         });
         $(document).ready(function() {
             var selectedManagerId = $('#mangered').val();
-            console.log(selectedManagerId);
 
             if (selectedManagerId) {
-                // Show the email field
                 $('#email_field').show();
                 fetchManagerDetails(selectedManagerId, false);
 
-                var existingBudget =
-                    "{{ old('budget', $department->reservation_allowance_amount ? $department->reservation_allowance_amount : '') }}";
-
+                var existingEmail = @json(old('mangered', $department->manager ? $email : null));
+                var existingBudget = @json(old('budget', $department->reservation_allowance_amount ? $department->reservation_allowance_amount : ''));
 
                 if (existingEmail) {
-                    $('#email_field').css('display', 'block');
-
-                    $('#email_field').show();
+                    $('#email_field').css({
+                        display: 'block',
+                        visibility: 'visible',
+                        opacity: 1
+                    });
                     $('#email').val(existingEmail);
-
                 }
-                // If a budget exists, check the radio button for specific budget and display the budget field
+
                 if (existingBudget) {
-                    $('#notFree').attr('checked', true);
-                    $('#budgetField').show();
+                    $('#notFree').prop('checked', true);
+                    $('#budgetField').css({
+                        display: 'block',
+                        visibility: 'visible',
+                        opacity: 1
+                    });
                     $('#budget').val(existingBudget);
                 } else {
-                    // If no specific budget, check the "free" option
-                    $('#Free').attr('checked', true);
+                    $('#Free').prop('checked', true);
                 }
-
             } else {
                 $('#manager_details').hide();
                 $('#email_field').hide();
             }
         });
+
         function fetchManagerDetails(managerId) {
             console.log('Manager ID:', managerId);
+            var sectorId = $('#sector').val();
+
 
             if (managerId) {
                 var sectorId = $('#sector').val();
+                var departmentId = $('#parent').val();
+                console.log('Manager ID:',sectorId);
+
 
                 $.ajax({
-                    url: '/get-manager-details/' + managerId,
+                    url: '/get-manager-details/' + managerId ,
                     type: 'GET',
                     data: {
-                        sector_id: sectorId
+                        sector_id: sectorId,
+                        department_id:departmentId
                     }, // Send sector_id to the backend
                     success: function(data) {
                         $('#manager_details').find('span').eq(0).text(
@@ -367,12 +380,8 @@
                 $('#email').val('');
             }
         }
-
-        $('#mangered').val('');
         $('#manager_details').hide();
         $('#email_field').hide();
-        $('#email').val('');
-
         // Use 'blur' event to trigger the check when the input field loses focus
         $('#mangered').on('blur', function() {
             var managerId = $(this).val();
@@ -385,40 +394,40 @@
             fetchManagerDetails(selectedManagerId);
         }
     </script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // Select the checkboxes by their IDs
-        const fullBooking = document.getElementById("fullBooking");
-        const partialBooking = document.getElementById("partialBooking");
-        const noBooking = document.getElementById("noBooking");
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Select the checkboxes by their IDs
+            const fullBooking = document.getElementById("fullBooking");
+            const partialBooking = document.getElementById("partialBooking");
+            const noBooking = document.getElementById("noBooking");
 
-        // Helper function to uncheck other checkboxes
-        function uncheckOthers(...checkboxes) {
-            checkboxes.forEach(checkbox => checkbox.checked = false);
-        }
-
-        // Event listener for "noBooking"
-        noBooking.addEventListener("change", function () {
-            if (this.checked) {
-                uncheckOthers(fullBooking, partialBooking);
+            // Helper function to uncheck other checkboxes
+            function uncheckOthers(...checkboxes) {
+                checkboxes.forEach(checkbox => checkbox.checked = false);
             }
-        });
 
-        // Event listener for "fullBooking"
-        fullBooking.addEventListener("change", function () {
-            if (this.checked) {
-                noBooking.checked = false;
-            }
-        });
+            // Event listener for "noBooking"
+            noBooking.addEventListener("change", function() {
+                if (this.checked) {
+                    uncheckOthers(fullBooking, partialBooking);
+                }
+            });
 
-        // Event listener for "partialBooking"
-        partialBooking.addEventListener("change", function () {
-            if (this.checked) {
-                noBooking.checked = false;
-            }
+            // Event listener for "fullBooking"
+            fullBooking.addEventListener("change", function() {
+                if (this.checked) {
+                    noBooking.checked = false;
+                }
+            });
+
+            // Event listener for "partialBooking"
+            partialBooking.addEventListener("change", function() {
+                if (this.checked) {
+                    noBooking.checked = false;
+                }
+            });
         });
-    });
-</script>
+    </script>
     <script>
         // Add event listeners for the radio buttons
         document.getElementById('notFree').addEventListener('change', function() {

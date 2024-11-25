@@ -29,7 +29,7 @@ class DepartmentController extends Controller
             $departments = departements::where('id', auth()->user()->department_id);
         }
         // Fetch the related sector information
-        $sectors = Sector::where('uuid',$uuid)->first();
+        $sectors = Sector::where('uuid', $uuid)->first();
         $departments = departements::where('sector_id', $sectors->id)->get();
 
         return view('departments.index', compact('departments', 'sectors'));
@@ -57,7 +57,7 @@ class DepartmentController extends Controller
 
     public function getDepartment($uuid)
     {
-        $sectors = Sector::where('uuid',$uuid)->first();
+        $sectors = Sector::where('uuid', $uuid)->first();
         if (in_array(Auth::user()->rule->id, [1, 2, 4])) {
 
 
@@ -132,6 +132,8 @@ class DepartmentController extends Controller
     public function getManagerDetails($id)
     {
         // Fetch manager data from the database
+        $isEditPage = request()->get('isEditPage', false); // Check if the request is from the edit page
+
         $user = User::where('file_number', $id)->first();
         if (!$user) {
             return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 404);
@@ -139,47 +141,56 @@ class DepartmentController extends Controller
 
         // Check if the user is a sector manager
         $isSectorManager = Sector::where('manager', $user->id)->exists();
+        $manager = User::where('file_number', $id)->first();
 
+        // Handle if no manager is found
+        // if (!$manager) {
+        //     return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 405);
+        // }
         // Prevent sector managers from being transferred or added
         if ($isSectorManager) {
             return response()->json(['error' => 'لا يمكن تعيين مدير قطاع كمدير أو موظف.'], 403);
         }
 
-        // Check if the user is already assigned to a department
-        if ($user->department_id) {
-            $currentDepartment = Departements::find($user->department_id);
-            $currentSector = $currentDepartment ? $currentDepartment->sector_id : null;
+        if (!$isEditPage) {
+            // Check if the user is already assigned to a department
+            if ($user->department_id) {
+                $currentDepartment = Departements::find($user->department_id);
+                $currentSector = $currentDepartment ? $currentDepartment->department_id : null;
+                $isDepartmentCheck = request()->has('skipDepartmentCheck') && request()->get('skipDepartmentCheck') === 'true';
+                // If the user is in a department in the same sector
+                if ($currentSector == request()->get('sector_id') && $isDepartmentCheck) {
+                    return response()->json([
+                        'warning' => 'هذا المستخدم موجود بالفعل في إدارة أخرى في نفس القطاع. هل تريد نقله إلى هذه الإدارة؟',
+                        'transfer' => true,
+                        'rank' => $user->grade_id ? $user->grade->name : 'لا يوجد رتبه',
+                        'seniority' => $user->joining_date ? Carbon::parse($user->joining_date)->diffInYears(Carbon::now()) : 'لا يوجد بيانات أقدميه',
+                        'job_title' => $user->job_title ?? 'لا يوجد مسمى وظيفى',
+                        'name' => $user->name,
+                        'phone' => $user->phone ?? 'لا يوجد رقم هاتف',
+                        'email' => $user->email ?? 'لا يوجد بريد الكتروني',
+                        'isEmployee' => $user->flag == 'employee' ? true : false,
+                    ]);
+                }
 
-            // If the user is in a department in the same sector
-            if ($currentSector == request()->get('sector_id')) {
-                return response()->json([
-                    'warning' => 'هذا المستخدم موجود بالفعل في إدارة أخرى في نفس القطاع. هل تريد نقله إلى هذه الإدارة؟',
-                    'transfer' => true,
-                    'rank' => $user->grade_id ? $user->grade->name : 'لا يوجد رتبه',
-                    'seniority' => $user->joining_date ? Carbon::parse($user->joining_date)->diffInYears(Carbon::now()) : 'لا يوجد بيانات أقدميه',
-                    'job_title' => $user->job_title ?? 'لا يوجد مسمى وظيفى',
-                    'name' => $user->name,
-                    'phone' => $user->phone ?? 'لا يوجد رقم هاتف',
-                    'email' => $user->email ?? 'لا يوجد بريد الكتروني',
-                    'isEmployee' => $user->flag == 'employee' ? true : false,
-                ]);
-            }
+                // If the user is in a department in a different sector
+                if ($currentSector !== request()->get('sector_id')  && $isDepartmentCheck) {
 
-            // If the user is in a department in a different sector
-            if ($currentSector !== request()->get('sector_id')) {
-                return response()->json([
-                    'warning' => 'هذا المستخدم موجود بالفعل في قطاع آخر. هل تريد نقله إلى هذا القطاع وهذه الإدارة؟',
-                    'transfer' => true,
-                    'rank' => $user->grade_id ? $user->grade->name : 'لا يوجد رتبه',
-                    'seniority' => $user->joining_date ? Carbon::parse($user->joining_date)->diffInYears(Carbon::now()) : 'لا يوجد بيانات أقدميه',
-                    'job_title' => $user->job_title ?? 'لا يوجد مسمى وظيفى',
-                    'name' => $user->name,
-                    'phone' => $user->phone ?? 'لا يوجد رقم هاتف',
-                    'email' => $user->email ?? 'لا يوجد بريد الكتروني',
-                    'isEmployee' => $user->flag == 'employee' ? true : false,
-                ]);
+                    return response()->json([
+                        'warning' => 'هذا المستخدم موجود بالفعل في قطاع آخر. هل تريد نقله إلى هذا القطاع وهذه الإدارة؟',
+                        'transfer' => true,
+                        'rank' => $user->grade_id ? $user->grade->name : 'لا يوجد رتبه',
+                        'seniority' => $user->joining_date ? Carbon::parse($user->joining_date)->diffInYears(Carbon::now()) : 'لا يوجد بيانات أقدميه',
+                        'job_title' => $user->job_title ?? 'لا يوجد مسمى وظيفى',
+                        'name' => $user->name,
+                        'phone' => $user->phone ?? 'لا يوجد رقم هاتف',
+                        'email' => $user->email ?? 'لا يوجد بريد الكتروني',
+                        'isEmployee' => $user->flag == 'employee' ? true : false,
+                    ]);
+                }
             }
         }
+
 
         // If the user is not in any department or sector, return their details
         $joiningDate = $user->joining_date ? Carbon::parse($user->joining_date) : Carbon::parse($user->created_at);
@@ -232,20 +243,16 @@ class DepartmentController extends Controller
 
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
             $data = departements::where('parent_id', $departement->id)
-                ->withCount('iotelegrams', 'outgoings', 'children')
+                ->withCount( 'children')
                 ->with(['children'])
-                ->orderBy('id', 'desc')->get();
+                ->orderBy('id', 'desc');
         } else {
             $data = departements::where('parent_id', $departement->id)
-                ->withCount('iotelegrams', 'outgoings', 'children')
-                ->where(function ($query) {
-                    $query->where('id', Auth::user()->department_id)
-                        ->orWhere('parent_id', Auth::user()->department_id);
-                })
+                ->withCount( 'children')
                 ->with(['children'])
-                ->orderBy('id', 'desc')->get();
-        }
+                ->orderBy('id', 'desc');
 
+        }
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
                 return '<button class="btn btn-primary btn-sm">Edit</button>';
@@ -308,7 +315,7 @@ class DepartmentController extends Controller
      */
     public function create($uuid)
     {
-        $sectors = Sector::where('uuid',$uuid)->first();
+        $sectors = Sector::where('uuid', $uuid)->first();
         $sector_id = $sectors->id;
         $managers = User::where('id', '!=', auth()->user()->id)
             ->whereNot('id', $sectors->manager)
@@ -638,15 +645,16 @@ class DepartmentController extends Controller
                 ->whereNot('id', $department->manager)
                 ->whereNot('id', auth()->user()->id)
                 ->get();
-            $manager = User::find( $department->manger);
+            $manager = User::find($department->manger);
         } else {
             $employees = User::where('flag', 'employee')->where('department_id', $department->id)->whereNot('id', $department->manager)->get();
-            $manager = User::find( $department->manger);
+            $manager = User::find($department->manger);
         }
-        
-        $fileNumber = $manager->file_number ?? null;
 
-        return view('sub_departments.edit', compact('department','fileNumber', 'manager', 'employees', 'sect'));
+        $fileNumber = $manager->file_number ?? null;
+        $email = $manager->email ?? null;
+
+        return view('sub_departments.edit', compact('department', 'fileNumber', 'manager', 'email', 'employees', 'sect'));
     }
 
     /**

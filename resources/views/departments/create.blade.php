@@ -67,8 +67,8 @@
     </div>
     <br>
     <div class="row">
-        <div class="container  col-11 mt-3 p-0 ">
-            <div class="container col-10 mt-5 mb-3 pb-5" style="border:0.5px solid #C7C7CC;">
+    <div class="container  col-11 mt-3 py-4 ">
+    <div class="container col-11" style="border:0.5px solid #C7C7CC;">
                 <form action="{{ route('departments.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @if (session('success'))
@@ -86,7 +86,7 @@
                     </div>
                     @endif
                     <div class="form-row mx-3 mt-4 d-flex justify-content-center">
-                        <div class="form-group col-md-10 mx-md-2">
+                        <div class="form-group col-md-12 mx-md-2">
                             <label for="sector">اختر القطاع </label>
                             <input type="text" name="name" id="name" class="form-control" value="{{ $sectors->name }}"
                                 disabled>
@@ -96,7 +96,7 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="form-group col-md-10 mx-md-2">
+                        <div class="form-group col-md-12 mx-md-2">
                             <label for="name">أسم الأداره الرئيسية</label>
                             <input type="text" name="name" class="form-control" autocomplete="one-time-code"
                                 value="{{ old('name') }}">
@@ -105,7 +105,7 @@
                             @enderror
                         </div>
 
-                        <div class="form-group col-md-10 mx-md-2" id="manager">
+                        <div class="form-group col-md-12 mx-md-2" id="manager">
                             <label for="mangered">رقم ملف المدير</label>
                             <input type="text" name="mangered" id="mangered" class="form-control"
                                 autocomplete="one-time-code" value="{{ old('mangered') }}">
@@ -115,14 +115,14 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="form-group col-md-10 mx-md-2" id="email_field" style="display: none;">
+                        <div class="form-group col-md-12 mx-md-2" id="email_field" style="display: none;">
                             <label class="pb-3 w-100" for="email"> الايميل</label>
-                            <input type="email" name="email" id="email" class="form-control" required>
+                            <input type="email" name="email" id="email" class="form-control"  value="{{ old('email') }}" required>
                             @error('email')
                             <div class="alert alert-danger">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="form-group col-md-10 mx-md-2" id="manager_details">
+                        <div class="form-group col-md-12 mx-md-2" id="manager_details">
                             <div class="col-12 div-info d-flex justify-content-between" style="direction: rtl">
                                 <div class="col-7">
                                     <div class="col-12 div-info-padding"><b>الرتبه : <span></span></b></div>
@@ -131,16 +131,13 @@
                                 <div class="col-5">
                                     <div class="col-12 div-info-padding"><b>الأسم: <span></span></b></div>
                                     <div class="col-12 div-info-padding"><b>الهاتف: <span></span></b></div>
-                                    <div class="col-12 div-info-padding"><b>الأيميل: <span></span></b></div>
+                                    <div class="col-12 div-info-padding" style="direction: rtl"><b>الأيميل: <span></span></b></div>
 
                                 </div>
                             </div>
                         </div>
 
-                    </div>
-                    <div class="form-row mx-2 d-flex justify-content-center">
-
-                        <div class="form-group moftsh col-md-10 mx-md-2">
+                        <div class="form-group moftsh col-md-12 mx-md-2">
                             <label for="description">الوصف </label>
                             <input type="text" name="description" class="form-control" autocomplete="one-time-code"
                                 value="{{ old('description') }}">
@@ -148,75 +145,68 @@
                             <div class="alert alert-danger">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="input-group moftsh col-md-10 mx-md-2">
+                        <div class="form-group moftsh col-md-12 mx-md-2">
                             <label for="file_number" class="col-12"> أرقام الملفات</label>
                             <textarea class="form-control" name="file_number" id="file_number"
                                 style="height: 100px"></textarea>
                         </div>
-                    </div>
-                  
-
-
-                   
-                    <div class="form-group col-md-11 mx-md-1" dir="rtl">
-                        <h4 class="mb-3 d-flex justify-content-start">صلاحيه الحجز</h4>
-                        <div class="d-flex mt-3">
-                            <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="fullBooking"
-                                name="part[]">
-                            <label for="fullBooking"> حجز كلى</label>
-                            <input type="checkbox" class="toggle-radio-buttons mx-2" value="2" id="partialBooking"
-                                name="part[]">
-                            <label for="partialBooking">حجز جزئى</label>
-                            <input type="checkbox" class="toggle-radio-buttons mx-2" value="3" id="noBooking"
-                                name="part[]">
-                            <label for="noBooking">لا يوجد بدل حجز</label>
-                            {{-- @error('part')
+                        <div class="form-group col-md-12 pt-4 mx-md-2" dir="rtl">
+                            <h4 class="mb-3 d-flex justify-content-start">صلاحيه الحجز</h4>
+                            <div class="d-flex  mt-3">
+                                <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="fullBooking"
+                                    name="part[]">
+                                <label for="fullBooking"> حجز كلى</label>
+                                <input type="checkbox" class="toggle-radio-buttons mx-2" value="2" id="partialBooking"
+                                    name="part[]">
+                                <label for="partialBooking">حجز جزئى</label>
+                                <input type="checkbox" class="toggle-radio-buttons mx-2" value="3" id="noBooking"
+                                    name="part[]">
+                                <label for="noBooking">لا يوجد بدل حجز</label>
+                                {{-- @error('part')
                                     <div class="alert alert-danger">{{ $message }}
+                            </div>
+                            @enderror --}}
                         </div>
-                        @enderror --}}
-                    </div> 
-                    <div class="form-group col-md-11 " dir="rtl">
-                      
-                      <h4 class="mb-3 d-flex justify-content-start">ميزانيه الحجز</h4>
+                        <div class="form-group col-md-12 pt-4">
 
-                     
-                      <div class="d-flex mt-3">
-                          <label for="notFree" class="d-flex align-items-center">  
-                              <input type="radio" class="toggle-radio-buttons " name="budget_type" value="1"
-                                  id="notFree" style="height:20px;"> ميزانيه محدده
-                           
-                          </label>
+                            <h4 class="mb-3 d-flex justify-content-start">ميزانيه الحجز</h4>
 
-                          <label for="free" class="d-flex align-items-center"> 
-                              <input type="radio" class="toggle-radio-buttons me-2" name="budget_type" value="2"
-                                  id="free" style="height:20px;">ميزانيه غير محدده
-                             
-                          </label>
-                      </div>
-                      </div>
-                    <div class="form-group col-md-11 " id="budgetField" style="display: none;">
-                    <div class="d-flex mt-3">
-                        <label class="d-flex justify-content-start pb-3" for="budget">ميزانية بدل حجز</label>
-                        <input type="text" name="budget" class="form-control" value="{{ old('budget') }}"
-                            autocomplete="one-time-code">
-                        @error('budget')
-                        <div class="alert alert-danger">{{ $message }}</div>
-                        @enderror
-                    </div>       </div>
+
+                            <div class="d-flex mt-3">
+                                <label for="notFree" class="d-flex align-items-center">
+                                    <input type="radio" class="toggle-radio-buttons " name="budget_type" value="1"
+                                        id="notFree" style="height:20px;"> ميزانيه محدده
+
+                                </label>
+
+                                <label for="free" class="d-flex align-items-center">
+                                    <input type="radio" class="toggle-radio-buttons me-2" name="budget_type" value="2"
+                                        id="free" style="height:20px;">ميزانيه غير محدده
+
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12 " id="budgetField" style="display: none;">
+
+                            <label class="d-flex justify-content-start pb-3" for="budget" class="col-12">ميزانية بدل
+                                حجز</label>
+                            <input type="text" name="budget" class="form-control" value="{{ old('budget') }}"
+                                autocomplete="one-time-code">
+                            @error('budget')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
             </div>
+            <div class="container col-12 mt-5 ">
+                    <button class="btn-blue " type="submit"> اضافة </button>
+
+            </div>
+            <br>
+            </form>
 
         </div>
-        <div class="container col-10 mt-5 mb-3 ">
-            <div class="form-row col-10 " dir="ltr">
-                <button class="btn-blue " type="submit">
-                    اضافة </button>
-            </div>
-        </div>
-        <br>
-
-        </form>
-
-    </div>
 
 
 
