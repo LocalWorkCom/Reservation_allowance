@@ -59,7 +59,7 @@
 
     <br>
 
-    <form class="edit-grade-form" id="Qta3-form" action="{{ route('sectors.update', $data->id) }}" method="POST">
+    <form class="edit-grade-form" id="Qta3-form" action="{{ route('sectors.update', $data) }}" method="POST">
         @csrf
         @method('POST') <!-- This line indicates it's an update -->
         <div class="row" dir="rtl">

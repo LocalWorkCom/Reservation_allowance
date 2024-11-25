@@ -20,7 +20,7 @@ class SectorEmployeesDetailsController extends Controller
     public function index(Request $request, $sectorId)
     {
         if (auth()->check() && auth()->user()->rule_id == 2) {
-            $sector = Sector::find($sectorId);
+            $sector = Sector::where('uuid',$sectorId)->first();
             $month = $request->input('month');
             $year = $request->input('year');
     
@@ -39,11 +39,12 @@ class SectorEmployeesDetailsController extends Controller
     {
         $month = $request->input('month');
         $year = $request->input('year');
-    
-        $employees = User::whereIn('id', function ($query) use ($sectorId, $month, $year) {
+        $sector_id = Sector::where('uuid',$sectorId)->first()->id;
+
+        $employees = User::whereIn('id', function ($query) use ($sector_id, $month, $year) {
                 $query->select('user_id')
                       ->from('reservation_allowances')
-                      ->where('sector_id', $sectorId)
+                      ->where('sector_id', $sector_id)
                       ->whereYear('date', $year)
                       ->whereMonth('date', $month);
             })

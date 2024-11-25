@@ -126,7 +126,7 @@
                         render: function (data, type, row) {
                             const month = $('#month-select').val();
                             const year = $('#year-select').val();
-                            return `<a href="/sector-employees/${row.id}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
+                            return `<a href="/sector-employees/${row.uuid}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
                         },
                     },
                     { 

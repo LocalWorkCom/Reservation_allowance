@@ -51,12 +51,12 @@
                         <li class="breadcrumb-item "><a href="{{ route('home') }}">الرئيسيه</a></li>
                         @if ($department->parent_id)
                             <li class="breadcrumb-item"><a
-                                    href="{{ route('sub_departments.index', ['id' => $department->parent_id]) }}">
+                                    href="{{ route('sub_departments.index', $department->uuid) }}">
                                     {{-- {{ $department->name }} --}} الأدارات
                                 </a></li>
                         @else
                             <li class="breadcrumb-item"><a
-                                    href="{{ route('departments.index', ['id' => $department->sector_id]) }}">
+                                    href="{{ route('departments.index', $department->sectors->uuid) }}">
                                     {{-- {{ $department->name }} --}} الأدارات
                                 </a></li>
                         @endif
@@ -147,7 +147,7 @@
                             </div>
                             <div class="form-group col-md-10 mx-md-2" id="email_field" style="display: none;">
                                 <label class="pb-3 w-100" for="email"> الايميل</label>
-                                <input type="email" name="email" id="email" class="form-control" required>
+                                <input type="email" name="email" id="email"  value="{{ old('email') }}" class="form-control" required>
                                 @error('email')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
@@ -268,10 +268,10 @@
                         $('#manager_details').find('span').eq(3).text(data.phone);
                         $('#manager_details').find('span').eq(4).text(data.email);
                         $('#manager_details').show();
+                        $('#email_field').show();
 
                         // Show password and rule fields for employees
                         if (data.email) {
-                            $('#email_field').show();
                             if (data.email === 'لا يوجد بريد الكتروني') {
                                 $('#email').val('');
 
@@ -280,7 +280,6 @@
 
                             }
                         } else {
-                            $('#email_field').hide();
                             $('#email').val('');
                         }
                         // Handle transfer logic

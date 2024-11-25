@@ -7,7 +7,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item "><a href="{{ route('home') }}">الرئيسيه</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('departments.index', ['id' => $department->id]) }}">الادارات
+                    <li class="breadcrumb-item"><a href="{{ route('departments.index', $department->uuid) }}">الادارات
                         </a></li>
                     <li class="breadcrumb-item active" aria-current="page"> <a href="#">تفاصيل الادارة</a></li>
                 </ol>
@@ -58,7 +58,7 @@
         <br> <br> <br> <br>
 
 
-        <!-- <div class="container">
+        <?php /*<div class="container">
             <h1>Department Details</h1>
 
             <div class="card">
@@ -85,6 +85,6 @@
     <p>No child departments.</p>
     @endif
             <a href="{{ route('departments.index', ['id' => $department->id]) }}" class="btn btn-primary mt-3">Back to Departments</a>
-        </div> -->
+        </div> */?>
     </section>
 @endsection

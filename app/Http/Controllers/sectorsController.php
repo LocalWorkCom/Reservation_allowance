@@ -4,24 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\departements;
-use App\Models\Government;
-use App\Models\history_allawonce;
 use App\Models\ReservationAllowance;
-// use App\Models\Rule;
 use Illuminate\Validation\Rule;
-
 use App\Models\Sector;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
-use RealRashid\SweetAlert\Facades\Alert;
-use Hashids\Hashids;
-use Illuminate\Support\Facades\Log;
 
 class sectorsController extends Controller
 {
@@ -96,6 +88,7 @@ class sectorsController extends Controller
 
     public function index()
     {
+        addUuidToTable('sectors');
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
             $sectors = Sector::all();
         } elseif (Auth::user()->rule->id == 4) {
@@ -114,18 +107,16 @@ class sectorsController extends Controller
 
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
-                $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;" href=' . route('sectors.edit', $row->hash_id) . '><i class="fa fa-edit"></i> تعديل</a>';
-                $add_permission = '<a class="btn btn-sm" style="background-color: #bb5207;" href="' .  route('department.create', ['id' => $row->hash_id]) . '"><i class="fa fa-plus"></i> أضافة أداره</a>';
+                $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;" href=' . route('sectors.edit', $row->uuid) . '><i class="fa fa-edit"></i> تعديل</a>';
+                $add_permission = '<a class="btn btn-sm" style="background-color: #bb5207;" href="' .  route('department.create', $row->uuid) . '"><i class="fa fa-plus"></i> أضافة أداره</a>';
                 $reservationAllowence = '<a class="btn btn-sm" style="background-color: #1d88a1;" href=' . route('reservation_allowances.search_employee_new', 'sector_id=' . $row->hash_id) . '><i class="fa fa-plus"></i> اضافة بدل حجز جماعى</a>';
-                $show_permission = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('sectors.show', $row->hash_id) . '> <i class="fa fa-eye"></i>عرض</a>';
-                // $addbadal_permission = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('sectors.show', $row->id) . '> <i class="fa fa-plus"></i>أضافه بدل</a>';
+                $show_permission = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('sectors.show', $row->uuid) . '> <i class="fa fa-eye"></i>عرض</a>';
 
                 return $show_permission . ' ' . $edit_permission . '' . $add_permission; //$reservationAllowence;
             })
             ->addColumn('manager_name', function ($row) {
                 // Check if manager exists before accessing its attributes
                 $manager = User::find($row->manager);
-                // $manager = User::find($row->manager);
                 if ($manager) {
                     // Check the flag to determine if the manager is an employee
                     $is_allow = $manager->flag == 'employee' ? 'لا يسمح بالدخول' : 'يسمح بالدخول';
@@ -147,7 +138,7 @@ class sectorsController extends Controller
             })
             ->addColumn('departments', function ($row) {
                 $num = departements::where('sector_id', $row->id)->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('departments.index', ['id' => $row->hash_id]) . '> ' . $num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('departments.index', ['uuid' => $row->uuid]) . '> ' . $num . '</a>';
                 return $btn;
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
@@ -165,13 +156,13 @@ class sectorsController extends Controller
                 }
             })
             ->addColumn('employees', function ($row) {
-                $emp_num = User::where('sector', $row->id)->where('department_id', null)->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('user.employees', ['sector_id' => $row->id, 'type' => 0, 'flag' => 'user']) . '> ' . $emp_num . '</a>';
+                $emp_num = User::where('sector', $row->id)->where('flag','employee')->where('department_id', null)->count();
+                $btn = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('user.employees', ['sector_id' => $row->uuid, 'type' => 0, 'flag' => 'employee']) . '> ' . $emp_num . '</a>';
                 return $btn;
             })
             ->addColumn('employeesdep', function ($row) {
-                $emp_num = User::where('sector', $row->id)->whereNotNull('department_id')->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15p" href=' . route('user.employees', ['sector_id' => $row->id, 'type' => 1, 'flag' => 'user']) . '> ' . $emp_num . '</a>';
+                $emp_num = User::where('sector', $row->id)->where('flag','employee')->whereNotNull('department_id')->count();
+                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15p" href=' . route('user.employees', ['sector_id' => $row->uuid, 'type' => 1, 'flag' => 'employee']) . '> ' . $emp_num . '</a>';
                 return $btn;
             })
             ->rawColumns(['action', 'departments', 'employees', 'login_info', 'employeesdep'])
@@ -220,7 +211,6 @@ class sectorsController extends Controller
         $Civil_numbers = explode(',,', $Civil_numbers);
 
         // Find employees based on Civil_number   file_number
-        // $employees = User::whereIn('Civil_number', $Civil_numbers)->pluck('id')->toArray();
         $employees = User::whereIn('file_number', $Civil_numbers)->pluck('id')->toArray();
 
         // Initialize manager variable
@@ -229,7 +219,6 @@ class sectorsController extends Controller
         // Handle the case if `mangered` is provided
         if ($request->mangered) {
             // Find manager based on Civil Number
-            // $manager = User::where('Civil_number', $request->mangered)->value('id');
             $manager = User::where('file_number', $request->mangered)->value('id');
 
             // Validate manager: must not be one of the employees
@@ -297,9 +286,6 @@ class sectorsController extends Controller
             if ($user->email && isValidEmail($user->email)) {
                 Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع ' . $request->name, $user->file_number, 123456, $user->email);
             }
-            //else {
-            //     return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
-            // }
         }
 
         // Track Civil numbers that could not be added
@@ -336,28 +322,25 @@ class sectorsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Sector $sector)
     {
-        $data = get_by_md5_id($id, 'sectors');
+        $data = $sector;
         $manager = User::find($data->manager);
+        $users = User::where('flag','employee')->where('department_id',null)->where('sector',$data->id)->get();
         $managerName = $manager->name ?? 'لا يوجد مدير';
-        // $data = Sector::find($id);
-        $users = User::where('department_id', null)->whereNot('id', $data->manager ?? null)->Where('sector', $data->id)->get();
-        $departments = departements::where('sector_id', $id)->get();
-        return view('sectors.showdetails', compact('data', 'managerName', 'users', 'departments'));
+        $departments = departements::where('sector_id', $data->id)->get();
+        return view('sectors.showdetails', compact('data', 'managerName', 'departments','users'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Sector $sector)
     {
-        // $data = Sector::findOrFail($id);
-        $data = get_by_md5_id($id, 'sectors');
-        $users = User::where('department_id', null)->where('sector', null)->orWhere('sector', $id)->get();
-        $employees =  User::where('department_id', null)->Where('sector', $id)->whereNot('id', $data->manager)->get();
+        $data = $sector;
+        $users = User::where('department_id', null)->where('sector', null)->orWhere('sector', $data->id)->get();
+        $employees =  User::where('department_id', null)->Where('sector', $data->id)->whereNot('id', $data->manager)->get();
         $manager = User::find($data->manager);
-
         $fileNumber = $manager->file_number ?? null;
         return view('sectors.edit', [
             'data' => $data,
@@ -366,13 +349,11 @@ class sectorsController extends Controller
             'fileNumber' => $fileNumber,
             'email' => $manager->email ?? null,
             'budget' => $data->reservation_allowance_amount
-
-
         ]);
     }
 
 
-    public function update(Request $request)
+    public function update(Request $request, Sector $sector)
     {
         $sector = Sector::find($request->id);
         $messages = [
@@ -415,7 +396,6 @@ class sectorsController extends Controller
         if ($request->mangered && $manager == null) {
             return redirect()->back()->withErrors('رقم هويه المدير غير موجود')->withInput();
         }
-        //dd($request->all());
         // Determine reservation_allowance_type based on 'part'
         $part = $request->input('part');
         $reservation_allowance_type = null;
