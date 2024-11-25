@@ -270,7 +270,6 @@ public function printReport($sectorUuid, Request $request)
     return $pdf->Output("sector_employees_{$sector->name}.pdf", 'I');
 }
 
-
 public function allowanceDetailsPage(Request $request, $employeeUuid)
 {
     $month = $request->input('month');
@@ -283,7 +282,8 @@ public function allowanceDetailsPage(Request $request, $employeeUuid)
 
     return view('sector_employees.allowance_details', [
         'employeeName' => $employee->name,
-        'employeeId' => $employeeUuid, 
+        'employeeUuid' => $employeeUuid, 
+        'month' => $month,
         'year' => $year,
     ]);
 }
@@ -312,6 +312,7 @@ public function getAllowanceDetails(Request $request, $employeeUuid)
         ->addIndexColumn()
         ->make(true);
 }
+
 
     
     

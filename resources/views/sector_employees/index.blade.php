@@ -84,50 +84,55 @@
             d.year = '{{ $year }}';
         }
     },
-            columns: [
-                {
-                data: null,
-                orderable: false,
-                searchable: false,
-                render: function (data, type, row, meta) {
-                    return meta.row + 1; // Auto-generate row numbers
-                }
-            },
-            { data: 'grade', name: 'grade' },
-              { data: 'name', name: 'name',
-                render: function (data, type, row) {
-                    const month = '{{ $month }}';
-                    const year = '{{ $year }}';
-                    return `<a href="/employee-allowance-details/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
-                }
-               },
-                { data: 'file_number', name: 'file_number',
-                    render: function (data, type, row) {
-                    const month = '{{ $month }}';
-                    const year = '{{ $year }}';
-                    return `<a href="/employee-allowance-details/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
-                }
-                 }, 
-                { data: 'department', name: 'department' },
-                { data: 'days', name: 'days',
-                    render: function (data, type, row) {
-                    const month = '{{ $month }}';
-                    const year = '{{ $year }}';
-                    return `<a href="/employee-allowance-details/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
-                }
-                 },
-                            
-                {
-                data: 'allowance',
-                name: 'allowance',
-                render: function (data, type, row) {
-                    const month = '{{ $month }}';
-                    const year = '{{ $year }}';
-                    return `<a href="/employee-allowance-details/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
-                }
-            },
+    columns: [
+    {
+        data: null,
+        orderable: false,
+        searchable: false,
+        render: function (data, type, row, meta) {
+            return meta.row + 1; // Auto-generate row numbers
+        }
+    },
+    { data: 'grade', name: 'grade' },
+    {
+        data: 'name',
+        name: 'name',
+        render: function (data, type, row) {
+            const month = '{{ $month }}';
+            const year = '{{ $year }}';
+            return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+        }
+    },
+    {
+        data: 'file_number',
+        name: 'file_number',
+        render: function (data, type, row) {
+            const month = '{{ $month }}';
+            const year = '{{ $year }}';
+            return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+        }
+    },
+    { data: 'department', name: 'department' },
+    {
+        data: 'days',
+        name: 'days',
+        render: function (data, type, row) {
+            const month = '{{ $month }}';
+            const year = '{{ $year }}';
+            return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+        }
+    },
+    {
+        data: 'allowance',
+        name: 'allowance',
+        render: function (data, type, row) {
+            const month = '{{ $month }}';
+            const year = '{{ $year }}';
+            return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+        }
+    },
+],
 
-            ],
             order: [[1, 'asc']],
             "oLanguage": {
                 "sSearch": "",
