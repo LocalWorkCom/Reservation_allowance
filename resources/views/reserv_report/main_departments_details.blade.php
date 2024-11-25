@@ -19,19 +19,23 @@
 @endpush
 
 @section('content')
-    <div class="row" style="direction: rtl;">
+    <div class="row" >
         <div class="container welcome col-11">
             <div class="d-flex justify-content-between">
-                <p>تفاصيل بدل حجز الإدارات الرئيسية قطاع {{ $sector->name }} الفترة من: {{ $startDate->format('Y-m-d') }} إلى: {{ $endDate->format('Y-m-d') }}</p>
+                <p>   الإدارات الرئيسية قطاع {{ $sector->name }}</p>
 
             </div>
-            <button id="print-report" class="btn btn-secondary">طباعة</button>
+           
 
         </div>
     </div>
 
-    <div class="row" style="direction: rtl;">
-        <div class="container col-11 mt-3 p-0 pt-5 pb-4">
+   
+    <div class="container col-11 mt-3 py-5  " >
+    <div class="d-flex justify-content-between pb-3"dir="rtl">
+                <h4> الفترة من: <span class="text-info">{{ $startDate->format('Y-m-d') }}</span> إلى: <span class="text-info">{{ $endDate->format('Y-m-d') }}</span></h4>
+            <button id="print-report" class="btn-blue">طباعة</button>
+            </div>
             <!-- Date Range -->
 
                 <!-- Data Table -->
@@ -53,7 +57,7 @@
                                 <td>{{ $department['department_name'] }}</td>
                                 <td>
                                     @if(isset($department['id']))
-                                        <a href="{{ route('reservation_report.main_department_sub_departments', ['departmentId' => $department['id']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:blue !important;">
+                                        <a href="{{ route('reservation_report.main_department_sub_departments', ['departmentId' => $department['id']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8 !important;">
                                             {{ $department['sub_departments_count'] }}
                                         </a>
                                     @else
@@ -61,12 +65,12 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <a href="{{ route('reservation_report.main_department_employees', ['departmentId' => $department['id']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:blue !important;">
+                                    <a href="{{ route('reservation_report.main_department_employees', ['departmentId' => $department['id']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8 !important;">
                                         {{ $department['employee_count'] }}
                                     </a>
                                 </td>
                                 <td>
-                                <a href="{{ route('reservation_report.main_department_employees', ['departmentId' => $department['id']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:blue !important;">
+                                <a href="{{ route('reservation_report.main_department_employees', ['departmentId' => $department['id']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8 !important;">
 
                                     {{ $department['reservation_amount'] }}
                                 

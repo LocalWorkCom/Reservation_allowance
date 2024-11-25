@@ -29,11 +29,13 @@
     <!-- Logo and Report Title -->
     <img src="{{ asset('img/logo.png') }}" alt="Logo" width="50px">
     <h2>تفاصيل بدل حجز لموظفي قطاع {{ $sector->name }}</h2>
+    <div class="d-flex justify-content-between">
     <p><strong>من تاريخ:</strong> {{ $startDate->format('Y-m-d') }} <strong>إلى تاريخ:</strong> {{ $endDate->format('Y-m-d') }}</p>
     
     <!-- Summary -->
     <p><strong>عدد الموظفين:</strong> {{ $reservations->unique('user_id')->count() }}</p>
     <p><strong>إجمالي المبلغ:</strong> {{ number_format($reservations->sum('amount'), 2) }} د.ك</p>
+    </div>
 
     <!-- Details Table -->
     <table>

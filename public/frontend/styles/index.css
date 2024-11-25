@@ -201,7 +201,7 @@ ul {
     display: none;
     position: absolute;
     top: 100%;
-    left: -90px;
+    left: -53px;
     background-color: white;
     border: 1px solid #ccc;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
@@ -209,8 +209,8 @@ ul {
     overflow-y: auto;
     padding-inline: 1px;
     font-size: 23px;
-    height: 200px;
-    width: 375px !important;
+    height: 175px;
+    width: 200px !important;
 }
 .dropdown-menu5 {
     display: none;
@@ -1663,4 +1663,3 @@ color: #2A2726;
     border-radius: 10px;
     padding: 5px;
 }
-/* menuitem */
