@@ -129,7 +129,7 @@ class DepartmentController extends Controller
             ->rawColumns(['action', 'login_info'])
             ->make(true);
     }
-    public function getManagerDetails($id)
+    public function getManagerDetails($id )
     {
         // Fetch manager data from the database
         $user = User::where('file_number', $id)->first();
@@ -139,7 +139,12 @@ class DepartmentController extends Controller
 
         // Check if the user is a sector manager
         $isSectorManager = Sector::where('manager', $user->id)->exists();
+        $manager = User::where('file_number', $id)->first();
 
+        // Handle if no manager is found
+        if (!$manager) {
+            return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 405);
+        }
         // Prevent sector managers from being transferred or added
         if ($isSectorManager) {
             return response()->json(['error' => 'لا يمكن تعيين مدير قطاع كمدير أو موظف.'], 403);
@@ -148,10 +153,12 @@ class DepartmentController extends Controller
         // Check if the user is already assigned to a department
         if ($user->department_id) {
             $currentDepartment = Departements::find($user->department_id);
-            $currentSector = $currentDepartment ? $currentDepartment->sector_id : null;
+            $currentSector = $currentDepartment ? $currentDepartment->department_id : null;
+            $isDepartmentCheck = request()->has('skipDepartmentCheck') && request()->get('skipDepartmentCheck') === 'true';
 
             // If the user is in a department in the same sector
-            if ($currentSector == request()->get('sector_id')) {
+            if ($currentSector == request()->get('sector_id') && $isDepartmentCheck  ) {
+                dd('s0');
                 return response()->json([
                     'warning' => 'هذا المستخدم موجود بالفعل في إدارة أخرى في نفس القطاع. هل تريد نقله إلى هذه الإدارة؟',
                     'transfer' => true,
@@ -166,7 +173,9 @@ class DepartmentController extends Controller
             }
 
             // If the user is in a department in a different sector
-            if ($currentSector !== request()->get('sector_id')) {
+            if ($currentSector !== request()->get('sector_id')  && $isDepartmentCheck ) {
+                dd('s');
+
                 return response()->json([
                     'warning' => 'هذا المستخدم موجود بالفعل في قطاع آخر. هل تريد نقله إلى هذا القطاع وهذه الإدارة؟',
                     'transfer' => true,
@@ -643,7 +652,7 @@ class DepartmentController extends Controller
             $employees = User::where('flag', 'employee')->where('department_id', $department->id)->whereNot('id', $department->manager)->get();
             $manager = User::find( $department->manger);
         }
-        
+
         $fileNumber = $manager->file_number ?? null;
 
         return view('sub_departments.edit', compact('department','fileNumber', 'manager', 'employees', 'sect'));
