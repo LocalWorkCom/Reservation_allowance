@@ -314,10 +314,7 @@ function fetchManagerDetails(managerId) {
                                 }
                             }
                         } else {
-                            // Handle cancel action: clear the manager input field
-                            $('#mangered').val(''); // Clear the input field
-                            $('#manager_details').hide(); // Hide the manager details
-                            $('#email_field').hide();
+                            $('#email').val('');
                         }
                     });
                 }

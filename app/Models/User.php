@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
 use Spatie\Permission\Traits\HasRoles;
+use App\Traits\Uuid;
 
 class User extends Authenticatable
 {
@@ -72,7 +73,14 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'id'
     ];
+    
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
     // protected $appends = ['hash_id'];
 
     /**

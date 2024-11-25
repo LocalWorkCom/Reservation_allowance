@@ -61,7 +61,7 @@
                     @endif
                     {{-- {{ dd($user) }} --}}
 
-                    <form action="{{ route('user.update', $user->id) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('user.update', $user) }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
                         <div class="form-row pt-5 pb-3 d-flex justify-content-around flex-row-reverse"
