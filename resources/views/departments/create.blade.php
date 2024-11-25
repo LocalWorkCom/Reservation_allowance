@@ -117,7 +117,7 @@
                         </div>
                         <div class="form-group col-md-12 mx-md-2" id="email_field" style="display: none;">
                             <label class="pb-3 w-100" for="email"> الايميل</label>
-                            <input type="email" name="email" id="email" class="form-control" required>
+                            <input type="email" name="email" id="email" class="form-control"  value="{{ old('email') }}" required>
                             @error('email')
                             <div class="alert alert-danger">{{ $message }}</div>
                             @enderror
