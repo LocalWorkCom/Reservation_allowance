@@ -35,19 +35,19 @@
     <div class="container col-11 mt-3 p-0 pt-5 pb-4b">
         <div class="bg-white p-4">
         <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
-                    <thead>
-                        <tr>
-                        <th>#</th>
-                        <th>اسم الإدارة الفرعية</th>
-                        <th>ميزانية بدل الحجز</th>
-                        <th>المسجل</th>
-                        <th>المبلغ المتبقي</th>
-                        <th>عدد الموظفين</th>
-                        <th>الحاصلين على بدل حجز</th>
-                        <th>لم يحصل على بدل حجز</th>
-                    </tr>
-                </thead>
-            </table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>اسم الإدارة الفرعية</th>
+                    <th>ميزانية بدل الحجز</th>
+                    <th>المسجل</th>
+                    <th>المبلغ المتبقي</th>
+                    <th>عدد الموظفين</th>
+                    <th>الحاصلين على بدل حجز</th>
+                    <th>لم يحصل على بدل حجز</th>
+                </tr>
+            </thead>
+        </table>
         </div>
     </div>
 </div>
@@ -73,7 +73,7 @@
                 render: function (data, type, row, meta) {
                     return meta.row + 1; // Auto-generate row numbers
                 }},               
-                 {
+                {
                     data: 'sub_department_name', 
                     name: 'sub_department_name',
                 },
@@ -82,7 +82,7 @@
                     render: function(data, type, row) {
                         const month = '{{ $month }}';
                         const year = '{{ $year }}';
-                        return `<a href="/department-employees/${row.id}?month=${month}&year=${year}" style="color: blue !important;">${data}</a>`;
+                        return `<a href="/subdepartment-employees/${row.uuid}?month=${month}&year=${year}" style="color: blue !important;">${data}</a>`;
                     }
                  },
                 { data: 'remaining_amount', name: 'remaining_amount' },
@@ -91,7 +91,7 @@
                     render: function(data, type, row) {
                         const month = '{{ $month }}';
                         const year = '{{ $year }}';
-                        return `<a href="/subdepartment-employees/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                        return `<a href="/subdepartment-employees/${row.uuid}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
                     }
                 },
                 { 
@@ -100,7 +100,7 @@
                     render: function(data, type, row) {
                         const month = '{{ $month }}';
                         const year = '{{ $year }}';
-                        return `<a href="/department-employees/${row.id}?month=${month}&year=${year}" style="color: blue !important;">${data}</a>`;
+                        return `<a href="/subdepartment-employees/${row.uuid}?month=${month}&year=${year}" style="color: blue !important;">${data}</a>`;
                     }
                 },
                 {
@@ -108,7 +108,7 @@
                     render: function(data, type, row) {
                         const month = '{{ $month }}';
                         const year = '{{ $year }}';
-                        return `<a href="/subdepartment-not-received/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                        return `<a href="/subdepartment-not-received/${row.uuid}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
                     }
                 }
             ],
@@ -121,10 +121,10 @@
                 "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
                 "sZeroRecords": 'نأسف لا توجد نتيجة',
                 "oPaginate": {
-                    "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
-                    "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
-                    "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
-                    "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
+                    "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
+                    "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
+                    "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
+                    "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
                 }
             },
             layout: {
@@ -136,15 +136,14 @@
             },
             "pagingType": "full_numbers",
             "fnDrawCallback": function(oSettings) {
-                    var api = this.api();
-                    var pageInfo = api.page.info();
-                    // Check if the total number of records is less than or equal to the number of entries per page
-                    if (pageInfo.recordsTotal <= 10) { // Adjust this number based on your page length
-                        $('.dataTables_paginate').css('visibility', 'hidden'); // Hide pagination
-                    } else {
-                        $('.dataTables_paginate').css('visibility', 'visible'); // Show pagination
-                    }
+                var api = this.api();
+                var pageInfo = api.page.info();
+                if (pageInfo.recordsTotal <= 10) {
+                    $('.dataTables_paginate').css('visibility', 'hidden');
+                } else {
+                    $('.dataTables_paginate').css('visibility', 'visible');
                 }
+            }
         });
     });
 </script>

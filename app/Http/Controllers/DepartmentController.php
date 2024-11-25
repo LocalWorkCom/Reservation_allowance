@@ -474,7 +474,7 @@ class DepartmentController extends Controller
                     'مدير ادارة',
                     'تم أضافتك كمدير ادارة',
                     $manager->file_number,
-                    $manager->password,
+                    123456,
                     $manager->email
                 );
             }
@@ -592,7 +592,7 @@ class DepartmentController extends Controller
                     'مدير ادارة',
                     'تم أضافتك كمدير ادارة',
                     $manager->file_number,
-                    $manager->password,
+                    123456,
                     $manager->email
                 );
             }

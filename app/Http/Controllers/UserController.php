@@ -35,14 +35,13 @@ use App\Imports\ImportUser;
 use App\Exports\ExportUser;
 use App\Exports\UsersExport;
 use App\Exports\UsersImportTemplate;
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendEmail;
 
 /**
  * Send emails
  */
 
-use App\Mail\SendEmail;
-use Illuminate\Support\Facades\Mail;
 use TCPDF;
 
 class UserController extends Controller
@@ -89,38 +88,38 @@ class UserController extends Controller
             $all = User::where('department_id', $search_id)->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
 
             // dd($all);
-            $gradeperson = Grade::where('type', 3)->pluck('id')->toArray();
+            $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
             $person = User::where('department_id', $search_id)->where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
 
             $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
             $Officer = User::where('department_id', $search_id)->where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
 
-            $graseOfficer2 = Grade::where('type', 1)->pluck('id')->toArray();
+            $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
             $Officer2 = User::where('department_id', $search_id)->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
         } elseif ($type == "sector") {
             $all = User::where('sector', $search_id)->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
 
             // dd($all);
-            $gradeperson = Grade::where('type', 3)->pluck('id')->toArray();
+            $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
             $person = User::where('sector', $search_id)->where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
 
             $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
             $Officer = User::where('sector', $search_id)->where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
 
-            $graseOfficer2 = Grade::where('type', 1)->pluck('id')->toArray();
+            $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
             $Officer2 = User::where('sector', $search_id)->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
         } elseif ($type == "parent") {
             $subdepartment_ids = Departements::where('parent_id', $search_id)->pluck('id');
             $all = User::whereIn('department_id', $subdepartment_ids)->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
 
-            $gradeperson = Grade::where('type', 3)->pluck('id')->toArray();
+            $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
             $person = User::whereIn('department_id', $subdepartment_ids)->where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
 
 
             $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
             $Officer = User::whereIn('department_id', $subdepartment_ids)->where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
 
-            $graseOfficer2 = Grade::where('type', 1)->pluck('id')->toArray();
+            $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
             $Officer2 = User::whereIn('department_id', $subdepartment_ids)->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
 
             // $all = User::where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
@@ -139,13 +138,13 @@ class UserController extends Controller
             $all = User::where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
 
             // dd($all);
-            $gradeperson = Grade::where('type', 3)->pluck('id')->toArray();
+            $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
             $person = User::where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
 
             $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
             $Officer = User::where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
 
-            $graseOfficer2 = Grade::where('type', 1)->pluck('id')->toArray();
+            $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
             $Officer2 = User::where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
         }
 
@@ -280,14 +279,14 @@ class UserController extends Controller
             $all = Grade::pluck('id')->toArray();
             $data->whereIn('grade_id', $all);
         } elseif ($filter == 'person') {
-            $person = Grade::where('type', 3)->pluck('id')->toArray();
+            $person = Grade::where('type', 1)->pluck('id')->toArray();
             $data->whereIn('grade_id', $person);
         } elseif ($filter == 'Officer') {
             $Officer = Grade::where('type', 2)->pluck('id')->toArray();
             $data->whereIn('grade_id', $Officer);
             // dd($data->get());
         } elseif ($filter == 'Officer2') {
-            $Officer2 = Grade::where('type', 1)->pluck('id')->toArray();
+            $Officer2 = Grade::where('type', 3)->pluck('id')->toArray();
             $data->whereIn('grade_id', $Officer2);
         }
         // Finally, fetch the results
@@ -473,27 +472,26 @@ class UserController extends Controller
 
     public function resend_code(Request $request)
     {
-        // dd($request);
+        $user = User::where('email', $request->number)->first();
+        // Generate a verification code
         $set = '123456789';
         $code = substr(str_shuffle($set), 0, 4);
-        // $msg = trans('message.please verified your account') . "\n" . trans('message.code activation') . "\n" . $code;
         $msg  = "يرجى التحقق من حسابك\nتفعيل الكود\n" . $code;
-        $user = User::where('military_number', $request->number)->orwhere('Civil_number', $request->number)->first();
-        // Send activation code via WhatsApp (assuming this is your preferred method)
-        $response = send_sms_code($msg, $user->phone, $user->country_code);
-        $result = json_decode($response, true);
-        // $code = $request->code;
-        $military_number = $request->military_number;
-        $number = $request->number;
-        $password = $request->password;
-        $sent = $result['sent'];
-        if ($sent === 'true') {
-            // dd("true");
-            return  view('verfication_code', compact('code', 'number', 'military_number', 'password'));
-        } else {
+        $password = 123456;
+        // Retrieve the user's email (assuming it's stored in the 'email' column)
+        $number = $user->email;
+        $user->code = $code;
+        $user->save();
+        $details = [
+            'title' => 'كود التفعيل',
+            'body' => "هذا هو كود التفعيل ",
+            'username' => $user->file_number,
+            'password' => null, // Pass the password if needed
+            'code' => $code, // Pass code
+        ];
 
-            return back()->with('error', 'سجل الدخول مرة أخرى');
-        }
+        Mail::to($number)->send(new SendEmail($details));
+        return  view('verfication_code', compact('code', 'number', 'password'));
     }
 
     public function verfication_code(Request $request)
@@ -516,11 +514,12 @@ class UserController extends Controller
         $code = $request->code;
         $number = $request->number;
         $password = $request->password;
-
+        // dd($request->verfication_code);
+        // dd($request->code, $request->verfication_code);
         // Check if the provided verification code matches the expected code
         if ($request->code === $request->verfication_code) {
             // Find the user by military number
-            $user = User::where('military_number', $number)->orwhere('Civil_number', $number)->first();
+            $user = User::where('email', $number)->first();
 
             // Save the activation code and password
             $user->code = $request->code;
@@ -528,21 +527,21 @@ class UserController extends Controller
 
 
             // dd($user);
-            $firstlogin = 0;
+            // $firstlogin = 0;
 
             // Coming from forget_password2
-            if ($user->token == null) {
-                $firstlogin = 1;
-                return view('resetpassword', compact('number', 'firstlogin'));
-                // }
+            // if ($user->token == null) {
+            //     $firstlogin = 1;
+            //     return view('resetpassword', compact('number', 'firstlogin'));
+            //     // }
 
+            // } else {
+            if (url()->previous() == route('forget_password2') || url()->previous() == route('resend_code') || url()->previous() == route('verfication_code')) {
+                return view('resetpassword', compact('number'));
             } else {
-                if (url()->previous() == route('forget_password2') || url()->previous() == route('resend_code') || url()->previous() == route('verfication_code')) {
-                    return view('resetpassword', compact('number', 'firstlogin'));
-                } else {
-                    return redirect()->route('home');
-                }
+                return redirect()->route('home');
             }
+            // }
         } else {
             // If verification code does not match, return back with error message and input values
             return view('verfication_code')->withErrors('الكود خاطئ.')
@@ -553,11 +552,11 @@ class UserController extends Controller
     }
 
 
+
     public function forget_password2(Request $request)
     {
-        // dd($request);
         $messages = [
-            'number.required' => 'رقم العسكري /الرقم المدنى مطلوب.',
+            'number.required' => 'رقم الملف مطلوب.',
         ];
 
         $validatedData = Validator::make($request->all(), [
@@ -568,36 +567,39 @@ class UserController extends Controller
             return back()->withErrors($validatedData)->withInput();
         }
 
-        $user = User::where('military_number', $request->number)->orwhere('Civil_number', $request->number)->first();
+        $user = User::where('file_number', $request->number)->first();
 
         if (!$user) {
-            return back()->with('error', 'الرقم العسكري لا يتطابق مع سجلاتنا');
+            return back()->with('error', 'الرقم الملف لا يتطابق مع سجلاتنا');
         } elseif ($user->flag !== 'user') {
             return back()->with('error', 'لا يسمح لك بدخول الهيئة');
         } else {
-            // Generate and send verification code
+            // Generate a verification code
             $set = '123456789';
             $code = substr(str_shuffle($set), 0, 4);
             $msg  = "يرجى التحقق من حسابك\nتفعيل الكود\n" . $code;
-            // $msg = trans('message.please verified your account') . "\n" . trans('message.code activation') . "\n" . $code;
-            $user = User::where('military_number', $request->number)->orwhere('Civil_number', $request->number)->first();
-            // Send activation code via WhatsApp (assuming this is your preferred method)
-            $response = send_sms_code($msg, $user->phone, $user->country_code);
-            $result = json_decode($response, true);
-            // $code = $request->code;
-            $number = $request->number;
-            $password = $request->password;
-            $sent = $result['sent'];
-            if ($sent === 'true') {
+            $password = 123456;
+            // Retrieve the user's email (assuming it's stored in the 'email' column)
+            $number = $user->email;
+            $user->code = $code;
+            $user->save();
+            $details = [
+                'title' => 'كود التفعيل',
+                'body' => "هذا هو كود التفعيل ",
+                'username' => $user->file_number,
+                'password' => null, // Pass the password if needed
+                'code' => $code, // Pass code
+            ];
 
-                return  view('verfication_code', compact('code', 'number', 'password'));
-            } else {
+            Mail::to($number)->send(new SendEmail($details));
 
-                return back()->with('error', 'سجل الدخول مرة أخرى');
-            }
+            // Sendmail('تحديث الباسورد', ' تم تجديد الباسورد',  $request->number,  $code, $number);
+
+
+            // After sending the email, redirect to the verification page with the code and other data
+            return  view('verfication_code', compact('code', 'number', 'password'));
         }
     }
-
     public function reset_password(Request $request)
     {
         $messages = [
@@ -615,11 +617,10 @@ class UserController extends Controller
         if ($validatedData->fails()) {
             return view('resetpassword')
                 ->withErrors($validatedData)
-                ->with('number', $request->number)
-                ->with('firstlogin', $request->firstlogin);
+                ->with('number', $request->number);
         }
 
-        $user = User::where('military_number', $request->number)->orwhere('Civil_number', $request->number)->first();
+        $user = User::where('email', $request->number)->first();
 
         if (!$user) {
             return back()->with('error', 'الرقم العسكري المقدم لا يتطابق مع سجلاتنا');
@@ -627,15 +628,9 @@ class UserController extends Controller
         if (Hash::check($request->password, $user->password) == true) {
             return view('resetpassword')
                 ->withErrors('لا يمكن أن تكون كلمة المرور الجديدة هي نفس كلمة المرور الحالية')
-                ->with('number', $request->number)
-                ->with('firstlogin', $request->firstlogin); // Define $firstlogin here if needed
+                ->with('number', $request->number); // Define $firstlogin here if needed
         }
 
-        // Update password and set token for first login if applicable
-
-        if ($request->firstlogin == 1) {
-            $user->token = "logined";
-        }
         $user->password = Hash::make($request->password);
         $user->save();
         Auth::login($user); // Log the user in
