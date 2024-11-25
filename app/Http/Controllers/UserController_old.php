@@ -62,6 +62,7 @@ class UserController extends Controller
     public function index(Request $request, $flag)
 
     {
+        //return $request;
         $department_id = $request->get('department_id'); // Fetch department_id from the request
 
         // Fetch all users in the specified department
@@ -95,13 +96,10 @@ class UserController extends Controller
 
     public function add_employees(Request $request)
     {
-        // $department_id = $request->department_id;
-        $uuid = $request->department_id;
+        $department_id = $request->department_id;
         $Civil_number = $request->Civil_number;
 
-        $department_details = departements::where('uuid', $uuid)->first();
-        $department_id = $department_details->id;
-        $sector_id = $department_details->sector_id;
+        $sector_id = departements::find($department_id)->sector_id;
         // Find the user by Civil_number
         $user = User::where('Civil_number', $Civil_number)->first();
 
@@ -197,6 +195,8 @@ class UserController extends Controller
             if (request()->has('amp;Civil_number') != 1)
                 $data = $data->where('Civil_number', request()->get('Civil_number'));
         }
+
+        // $users = User::where('department_id', $department_id)->get();
 
         // $gradeIds = $users->pluck('grade_id'); // Get all grade IDs from users in this department
         if ($filter == 'all') {
@@ -874,10 +874,10 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show($id)
     {
         //
-        //$user = User::find($id);
+        $user = User::find($id);
         $rule = Rule::where('hidden', '!=', "1")->get();
         $grade = grade::all();
         $joining_date = Carbon::parse($user->joining_date);
@@ -905,10 +905,10 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(User $user)
+    public function edit(string $id)
     {
         //
-        //$user = User::find($id);
+        $user = User::find($id);
         $rule = Rule::where('hidden', '!=', "1")->get();
         $grade = grade::all();
         $joining_date = Carbon::parse($user->joining_date);
@@ -952,9 +952,9 @@ class UserController extends Controller
      * Update the specified resource in storage.
      */
 
-    public function update(Request $request, User $user)
+    public function update(Request $request, $id)
     {
-        //$user = User::findOrFail($id);  // Ensure user is found or throw error
+        $user = User::findOrFail($id);  // Ensure user is found or throw error
         $military_number = $request->military_number;
 
         // Define validation messages
@@ -1074,12 +1074,12 @@ class UserController extends Controller
         // Save user data
         $user->save();
 
-        $department = departements::where('manger', $user->id)->where('id', '<>', $request->public_administration)->first();
+        $department = departements::where('manager', $id)->where('id', '<>', $request->public_administration)->first();
         if ($department) {
-            $department->manger = null;
+            $department->manager = null;
             $department->save();
         }
-        $sector = sector::where('manager', $user->id)->where('id', '<>', $request->sector)->first();
+        $sector = sector::where('manager', $id)->where('sector', '<>', $request->sector)->first();
         if ($sector) {
             $sector->manager = null;
             $sector->save();
