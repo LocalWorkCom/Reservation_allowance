@@ -7,7 +7,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item "><a href="{{ route('home') }}">الرئيسيه</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('departments.index', $department->uuid) }}">الادارات
+                    <li class="breadcrumb-item"><a href="{{ route('departments.index', $department->sectors->uuid) }}">الادارات
                         </a></li>
                     <li class="breadcrumb-item active" aria-current="page"> <a href="#">تفاصيل الادارة</a></li>
                 </ol>
