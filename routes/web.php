@@ -27,7 +27,6 @@ use App\Http\Controllers\ReserveFetchController;
 use App\Http\Controllers\ReserveSectorController;
 use App\Http\Controllers\SubDepartmentStatsController;
 use App\Http\Controllers\SubDepartmentReservationController;
-use App\Http\Controllers\PrisonersDetailsController;
 use App\Http\Controllers\SectorEmployeesDetailsController;
 use App\Http\Controllers\ReservationReportController;
 use App\Http\Controllers\DepartmentEmployeesDetailsController;
