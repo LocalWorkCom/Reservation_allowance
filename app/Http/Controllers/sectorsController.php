@@ -71,12 +71,11 @@ class sectorsController extends Controller
             ->whereBetween('date', [$startDate, $endDate])
             ->get();
 
-            if($employees){
-                $totalAmount = $employees->sum('amount');
-
-            }else{
-                $totalAmount = 0;
-            }
+        if ($employees) {
+            $totalAmount = $employees->sum('amount');
+        } else {
+            $totalAmount = 0;
+        }
         // Calculate total amount for the specified sector and date range
         $is_allow = $totalAmount < $amount;
 
@@ -161,12 +160,12 @@ class sectorsController extends Controller
             })
             ->addColumn('employees', function ($row) {
                 $emp_num = User::where('sector', $row->id)->where('flag', 'employee')->where('department_id', null)->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('user.employees', ['sector_id' => $row->uuid, 'type' => 0, 'flag' => 'employee']) . '> ' . $emp_num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('user.employees', ['id' => $row->uuid, 'type' => 'sector', 'flag' => 'employee']) . '> ' . $emp_num . '</a>';
                 return $btn;
             })
             ->addColumn('employeesdep', function ($row) {
                 $emp_num = User::where('sector', $row->id)->where('flag', 'employee')->whereNotNull('department_id')->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15p" href=' . route('user.employees', ['sector_id' => $row->uuid, 'type' => 1, 'flag' => 'employee']) . '> ' . $emp_num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15p" href=' . route('user.employees', ['id' => $row->uuid, 'type' => 'sector', 'flag' => 'employee']) . '> ' . $emp_num . '</a>';
 
                 return $btn;
             })
@@ -366,7 +365,7 @@ class sectorsController extends Controller
 
     public function update(Request $request, Sector $sector)
     {
-       // dd($request->all());
+        // dd($request->all());
         $sector = Sector::find($request->id);
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',

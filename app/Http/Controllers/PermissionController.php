@@ -32,7 +32,7 @@ class PermissionController extends Controller
         $models = [];
 
         // List of models to exclude (you can define the names of models to remove here)
-        $excludeModels = ['Iotelegram', 'paperTransaction', 'Io_file', 'outgoing_files', 'outgoings', 'history_allawonce'];
+        $excludeModels = ['Iotelegram', 'paperTransaction', 'Io_file', 'outgoing_files', 'outgoings', 'history_allawonce', 'UserDepartment'];
 
         // Iterate through each file to get model class names
         foreach ($modelFiles as $file) {

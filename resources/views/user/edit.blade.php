@@ -14,11 +14,14 @@
 
 
                         @if (Auth::user()->rule_id == 2)
-                            <li class="breadcrumb-item"><a href="{{ route('user.employees', 'employee') }}">موظفين الوزارة</a>
+                            <li class="breadcrumb-item"><a
+                                    href="{{ route('user.employees',  $user->flag) }}">{{ $user->flag == 'employee' ? 'موظفين الوزارة' : 'المستخدمين والصلاحيات' }}</a>
                             </li>
                         @endif
                         @if (Auth::user()->rule_id != 2)
-                            <li class="breadcrumb-item"><a href="{{ route('user.employees', 'employee') }}">موظفين القوة</a></li>
+                            <li class="breadcrumb-item"><a
+                                    href="{{ route('user.employees',  $user->flag) }}">{{ $user->flag == 'employee' ? 'موظفين القوة' : 'المستخدمين والصلاحيات' }}</a>
+                            </li>
                         @endif
                         <li class="breadcrumb-item active" aria-current="page"> <a href=""> تعديل </a></li>
                     </ol>
@@ -30,10 +33,10 @@
             <div class="container welcome col-11">
 
                 @if (Auth::user()->rule_id == 2)
-                    <p>موظفين الوزارة</p>
+                <p>{{ $user->flag == 'employee' ? 'موظفين الوزارة' : 'المستخدمين والصلاحيات' }} </p>
                 @endif
                 @if (Auth::user()->rule_id != 2)
-                    <p>موظفين القوة</p>
+                <p>{{ $user->flag == 'employee' ? 'موظفين القوة' : 'المستخدمين والصلاحيات' }}</p>
                 @endif
             </div>
         </div>
@@ -280,7 +283,7 @@
 
                             <div class="form-group col-md-5 mx-2">
                                 <label for="department_id">
-                                   
+
                                     الادارة
                                 </label>
                                 <select id="department_id" name="public_administration" class="form-control select2"

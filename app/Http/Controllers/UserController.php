@@ -197,7 +197,7 @@ class UserController extends Controller
         UpdateUserHistory($user->id);
         addUserHistory($user->id, $department_id, $sector_id);
 
-        return redirect()->route('user.employees', ['department_id' => $department_id, 'flag' => 'employee']);
+        return redirect()->route('user.employees', ['id' => $uuid, 'flag' => 'employee', 'type' => 'department']);
     }
 
 
@@ -692,7 +692,7 @@ class UserController extends Controller
 
         // Fetch grades based on the selected violation type
         $grades = Grade::where('type', $selectedViolationType)->get();
-        
+
         if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
             $alluser = User::where('flag', 'employee')->get();
         } else {
@@ -740,9 +740,9 @@ class UserController extends Controller
     public function unsigned(Request $request)
     {
         //
-        $user = User::where('uuid',$request->id_employee)->first();
+        $user = User::where('uuid', $request->id_employee)->first();
         UpdateUserHistory($user->id);
-        $user = User::where('uuid',$request->id_employee)->first();
+        $user = User::where('uuid', $request->id_employee)->first();
         $user->department_id  = Null;
         $user->sector  = Null;
         $user->flag  = 'employee';

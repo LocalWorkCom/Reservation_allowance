@@ -59,7 +59,7 @@
             <div class="d-flex ">
                 @php
                     // Get the department based on department_id from the request
-                    $department = \App\Models\departements::where('uuid',request()->get('department_id'))->first();
+                    $department = \App\Models\departements::where('uuid', request()->get('department_id'))->first();
                 @endphp
 
                 @if (request()->fullUrlIs('*employees/employee?department_id=*'))
@@ -96,10 +96,10 @@
                         @endif
 
                 </div>
-                @if (request()->fullUrlIs('*employees/employee?department_id=*'))
+                @if (request()->fullUrlIs('*employees/employee/department/*'))
                     <form class="" action="{{ route('user.employees.add') }}" method="post">
-                        <input type="hidden" id="department_id" name="department_id"
-                            value="{{ request()->get('department_id') }}" class="form-control">
+                        <input type="hidden" id="department_id" name="department_id" value="{{ $id }}"
+                            class="form-control">
                         @csrf
                         <div class="row d-flex flex-wrap ">
                             <!-- 1 for sector , 2 for department -->
@@ -266,11 +266,12 @@
                                   '<input type="text" placeholder="' + title + '" data-index="' + i + '" />'
                               );
                           }); */
-                          var url = '{{ route($Dataurl) }}';
-var query = '{{ isset($q) ? '/' . $q : '' }}';
+                        var url = '{{ route($Dataurl) }}';
+                        var query = '{{ isset($q) ? '/' . $q : '' }}';
 
-// Manually append the parameters
-var fullUrl = url + query + '?flag={{ urlencode($parms['flag']) }}&id={{ urlencode($parms['id']) }}&type={{ urlencode($parms['type']) }}';
+                        // Manually append the parameters
+                        var fullUrl = url + query +
+                            '?flag={{ urlencode($parms['flag']) }}&id={{ urlencode($parms['id']) }}&type={{ urlencode($parms['type']) }}';
 
                         var table = $('#users-table').DataTable({
                             processing: true,

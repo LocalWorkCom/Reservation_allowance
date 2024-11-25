@@ -11,13 +11,18 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item "><a href="/">الرئيسيه</a></li>
 
-                        @if (Auth::user()->rule_id == 2)
-                            <li class="breadcrumb-item"><a href="{{ route('user.employees', 'employee') }}">موظفين الوزارة</a>
-                            </li>
-                        @endif
-                        @if (Auth::user()->rule_id != 2)
-                            <li class="breadcrumb-item"><a href="{{ route('user.employees', 'employee') }}">موظفين القوة</a></li>
-                        @endif
+                    @if (Auth::user()->rule_id == 2)
+                        <li class="breadcrumb-item"><a
+                                href="{{ route('user.employees', $user->flag) }}">{{ $user->flag == 'employee' ? 'موظفين الوزارة' : 'المستخدمين والصلاحيات' }}
+                            </a>
+                        </li>
+                    @endif
+                    @if (Auth::user()->rule_id != 2)
+                        <li class="breadcrumb-item"><a
+                                href="{{ route('user.employees', $user->flag) }}">{{ $user->flag == 'employee' ? 'موظفين القوة' : 'المستخدمين والصلاحيات' }}
+                            </a>
+                        </li>
+                    @endif
                     <li class="breadcrumb-item active" aria-current="page"> <a href=""> عرض </a></li>
                 </ol>
 
@@ -26,13 +31,13 @@
     </div>
     <div class="row ">
         <div class="container welcome col-11">
-           
-                @if (Auth::user()->rule_id == 2)
-                    <p>موظفين الوزارة</p>
-                @endif
-                @if (Auth::user()->rule_id != 2)
-                    <p>موظفين القوة</p>
-                @endif
+
+            @if (Auth::user()->rule_id == 2)
+                <p>{{ $user->flag == 'employee' ? 'موظفين الوزارة' : 'المستخدمين والصلاحيات' }} </p>
+            @endif
+            @if (Auth::user()->rule_id != 2)
+                <p>{{ $user->flag == 'employee' ? 'موظفين القوة' : 'المستخدمين والصلاحيات' }}</p>
+            @endif
         </div>
     </div>
 
@@ -67,9 +72,8 @@
                 <table class="table table-bordered" dir="rtl">
                     <tbody>
                         <tr>
-                            <th scope="row" style="    background-color: #f5f6fa;"> الاسم</th>
-
-                            <td style="    background-color: #f5f6fa;">{{ $user->name }} </td>
+                            <th scope="row" style="background-color: #f5f6fa;"> الاسم</th>
+                            <td style="background-color: #f5f6fa;">{{ $user->name }} </td>
                         </tr>
 
                         <tr>
