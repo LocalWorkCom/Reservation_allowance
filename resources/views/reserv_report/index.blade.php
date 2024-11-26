@@ -27,7 +27,7 @@
 
     <div class="container col-11 mt-3 py-5  " >
        <!-- Info Boxes for Summary -->
-       <div class="d-flex justify-content-between">
+       <div class="d-flex flex-wrap justify-content-between">
           
         
          
@@ -35,20 +35,20 @@
       
 
        
-             <div class="d-flex"dir="rtl">
+             <div class="d-flex flex-wrap "dir="rtl">
         
-        <form id="filter-form" class="d-flex align-items-center mb-4" >
+        <form id="filter-form" class="d-flex align-items-center flex-wrap mb-md-4" >
 
 <label for="start-date" class="text-dark ">من </label>
-<input type="date" id="start-date" name="start_date" class="btn-all  mx-2" required>
+<input type="date" id="start-date" name="start_date" class="btn-all  mx-md-2" required>
 
 <label for="end-date" class="text-dark ">إلى </label>
 <input type="date" id="end-date" name="end_date" class="btn-all  mx-1" required>
-<button type="submit" class=" btn-all mx-2">عرض التقرير</button>
+<button type="submit" class=" btn-all mx-md-2">عرض التقرير</button>
 </form>
-<button id="print-report" class="btn btn-blue mx-1 ">طباعة</button>
+<button id="print-report" class="btn btn-blue mx-md-1 ">طباعة</button>
 </div>
-<div class="d-flex  ">
+<div class="d-flex  flex-wrap">
                 <div class="btn-all mx-1">
                     <p class="p-1">عدد القطاعات المحجوزة : <span class="text-info" id="total-sectors">0</span> </p>
                   
@@ -119,28 +119,33 @@
     data: 'sector_name',
     name: 'sector_name',
     render: function(data, type, row) {
-        return `<a href="/reservation_report/sector/${row.sector_id}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#17a2b8 !important;">${data}</a>`;
+        return `<a href="/reservation_report/sector/${row.sector_id}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#2f6289 !important;
+    ">${data}</a>`;
     }
 },
 
        { data: 'main_departments_count',
         name: 'main_departments_count',
         render: function(data, type, row) {
-            return `<a href="/reservation_report/sector/${row.sector_id}/departments?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#17a2b8 !important;">${data}</a>`;
+            return `<a href="/reservation_report/sector/${row.sector_id}/departments?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#2f6289 !important;
+    ">${data}</a>`;
         }},
             { data: 'sub_departments_count', name: 'sub_departments_count', searchable: true ,render: function(data, type, row) {
-            return `<a href="/reservation_report/sector/${row.sector_id}/departments?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#17a2b8 !important;">${data}</a>`;
+            return `<a href="/reservation_report/sector/${row.sector_id}/departments?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#2f6289 !important;
+    ">${data}</a>`;
         }},
             { 
     data: 'employee_count', 
     name: 'employee_count',
     render: function(data, type, row) {
-        return `<a href="/reservation_report/sector/${row.sector_id}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#17a2b8 !important;">${data}</a>`;
+        return `<a href="/reservation_report/sector/${row.sector_id}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#2f6289 !important;
+    ">${data}</a>`;
     }
 },
             { data: 'total_amount', name: 'total_amount', searchable: true,
                 render: function(data, type, row) {
-        return `<a href="/reservation_report/sector/${row.sector_id}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#17a2b8 !important;">${data}</a>`;
+        return `<a href="/reservation_report/sector/${row.sector_id}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#2f6289 !important;
+    ">${data}</a>`;
     }
             }
         ],  order: [
