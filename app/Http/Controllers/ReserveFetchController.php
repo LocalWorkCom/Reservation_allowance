@@ -85,14 +85,16 @@ class ReserveFetchController extends Controller
         ->addColumn('day', fn($row) => Carbon::parse($row->date)->translatedFormat('l'))
         ->addColumn('date', fn($row) => Carbon::parse($row->date)->format('Y-m-d'))
         ->addColumn('name', fn($row) => optional($row->user)->name ?? 'N/A')
-        ->addColumn('department', fn($row) => optional($row->departements)->name ?? 'N/A') 
-        ->addColumn('grade', fn($row) => optional($row->grade)->name ?? 'N/A') 
-        ->addColumn('sector', fn($row) => optional($row->sector)->name ?? 'N/A') 
+        ->addColumn('department', fn($row) => optional($row->departements)->name ?? 'N/A')
+        ->addColumn('sector', fn($row) => optional($row->sector)->name ?? 'N/A')
+        ->addColumn('grade', function ($row) {
+            return grade::find($row->grade_id)?->name ?? 'N/A';
+        })
         ->addColumn('type', fn($row) => $row->type == 1 ? 'حجز كلي' : 'حجز جزئي')
         ->addColumn('amount', fn($row) => number_format($row->amount, 2) . ' د ك')
         ->addIndexColumn();
-        
 }
+
 
     private function fetchReservations($userId, $startDate, $endDate)
     {
@@ -120,7 +122,7 @@ class ReserveFetchController extends Controller
     
         if ($employee && $this->canAccessEmployeeData(Auth::user(), $employee)) {
             $reservations = ReservationAllowance::where('user_id', $employee->id)
-                ->with(['user', 'departements', 'sector', 'grade']) 
+                ->with(['user', 'departements', 'sector']) 
                 ->get();
     
             return $this->handleReservationData($employee, $reservations);
@@ -183,7 +185,7 @@ class ReserveFetchController extends Controller
     
         if ($employee && $this->canAccessEmployeeData(Auth::user(), $employee)) {
             $reservations = ReservationAllowance::where('user_id', $employee->id)
-                ->with(['user', 'departements', 'sector', 'grade']) 
+                ->with(['user', 'departements', 'sector']) 
                 ->get();
     
             return $this->handleReservationData($employee, $reservations);
