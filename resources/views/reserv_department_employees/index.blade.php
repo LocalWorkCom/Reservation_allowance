@@ -79,14 +79,14 @@
                 render: function (data, type, row) {
                         const month = '{{ $month }}';
                         const year = '{{ $year }}';
-                        return `<a href="/employee-allowance-details/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                        return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
                     }
              },
             { data: 'file_number', name: 'file_number',
                 render: function (data, type, row) {
                         const month = '{{ $month }}';
                         const year = '{{ $year }}';
-                        return `<a href="/employee-allowance-details/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                        return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
                     }
              },
             { 
@@ -95,16 +95,17 @@
                     render: function (data, type, row) {
                         const month = '{{ $month }}';
                         const year = '{{ $year }}';
-                        return `<a href="/employee-allowance-details/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                        return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
                     }
                 },
+                
             { 
                     data: 'allowance', 
                     name: 'allowance',
                     render: function (data, type, row) {
                         const month = '{{ $month }}';
                         const year = '{{ $year }}';
-                        return `<a href="/employee-allowance-details/${row.id}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                        return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
                     }
                 },
             ],
