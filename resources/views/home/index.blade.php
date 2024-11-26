@@ -12,42 +12,17 @@
 </div>
 <br>
 <div class="row">
-    <div class="container container-not-responsive col-11 mt-3 p-0 col-md-11 col-lg-3 col-s-11">
-        <div class="header-side d-flex">
-            <p>المهام</p>
-            <img src="{{ asset('frontend/images/tasks.svg')}}" alt="">
-        </div> <br>
-        <div class="progress blue mt-3">
-            <span class="progress-left">
-                <span class="progress-bar"></span>
-            </span>
-            <span class="progress-right">
-                <span class="progress-bar"></span>
-            </span>
-            <div class="progress-value">28/30</div>
-        </div>
-        <div class="footer-side">
-        <div class="name">
-            <p>تجديد هوية</p>
-            <h3>بشير سالم</h3>
-            <button class="order">ordered</button>
-            <img class="ordered-img" src="{{ asset('frontend/images/ordered.svg') }}" alt="img">
-
-
-          </div>
-     </div>
-
-    </div>
-    <div class=" container  col-11 mt-3 col-lg-7 col-md-11 col-s-11 ">
+    
+    <div class=" container  col-11 ">
         <div class=" col-12  col-md-11 col-sm-12 d-md-flex   my-4">
             <div class=" card2 col-md-6 col-12 d-flex col-sm-10 mx-lg-4 mx-md-2 sm-mb-2"
                 style="background-color:#DCFCE7;">
                 <div class="details">
-                    <p>الادارات</p>
+                    <p>القطاعات</p>
                     <p>{{$depCount}}</p>
                 </div>
-                <div class="icon m-5" style="background-color: #0D992C;">
-                    <img src="{{ asset('frontend/images/management-card.svg')}}" alt="">
+                <div class="card-img m-5" >
+                    <img src="{{ asset('frontend/images/managements.svg')}}" alt="">
                 </div>
             </div>
             <div class=" card1 col-md-6 col-12 d-flex col-sm-10 d-flex mx-lg-3 mx-md-2 sm-mb-2"
@@ -67,7 +42,7 @@
             <div class="card3 col-md-6 col-12 d-flex col-sm-10 d-flex mx-lg-3 mx-md-2 sm-mb-2"
                 style="background-color:#F3E8FF;">
                 <div class="details">
-                    <p>الصادر</p>
+                    <p>عدد الادارات الفرعية</p>
                     <p>{{$outCount}}</p>
                 </div>
 
@@ -78,7 +53,7 @@
             <div class="card4 col-md-6 col-12 d-flex col-sm-10 d-flex mx-lg-4 mx-md-2 mb-5 sm-mb-2"
                 style="background-color:#E8F0FF;">
                 <div class="details ">
-                    <p>الوارد</p>
+                    <p>الادارات</p>
                     <p>{{$ioCount}}</p>
                 </div>
 

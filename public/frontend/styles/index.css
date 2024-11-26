@@ -82,14 +82,8 @@ li img{
      height: 30px; */
      margin-left: 15px;
 }
-.collapse .navbar-nav{
-    padding-left: 90px;
-    padding-right: 90px;
-}
-li {
-    /* width: 200px;
-    margin-inline: 10px; */
-}
+
+
 .nav-item {
     display: inline-block;
     /* padding: 1px 2px; */
@@ -120,7 +114,6 @@ ul {
 }
 .first-section img{
     height:70px;
-    width:70px;
 }
 .first-section h2 {
     font-family: Almarai;
@@ -134,14 +127,9 @@ ul {
 .second-section .btn-2 {
     font-family: Almarai;
     font-size: 20px;
-    font-weight: 700;
-    line-height: 22.32px;
     text-align: right;
-    width: 200px;
-    height: 44px;
     gap: 10px;
     background-color: transparent;
-    border: none;
     color: #FFFFFF;
 }
 #dropdownMenu a {
@@ -149,20 +137,21 @@ ul {
     background-color: #ffffff;
     font-size: 20px;
 }
-  .dropdown-menu {
+
+.dropdown-menu {
     display: none;
     position: absolute;
     background-color: #fff;
     border: 1px solid #ccc;
     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
     z-index: 1;
-    top: 60px;
+    top: 77px;
     left: 0px;
-    height: 55px;
-    width: 215px !important;
-    /* text-align: center; */
-    padding-inline: 45px;
-    font-size: 23px;
+    /* height: 55px; */
+    width: 249px !important;
+    text-align: center;
+    /* padding-inline: 45px; */
+    /* font-size: 27px; */
 }
 #dropdownMenu3 a , #dropdownMenu4 a , #dropdownMenu5 a, #dropdownMenu6 a, #dropdownMenu9 a{
     color: #1C1B1B;
@@ -201,7 +190,7 @@ ul {
     display: none;
     position: absolute;
     top: 100%;
-    left: -53px;
+    left: -41px;
     background-color: white;
     border: 1px solid #ccc;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
@@ -209,8 +198,8 @@ ul {
     overflow-y: auto;
     padding-inline: 1px;
     font-size: 23px;
-    height: 175px;
-    width: 200px !important;
+    height: 185px;
+    width: 210px !important;
 }
 .dropdown-menu5 {
     display: none;
@@ -747,7 +736,7 @@ color: #999595;
     border: 0.5px solid #D7D8D9;
     color: #ffffff;
 }
-.btn-all:hover , .wide-btn:hover{
+ .wide-btn:hover{
 background-color: #f1f1f1;
 }
 .btn-all a{
@@ -990,16 +979,10 @@ table.dataTable.no-footer {
     direction: rtl;
 }
 #users-table td a {
-    color: #ffffff !important;
-    border: none !important;
-    border-radius: 10px !important;
-    width: 135px !important;
-    height: 30px !important;
-    font-size: 16px !important;
+    font-weight: 500;
+    font-size: 20px !important;
     justify-content: center !important;
-    padding-block: 3px;
-    margin-inline: 2px;
-    margin-block: 4px;
+  
 }
 #users-table td a i {
     padding-left: 5px;
@@ -1676,4 +1659,7 @@ color: #2A2726;
     /* box-shadow: rgb(149 157 165 / 13%) 0px 8px 24px; */
     border-radius: 10px;
     padding: 5px;
+}
+.card-img img{
+    height: 90px;
 }

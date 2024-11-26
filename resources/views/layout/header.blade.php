@@ -1,6 +1,6 @@
 <div class="all-nav">
-    <div class="upper-navbar d-flex">
-        <div class="second-section d-flex col-md-9 col-sm-6">
+    <div class="upper-navbar d-flex justify-content-between px-md-5">
+        <div class="second-section d-flex ">
             <div class="dropdown">
                 @php
                     $user = auth()->user();
@@ -71,13 +71,13 @@
                 </select> --}}
             </div>
         </div>
-        <div class="first-section d-flex justify-content-between mt-1 ">
+        <div class="first-section d-flex justify-content-between ">
             <h2 style="color: #FFFFFF">{{ showUserDepartment() }} -</h2>
             <h2> شئون القوة</h2>
             <img class="mt-2" src="{{ asset('frontend/images/logo.svg') }}" alt="">
         </div>
     </div>
-    <div class="navbar navbar-expand-md mb-4" role="navigation" dir="rtl">
+    <div class="navbar navbar-expand-md px-md-5 mb-4" role="navigation" dir="rtl">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
             aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
             <i class="fa-solid fa-bars side-nav"></i>
