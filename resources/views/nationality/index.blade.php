@@ -64,7 +64,7 @@
                     <div class="title d-flex flex-row align-items-center">
                         <h5 class="modal-title" id="lable"> أضافه دولة جديدة</h5>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="closeModalBtn" aria-label="Close">&times;</button>
                 </div>
                 <div class="modal-body mt-3 mb-5">
                     <div class="container pt-5 pb-4" style="border: 0.2px solid rgb(166, 165, 165);">
@@ -107,32 +107,35 @@
             <div class="modal-content">
                 <div class="modal-header d-flex justify-content-center">
                     <div class="title d-flex flex-row align-items-center">
-                        <h5 class="modal-title" id="lable"> تعديل على مسمى
-                            الدولة ؟</h5>
-
+                        <h5 class="modal-title" id="lable"> تعديل على مسمى الدولة ؟</h5>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> &times;
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="closeModalBtn1" aria-label="Close"> &times; </button>
                 </div>
                 <div class="modal-body mt-3 mb-5">
                     <div class="container pt-5 pb-4" style="border: 0.2px solid rgb(166, 165, 165);">
-                        <form class="edit-grade-form" id="edit-form" action=" {{ route('nationality.update') }}"
-                            method="POST">
+                        <form class="edit-grade-form" id="edit-form" action="{{ route('nationality.update') }}" method="POST">
                             @csrf
+
                             <div class="form-group">
                                 <label for="name">الاسم</label>
-                                <input type="text" id="nameedit" value="" name="name" class="form-control"
-                                    required>
-                                <input type="text" id="idedit" value="" name="id" hidden
-                                    class="form-control">
-
+                                <input type="text" id="nameedit" name="name" class="form-control"
+                                    value="{{ old('name') ?? session('old_name') }}" required>
+                                @error('name')
+                                    <span class="text-danger" dir="rtl">{{ $message }}</span>
+                                @enderror
                             </div>
+
                             <div class="form-group">
-                                <label for="name">الكود</label>
-                                <input type="text" id="codeedit" value="" name="codeedit"
-                                    class="form-control">
-
+                                <label for="codeedit">الكود</label>
+                                <input type="text" id="codeedit" name="codeedit" class="form-control"
+                                    value="{{ old('codeedit') ?? session('old_codeedit') }}">
+                                @error('codeedit')
+                                    <span class="text-danger" dir="rtl">{{ $message }}</span>
+                                @enderror
                             </div>
+
+                            <input type="hidden" name="id" id="idedit" value="{{ session('edit_id') }}">
+
                             <!-- Save button -->
                             <div class="text-end">
                                 <button type="submit" class="btn-blue" onclick="confirmEdit()">تعديل</button>
@@ -143,6 +146,7 @@
             </div>
         </div>
     </div>
+
     {{-- model for delete form --}}
     <div class="modal fade" id="delete" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -202,7 +206,26 @@
                 $('#add').modal('show');
             });
         @endif
-
+        $('#closeModalBtn').on('click', function() {
+            $.ajax({
+                url: "{{ route('modal.clearSession') }}", // The route to clear session
+                type: 'GET', // Use GET for session clear (safe action)
+                success: function(response) {
+                    // You can check for success message if needed
+                },
+                error: function(xhr, status, error) {}
+            });
+        });
+        $('#closeModalBtn1').on('click', function() {
+            $.ajax({
+                url: "{{ route('modal.clearSession') }}", // The route to clear session
+                type: 'GET', // Use GET for session clear (safe action)
+                success: function(response) {
+                    // You can check for success message if needed
+                },
+                error: function(xhr, status, error) {}
+            });
+        });
         @if (session('modal_type') === 'edit')
             $(document).ready(function() {
                 $('#edit').modal('show');
