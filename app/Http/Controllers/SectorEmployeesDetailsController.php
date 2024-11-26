@@ -104,29 +104,38 @@ class SectorEmployeesDetailsController extends Controller
         if (!$sector) {
             return abort(404, 'Sector not found');
         }
-
+    
         $month = $request->input('month');
         $year = $request->input('year');
-
+    
         return view('sector_employees.not_reserved', [
-            'sectorId' => $sectorUuid,
+            'sectorId' => $sectorUuid, // Pass UUID
             'sectorName' => $sector->name,
             'month' => $month,
             'year' => $year,
         ]);
     }
-
+    
     public function getNotReservedData(Request $request, $sectorUuid)
     {
         $sector = Sector::where('uuid', $sectorUuid)->first();
         if (!$sector) {
             return response()->json(['error' => 'Sector not found'], 404);
         }
-
+    
         $month = $request->input('month');
         $year = $request->input('year');
-
-        $users = User::where('sector_uuid', $sectorUuid)
+    
+        // Get user IDs that were in the sector during the specified time
+        $userIdsInSector = DB::table('user_departments')
+            ->where('sector_id', $sector->id)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->distinct('user_id')
+            ->pluck('user_id');
+    
+        // Fetch users who were in the sector but did not receive allowance
+        $users = User::whereIn('id', $userIdsInSector)
             ->whereNotIn('id', function ($query) use ($sector, $month, $year) {
                 $query->select('user_id')
                     ->from('reservation_allowances')
@@ -136,7 +145,7 @@ class SectorEmployeesDetailsController extends Controller
             })
             ->with(['grade', 'department'])
             ->get();
-
+    
         return DataTables::of($users)
             ->addColumn('file_number', fn($user) => $user->file_number)
             ->addColumn('name', fn($user) => $user->name)
@@ -145,6 +154,7 @@ class SectorEmployeesDetailsController extends Controller
             ->addIndexColumn()
             ->make(true);
     }
+    
     public function sectorUsersPage(Request $request, $sectorUuid)
     {
         $sector = Sector::where('uuid', $sectorUuid)->first();
@@ -156,12 +166,13 @@ class SectorEmployeesDetailsController extends Controller
         $year = $request->input('year');
     
         return view('sector_employees.sector_users', [
-            'sectorId' => $sectorUuid, 
+            'sectorId' => $sectorUuid, // Pass UUID to the view
             'sectorName' => $sector->name,
             'month' => $month,
             'year' => $year,
         ]);
     }
+    
     
     public function getSectorUsers(Request $request, $sectorUuid)
     {
@@ -180,9 +191,16 @@ class SectorEmployeesDetailsController extends Controller
             return response()->json(['error' => 'Sector not found'], 404);
         }
     
-        // Fetch users belonging to the sector
-        $users = User::where('sector_uuid', $sectorUuid) 
-            ->with(['grade', 'department']) 
+        // Fetch users who were in the sector during the selected month and year
+        $userIdsInSector = DB::table('user_departments')
+            ->where('sector_id', $sector->id)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->distinct('user_id')
+            ->pluck('user_id');
+    
+        $users = User::whereIn('id', $userIdsInSector)
+            ->with(['grade', 'department'])
             ->get();
     
         // Return data to DataTables
@@ -194,6 +212,8 @@ class SectorEmployeesDetailsController extends Controller
             ->addIndexColumn()
             ->make(true);
     }
+    
+    
 
 
 public function printReport($sectorUuid, Request $request)

@@ -33,6 +33,26 @@
                             <td>{{ $department->manager ? $department->manager->name : 'N/A' }}</td>
                         </tr>
 
+                        <tr>
+                            <th scope="row">ميزانية البدل</th>
+                            <td>{{ $department->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' :  $department->reservation_allowance_amount }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">صلاحيه الحجز</th>
+                            @if ($department->reservation_allowance_type == 1)
+                            <td>بدل حجز كلى </td>
+
+                            @elseif($department->reservation_allowance_type == 2)
+                            <td>بدل حجز جزئى</td>
+
+                            @elseif($department->reservation_allowance_type == 3)
+                            <td>بدل حجز كلى و جزئى </td>
+
+                            @elseif($department->reservation_allowance_type == 4)
+                            <td>لا يوجد بدل حجز </td>
+
+                            @endif
+                        </tr>
                         @if ($department->children->count() > 0)
                             @foreach ($department->children as $child)
                                 <tr>

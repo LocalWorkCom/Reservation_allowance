@@ -66,56 +66,7 @@
                         {{ session('success') }}
                     </div>
                 @endif
-               {{-- {{ dd($errors->all())}} --}}
-                @if ($errors->any())
-                    <script>
-                        $(document).ready(function() {
-                            var selectedManagerId = $('#mangered').val();
-                            console.log("Selected Manager ID:", selectedManagerId);
 
-                            if (selectedManagerId) {
-                                $('#email_field').show();
-                                fetchManagerDetails(selectedManagerId, false);
-
-                                var existingEmail = @json(old('email'));
-                                var existingBudget = @json(old('budget'));
-
-
-                                if (existingEmail) {
-                                    // $('#email_field').css({
-                                    //     display: 'block',
-                                    //     visibility: 'visible',
-                                    //     opacity: 1
-                                    // });
-                                    $('#email_field').show();
-                                    $('#email').val(@json(old('email')));
-                                }
-
-                                if (existingBudget) {
-                                    $('#notFree').prop('checked', true);
-                                    $('#budgetField').css({
-                                        display: 'block',
-                                        visibility: 'visible',
-                                        opacity: 1
-                                    });
-                                    $('#budget').val(existingBudget);
-                                } else {
-                                    $('#Free').prop('checked', true);
-                                }
-                            } else {
-                                $('#manager_details').hide();
-                                $('#email_field').hide();
-                            }
-                        });
-                    </script>
-                    {{-- <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div> --}}
-                @endif
                 <div class="form-row mx-2 mb-2">
                     <h3 class=" px-md-5 px-3">اضف قطاع</h3>
                     <div class="input-group moftsh px-md-5 px-3 pt-3">
@@ -174,45 +125,46 @@
                     <label for="" class="col-12">ميزانيه الحجز</label>
                     <div class="d-flex mt-3" dir="rtl">
                         <input type="radio" class="toggle-radio-buttons mx-2" name="budget_type"
-                            {{ old('budget_type') == 1 ?? 'checked' }} value="1" id="notFree" style="height:30px;">
+                            {{ old('budget_type') == 1 ? 'checked' : '' }} value="1" id="notFree" style="height:30px;">
                         <label for="notFree" class="col-12">ميزانيه محدده</label>
 
                         <input type="radio" class="toggle-radio-buttons mx-2" name="budget_type"
-                            {{ old('budget_type') == 2 ?? 'checked' }} value="2" id="free" style="height:30px;">
+                            {{ old('budget_type') == 2 ? 'checked' : '' }} value="2" id="free" style="height:30px;">
                         <label for="free" class="col-12">ميزانيه غير محدده</label>
                     </div>
                 </div>
                 @error('budget_type')
                     <div class="alert alert-danger">{{ $message }}</div>
                 @enderror
+
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="budgetField" style="display: none;">
                     <label class="d-flex pb-3" for="budget">ميزانية بدل حجز</label>
-                    <input type="text" name="budget" class="form-control" value="{{ old('budget') }}"
-                        autocomplete="one-time-code">
+                    <input type="text" name="budget" class="form-control" value="{{ old('budget') }}" autocomplete="one-time-code">
                     @error('budget')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
+
                 <div class="input-group moftsh px-md-5 px-3 pt-3 ">
                     <label for="" class="col-12">صلاحيه الحجز</label>
                     <div class="d-flex mt-3" dir="rtl">
-                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="fullBooking"
-                            name="part[]" style="height:30px;">
+                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="fullBooking" name="part[]"
+                            style="height:30px;" {{ is_array(old('part')) && in_array(1, old('part')) ? 'checked' : '' }}>
                         <label for="fullBooking" class="col-12">حجز كلى</label>
 
-                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="2" id="partialBooking"
-                            name="part[]" style="height:30px;">
+                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="2" id="partialBooking" name="part[]"
+                            style="height:30px;" {{ is_array(old('part')) && in_array(2, old('part')) ? 'checked' : '' }}>
                         <label for="partialBooking" class="col-12">حجز جزئى</label>
 
-                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="3" id="noBooking"
-                            name="part[]" style="height:30px;">
+                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="3" id="noBooking" name="part[]"
+                            style="height:30px;" {{ is_array(old('part')) && in_array(3, old('part')) ? 'checked' : '' }}>
                         <label for="noBooking" class="col-12">لا يوجد بدل حجز</label>
                     </div>
-
                 </div>
                 @error('part')
                     <div class="alert alert-danger moftsh px-md-5 px-3 pt-3" style="direction:rtl">{{ $message }}</div>
                 @enderror
+
                 <div class="container col-11">
                     <div class="form-row d-flex justify-content-end mt-4 mb-3">
                         <button type="submit" class="btn-blue">
@@ -227,6 +179,48 @@
         </div>
     </form>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @if ($errors->any())
+        <script>
+            $(document).ready(function() {
+                var selectedManagerId = $('#mangered').val();
+                console.log("Selected Manager ID:", selectedManagerId);
+
+                if (selectedManagerId) {
+                    $('#email_field').show();
+                    fetchManagerDetails(selectedManagerId, false);
+
+                    var existingEmail = @json(old('email'));
+                    var existingBudget = @json(old('budget'));
+
+
+                    if (existingEmail) {
+                        // $('#email_field').css({
+                        //     display: 'block',
+                        //     visibility: 'visible',
+                        //     opacity: 1
+                        // });
+                        $('#email_field').show();
+                        $('#email').val(@json(old('email')));
+                    }
+
+                    if (existingBudget) {
+                        $('#notFree').prop('checked', true);
+                        $('#budgetField').css({
+                            display: 'block',
+                            visibility: 'visible',
+                            opacity: 1
+                        });
+                        $('#budget').val(existingBudget);
+                    } else {
+                        $('#Free').prop('checked', true);
+                    }
+                } else {
+                    $('#manager_details').hide();
+                    $('#email_field').hide();
+                }
+            });
+        </script>
+    @endif
     <script>
         // Function to toggle the 'required' attribute of the email field based on the 'mangered' field value
         document.getElementById('mangered').addEventListener('input', function() {

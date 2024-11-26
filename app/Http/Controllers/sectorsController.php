@@ -28,7 +28,7 @@ class sectorsController extends Controller
 
         // Handle if no manager is found
         if (!$manager) {
-            return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 405);
+            return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 404);
         }
 
         // Handle the case where $sector is 'null'
@@ -70,14 +70,19 @@ class sectorsController extends Controller
         $employees = ReservationAllowance::where('sector_id', $sectorId)
             ->whereBetween('date', [$startDate, $endDate])
             ->get();
-
         if ($employees) {
             $totalAmount = $employees->sum('amount');
+
+            if ($totalAmount == 0) {
+                $is_allow = true;
+            } else {
+                $is_allow = $totalAmount < $amount;
+            }
         } else {
             $totalAmount = 0;
+            $is_allow = true;
         }
-        // Calculate total amount for the specified sector and date range
-        $is_allow = $totalAmount < $amount;
+
 
         // Return total amount and is_allow status
         return response()->json([
@@ -160,12 +165,12 @@ class sectorsController extends Controller
             })
             ->addColumn('employees', function ($row) {
                 $emp_num = User::where('sector', $row->id)->where('flag', 'employee')->where('department_id', null)->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('user.employees', ['id' => $row->uuid, 'type' => 'sector','status'=>'null', 'flag' => 'employee']) . '> ' . $emp_num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('user.employees', ['id' => $row->uuid, 'type' => 'sector', 'status' => 'null', 'flag' => 'employee']) . '> ' . $emp_num . '</a>';
                 return $btn;
             })
             ->addColumn('employeesdep', function ($row) {
                 $emp_num = User::where('sector', $row->id)->where('flag', 'employee')->whereNotNull('department_id')->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15p" href=' . route('user.employees', ['id' => $row->uuid, 'type' => 'sector','status'=>'notnull', 'flag' => 'employee']) . '> ' . $emp_num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15p" href=' . route('user.employees', ['id' => $row->uuid, 'type' => 'sector', 'status' => 'notnull', 'flag' => 'employee']) . '> ' . $emp_num . '</a>';
 
                 return $btn;
             })
@@ -207,7 +212,6 @@ class sectorsController extends Controller
                     if ($value && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
                         $fail('البريد الإلكتروني للمدير غير صالح.'); // Custom failure message
                     }
-                    
                 },
             ],
         ], $messages);
@@ -402,15 +406,24 @@ class sectorsController extends Controller
         // Check allowance condition and add custom error if needed
         $allowance = $this->getAllowance($request->budget, $request->id);
         // If the budget condition doesn't pass
-        if ($allowance->original['is_allow']) {
+        // if ($allowance->original['is_allow']) {
+        //     $errorMessage = '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total'] . ' لوجود بدلات حجز اكبر من القيمه المدخله';
+
+        //     // Add the custom budget error to the validator's errors
+        //     $validator->errors()->add('budget', $errorMessage);
+
+        //     return redirect()->back()->withErrors($validator)->withInput();
+        // }
+        $allowanceData = json_decode($allowance->getContent(), true);  // Decode JSON response
+
+        // Now you can check the 'is_allow' value as expected
+        if ($allowanceData['is_allow'] === false) {
             $errorMessage = '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total'] . ' لوجود بدلات حجز اكبر من القيمه المدخله';
 
             // Add the custom budget error to the validator's errors
             $validator->errors()->add('budget', $errorMessage);
-
             return redirect()->back()->withErrors($validator)->withInput();
         }
-
         // Continue with further logic if validation passes
 
 
@@ -469,6 +482,12 @@ class sectorsController extends Controller
                     }
                 }
                 if ($newManager) {
+                    $department = departements::where('manger', $newManager->id)->first();
+                    if ($department) {
+                        $department->manger = null;
+                        $department->save();
+                    }
+
                     $newManager->sector = $sector->id;
                     $newManager->department_id = null;
                     $newManager->flag = 'user';

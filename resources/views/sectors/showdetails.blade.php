@@ -33,35 +33,44 @@
                             <th scope="row"> أسم القطاع </th>
                             <td>{{ $data->name }}</td>
                         </tr>
-                        <tr >
+                        <tr>
                             <th scope="row">مدير القطاع</th>
                             <td>{{ $data->manager ? $managerName : 'لا يوجد مدير' }}</td>
                         </tr>
-                        <tr >
+                        <tr>
                             <th scope="row">ميزانية البدل</th>
-                            <td>{{ $data->reservation_allowance_amount }}</td>
-                        </tr>
-                        <tr >
-                            <th scope="row">صلاحيه الحجز</th>
-                            <td>{{ $data->reservation_allowance_type }}</td>
+                            <td>{{ $data->reservation_allowance_amount == 0.0 ? 'ميزانيه مفتوحه' : $data->reservation_allowance_amount }}
+                            </td>
                         </tr>
                         <tr>
-                            <th scope="row">الأدارات الخاصه بهذا القطاع</th>
-                            <td>
-                                @if(!empty($departments))
-                                {{ implode(' - ', $departments->pluck('name')->toArray()) }}
-                            @else
-                                لا يوجد إدارات
+                            <th scope="row">صلاحيه الحجز</th>
+                            @if ($data->reservation_allowance_type == 1)
+                                <td>بدل حجز كلى </td>
+                            @elseif($data->reservation_allowance_type == 2)
+                                <td>بدل حجز جزئى</td>
+                            @elseif($data->reservation_allowance_type == 3)
+                                <td>بدل حجز كلى و جزئى </td>
+                            @elseif($data->reservation_allowance_type == 4)
+                                <td>لا يوجد بدل حجز </td>
                             @endif
+                        </tr>
+                        @if ($departments->isNotEmpty())
+                            <tr>
+                                <th scope="row">الأدارات الخاصه بهذا القطاع</th>
+                                <td>
+                                    {{ implode(' - ', $departments->pluck('name')->toArray()) }}
+                                </td>
+                            </tr>
+                        @endif
+                        @if ($users->isNotEmpty())
 
-                            </td>
                         <tr>
                             <th scope="row">الموظفين الخاصين بهذا القطاع</th>
                             <td>
                                 {{ implode(' - ', $users->pluck('name')->toArray()) }}
                             </td>
-
                         </tr>
+                        @endif
 
                     </tbody>
                     <tfoot>

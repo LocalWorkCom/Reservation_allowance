@@ -28,7 +28,7 @@ class SendEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'بيانات دخولك على نظام الثوة المطور',
+            subject: 'بيانات دخولك على نظام القوه المطور',
         );
     }
 

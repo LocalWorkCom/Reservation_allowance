@@ -92,9 +92,15 @@ class ReserveSectorController extends Controller
                     $remainingAmount = $historicalAmount - $registeredAmount;
                     return number_format($remainingAmount, 2) . " د.ك";
                 })
-                ->addColumn('employees_count', function ($row) {
-                    return User::where('sector', $row->id)->count();
+                ->addColumn('employees_count', function ($row) use ($month, $year) {
+                    return DB::table('user_departments')
+                        ->where('sector_id', $row->id)
+                        ->whereYear('created_at', $year)
+                        ->whereMonth('created_at', $month)
+                        ->distinct('user_id')
+                        ->count('user_id');
                 })
+                
                 ->addColumn('received_allowance_count', function ($row) use ($month, $year) {
                     return ReservationAllowance::where('sector_id', $row->id)
                         ->whereYear('date', $year)
@@ -103,14 +109,19 @@ class ReserveSectorController extends Controller
                         ->count('user_id');
                 })
                 ->addColumn('did_not_receive_allowance_count', function ($row) use ($month, $year) {
-                    $employeesCount = User::where('sector', $row->id)->count();
+                    $userIdsInSector = DB::table('user_departments')
+                    ->where('sector_id', $row->id)
+                    ->whereYear('created_at', $year)
+                    ->whereMonth('created_at', $month)
+                    ->distinct('user_id')
+                    ->pluck('user_id');
                     $receivedAllowanceCount = ReservationAllowance::where('sector_id', $row->id)
                         ->whereYear('date', $year)
                         ->whereMonth('date', $month)
                         ->distinct('user_id')
                         ->count('user_id');
     
-                    return $employeesCount - $receivedAllowanceCount;
+                        return $userIdsInSector->count() - $receivedAllowanceCount;
                 })
                 ->make(true);
         } catch (\Exception $e) {

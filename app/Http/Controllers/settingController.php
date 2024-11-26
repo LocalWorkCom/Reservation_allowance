@@ -180,13 +180,14 @@ class settingController extends Controller
         $messages = [
             'nameadd.required' => 'الاسم مطلوب.',
             'nameadd.string' => 'الاسم يجب أن يكون نصًا.',
-
+            'nameadd.unique' => 'الاسم موجود بالفعل.',
+            'codeAdd.unique' => 'كود الدولة موجود بالفعل.',
         ];
 
         // Create a validator instance
         $validator = Validator::make($request->all(), [
-            'nameadd' => 'required|string',
-
+            'nameadd' => 'required|string|unique:countries,country_name_ar',
+            'codeAdd' => 'nullable|string|unique:countries,code',
         ], $messages);
 
         // Check if validation fails
@@ -277,7 +278,7 @@ class settingController extends Controller
         } else {
             $type = Country::find($request->id);
             $type->delete();
-            return redirect()->route('grads.index')->with(['message' => 'تم حذف الجنسية']);
+            return redirect()->route('nationality.index')->with(['message' => 'تم حذف الجنسية']);
         }
     }
     //END Nationality
@@ -503,7 +504,7 @@ class settingController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-   
+
     public function allSettings()
     {
         return view('setting.index');

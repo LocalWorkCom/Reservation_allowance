@@ -12,15 +12,26 @@
     </script>
     @endpush
 @section('content')
-<div class="row" >
+
+
+        <div class="row" >
     <div class="container welcome col-11">
         <div class="d-flex justify-content-between">
-            <div class="mt-4 bg-white">
-                <p>تفاصيل بدل حجز لموظفي قطاع {{ $sector->name }} الفترة من: {{ $startDate->format('Y-m-d') }} إلى: {{ $endDate->format('Y-m-d') }}</p>
-            </div>
+        <p>   موظفي قطاع {{ $sector->name }} </p>
+          
         </div>
-        <br><br>
-        <button id="print-report" class="btn btn-secondary mx-2">طباعة</button>
+   
+    
+ </div>
+</div>
+
+
+    <div class="container col-11 mt-3 py-5  " >
+<div class="d-flex justify-content-between pb-3">
+<button id="print-report" class="btn-blue m">طباعة</button>
+<h4>الفترة من: <span class="text-info">{{ $startDate->format('Y-m-d') }}</span> إلى: <span class="text-info">{{ $endDate->format('Y-m-d') }}</span></h4>
+
+</div>
         <table id="users-table" class="display table table-bordered table-hover dataTable">
             <thead>
                 <tr>
@@ -36,6 +47,7 @@
             </thead>
         </table>
     </div>
+</div>   </div>
 </div>
 @endsection
 
@@ -65,22 +77,22 @@
                 },
                 { data: 'grade', name: 'grade' },
                 { data: 'name', name: 'name', render: function(data, type, row) {
-                        return `<a href="/reservation_report/user/${row.id}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:blue !important;">${data}</a>`;
+                        return `<a href="/reservation_report/user/${row.id}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8 !important;">${data}</a>`;
                     } },
                 { data: 'file_number', name: 'file_number', render: function(data, type, row) {
-                        return `<a href="/reservation_report/user/${row.id}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:blue !important;">${data}</a>`;
+                        return `<a href="/reservation_report/user/${row.id}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8 !important;">${data}</a>`;
                     } },
                 { data: 'department', name: 'department' },
                 { data: 'days', name: 'days',
                     render: function(data, type, row) {
-                        return `<a href="/reservation_report/user/${row.id}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:blue !important;">${data}</a>`;
+                        return `<a href="/reservation_report/user/${row.id}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8 !important;">${data}</a>`;
                     }
                  },
                 { 
                     data: 'allowance', 
                     name: 'allowance',
                     render: function(data, type, row) {
-                        return `<a href="/reservation_report/user/${row.id}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:blue !important;">${data}</a>`;
+                        return `<a href="/reservation_report/user/${row.id}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8 !important;">${data}</a>`;
                     }
                 }
             ],
