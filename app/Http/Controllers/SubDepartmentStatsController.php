@@ -75,24 +75,38 @@ class SubDepartmentStatsController extends Controller
                         ? number_format($historicalAmount - $registeredAmount, 2) . " د.ك"
                         : "-";
                 })
-                ->addColumn('employees_count', fn($row) => User::where('department_id', $row->id)->count())
+                ->addColumn('employees_count', function ($row) use ($month, $year) {
+                    return DB::table('user_departments')
+                        ->where('department_id', $row->id) 
+                        ->whereYear('created_at', $year) 
+                        ->whereMonth('created_at', $month) 
+                        ->distinct('user_id') 
+                        ->count('user_id');
+                })
                 ->addColumn('received_allowance_count', function ($row) use ($month, $year) {
                     return ReservationAllowance::where('departement_id', $row->id)
-                        ->whereYear('date', $year)
-                        ->whereMonth('date', $month)
-                        ->distinct('user_id')
+                        ->whereYear('date', $year) 
+                        ->whereMonth('date', $month) 
+                        ->distinct('user_id') 
                         ->count('user_id');
                 })
                 ->addColumn('did_not_receive_allowance_count', function ($row) use ($month, $year) {
-                    $employeesCount = User::where('department_id', $row->id)->count();
+                    $employees = DB::table('user_departments')
+                        ->where('department_id', $row->id)
+                        ->whereYear('created_at', $year)
+                        ->whereMonth('created_at', $month)
+                        ->distinct('user_id')
+                        ->pluck('user_id'); 
+                
                     $receivedAllowanceCount = ReservationAllowance::where('departement_id', $row->id)
                         ->whereYear('date', $year)
                         ->whereMonth('date', $month)
                         ->distinct('user_id')
                         ->count('user_id');
-
-                    return $employeesCount - $receivedAllowanceCount;
+                
+                    return $employees->count() - $receivedAllowanceCount;
                 })
+                
                 ->make(true);
         } catch (\Exception $e) {
             \Log::error("Error fetching sub-departments for department UUID $departmentUuid: " . $e->getMessage());
@@ -112,7 +126,7 @@ class SubDepartmentStatsController extends Controller
         $month = $request->input('month');
         $year = $request->input('year');
         $subDepartment = departements::where('uuid', $subDepartmentUuid)->first();
-
+    
         return view('reservation_subdeparts.subdeparts_employee', [
             'subDepartmentId' => $subDepartmentUuid,
             'subDepartmentName' => $subDepartment->name ?? 'Unknown Subdepartment',
@@ -120,35 +134,44 @@ class SubDepartmentStatsController extends Controller
             'year' => $year,
         ]);
     }
-
+    
     public function getSubDepartmentEmployees(Request $request, $subDepartmentUuid)
     {
         $month = $request->input('month');
         $year = $request->input('year');
-
+    
         $subDepartment = departements::where('uuid', $subDepartmentUuid)->first();
         if (!$subDepartment) {
             return response()->json(['error' => 'Sub-department not found'], 404);
         }
-
-        $users = User::where('department_id', $subDepartment->id)
-            ->with(['grade'])
+    
+        $users = DB::table('user_departments')
+            ->where('user_departments.department_id', $subDepartment->id) 
+            ->whereYear('user_departments.created_at', $year) 
+            ->whereMonth('user_departments.created_at', $month) 
+            ->join('users', 'user_departments.user_id', '=', 'users.id') 
+            ->distinct('users.id') 
+            ->select('users.*') 
             ->get();
-
+    
         return DataTables::of($users)
             ->addColumn('file_number', fn($user) => $user->file_number)
             ->addColumn('name', fn($user) => $user->name)
-            ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
+            ->addColumn('grade', function ($user) {
+                $grade = DB::table('grades')->where('id', $user->grade_id)->value('name');
+                return $grade ?? 'N/A';
+            })
             ->addIndexColumn()
             ->make(true);
     }
-
+    
+    
     public function notReceivedEmployeesPage(Request $request, $subDepartmentUuid)
     {
         $month = $request->input('month');
         $year = $request->input('year');
         $subDepartment = departements::where('uuid', $subDepartmentUuid)->first();
-
+    
         return view('reservation_subdeparts.not_reserved', [
             'subDepartmentId' => $subDepartmentUuid,
             'subDepartmentName' => $subDepartment->name ?? 'Unknown Subdepartment',
@@ -156,33 +179,43 @@ class SubDepartmentStatsController extends Controller
             'year' => $year,
         ]);
     }
-
+    
     public function getNotReceivedEmployees(Request $request, $subDepartmentUuid)
     {
         $month = $request->input('month');
         $year = $request->input('year');
-
+    
         $subDepartment = departements::where('uuid', $subDepartmentUuid)->first();
         if (!$subDepartment) {
             return response()->json(['error' => 'Sub-department not found'], 404);
         }
-
-        $users = User::where('department_id', $subDepartment->id)
-            ->whereNotIn('id', function ($query) use ($subDepartment, $month, $year) {
-                $query->select('user_id')
-                    ->from('reservation_allowances')
-                    ->where('departement_id', $subDepartment->id)
-                    ->whereYear('date', $year)
-                    ->whereMonth('date', $month);
-            })
-            ->with(['grade'])
-            ->get();
-
+    
+        $employees = DB::table('user_departments')
+            ->where('user_departments.department_id', $subDepartment->id) 
+            ->whereYear('user_departments.created_at', $year) 
+            ->whereMonth('user_departments.created_at', $month) 
+            ->join('users', 'user_departments.user_id', '=', 'users.id')
+            ->distinct('users.id') 
+            ->select('users.*');
+    
+        $users = $employees->whereNotIn('users.id', function ($query) use ($subDepartment, $month, $year) {
+            $query->select('user_id')
+                ->from('reservation_allowances')
+                ->where('reservation_allowances.departement_id', $subDepartment->id)
+                ->whereYear('reservation_allowances.date', $year) 
+                ->whereMonth('reservation_allowances.date', $month); 
+        })->get();
+    
         return DataTables::of($users)
             ->addColumn('file_number', fn($user) => $user->file_number)
             ->addColumn('name', fn($user) => $user->name)
-            ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
+            ->addColumn('grade', function ($user) {
+                $grade = DB::table('grades')->where('id', $user->grade_id)->value('name');
+                return $grade ?? 'N/A';
+            })
             ->addIndexColumn()
             ->make(true);
     }
+    
+    
 }
