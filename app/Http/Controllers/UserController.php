@@ -95,7 +95,6 @@ class UserController extends Controller
 
             $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
             $Officer2 = User::where('department_id', $search_id)->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
-
         } elseif ($type == "sector") {
             if ($status == 'null') {
                 $all = User::where('sector', $search_id)->whereNull('department_id')->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
@@ -105,7 +104,7 @@ class UserController extends Controller
                 $Officer = User::where('sector', $search_id)->whereNull('department_id')->where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
                 $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
                 $Officer2 = User::where('sector', $search_id)->whereNull('department_id')->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
-            }elseif ($status == 'notnull') {
+            } elseif ($status == 'notnull') {
                 $all = User::where('sector', $search_id)->whereNotNull('department_id')->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
                 $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
                 $person = User::where('sector', $search_id)->whereNotNull('department_id')->where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
@@ -150,7 +149,7 @@ class UserController extends Controller
             // $Officer2 = User::where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
 
         } else {
-            
+
             $all = User::where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
 
             // dd($all);
@@ -310,7 +309,7 @@ class UserController extends Controller
         // Finally, fetch the results
         $data = $data->orderby('grade_id', 'asc')->get();
 
-       return DataTables::of($data)->addColumn('action', function ($row) {
+        return DataTables::of($data)->addColumn('action', function ($row) {
             return $row;
         })
             ->addColumn('department', function ($row) {
@@ -695,7 +694,7 @@ class UserController extends Controller
         //
         $user = User::find(Auth::user()->id);
         $rule = Rule::where('hidden', '!=', "1")->get();
-        $grade = grade::all();
+        $grades = grade::all();
         $job = job::all();
         $govermnent = Government::all();
         $countries = Country::all();
@@ -705,12 +704,12 @@ class UserController extends Controller
         $qualifications = Qualification::all();
         $violationTypeName = ViolationTypes::whereJsonContains('type_id', 0)->get();
 
-        // Get the selected violation type from old input or set a default value
-        $selectedViolationType = old('type_military', 'police'); // Default to 'police'
+        //         // Get the selected violation type from old input or set a default value
+        //         $selectedViolationType = old('type_military', 'police'); // Default to 'police'
 
-        // Fetch grades based on the selected violation type
-        $grades = Grade::where('type', $selectedViolationType)->get();
-
+        //         // Fetch grades based on the selected violation type
+        //         $grades = Grade::where('type', $selectedViolationType)->get();
+        // dd( $violationTypeName  , $selectedViolationType , $grades);
         if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
             $alluser = User::where('flag', 'employee')->get();
         } else {
@@ -742,7 +741,7 @@ class UserController extends Controller
         // dd($allPermission);
         // $alldepartment = $user->createdDepartments;
         // return view('role.create',compact('allPermission','alldepartment'));
-        return view('user.create', compact('alldepartment', 'rule', 'grade', 'job', 'alluser', 'govermnent', 'area', 'selectedViolationType', 'sectors', 'qualifications', 'grades', 'countries', 'violationTypeName'));
+        return view('user.create', compact('alldepartment', 'rule', 'grades', 'job', 'alluser', 'govermnent', 'area', 'sectors', 'qualifications', 'countries', 'violationTypeName'));
     }
 
     public function GetDepartmentsBySector()
@@ -787,7 +786,6 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-
         $messages = [
             'name.required' => 'الاسم  مطلوب ولا يمكن تركه فارغاً.',
             'name.string' => 'الاسم  يجب أن يكون نصاً.',
@@ -797,12 +795,11 @@ class UserController extends Controller
             'phone.unique' => 'رقم الهاتف الذي أدخلته موجود بالفعل.',
             'phone.regex' => 'رقم الهاتف يجب ان يكون مكون من 8 اراقام',
             'flag.required' => 'يجب عليك اختيار نوع المستخدم',
-            // 'email.required' => 'البريد الالكتروني  مطلوب ولا يمكن تركه فارغاً.',
             'grade_id.required' => 'يجب اختيار رتبه',
             'file_number.required' => 'رقم الملف مطلوب ولا يمكن تركه فارغاً.',
             'Civil_number.required' => 'رقم المدنى مطلوب ولا يمكن تركه فارغاً   .',
-            // 'department_id.required' => 'القسم  يجب أن يكون نصاً.',
-            // Add more custom messages here
+            'email.unique' => 'الايميل الذي أدخلته موجود بالفعل.',
+
         ];
 
         $rules = [
@@ -819,6 +816,10 @@ class UserController extends Controller
                 'required',
                 ValidationRule::unique('users', 'Civil_number'),
             ],
+            ' email' => [
+                'nullable',
+                ValidationRule::unique('users', 'email'),
+            ],
             'file_number' => [
                 'required',
                 ValidationRule::unique('users', 'file_number'),
@@ -830,49 +831,18 @@ class UserController extends Controller
                    'required_if:type_military,police',
                 ], */
         ];
+        if ($request->hasFile('image')) {
+            // Save the new image and get its path
+            $imagePath = $request->file('image')->store('images', 'public');
+        } else {
+            // If no new image is uploaded, keep the old image path
+            $imagePath = $request->old('image', 'default_image.jpg'); // Adjust as necessary
+        }
         if ($request->filled('email')) {
             $rules['email'] = [ValidationRule::unique('users', 'email'), 'email'];
             $messages['email.email'] = 'البريد الالكتروني يجب ان يكون يحتوي علي @ .com';
             $messages['email.unique'] = 'البريد الالكتروني الذي أدخلته موجود بالفعل.';
         }
-        // if ($request->has('type_military') && $request->type_military == "police") {
-        //     // dd("dd");
-        //     if ($request->has('military_number')) {
-        //         $rules['military_number'] = [
-        //             'required_if:type_military,police',
-        //             'string',
-        //             'max:255',
-        //             ValidationRule::unique('users', 'military_number'),
-        //         ];
-        //     }
-        //     /*   if ($request->has('file_number')) {
-        //         $rules['file_number'] = [
-        //             'required_if:type_military,police',
-        //             'string',
-        //             'max:255',
-        //             ValidationRule::unique('users', 'file_number'),
-        //         ];
-        //     } */
-        // }
-
-
-        // if ($request->has('Civil_number')) {
-        //     $rules['Civil_number'] = [
-        //         'required',
-        //         'string',
-        //         'max:255',
-        //         ValidationRule::unique('users', 'Civil_number'),
-        //     ];
-        // }
-
-        // if ($request->has('file_number')  && $request->type_military == "police") {
-        //     $rules['file_number'] = [
-        //         'required',
-        //         'string',
-        //         'max:255',
-        //         ValidationRule::unique('users', 'file_number'),
-        //     ];
-        // }
 
 
         $validatedData = Validator::make($request->all(), $rules, $messages);
@@ -900,6 +870,11 @@ class UserController extends Controller
                 return redirect()->back()->withErrors(['department_id' => 'يجب عليك اختيار قطاع او ادارة علي الاقل'])->withInput();
             }
         }
+        if ($request->filled('department_id')) {
+            $id_department = Departements::where('uuid', $request->department_id)->value('id');
+        } else {
+            $id_department = null;
+        }
         $newUser->email = $request->email;
         $newUser->type = $request->gender;
         $newUser->address1 = $request->address_1;
@@ -913,8 +888,8 @@ class UserController extends Controller
         $newUser->nationality = $request->nationality;
         $newUser->Civil_number = $request->Civil_number;
         $newUser->seniority = $request->seniority;
-        $newUser->department_id = $request->department_id;
-        $newUser->public_administration = $request->department_id;
+        $newUser->department_id = $id_department;
+        $newUser->public_administration = $request->public_administration;
         $newUser->work_location = $request->work_location;
         $newUser->qualification = $request->qualification;
         $newUser->date_of_birth = $request->date_of_birth;
@@ -935,6 +910,21 @@ class UserController extends Controller
 
         $newUser->save();
 
+        if ($request->rule_id == 3) {
+            $department = Departements::where('id', $id_department)->first();
+            $department->manger = $newUser->id;
+            $department->save();
+            if ($newUser->email && isValidEmail($newUser->email)) {
+                Sendmail('مدير أداره', ' تم أضافتك كمدير أداره' . $request->name, $newUser->Civil_number, $request->password, $newUser->email);
+            }
+        } elseif ($request->rule_id == 4) {
+            $sector = Sector::where('id', $request->sector)->first();
+            $sector->manager = $newUser->id;
+            $sector->save();
+            if ($newUser->email && isValidEmail($newUser->email)) {
+                Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $newUser->Civil_number, $request->password, $newUser->email);
+            }
+        }
         if ($request->hasFile('image')) {
             $file = $request->image;
             $path = 'users/user_profile';
@@ -948,7 +938,7 @@ class UserController extends Controller
             Sendmail('بيانات دخولك على نظام القوة المطور', 'هذه بيانات دخولك على نظام القوة المطور',  $request->Civil_number, $request->password, $request->email);
         }
         UpdateUserHistory($newUser->id);
-        addUserHistory($newUser->id,  $request->department_id,  $request->sector);
+        addUserHistory($newUser->id,  $id_department,  $request->sector);
         // $id = $request->type;
         return redirect()->route('user.employees', $request->flag);
     }
@@ -1088,12 +1078,17 @@ class UserController extends Controller
 
         // Apply validation
         $validatedData = Validator::make($request->all(), $rules, $messages);
-
+        // dd($request->all());
         // Handle validation failure
         if ($validatedData->fails()) {
             return redirect()->back()->withErrors($validatedData)->withInput();
         }
 
+        if ($request->filled('department_id')) {
+            $id_department = Departements::where('uuid', $request->department_id)->value('id');
+        } else {
+            $id_department = null;
+        }
         // Additional checks for 'user' flag
         if ($request->flag == 'user') {
             if (!$request->filled('email')) {
@@ -1104,6 +1099,43 @@ class UserController extends Controller
             }
             if (!$request->filled('password') && !$user->password) {
                 return redirect()->back()->withErrors(['password' => 'كلمة المرور مطلوبة ولا يمكن تركها فارغة.'])->withInput();
+            }
+        }
+        ///dd($request->all());
+        $old_sector = $user->sector;
+        $old_department = $user->department_id;
+        $old_flag = $user->flag;
+
+        //if flag user and user sector manager , changed rule to dep manager
+        $is_sectormanager = Sector::where('manager',$user->id)->exists();
+        if($request->flag == 'user' && $is_sectormanager && $request->rule_id ==3){
+            return redirect()->back()->withErrors(['rule_id' => 'لا يمكن تعديل هذا المستخدم ,لأنه مدير قطاع'])->withInput();
+        }
+        if ($request->sector != $old_sector || $old_flag != $request->flag) {
+            $checksectormanger = Sector::where('manager', $user->id)->first();
+            if ($checksectormanger) {
+                $checksectormanger->manager = null;
+                $checksectormanger->save();
+            }
+            if ($request->rule_id == 4) {
+                $newsectormanger = Sector::find($request->sector);
+                $newsectormanger->manager = $user->id;
+                $newsectormanger->save();
+            }
+        }
+
+        if ($id_department != $old_department || $old_flag != $request->flag) {
+
+            $checkdepmanger = departements::where('manger', $user->id)->first();
+            if ($checkdepmanger) {
+                $checkdepmanger->manger = null;
+                $checkdepmanger->save();
+            }
+            if ($request->rule_id == 3) {
+                // dd($request->department_id);
+                $newdepmanger = departements::find($id_department);
+                $newdepmanger->manger = $user->id;
+                $newdepmanger->save();
             }
         }
 
@@ -1123,8 +1155,8 @@ class UserController extends Controller
         $user->Provinces = $request->Provinces;
         $user->sector = $request->sector;
         $user->region = $request->region;
-        $user->public_administration = $request->public_administration;
-        $user->department_id = $request->public_administration;
+        $user->public_administration =$id_department;
+        $user->department_id = $id_department;
         $user->work_location = $request->work_location;
         $user->qualification = $request->qualification;
         $user->date_of_birth = $request->date_of_birth;
@@ -1150,24 +1182,30 @@ class UserController extends Controller
         // Set rule_id and password if flag is 'user'
         if ($request->flag == 'user') {
             $user->rule_id = $request->rule_id;
-            $user->password = Hash::make($request->password);
+            if ($request->password != null) {
+                $user->password =  Hash::make($request->password);
+            }
         }
-
+        if ($request->flag == 'employee') {
+            $user->rule_id = null;
+            $user->password =  null;
+        }
         // Save user data
         $user->save();
+        // dd($request->id_department ,$id_department , $old_department ,$old_flag , $request->flag );
 
-        $department = departements::where('manger', $user->id)->where('id', '<>', $request->public_administration)->first();
-        if ($department) {
-            $department->manger = null;
-            $department->save();
-        }
-        $sector = sector::where('manager', $user->id)->where('id', '<>', $request->sector)->first();
-        if ($sector) {
-            $sector->manager = null;
-            $sector->save();
-        }
+        // $department = departements::where('manger', $user->id)->where('id', '<>', $request->public_administration)->first();
+        // if ($department) {
+        //     $department->manger = null;
+        //     $department->save();
+        // }
+        // $sector = sector::where('manager', $user->id)->where('id', '<>', $request->sector)->first();
+        // if ($sector) {
+        //     $sector->manager = null;
+        //     $sector->save();
+        // }
         UpdateUserHistory($user->id);
-        addUserHistory($user->id,  $request->department_id,  $request->sector);
+        addUserHistory($user->id,  $id_department,  $request->sector);
         session()->flash('success', 'تم الحفظ بنجاح.');
         return redirect()->route('user.employees', $request->flag);
     }
@@ -1175,7 +1213,9 @@ class UserController extends Controller
     public function getGoverment($id)
     {
         $sector = Sector::find($id);
+
         $governments = Government::whereIn('id', $sector->governments_IDs)->get();
+
         return response()->json($governments);
     }
 
