@@ -72,25 +72,27 @@
 @endsection
 
 @section('content')
-    <div class="container welcome col-11 my-4" dir="rtl">
-        <!-- Search Form and Buttons Container -->
-        <div class="d-flex justify-content-between align-items-center flex-wrap">
-            <!-- General Search Form -->
-            <form id="search-form" class="d-flex align-items-center me-3" method="get"
-                action="{{ route('reservation_fetch.getAll') }}">
-                <label for="file_number" class="form-label mx-2 col-3">رقم الملف</label>
-                <input type="text" id="file_number" name="file_number" class="form-control" required>
+<div class="row" >
+        <div class="container welcome col-11 mb-4" >
+            <div class="d-flex justify-content-between">
+                <p>  بحث بدل حجز</p>
+                      
+              <div class="d-flex flex-wrap" dir="rtl">
 
-                <button type="submit" class="btn  mx-2"
-                    style="    background-color: #b9bcc0; color: #0f0e0e;border-radius: 10px; border: none; font-weight: 700; ">بحث</button>
+ <!-- General Search Form -->
+ <form id="search-form" class="d-flex align-items-center mx-1" method="get"
+                action="{{ route('reservation_fetch.getAll') }}">
+                <!-- <label for="file_number" class="form-label mx-2 col-3">رقم الملف</label> -->
+                <input type="text" id="file_number" name="file_number" class="form-control" required placeholder="رقم الملف">
+
+                <button type="submit" class="btn-all mx-1">بحث</button>
             </form>
 
-            <!-- Buttons Group -->
-            <div class="d-flex gap-2 flex-wrap">
+
                 <!-- Last Month Search Form -->
                 <form id="last-month-form" method="get" action="{{ route('reservation_fetch.getLastMonth') }}">
                     <input type="hidden" name="file_number" id="last_month_file_number">
-                    <button type="submit" class="btn  mx-1" style="background-color: #3c7327; color:white; border-radius:10px;">الشهر
+                    <button type="submit" class="btn-all  mx-1" >الشهر
                         الماضي</button>
                 </form>
 
@@ -98,58 +100,74 @@
                 <form id="last-three-month-form" method="get"
                     action="{{ route('reservation_fetch.getLastThreeMonths') }}">
                     <input type="hidden" name="file_number" id="last_three_month_file_number">
-                    <button type="submit" class="btn  mx-1" style="background-color: #d06702; color:white; border-radius:10px;">آخر 3
+                    <button type="submit" class="btn-all  mx-1">آخر 3
                         شهور</button>
                 </form>
 
                 <!-- Last 6 Months Search Form -->
                 <form id="last-six-months-form" method="get" action="{{ route('reservation_fetch.getLastSixMonths') }}">
                     <input type="hidden" name="file_number" id="last_six_months_file_number">
-                    <button type="submit" class="btn  mx-1" style="background-color:#2c9e9f; color:white; border-radius:10px;">آخر ستة
+                    <button type="submit" class="btn-all  mx-1">آخر ستة
                         أشهر</button>
                 </form>
 
                 <!-- Last Year Search Form -->
                 <form id="last-year-form" method="get" action="{{ route('reservation_fetch.getLastYear') }}">
                     <input type="hidden" name="file_number" id="last_year_file_number">
-                    <button type="submit" class="btn  mx-1" style="background-color: #c9b22c; color:white; border-radius:10px;">السنة
+                    <button type="submit" class="btn-all  mx-1" >السنة
                         الماضية</button>
                 </form>
                 <!-- Other Dates Button -->
-                <button id="other-dates-button" class="btn" style="background-color: #c47900; color:white; border-radius:10px;">تواريخ
+                <button id="other-dates-button" class="btn-all " >تواريخ
 
                     أخرى ...</button>
+            
+           
+
+
+
+
+            <button type="button" class="btn-blue mx-1" onclick="printPDF()">طباعة</button>    
+
             </div>
+            <!-- Buttons Group -->
+        
          
-        </div> 
+   
+
+            </div>
+           
+
+        </div>
+  
 
 
-    </div>
+
+
+
+    
    
    <!-- Date Range Picker (Initially Hidden) -->
    <div id="date-picker-container" class="row col-12 mt-3" style="display: none;">
-   <div class="container welcome col-11 my-4" dir="rtl">
+   <div class="container welcome col-11 py-3" dir="rtl">
                 <form id="custom-date-form" class="d-flex align-items-center">
              
                     <label for="start_date" class="form-label mx-2" style="    font-weight: 700;">من</label>
-                    <input type="date" id="start_date" name="start_date" class="form-control mx-2" style="background-color: #f5f6fa; !important;     " >
+                    <input type="date" id="start_date" name="start_date" class="form-control mx-2" >
                     <label for="end_date" class="form-label mx-2" style="    font-weight: 700;">إلى</label>
-                    <input type="date" id="end_date" name="end_date" class="form-control mx-2" style="background-color: #f5f6fa; !important; " >
-                    <button type="submit" class="btn btn-success mx-2" style="    background-color: #b9bcc0; color: #0f0e0e;border-radius: 10px; border: none;font-weight: 700;  ">بحث
+                    <input type="date" id="end_date" name="end_date" class="form-control mx-2"  >
+                    <button type="submit" class="btn mx-2">بحث
                         بالتواريخ</button>
                       
-                </form>  </div>
+                </form> 
+             </div>
             </div>    
     <!-- </div> -->
 
 
 <!-- Results Table -->
-<div class="container col-11 pb-4" >
-    <div class="" >
-        <h3 style="font-weight: 700; display: flex; justify-content: flex-end; padding-top: 20px; font-size: 25px;">نتائج البحث</h3>
-        <div class="col-md-2 mb-2">
-            <button type="button" class="btn" onclick="printPDF()" style="background-color: #274373; color:white;">طباعة</button>
-        </div>
+<div class="container col-11 py-4 mt-3" >
+   
         <table id="reservation-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
             <thead>
                 <tr>
