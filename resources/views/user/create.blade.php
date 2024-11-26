@@ -75,6 +75,8 @@
                             <div class="form-group d-flex justify-content-center col-md-5 mx-2 pb-2">
                                 <!-- Violation type radio buttons -->
                                 @foreach ($violationTypeName as $key => $violation)
+                                {{-- {{ dd($violationTypeName) }} --}}
+
                                     <div class="radio-btns" style="margin-left: 1.5rem; margin-right: 1.5rem;">
                                         <input type="radio" class="form-check-input" id="police_{{ $key }}"
                                             name="type_military" value="{{ $violation->id }}"
@@ -281,12 +283,12 @@
                                 <select id="department_id" name="department_id" class="form-control"
                                     placeholder="الادارة">
                                     <option value="{{ null }}">لا يوجد قسم محدد</option>
-                                    @foreach ($alldepartment as $item)
+                                    {{-- @foreach ($alldepartment as $item)
                                         <option value="{{ $item->id }}"
                                             {{ old('department_id') == $item->id ? 'selected' : '' }}>
                                             {{ $item->name }}
                                         </option>
-                                    @endforeach
+                                    @endforeach --}}
                                 </select>
                             </div>
                         </div>
@@ -481,6 +483,7 @@
             // JavaScript to handle radio button change events
 
             function getgrades(id) {
+
                 // Create the URL with query parameters
                 var url = '/get-grades?violation_type=' + id;
 
