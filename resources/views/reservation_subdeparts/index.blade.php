@@ -82,7 +82,7 @@
                     render: function(data, type, row) {
                         const month = '{{ $month }}';
                         const year = '{{ $year }}';
-                        return `<a href="/subdepartment-employees/${row.uuid}?month=${month}&year=${year}" style="color: blue !important;">${data}</a>`;
+                        return `<a href="/department-employees/${row.uuid}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
                     }
                  },
                 { data: 'remaining_amount', name: 'remaining_amount' },
@@ -100,7 +100,7 @@
                     render: function(data, type, row) {
                         const month = '{{ $month }}';
                         const year = '{{ $year }}';
-                        return `<a href="/subdepartment-employees/${row.uuid}?month=${month}&year=${year}" style="color: blue !important;">${data}</a>`;
+                        return `<a href="/department-employees/${row.uuid}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
                     }
                 },
                 {
