@@ -226,17 +226,28 @@ class settingController extends Controller
     //update nationality
     public function updatenationality(Request $request)
     {
-
         $messages = [
             'name.required' => 'الاسم مطلوب.',
             'name.string' => 'الاسم يجب أن يكون نصًا.',
+            'name.unique' => 'الاسم موجود بالفعل.',
+            'codeedit.unique' => 'كود الدولة موجود بالفعل.',
         ];
 
-        $countryId = $request->id; // Retrieve the ID from the route parameter
+        // Get the current ID (to ignore during uniqueness validation)
+        $id = $request->id;
+
         // Create a validator instance
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-
+            'name' => [
+                'required',
+                'string',
+                Rule::unique('countries', 'country_name_ar')->ignore($id), // Ignore the current record's ID for the `name` field
+            ],
+            'codeedit' => [
+                'nullable',
+                'string',
+                Rule::unique('countries', 'code')->ignore($id), // Ignore the current record's ID for the `codeedit` field
+            ],
         ], $messages);
 
         if ($validator->fails()) {
@@ -245,12 +256,14 @@ class settingController extends Controller
             session([
                 'old_name' => $request->name,
                 'old_codeedit' => $request->codeedit,
-
                 'edit_id' => $request->id,
             ]);
 
             return redirect()->back()->withErrors($validator)->withInput();
         }
+
+        // Your update logic here if validation passes
+
 
         $country = Country::find($request->id);
 

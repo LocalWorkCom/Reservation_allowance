@@ -77,6 +77,10 @@ Route::any('/reset_password', [UserController::class, 'reset_password'])->name('
 
 //  Auth verfication_code
 Route::middleware(['auth'])->group(function () {
+    Route::get('/clear-modal-session', function() {
+        session()->forget('modal_type');  // Clear the session variable
+        return redirect()->back();
+    })->name('modal.clearSession');
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/user-departments/{flag}', [UserController::class, 'index'])->name('user.departments')->middleware('check.permission:view User');
@@ -350,7 +354,7 @@ Route::middleware(['auth'])->group(function () {
 
     //reserv statics
  Route::group(['middleware' => ['check.permission:statistic ReservationAllowance']], function () {
-    
+
     //statistics
     Route::get('/statistics', [statisticController::class, 'index'])->name('statistic.show');
     Route::get('/statistics/search', [statisticController::class, 'getFilteredData'])->name('statistic.search');
