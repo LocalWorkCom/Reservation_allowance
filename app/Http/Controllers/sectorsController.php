@@ -150,7 +150,7 @@ class sectorsController extends Controller
                 return $btn;
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
-                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount." د.ك";
+                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه غير محدده' : $row->reservation_allowance_amount." د.ك";
             })
             ->addColumn('reservation_allowance', function ($row) {
                 if ($row->reservation_allowance_type == 1) {
@@ -487,7 +487,12 @@ class sectorsController extends Controller
                         $department->manger = null;
                         $department->save();
                     }
-
+                    $sector_manager = Sector::where('manager',$newManager)->whereNot('id',$sector->id)->get();
+                    if($sector_manager){
+                        $sector_manager = Sector::where('manager',$newManager)->whereNot('id',$sector->id)->first();
+                        $sector_manager->manager= null;
+                        $sector_manager->save();
+                    }
                     $newManager->sector = $sector->id;
                     $newManager->department_id = null;
                     $newManager->flag = 'user';
@@ -501,6 +506,12 @@ class sectorsController extends Controller
                 }
             }
         } else {
+            $sector_manager = Sector::where('manager',$manager)->whereNot('id',$sector->id)->get();
+            if($sector_manager){
+                $sector_manager = Sector::where('manager',$manager)->whereNot('id',$sector->id)->first();
+                $sector_manager->manager= null;
+                $sector_manager->save();
+            }
             $Manager = User::find($manager);
             if ($request->password) {
                 $Manager->sector = $sector->id;

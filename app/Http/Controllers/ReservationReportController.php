@@ -21,7 +21,7 @@ class ReservationReportController extends Controller
     public function index()
     {
 
-        if (auth()->check() && auth()->user()->rule_id == 2) {
+        if (auth()->check() && in_array(auth()->user()->rule_id, [2, 4])) {
             return view('reserv_report.index');
         } else {
             return abort(403, 'Unauthorized action.');
@@ -47,7 +47,20 @@ class ReservationReportController extends Controller
             $start = Carbon::parse($startDate)->startOfDay();
             $end = Carbon::parse($endDate)->endOfDay();
     
+            // Filter sectors based on user rule_id
+            if (auth()->user()->rule_id == 2) { // Super Admin
+                $sectors = Sector::pluck('id');
+            } elseif (auth()->user()->rule_id == 4) { // Sector Manager
+                $sectors = Sector::where('id', auth()->user()->sector)->pluck('id');
+            } else {
+                return response()->json([
+                    'error' => 'Unauthorized action.'
+                ], 403);
+            }
+    
+            // Query reservation allowances for the filtered sectors
             $query = ReservationAllowance::whereBetween('date', [$start, $end])
+                ->whereIn('sector_id', $sectors)
                 ->selectRaw('sector_id, COUNT(DISTINCT user_id) as user_count, SUM(amount) as total_amount')
                 ->groupBy('sector_id')
                 ->having('total_amount', '>', 0);

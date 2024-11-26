@@ -10,10 +10,12 @@
                     <li class="breadcrumb-item "><a href="/">الرئيسيه</a></li>
 
                     @if (Auth::user()->rule_id == 2)
-                        <li class="breadcrumb-item"><a href="{{ route('user.employees', 'employee') }}">موظفين الوزارة</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('user.employees', 'employee') }}">موظفين الوزارة</a>
+                        </li>
                     @endif
                     @if (Auth::user()->rule_id != 2)
-                        <li class="breadcrumb-item"><a href="{{ route('user.employees', 'employee') }}">موظفين القوة</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('user.employees', 'employee') }}">موظفين القوة</a>
+                        </li>
                     @endif
                     <li class="breadcrumb-item active" aria-current="page"> <a href=""> اضافة </a></li>
                 </ol>
@@ -91,7 +93,6 @@
                                 </label>
                             </div>
 
-
                             {{-- <div class="form-group d-flex  justify-content-end col-md-5 mx-2">
                             <div class="radio-btns mx-md-4 ">
                                 <input type="radio" class="form-check-input" id="solder" name="solderORcivil"
@@ -117,11 +118,6 @@
                                 <label for="type_military">نوع العسكرى</label>
                             </div>
                         </div> --}}
-
-
-
-
-
 
                         <div class="form-row mx-md-3 d-flex justify-content-center flex-row-reverse">
                             <div class="form-group col-md-5 mx-2">
@@ -165,7 +161,7 @@
                             <div class="form-group col-md-5 mx-2">
                                 <label for="input44">العنوان</label>
                                 <textarea id="input44" name="address_1" class="form-control" placeholder="  العنوان"
-                                    value="{{ old('address_1') }}"></textarea>
+                                    value="{{ old('address_1') }}">{{ old('address_1') }}</textarea>
                             </div>
                             <div class="form-group col-md-5 mx-2">
                                 <label for="input11"> <i class="fa-solid fa-asterisk"
@@ -219,8 +215,9 @@
                                     placeholder="رقم الملف" value="{{ old('file_number') }}">
                             </div>
                             <div class="form-group col-md-10 mx-2">
-                                <label for="input13"> <i class="fa-solid fa-asterisk"
-                                        style="color:red; font-size:10px;"></i> هل يمكن لهذا الموظف أن يكون مستخدم؟
+                                <label for="input13">
+                                    <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i> هل يمكن لهذا
+                                    الموظف أن يكون مستخدم؟
                                 </label>
                                 <select id="input13" name="flag" class="form-control">
                                     <option value="">اختر النوع</option>
@@ -237,19 +234,20 @@
                                     </label>
                                     <div class="password-container">
                                         <input type="password" id="input3" name="password" class="form-control"
-                                            placeholder="الباسورد" style="position: absolute">
+                                            value="{{ old('password') }}" placeholder="الباسورد">
                                         <label class="toggle-password" onclick="togglePasswordVisibility()">
                                             <i id="toggleIcon" class="fa fa-eye eye-icon"></i>
                                         </label>
                                     </div>
                                 </div>
+
                                 <div class="form-group col-md-5 mx-2">
                                     <label for="input77">
                                         <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i> المهام
                                     </label>
                                     <select id="input77" name="rule_id" class="form-control select2"
                                         placeholder="المهام">
-                                        <option selected disabled>اختار من القائمة</option>
+                                        <option disabled>اختار من القائمة</option>
                                         @foreach ($rule as $item)
                                             <option value="{{ $item->id }}"
                                                 {{ old('rule_id') == $item->id ? 'selected' : '' }}>
@@ -259,7 +257,6 @@
                                     </select>
                                 </div>
                             </div>
-
                         </div>
 
 
@@ -267,33 +264,29 @@
 
 
                             <div class="form-group col-md-5 mx-2">
-                                <label for="sector">
-                                    القطاع </label>
-                                <select id="sector" name="sector" class="form-control " placeholder="القطاع">
-                                    <option value="{{ null }}">
-                                        لا يوجد قسم محدد</option>
+                                <label for="sector">القطاع</label>
+                                <select id="sector" name="sector" class="form-control" placeholder="القطاع">
+                                    <option value="{{ null }}">لا يوجد قسم محدد</option>
                                     @foreach ($sectors as $sector)
                                         <option value="{{ $sector->id }}"
                                             {{ old('sector') == $sector->id ? 'selected' : '' }}>
-                                            {{ $sector->name }}</option>
+                                            {{ $sector->name }}
+                                        </option>
                                     @endforeach
-
                                 </select>
                             </div>
 
                             <div class="form-group col-md-5 mx-2">
-                                <label for="department_id">
-                                    الادارة </label>
-                                <select id="department_id" name="department_id" class="form-control "
+                                <label for="department_id">الادارة</label>
+                                <select id="department_id" name="department_id" class="form-control"
                                     placeholder="الادارة">
-                                    <option value="{{ null }}" selected>
-                                        لا يوجد قسم محدد</option>
+                                    <option value="{{ null }}">لا يوجد قسم محدد</option>
                                     @foreach ($alldepartment as $item)
                                         <option value="{{ $item->id }}"
                                             {{ old('department_id') == $item->id ? 'selected' : '' }}>
-                                            {{ $item->name }}</option>
+                                            {{ $item->name }}
+                                        </option>
                                     @endforeach
-
                                 </select>
                             </div>
                         </div>
@@ -331,7 +324,7 @@
                             <div class="form-group col-md-10">
                                 <label for="input5"> الملاحظات</label>
                                 <textarea type="text" id="input5" name="description" class="form-control" placeholder="الملاحظات"
-                                    rows="3" value="{{ old('description') }}"></textarea>
+                                    rows="3" value="{{ old('description') }}">{{ old('description') }}</textarea>
                             </div>
                         </div>
 
@@ -340,6 +333,14 @@
                                 <label for="input23">الصورة</label>
                                 <input type="file" class="form-control" name="image" id="input23"
                                     placeholder="الصورة">
+                                @if ($errors->has('image'))
+                                    <div class="text-danger">
+                                        {{ $errors->first('image') }}
+                                    </div>
+                                @elseif(old('image'))
+                                    <img src="{{ asset('storage/' . old('image')) }}" alt="Uploaded Image"
+                                        width="100">
+                                @endif
                             </div>
                         </div>
 
@@ -362,6 +363,46 @@
 
         </div>
         <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const flagSelect = document.getElementById('input13');
+                const ruleSelect = document.getElementById('input77');
+                const departmentSelect = document.getElementById('department_id');
+                const sectorSelect = document.getElementById('sector');
+                const additionalFields = document.getElementById('additionalFields');
+
+                // Handle visibility and required/disabled status dynamically
+                function handleDynamicFields() {
+                    const flagValue = flagSelect.value;
+                    const ruleValue = ruleSelect.value;
+                    console.log(flagValue, ruleValue)
+
+                    // Show or hide the additional fields when "user" is selected
+                    additionalFields.style.visibility = (flagValue === 'user') ? 'visible' : 'hidden';
+
+                    // Reset validations and state
+                    departmentSelect.removeAttribute('required');
+                    sectorSelect.removeAttribute('required');
+                    departmentSelect.removeAttribute('disabled');
+
+                    // Apply validation based on rule_id
+                    if (ruleValue == 3 && flagValue === 'user') {
+                        departmentSelect.setAttribute('required', true);
+                    } else if (ruleValue == 4) {
+                        sectorSelect.setAttribute('required', true);
+                        departmentSelect.setAttribute('disabled', true);
+                    }
+                }
+
+                // Event listener for flag and rule selection changes
+                flagSelect.addEventListener('change', handleDynamicFields);
+                ruleSelect.addEventListener('change', handleDynamicFields);
+
+                // Trigger the function on page load to handle preselected values
+                handleDynamicFields();
+            });
+
+
+
             $(document).ready(function() {
                 $('#input13').change(function() {
 
@@ -466,38 +507,87 @@
                     }
                 });
             }
+            $(document).ready(function() {
+                // Retrieve the old department ID from Blade or a pre-selected value for editing
+                var oldDepartment = '{{ old('department_id', $user->department_id ?? '') }}';
+                var sectorId = $('#sector').val(); // Get the pre-selected sector ID if exists
 
-            function getDepartment(id) {
+                // Populate departments if sector ID exists on page load
+                if (sectorId) {
+                    getDepartment(sectorId, oldDepartment);
+                }
 
-                console.log(id);
+                // Fetch and populate departments when the sector changes
+                $('#sector').on('change', function() {
+                    var newSectorId = $(this).val();
+                    getDepartment(newSectorId, null); // Reset oldDepartment to null on sector change
+                });
+            });
 
-                var url = '/get-deprt-sector?sector=' + id;
+            function getDepartment(sectorId, oldDepartment) {
+                if (!sectorId) return; // Ensure sectorId is provided
+
+                var url = '/get-deprt-sector?sector=' + sectorId; // API endpoint for fetching departments
 
                 $.ajax({
                     url: url,
-                    type: 'GET', // Use GET method
+                    type: 'GET',
                     success: function(response) {
-                        console.log(response);
+                        // Safely clear and repopulate the department dropdown
+                        var $departmentDropdown = $('#department_id');
+                        $departmentDropdown.empty(); // Clear existing options
+                        $departmentDropdown.append('<option selected disabled>اختار من القائمة</option>');
 
-
-                        // Clear the current grade options
-                        var department_id = document.getElementById('department_id');
-                        department_id.innerHTML = '<option selected disabled>اختار من القائمة</option>';
-
-                        // Populate the grade select with new options
-                        response.forEach(function(grade) { // Use `response` instead of `data`
-                            var option = document.createElement('option');
-                            option.value = grade.id;
-                            option.textContent = grade.name;
-                            department_id.appendChild(option);
+                        // Populate dropdown with department options
+                        $.each(response, function(key, department) {
+                            $departmentDropdown.append(
+                                `<option value="${department.uuid}">${department.name}</option>`
+                            );
                         });
+
+                        // Set the old department value after populating
+                        if (oldDepartment) {
+                            $departmentDropdown.val(oldDepartment);
+                        }
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
-                        console.error('Error fetching grades:', textStatus, errorThrown);
+                        console.error('Error fetching departments:', textStatus, errorThrown);
                     }
                 });
-
             }
+
+
+            // function getDepartment(id) {
+
+            //     console.log(id);
+
+            //     var url = '/get-deprt-sector?sector=' + id;
+
+            //     $.ajax({
+            //         url: url,
+            //         type: 'GET', // Use GET method
+            //         success: function(response) {
+            //             console.log(response);
+
+
+            //             // Clear the current grade options
+            //             var department_id = document.getElementById('department_id');
+            //             department_id.innerHTML = '<option selected disabled>اختار من القائمة</option>';
+
+            //             // Populate the grade select with new options
+            //             response.forEach(function(grade) { // Use `response` instead of `data`
+            //                 var option = document.createElement('option');
+            //                 option.value = grade.id;
+            //                 option.textContent = grade.name;
+            //                 department_id.appendChild(option);
+            //             });
+            //         },
+            //         error: function(jqXHR, textStatus, errorThrown) {
+            //             console.error('Error fetching grades:', textStatus, errorThrown);
+            //         }
+            //     });
+
+            // }
         </script>
         {{-- <script>
     document.addEventListener('DOMContentLoaded', function() {
