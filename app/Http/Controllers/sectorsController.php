@@ -193,7 +193,7 @@ class sectorsController extends Controller
             'budget_type.required' => 'يجب اختيار نوع الميزانيه.',
             'email.invalid_format' => 'البريد الإلكتروني للمدير غير صالح.', // Custom error message
         ];
-        
+
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'budget_type' => 'required',
@@ -207,14 +207,15 @@ class sectorsController extends Controller
                     if ($value && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
                         $fail('البريد الإلكتروني للمدير غير صالح.'); // Custom failure message
                     }
+                    
                 },
             ],
         ], $messages);
-        
+
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        
+
 
 
 
@@ -376,7 +377,7 @@ class sectorsController extends Controller
             'budget_type.required' => 'يجب اختيار نوع الميزانيه.',
             'email.invalid_format' => 'البريد الإلكتروني للمدير غير صالح.', // Custom error message
         ];
-        
+
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'budget_type' => 'required',
@@ -393,7 +394,7 @@ class sectorsController extends Controller
                 },
             ],
         ], $messages);
-        
+
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
