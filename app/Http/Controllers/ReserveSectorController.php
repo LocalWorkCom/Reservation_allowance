@@ -16,29 +16,38 @@ use Illuminate\Support\Facades\Log;
 
 class ReserveSectorController extends Controller
 {
-    public function static() 
+    public function static()
     {
-        if (auth()->check() && auth()->user()->rule_id == 2) {
+        if (auth()->check() && in_array(auth()->user()->rule_id, [2, 4])) { 
             return view('reservation_sector.index');
         } else {
             return abort(403, 'Unauthorized action.');
         }
     }
+    
 
     public function getAll(Request $request)
     {
         try {
             $month = $request->input('month');
             $year = $request->input('year');
-            
+    
             if (!$month || !$year) {
                 return response()->json([
                     'error' => 'Please select both month and year.'
                 ], 400);
             }
-
-            $sectors = Sector::orderBy('name', 'asc')->get();
-
+    
+            if (auth()->user()->rule_id == 2) { 
+                $sectors = Sector::orderBy('name', 'asc')->get();
+            } elseif (auth()->user()->rule_id == 4) { 
+                $sectors = Sector::where('id', auth()->user()->sector)->get(); 
+            } else {
+                return response()->json([
+                    'error' => 'Unauthorized action.'
+                ], 403);
+            }
+    
             return DataTables::of($sectors)
                 ->addIndexColumn()
                 ->addColumn('sector', fn($row) => $row->name)
@@ -53,7 +62,6 @@ class ReserveSectorController extends Controller
                         ->count();
                 })
                 ->addColumn('reservation_allowance_budget', function ($row) use ($month, $year) {
-                   
                     $amount = DB::table('history_allawonces')
                         ->where('sector_id', $row->id)
                         ->whereYear('date', $year)
@@ -80,14 +88,13 @@ class ReserveSectorController extends Controller
                         ->whereYear('date', $year)
                         ->whereMonth('date', $month)
                         ->sum('amount');
-    
                     $historicalAmount = DB::table('history_allawonces')
                         ->where('sector_id', $row->id)
                         ->whereYear('date', $year)
                         ->whereMonth('date', $month)
                         ->value('amount');
                  if ( $historicalAmount == 0 || is_null( $historicalAmount)) {
-                         return "-"; 
+                        return "-";
                     }
                     $remainingAmount = $historicalAmount - $registeredAmount;
                     return number_format($remainingAmount, 2) . " د.ك";
@@ -100,7 +107,6 @@ class ReserveSectorController extends Controller
                         ->distinct('user_id')
                         ->count('user_id');
                 })
-                
                 ->addColumn('received_allowance_count', function ($row) use ($month, $year) {
                     return ReservationAllowance::where('sector_id', $row->id)
                         ->whereYear('date', $year)
@@ -110,18 +116,17 @@ class ReserveSectorController extends Controller
                 })
                 ->addColumn('did_not_receive_allowance_count', function ($row) use ($month, $year) {
                     $userIdsInSector = DB::table('user_departments')
-                    ->where('sector_id', $row->id)
-                    ->whereYear('created_at', $year)
-                    ->whereMonth('created_at', $month)
-                    ->distinct('user_id')
-                    ->pluck('user_id');
+                        ->where('sector_id', $row->id)
+                        ->whereYear('created_at', $year)
+                        ->whereMonth('created_at', $month)
+                        ->distinct('user_id')
+                        ->pluck('user_id');
                     $receivedAllowanceCount = ReservationAllowance::where('sector_id', $row->id)
                         ->whereYear('date', $year)
                         ->whereMonth('date', $month)
                         ->distinct('user_id')
                         ->count('user_id');
-    
-                        return $userIdsInSector->count() - $receivedAllowanceCount;
+                    return $userIdsInSector->count() - $receivedAllowanceCount;
                 })
                 ->make(true);
         } catch (\Exception $e) {
@@ -136,5 +141,6 @@ class ReserveSectorController extends Controller
             ]);
         }
     }
+    
 }
 
