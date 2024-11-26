@@ -40,13 +40,18 @@ class DepartmentController extends Controller
         $startDate = now()->startOfMonth()->toDateString();
         $endDate = now()->toDateString();
 
-        $employees = ReservationAllowance::where('sector_id', $departement_id)
+        $employees = ReservationAllowance::where('departement_id', $departement_id)
             ->whereBetween('date', [$startDate, $endDate])
             ->get();
 
         // Calculate total amount for the specified sector and date range
         $totalAmount = $employees->sum('amount');
-        $is_allow = $totalAmount < $amount;
+
+        if ($totalAmount == 0) {
+            $is_allow = true;
+        } else {
+            $is_allow = $totalAmount < $amount;
+        }
 
         // Return total amount and is_allow status
         return response()->json([
@@ -75,6 +80,9 @@ class DepartmentController extends Controller
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
                 return '<button class="btn btn-primary btn-sm">Edit</button>';
+            })
+            ->addColumn('reservation_allowance_amount', function ($row) {
+                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount." د.ك";
             })
             ->addColumn('reservation_allowance', function ($row) {
                 switch ($row->reservation_allowance_type) {
@@ -144,9 +152,9 @@ class DepartmentController extends Controller
         $manager = User::where('file_number', $id)->first();
 
         // Handle if no manager is found
-        if (!$manager) {
-            return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 405);
-        }
+        // if (!$manager) {
+        //     return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 405);
+        // }
         // Prevent sector managers from being transferred or added
         if ($isSectorManager) {
             return response()->json(['error' => 'لا يمكن تعيين مدير قطاع كمدير أو موظف.'], 403);
@@ -243,28 +251,33 @@ class DepartmentController extends Controller
 
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
             $data = departements::where('parent_id', $departement->id)
-                ->withCount( 'children')
+                ->withCount('children')
                 ->with(['children'])
                 ->orderBy('id', 'desc');
         } else {
             $data = departements::where('parent_id', $departement->id)
-                ->withCount( 'children')
+                ->withCount('children')
                 ->with(['children'])
                 ->orderBy('id', 'desc');
-
         }
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
                 return '<button class="btn btn-primary btn-sm">Edit</button>';
             })
+            ->addColumn('reservation_allowance_amount', function ($row) {
+                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount." د.ك";
+            })
             ->addColumn('reservation_allowance', function ($row) {
-                return match ((int) $row->reservation_allowance_type) {
-                    1 => 'حجز كلى',
-                    2 => 'حجز جزئى',
-                    4 => 'لا يوجد بدل حجز',
-                    3 => 'حجز كلى و حجز جزئى',
-                    default => 'غير معروف',
-                };
+                switch ($row->reservation_allowance_type) {
+                    case 1:
+                        return 'حجز كلى';
+                    case 2:
+                        return 'حجز جزئى';
+                    case 4:
+                        return 'لا يوجد بدل حجز';
+                    default:
+                        return 'حجز كلى و حجز جزئى';
+                }
             })
             ->addColumn('subDepartment', function ($row) {
                 $sub = departements::where('parent_id', $row->id)->count();
@@ -388,32 +401,32 @@ class DepartmentController extends Controller
             'budget_type' => 'required',
             'part' => 'required',
             'email' =>  'required',
-            'email',
-            Rule::unique('users', 'email')->ignore($request->mangered),
+            Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
+            function ($attribute, $value, $fail) {
+                // Custom email format validation
+                if (!isValidEmail($value)) {
+                    return $fail('البريد الإلكتروني للمدير غير صالح.');
+                }
+            },
         ], $messages);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        if (!isValidEmail($request->email)) {
-            return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
-        }
         // Process file Numbers for employees
         $file_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->file_number);
         $file_numbers = array_filter(explode(',', $file_numbers)); // Ensure it's an array of valid numbers
 
         // Handle reservation allowance type
         $part = $request->input('part');
-        if (in_array('1', $part) && in_array('2', $part)) {
-            $reservation_allowance_type = 3; // Both '1' and '2' selected
-        } elseif (in_array('1', $part)) {
-            $reservation_allowance_type = 1; // Only '1' selected
-        } elseif (in_array('2', $part)) {
-            $reservation_allowance_type = 2; // Only '2' selected
-        } elseif (in_array('3', $part)) {
-            $reservation_allowance_type = 4; // Only '3' selected
-        }
+        $reservation_allowance_type = match (true) {
+            in_array('1', $part) && in_array('2', $part) => 3,
+            in_array('1', $part) => 1,
+            in_array('2', $part) => 2,
+            in_array('3', $part) => 4,
+            default => null,
+        };
 
         // Retrieve the user by file_number and set the manager
         $manager = $request->mangered ? User::where('file_number', $request->mangered)->first() : null;
@@ -464,7 +477,7 @@ class DepartmentController extends Controller
                     'مدير ادارة',
                     'تم أضافتك كمدير ادارة',
                     $manager->file_number,
-                    $manager->password,
+                    123456,
                     $manager->email
                 );
             }
@@ -492,8 +505,9 @@ class DepartmentController extends Controller
         if (count($failed_file_numbers) > 0) {
             $message .= ' لكن بعض الموظفين لم يتم إضافتهم بسبب عدم تأكيد النقل أو عدم العثور على ارقام الملفات: ' . implode(', ', $failed_file_numbers);
         }
+        $sector = Sector::find($request->sector);
 
-        return redirect()->route('departments.index', ['id' => $request->sector])->with('message', $message);
+        return redirect()->route('departments.index', $sector->uuid)->with('message', $message);
     }
 
     public function store_1(Request $request)
@@ -513,26 +527,28 @@ class DepartmentController extends Controller
             'budget_type' => 'required',
             'part' => 'required',
             'email' =>  'required',
-            'email',
-            Rule::unique('users', 'email')->ignore($request->mangered),
+            Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
+            function ($attribute, $value, $fail) {
+                // Custom email format validation
+                if (!isValidEmail($value)) {
+                    return $fail('البريد الإلكتروني للمدير غير صالح.');
+                }
+            },
         ], $messages);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        if (!isValidEmail($request->email)) {
-            return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
-        }
+
         $part = $request->input('part');
-        if (in_array('1', $part) && in_array('2', $part)) {
-            $reservation_allowance_type = 3; // Both '1' and '2' selected
-        } elseif (in_array('1', $part)) {
-            $reservation_allowance_type = 1; // Only '1' selected
-        } elseif (in_array('2', $part)) {
-            $reservation_allowance_type = 2; // Only '2' selected
-        } elseif (in_array('3', $part)) {
-            $reservation_allowance_type = 4; // Only '3' selected
-        }
+        $reservation_allowance_type = match (true) {
+            in_array('1', $part) && in_array('2', $part) => 3,
+            in_array('1', $part) => 1,
+            in_array('2', $part) => 2,
+            in_array('3', $part) => 4,
+            default => null,
+        };
+
         $file_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->file_number);
         $file_numbers = array_filter(explode(',', $file_numbers)); // Ensure it's an array of valid numbers
         $manager = $request->mangered ? User::where('file_number', $request->mangered)->first() : null;
@@ -577,7 +593,7 @@ class DepartmentController extends Controller
                     'مدير ادارة',
                     'تم أضافتك كمدير ادارة',
                     $manager->file_number,
-                    $manager->password,
+                    123456,
                     $manager->email
                 );
             }
@@ -678,24 +694,31 @@ class DepartmentController extends Controller
             'budget' => 'nullable|numeric',
             'budget_type' => 'required',
             'part' => 'required',
-            'email' =>  'required',
-            'email',
-            Rule::unique('users', 'email')->ignore($request->mangered),
+            'email' => [
+                'nullable', // Allow email to be null unless manager is set
+                'email', // Ensure valid email format
+                Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
+                function ($attribute, $value, $fail) use ($request) {
+                    // If manager is set, email must not be empty
+                    if ($request->mangered !== null && empty($value)) {
+                        return $fail('البريد الإلكتروني للمدير مطلوب.');
+                    }
+                },
+            ],
         ], $messages);
-
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
-        }
-        if (!isValidEmail($request->email)) {
-            return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
         }
 
         $sectors_details = Sector::where('id', $request->sector)->first();
 
         $allowance = $this->getAllowancedepart($request->budget, $department->id);
 
-        if (!$allowance->original['is_allow']) {
-            $validator->errors()->add('budget',  '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total'] . 'لوجود بدلات حجز اكبر من القيمه المدخله');
+        $allowanceData = json_decode($allowance->getContent(), true);  // Decode JSON response
+
+        // Now you can check the 'is_allow' value as expected
+        if ($allowanceData['is_allow'] === false) {
+            $validator->errors()->add('budget',  '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowanceData['total'] . ' لوجود بدلات حجز اكبر من القيمه المدخله');
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
@@ -725,8 +748,8 @@ class DepartmentController extends Controller
         $department->created_by = Auth::user()->id;
         $department->save();
         saveHistory($department->reservation_allowance_amount, $department->sector_id, $department->id);
-        UpdateUserHistory($manager->id);
-        addUserHistory($manager->id, $department->id,  $request->sector);
+        UpdateUserHistory($manager);
+        addUserHistory($manager, $department->id,  $request->sector);
         // Handle old and new manager updates
         if ($oldManager != $manager) {
             if ($oldManager) {
@@ -838,6 +861,7 @@ class DepartmentController extends Controller
 
     public function update_1(Request $request, departements $department)
     {
+        $department = departements::findOrFail($department->id);
         // Validation rules and error messages
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
@@ -853,20 +877,29 @@ class DepartmentController extends Controller
             'budget' => 'nullable|numeric',
             'budget_type' => 'required',
             'part' => 'required',
-            'email' =>  'required',
-            'email',
-            Rule::unique('users', 'email')->ignore($request->mangered),
+            'email' => [
+                'nullable', // Allow email to be null unless manager is set
+                'email', // Ensure valid email format
+                Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
+                function ($attribute, $value, $fail) use ($request) {
+                    // If manager is set, email must not be empty
+                    if ($request->mangered !== null && empty($value)) {
+                        return $fail('البريد الإلكتروني للمدير مطلوب.');
+                    }
+                },
+            ],
         ], $messages);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        if (!isValidEmail($request->email)) {
-            return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
-        }
-        $allowance = $this->getAllowancedepart($request->budget, $department->id);
-        if (!$allowance->original['is_allow']) {
-            $validator->errors()->add('budget',  '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total'] . 'لوجود بدلات حجز اكبر من القيمه المدخله');
+
+        $allowance = $this->getAllowancedepart($request->budget, $request->id);
+        $allowanceData = json_decode($allowance->getContent(), true);  // Decode JSON response
+
+        // Now you can check the 'is_allow' value as expected
+        if ($allowanceData['is_allow'] === false) {
+            $validator->errors()->add('budget',  '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowanceData['total'] . ' لوجود بدلات حجز اكبر من القيمه المدخله');
             return redirect()->back()->withErrors($validator)->withInput();
         }
 

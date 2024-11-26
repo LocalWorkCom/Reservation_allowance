@@ -29,7 +29,7 @@
                         <div class="container pt-5 pb-2" style="border: 0.2px solid rgb(166, 165, 165);">
                             <form id="transfer-form" action="{{ route('user.unsigned') }}" method="POST">
                                 @csrf
-                                <input type="text" name="id_employee" id="id_employee" value="">
+                                <input type="hidden" name="id_employee" id="id_employee" value="">
                                 <div class="mb-3">
                                     <label style="justify-content: flex-end;"> هل انت متاكد من الغاء التعييين
                                         ؟ </label>
@@ -59,7 +59,7 @@
             <div class="d-flex ">
                 @php
                     // Get the department based on department_id from the request
-                    $department = \App\Models\departements::where('uuid',request()->get('department_id'))->first();
+                    $department = \App\Models\departements::where('uuid', request()->get('department_id'))->first();
                 @endphp
 
                 @if (request()->fullUrlIs('*employees/employee?department_id=*'))
@@ -96,10 +96,10 @@
                         @endif
 
                 </div>
-                @if (request()->fullUrlIs('*employees/employee?department_id=*'))
+                @if (request()->fullUrlIs('*employees/employee/department/*'))
                     <form class="" action="{{ route('user.employees.add') }}" method="post">
-                        <input type="hidden" id="department_id" name="department_id"
-                            value="{{ request()->get('department_id') }}" class="form-control">
+                        <input type="hidden" id="department_id" name="department_id" value="{{ $id }}"
+                            class="form-control">
                         @csrf
                         <div class="row d-flex flex-wrap ">
                             <!-- 1 for sector , 2 for department -->
@@ -224,11 +224,11 @@
                         var filter = 'all'; // Default filter
 
                         @php
-                            $department_id = request()->get('department_id');
-                            $parent_department_id = request()->get('parent_department_id');
-                            $sector_id = request()->get('sector_id');
-                            $type = request()->get('type');
-                            $Civil_number = request()->get('Civil_number'); // Get Civil_number from request
+                            // $department_id = request()->get('department_id');
+                            // $parent_department_id = request()->get('parent_department_id');
+                            // $sector_id = request()->get('sector_id');
+                            // $type = request()->get('type');
+                            // $Civil_number = request()->get('Civil_number'); // Get Civil_number from request
                             $Dataurl = 'api.users'; // Default URL
 
                             if (isset($mode) && $mode == 'search') {
@@ -236,18 +236,27 @@
                             }
 
                             $parms['flag'] = $flag;
-                            if ($department_id) {
-                                $parms['department_id'] = $department_id;
-                            }
-                            if ($parent_department_id) {
-                                $parms['parent_department_id'] = $parent_department_id;
-                            }
-                            if ($sector_id) {
-                                $parms['sector_id'] = $sector_id;
-                            }
-                            if ($Civil_number) {
-                                $parms['Civil_number'] = $Civil_number; // Add Civil_number to parameters
-                            }
+                            $parms['id'] = $id;
+                            $parms['type'] = $type;
+                            $parms['status'] = $status;
+                            // if ($department_id) {
+                            //     $parms['id'] = $department_id;
+                            // $parms['type'] = 'department';
+
+                            // }
+                            // if ($parent_department_id) {
+                            //     $parms['id'] = $parent_department_id;
+                            // $parms['type'] = 'parent';
+
+                            // }
+                            // if ($sector_id) {
+                            //     $parms['id'] = $sector_id;
+                            // $parms['type'] = 'sector';
+
+                            // }
+                            // if ($Civil_number) {
+                            //     $parms['Civil_number'] = $Civil_number; // Add Civil_number to parameters
+                            // }
                         @endphp
                         /*
                           $('#users-table tfoot th').each(function (i) {
@@ -258,12 +267,18 @@
                                   '<input type="text" placeholder="' + title + '" data-index="' + i + '" />'
                               );
                           }); */
+                        var url = '{{ route($Dataurl) }}';
+                        var query = '{{ isset($q) ? '/' . $q : '' }}';
+
+                        // Manually append the parameters
+                        var fullUrl = url + query +
+                            '?flag={{ urlencode($parms['flag']) }}&id={{ urlencode($parms['id']) }}&type={{ urlencode($parms['type']) }}&status={{ urlencode($parms['status']) }}';
+
                         var table = $('#users-table').DataTable({
                             processing: true,
                             serverSide: true,
                             ajax: {
-                                url: '{{ route($Dataurl, $parms) }}' +
-                                    '{{ isset($q) ? '/' . $q : '' }}',
+                                url: fullUrl,
                                 data: function(d) {
                                     d.filter = filter;
                                     // d.department_id = department_id; // Use the global filter variable
@@ -353,7 +368,7 @@
         <a href="` + useredit + `" class="btn btn-sm" style="background-color: #F7AF15;">
             <i class="fa fa-edit"></i> تعديل
         </a>
-        <a class="btn btn-sm ${visibility}" style="background-color: #E3641E;" onclick="openTransferModal(${row.id})">
+        <a class="btn btn-sm ${visibility}" style="background-color: #E3641E;" onclick="openTransferModal('${row.uuid}')">
             <i class="fa-solid fa-user-tie"></i>  الغاء التعيين
         </a>
     `;

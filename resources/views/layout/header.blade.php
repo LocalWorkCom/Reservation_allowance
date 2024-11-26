@@ -100,13 +100,13 @@
                     onclick="toggleDropdown3(event)">
 
                     @if (Auth::user()->rule_id == 2)
-                        <a href="{{ route('user.employees','employee') }}">
+                        <a href="{{ route('user.employees',['employee']) }}">
                             <img src="{{ asset('frontend/images/employees.svg') }}" alt="logo">
                             <h6 class="btn3">موظفين الوزارة</h6>
                         </a>
                     @endif
                     @if (Auth::user()->rule_id != 2)
-                        <a href="{{ route('user.employees','employee') }}">
+                        <a href="{{ route('user.employees',['employee']) }}">
                             <img src="{{ asset('frontend/images/employees.svg') }}" alt="logo">
                             <h6 class="btn3">موظفين القوة</h6>
                         </a>
@@ -155,7 +155,7 @@
                                     @endif
                                     
 
-                                    @if (auth()->check() && auth()->user()->rule_id == 2)
+                                    @if (auth()->check() && in_array(auth()->user()->rule_id, [2, 4]))
                                     <li class="{{ request()->routeIs('reservation_fetch.index') ? 'active' : '' }}">
                                         <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
                                             style="margin-left: 7px;">
@@ -163,7 +163,7 @@
                                     </li>
                                     @endif
 
-                                    @if (auth()->check() && auth()->user()->rule_id == 2)
+                                    @if (auth()->check() && in_array(auth()->user()->rule_id, [2, 4]))
                                     <li class="{{ request()->routeIs('reservation_report.index') ? 'active' : '' }}">
                                         <img src="{{ asset('frontend/images/police.svg') }}" alt="logo" style="margin-left: 7px;">
                                         <a href="{{ route('reserv_report.index') }}">تقارير بدل حجز</a>

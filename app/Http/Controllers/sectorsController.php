@@ -28,20 +28,19 @@ class sectorsController extends Controller
 
         // Handle if no manager is found
         if (!$manager) {
-            return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 405);
+            return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 404);
         }
 
         // Handle the case where $sector is 'null'
         if ($sector === 'null') {
             $sector = null;
         }
-
         // Check for the 'skipDepartmentCheck' flag to perform department/sector validation
         $isDepartmentCheck = request()->has('skipDepartmentCheck') && request()->get('skipDepartmentCheck') === 'true';
         if ($isDepartmentCheck && ($manager->department_id != null || $manager->sector != null || ($sector != $manager->sector && $manager->sector != null))) {
             return response()->json([
                 'error' => 'هذا المستخدم موجود فى قطاع مسبقا . هل تريد نقله ?'
-            ], 404);
+            ], 405);
         }
 
         // Calculate seniority (years of service)
@@ -71,10 +70,19 @@ class sectorsController extends Controller
         $employees = ReservationAllowance::where('sector_id', $sectorId)
             ->whereBetween('date', [$startDate, $endDate])
             ->get();
+        if ($employees) {
+            $totalAmount = $employees->sum('amount');
 
-        // Calculate total amount for the specified sector and date range
-        $totalAmount = $employees->sum('amount');
-        $is_allow = $totalAmount < $amount;
+            if ($totalAmount == 0) {
+                $is_allow = true;
+            } else {
+                $is_allow = $totalAmount < $amount;
+            }
+        } else {
+            $totalAmount = 0;
+            $is_allow = true;
+        }
+
 
         // Return total amount and is_allow status
         return response()->json([
@@ -142,7 +150,7 @@ class sectorsController extends Controller
                 return $btn;
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
-                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount;
+                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount." د.ك";
             })
             ->addColumn('reservation_allowance', function ($row) {
                 if ($row->reservation_allowance_type == 1) {
@@ -156,13 +164,14 @@ class sectorsController extends Controller
                 }
             })
             ->addColumn('employees', function ($row) {
-                $emp_num = User::where('sector', $row->id)->where('flag','employee')->where('department_id', null)->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('user.employees', ['sector_id' => $row->uuid, 'type' => 0, 'flag' => 'employee']) . '> ' . $emp_num . '</a>';
+                $emp_num = User::where('sector', $row->id)->where('flag', 'employee')->where('department_id', null)->count();
+                $btn = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('user.employees', ['id' => $row->uuid, 'type' => 'sector', 'status' => 'null', 'flag' => 'employee']) . '> ' . $emp_num . '</a>';
                 return $btn;
             })
             ->addColumn('employeesdep', function ($row) {
-                $emp_num = User::where('sector', $row->id)->where('flag','employee')->whereNotNull('department_id')->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15p" href=' . route('user.employees', ['sector_id' => $row->uuid, 'type' => 1, 'flag' => 'employee']) . '> ' . $emp_num . '</a>';
+                $emp_num = User::where('sector', $row->id)->where('flag', 'employee')->whereNotNull('department_id')->count();
+                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15p" href=' . route('user.employees', ['id' => $row->uuid, 'type' => 'sector', 'status' => 'notnull', 'flag' => 'employee']) . '> ' . $emp_num . '</a>';
+
                 return $btn;
             })
             ->rawColumns(['action', 'departments', 'employees', 'login_info', 'employeesdep'])
@@ -184,39 +193,46 @@ class sectorsController extends Controller
             'name.required' => 'اسم الحقل مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
-            'email.required' => 'الايميل مطلوب',
-            'budget_type.required' => 'يجب اختيار نوع الميزانيه',
-            'email.unique' => 'عفوا هذا الايميل مأخوذ مسبقا',
+            'email.required' => 'الايميل مطلوب.',
+            'email.unique' => 'الايميل مأخوذ مسبقا و يرجى أدخال أيميل أخر.',
+            'budget_type.required' => 'يجب اختيار نوع الميزانيه.',
+            'email.invalid_format' => 'البريد الإلكتروني للمدير غير صالح.', // Custom error message
         ];
 
-        // Validation rules
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'budget_type' => 'required',
             'budget' => 'nullable|numeric',
             'part' => 'required',
-            'email' =>  'required',
-            'email',
-            Rule::unique('users', 'email')->ignore($request->mangered),
+            'email' => [
+                'nullable', // Allow email to be null unless manager is set
+                Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
+                function ($attribute, $value, $fail) {
+                    // Check if email format is invalid
+                    if ($value && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                        $fail('البريد الإلكتروني للمدير غير صالح.'); // Custom failure message
+                    }
+                },
+            ],
         ], $messages);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        if (!isValidEmail($request->email)) {
-            return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
-        }
+
+
+
+
         // Process Civil_numbers input into an array
         $Civil_numbers = str_replace(["\r", "\r\n", "\n"], ',', $request->Civil_number);
-        $Civil_numbers = explode(',,', $Civil_numbers);
+        $Civil_numbers = explode(',', $Civil_numbers);
 
-        // Find employees based on Civil_number   file_number
+        // Find employees based on Civil_number (file_number)
         $employees = User::whereIn('file_number', $Civil_numbers)->pluck('id')->toArray();
 
         // Initialize manager variable
         $manager = null;
 
-        // Handle the case if `mangered` is provided
         if ($request->mangered) {
             // Find manager based on Civil Number
             $manager = User::where('file_number', $request->mangered)->value('id');
@@ -239,23 +255,24 @@ class sectorsController extends Controller
             in_array('1', $part) => 1,
             in_array('2', $part) => 2,
             in_array('3', $part) => 4,
-            default => null, // Default to null if no match
+            default => null,
         };
-
 
         // Create and save new sector
         $sector = new Sector();
         $sector->name = $request->name;
         $sector->reservation_allowance_type = $reservation_allowance_type;
-        $sector->reservation_allowance_amount = $request->budget_type == 2 ? 00.00 : $request->budget;
+        $sector->reservation_allowance_amount = $request->budget_type == 2 ? 0.00 : $request->budget;
         $sector->manager = $manager;
         $sector->created_by = Auth::id();
         $sector->updated_by = Auth::id();
         $sector->save();
+
+        // Save history
         saveHistory($sector->reservation_allowance_amount, $sector->id, $request->department_id);
         UpdateUserHistory($manager);
         addUserHistory($manager, null, $sector->id);
-        // Handle updating the manager, if present
+
         if ($manager) {
             $user = User::find($manager);
 
@@ -266,7 +283,7 @@ class sectorsController extends Controller
             if ($user->sector != $sector->id || $user->sector != null) {
                 $old_sector = Sector::find($user->sector);
 
-                if ($old_sector) { // Ensure old sector exists
+                if ($old_sector) {
                     $old_sector->manager = null;
                     $old_sector->save();
                     UpdateUserHistory($manager);
@@ -274,17 +291,16 @@ class sectorsController extends Controller
                 }
             }
 
-            // Continue with updating the user
             $user->sector = $sector->id;
             $user->department_id = null;
-
             $user->flag = 'user';
             $user->rule_id = 4;
             $user->email = $request->email;
             $user->password = Hash::make('123456');
             $user->save();
+
             if ($user->email && isValidEmail($user->email)) {
-                Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع ' . $request->name, $user->file_number, 123456, $user->email);
+                Sendmail('مدير قطاع', 'تم أضافتك كمدير قطاع ' . $request->name, $user->file_number, 123456, $user->email);
             }
         }
 
@@ -294,6 +310,7 @@ class sectorsController extends Controller
         // Update employees in the sector
         foreach ($Civil_numbers as $Civil_number) {
             $employee = User::where('file_number', $Civil_number)->first();
+
             if ($employee && $employee->grade_id != null) {
                 $employee->sector = $sector->id;
                 $employee->department_id = null;
@@ -301,7 +318,6 @@ class sectorsController extends Controller
                 UpdateUserHistory($employee->id);
                 addUserHistory($employee->id, null, $sector->id);
             } else {
-                // Add Civil_number to the failed list if the employee is not found or has no grade_id
                 $failed_civil_numbers[] = $Civil_number;
             }
         }
@@ -309,14 +325,13 @@ class sectorsController extends Controller
         // Prepare success message
         $message = 'تم أضافه قطاع جديد';
 
-        // Append failed Civil numbers to the message, if any
         if (count($failed_civil_numbers) > 0) {
             $message .= ' لكن بعض الموظفين لم يتم إضافتهم بسبب عدم العثور على الأرقام الملف أو عدم وجود درجة لهم: ' . implode(', ', $failed_civil_numbers);
         }
 
-        // Redirect to sectors index with success message
         return redirect()->route('sectors.index')->with('message', $message);
     }
+
 
 
     /**
@@ -326,10 +341,10 @@ class sectorsController extends Controller
     {
         $data = $sector;
         $manager = User::find($data->manager);
-        $users = User::where('flag','employee')->where('department_id',null)->where('sector',$data->id)->get();
+        $users = User::where('flag', 'employee')->where('department_id', null)->where('sector', $data->id)->get();
         $managerName = $manager->name ?? 'لا يوجد مدير';
         $departments = departements::where('sector_id', $data->id)->get();
-        return view('sectors.showdetails', compact('data', 'managerName', 'departments','users'));
+        return view('sectors.showdetails', compact('data', 'managerName', 'departments', 'users'));
     }
 
     /**
@@ -355,39 +370,62 @@ class sectorsController extends Controller
 
     public function update(Request $request, Sector $sector)
     {
+        // dd($request->all());
         $sector = Sector::find($request->id);
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
-            'email.required' => 'الايميل مطلوب',
-            'budget_type.required' => 'يجب اختيار نوع الميزانيه',
-            'email.unique' => 'عفوا هذا الايميل مأخوذ مسبقا',
+            'email.required' => 'الايميل مطلوب.',
+            'email.unique' => 'الايميل مأخوذ مسبقا و يرجى أدخال أيميل أخر.',
+            'budget_type.required' => 'يجب اختيار نوع الميزانيه.',
+            'email.invalid_format' => 'البريد الإلكتروني للمدير غير صالح.', // Custom error message
         ];
 
-        // Create a validator instance
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'budget_type' => 'required',
             'budget' => 'nullable|numeric',
             'part' => 'required',
-            'email' =>  'required',
-            'email',
-            Rule::unique('users', 'email')->ignore($request->mangered),
+            'email' => [
+                'nullable', // Allow email to be null unless manager is set
+                Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
+                function ($attribute, $value, $fail) {
+                    // Check if email format is invalid
+                    if ($value && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                        $fail('البريد الإلكتروني للمدير غير صالح.'); // Custom failure message
+                    }
+                },
+            ],
         ], $messages);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        if (!isValidEmail($request->email)) {
-            return redirect()->back()->withErrors(['email' => 'البريد الإلكتروني للمدير غير صالح.'])->withInput();
-        }
-        $allowance = $this->getAllowance($request->budget, $request->id);
 
-        if (!$allowance->original['is_allow']) {
-            $validator->errors()->add('budget',  '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total'] . 'لوجود بدلات حجز اكبر من القيمه المدخله');
+        // Check allowance condition and add custom error if needed
+        $allowance = $this->getAllowance($request->budget, $request->id);
+        // If the budget condition doesn't pass
+        // if ($allowance->original['is_allow']) {
+        //     $errorMessage = '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total'] . ' لوجود بدلات حجز اكبر من القيمه المدخله';
+
+        //     // Add the custom budget error to the validator's errors
+        //     $validator->errors()->add('budget', $errorMessage);
+
+        //     return redirect()->back()->withErrors($validator)->withInput();
+        // }
+        $allowanceData = json_decode($allowance->getContent(), true);  // Decode JSON response
+
+        // Now you can check the 'is_allow' value as expected
+        if ($allowanceData['is_allow'] === false) {
+            $errorMessage = '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total'] . ' لوجود بدلات حجز اكبر من القيمه المدخله';
+
+            // Add the custom budget error to the validator's errors
+            $validator->errors()->add('budget', $errorMessage);
             return redirect()->back()->withErrors($validator)->withInput();
         }
+        // Continue with further logic if validation passes
+
 
         $oldManager = $sector->manager;
         $manager = $request->mangered ? User::where('file_number', $request->mangered)->value('id') : null;
@@ -444,6 +482,12 @@ class sectorsController extends Controller
                     }
                 }
                 if ($newManager) {
+                    $department = departements::where('manger', $newManager->id)->first();
+                    if ($department) {
+                        $department->manger = null;
+                        $department->save();
+                    }
+
                     $newManager->sector = $sector->id;
                     $newManager->department_id = null;
                     $newManager->flag = 'user';

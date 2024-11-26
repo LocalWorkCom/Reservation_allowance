@@ -109,7 +109,6 @@
             'btn-pagination btn-sm'; // Change Pagination Button Class
         var pathArray = window.location.pathname.split('/');
         var departmentId = pathArray[pathArray.length - 1]; // Get the last segment of the URL, which is the ID
-console.log(departmentId);
         // Update DataTables configuration
         $('#users-table').DataTable({
             processing: true,
@@ -286,12 +285,13 @@ console.log(departmentId);
     }
 
     function showUsers(departmentId) {
-        window.location.href = '/employees/employee?department_id=' + departmentId;
+        window.location.href = '/employees/employee/department/' + departmentId;
+
     }
 
     function showSubUsers(parentDepartmentId) {
-        window.location.href = '/employees/employee?parent_department_id=' +
-            parentDepartmentId;
+        window.location.href = '/employees/employee/parent/' + parentDepartmentId;
+
     }
 </script>
 

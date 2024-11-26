@@ -27,7 +27,6 @@ use App\Http\Controllers\ReserveFetchController;
 use App\Http\Controllers\ReserveSectorController;
 use App\Http\Controllers\SubDepartmentStatsController;
 use App\Http\Controllers\SubDepartmentReservationController;
-use App\Http\Controllers\PrisonersDetailsController;
 use App\Http\Controllers\SectorEmployeesDetailsController;
 use App\Http\Controllers\ReservationReportController;
 use App\Http\Controllers\DepartmentEmployeesDetailsController;
@@ -65,7 +64,7 @@ Route::get('/login', function () {
 });
 Route::post('/login', [UserController::class, 'login'])->name('login');
 Route::any('/logout', [UserController::class, 'logout'])->name('logout');
-Route::post('/verfication_code', [UserController::class, 'verfication_code'])->name('verfication_code');
+Route::any('/verfication_code', [UserController::class, 'verfication_code'])->name('verfication_code');
 Route::post('/resend_code', [UserController::class, 'resend_code'])->name('resend_code');
 
 Route::get('/forget-password', function () {
@@ -88,7 +87,7 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/getGoverment/{id}', [UserController::class, 'getGoverment'])->name('user.getGoverment')->middleware('check.permission:view Government');
     Route::any('/getRegion/{id}', [UserController::class, 'getRegion'])->name('user.getRegion')->middleware('check.permission:view Region');
 
-    Route::any('/employees/{flag}', [UserController::class, 'index'])->name('user.employees')->middleware('check.permission:view User');
+    Route::any('/employees/{flag}/{type?}/{id?}/{status?}', [UserController::class, 'index'])->name('user.employees')->middleware('check.permission:view User');
     Route::post('/employees-add', [UserController::class, 'add_employees'])->name('user.employees.add')->middleware('check.permission:create User');
     Route::get('/edit/{user}', [UserController::class, 'edit'])->name('user.edit')->middleware('check.permission:edit User');
     Route::get('/show/{user}', [UserController::class, 'show'])->name('user.show')->middleware('check.permission:view User');
@@ -305,7 +304,7 @@ Route::middleware(['auth'])->group(function () {
 
     // ->middleware('check.permission:fetch ReservationAllowance');
     // ->middleware('check.permission:statistic ReservationAllowance');
-    
+
     // ->middleware('check.permission:report ReservationAllowance');
     Route::get('/employees/by-department/{departmentId}', [DepartmentController::class, 'getEmployeesByDepartment'])->middleware('check.permission:view departements');
 
@@ -324,20 +323,17 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-    //statistics
-    Route::get('/statistics', [statisticController::class, 'index'])->name('statistic.show');
-    Route::get('/statistics/search', [statisticController::class, 'getFilteredData'])->name('statistic.search');
 
     //reservation_allowances
     Route::any('/reservation_allowances', [ReservationAllowanceController::class, 'index'])->name('reservation_allowances.index')->middleware('check.permission:view ReservationAllowance');
     Route::any('/reservation_allowances/create', [ReservationAllowanceController::class, 'create'])->name('reservation_allowances.create')->middleware('check.permission:create ReservationAllowance');
-    Route::any('/reservation_allowances/store', [ReservationAllowanceController::class, 'store'])->name('reservation_allowances.store')->middleware('check.permission:store ReservationAllowance');
+    Route::any('/reservation_allowances/store', [ReservationAllowanceController::class, 'store'])->name('reservation_allowances.store')->middleware('check.permission:create ReservationAllowance');
     Route::any('/reservation_allowances/create_all', [ReservationAllowanceController::class, 'create_all'])->name('reservation_allowances.create.all')->middleware('check.permission:create ReservationAllowance');
     Route::any('/reservation_allowances/get_crate_all_form/{sector}/{department}', [ReservationAllowanceController::class, 'get_crate_all_form'])->name('reservation_allowances.get_crate_all_form')->middleware('check.permission:create ReservationAllowance');
     Route::any('/reservation_allowances/get_check_sector_department/{sector}/{department}/{civilNumber}', [ReservationAllowanceController::class, 'get_check_sector_department'])->name('reservation_allowances.get_check_sector_department')->middleware('check.permission:view ReservationAllowance');
     Route::any('/reservation_allowances/index_data/{sector}/{departement}/{date}', [ReservationAllowanceController::class, 'index_data'])->name('reservation_allowances.index_data')->middleware('check.permission:view ReservationAllowance');
     Route::any('/reservation_allowances/check_store', [ReservationAllowanceController::class, 'check_store'])->name('reservation_allowances.check_store')->middleware('check.permission:view ReservationAllowance');
-    Route::any('/reservation_allowances/store_all', [ReservationAllowanceController::class, 'store_all'])->name('reservation_allowances.store.all')->middleware('check.permission:store ReservationAllowance');
+    Route::any('/reservation_allowances/store_all', [ReservationAllowanceController::class, 'store_all'])->name('reservation_allowances.store.all')->middleware('check.permission:create ReservationAllowance');
     Route::any('/reservation_allowances/update', [ReservationAllowanceController::class, 'update'])->name('reservation_allowances.edit')->middleware('check.permission:update ReservationAllowance');
     Route::any('/reservation_allowances/edit/{id}', [ReservationAllowanceController::class, 'edit'])->name('reservation_allowances.update')->middleware('check.permission:edit ReservationAllowance');
     Route::any('/reservation_allowances/getAll', [ReservationAllowanceController::class, 'getAll'])->name('reservation_allowances.getAll')->middleware('check.permission:view ReservationAllowance');
@@ -352,9 +348,14 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/reservation_allowances/create_employee_new', [ReservationAllowanceController::class, 'create_employee_new'])->name('reservation_allowances.create_employee_new')->middleware('check.permission:create ReservationAllowance');
     Route::any('/reservation_allowances/create_employee_all', [ReservationAllowanceController::class, 'create_employee_all'])->name('reservation_allowances.create_employee_all')->middleware('check.permission:create ReservationAllowance');
 
-
+    //reserv statics
  Route::group(['middleware' => ['check.permission:statistic ReservationAllowance']], function () {
+    
+    //statistics
+    Route::get('/statistics', [statisticController::class, 'index'])->name('statistic.show');
+    Route::get('/statistics/search', [statisticController::class, 'getFilteredData'])->name('statistic.search');
     //reservation statics for departments per sector
+
     Route::get('/statistics_department/{sector_id}', [ReservationStaticsController::class, 'static'])->name('Reserv_statistic_department.index');
     Route::get('/statistics_department/getAll/{sector_id}', [ReservationStaticsController::class, 'getAll'])->name('Reserv_statistic.getAll');
     Route::get('/all-department-employees/{departmentId}', [ReservationStaticsController::class, 'departmentEmployeesPage'])->name('all.department.employees.page');
@@ -411,6 +412,7 @@ Route::group(['middleware' => ['check.permission:search ReservationAllowance']],
     Route::any('/reservations/other-dates', [ReserveFetchController::class, 'getCustomDateRange'])->name('reservation_fetch.getCustomDateRange');
 });
 
+    //reserv reports
 Route::group(['middleware' => ['check.permission:report ReservationAllowance']], function () {
 
     Route::get('reservation_report', [ReservationReportController::class, 'index'])->name('reserv_report.index');

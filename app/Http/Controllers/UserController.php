@@ -35,14 +35,13 @@ use App\Imports\ImportUser;
 use App\Exports\ExportUser;
 use App\Exports\UsersExport;
 use App\Exports\UsersImportTemplate;
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendEmail;
 
 /**
  * Send emails
  */
 
-use App\Mail\SendEmail;
-use Illuminate\Support\Facades\Mail;
 use TCPDF;
 
 class UserController extends Controller
@@ -59,31 +58,111 @@ class UserController extends Controller
 
 
     // }
-    public function index(Request $request, $flag)
+    public function index($flag, $type = 0, $id = 0, $status = 0)
 
     {
         addUuidToTable('users');
 
-        $department_id = $request->get('department_id'); // Fetch department_id from the request
-
+        // $department_id = $request->get('id'); // Fetch department_id from the request
+        $Officer = 0;
+        $Officer2 = 0;
+        $person = 0;
+        $all = 0;
         // Fetch all users in the specified department
         // $users = User::where('department_id', $department_id)->get();
 
         // Fetch grade counts based on user associations
         // $gradeIds = $users->pluck('grade_id'); // Get all grade IDs from users in this department
 
+        if ($type == "department") {
+            $search_id = Departements::where('uuid', $id)->first()->id;
+        } elseif ($type == 'sector') {
+            $search_id = Sector::where('uuid', $id)->first()->id;
+        } elseif ($type == 'parent') {
+            $search_id = Departements::where('uuid', $id)->first()->id;
+        }
+
+
         $gradeall = Grade::pluck('id')->toArray();
-        $all = User::where('department_id', $department_id)->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
+        if ($type == "department") {
+            $all = User::where('department_id', $search_id)->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
 
-        // dd($all);
-        $gradeperson = Grade::where('type', 3)->pluck('id')->toArray();
-        $person = User::where('department_id', $department_id)->where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
+            $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
+            $person = User::where('department_id', $search_id)->where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
 
-        $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
-        $Officer = User::where('department_id', $department_id)->where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
+            $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
+            $Officer = User::where('department_id', $search_id)->where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
 
-        $graseOfficer2 = Grade::where('type', 1)->pluck('id')->toArray();
-        $Officer2 = User::where('department_id', $department_id)->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
+            $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
+            $Officer2 = User::where('department_id', $search_id)->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
+
+        } elseif ($type == "sector") {
+            if ($status == 'null') {
+                $all = User::where('sector', $search_id)->whereNull('department_id')->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
+                $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
+                $person = User::where('sector', $search_id)->whereNull('department_id')->where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
+                $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
+                $Officer = User::where('sector', $search_id)->whereNull('department_id')->where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
+                $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
+                $Officer2 = User::where('sector', $search_id)->whereNull('department_id')->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
+            }elseif ($status == 'notnull') {
+                $all = User::where('sector', $search_id)->whereNotNull('department_id')->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
+                $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
+                $person = User::where('sector', $search_id)->whereNotNull('department_id')->where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
+                $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
+                $Officer = User::where('sector', $search_id)->whereNotNull('department_id')->where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
+                $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
+                $Officer2 = User::where('sector', $search_id)->whereNotNull('department_id')->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
+            }
+
+            // $all = User::where('sector', $search_id)->where($cond_dep)->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
+            // $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
+            // $person = User::where('sector', $search_id)->where($cond_dep)->where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
+            // $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
+            // $Officer = User::where('sector', $search_id)->where($cond_dep)->where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
+            // $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
+            // $Officer2 = User::where('sector', $search_id)->where($cond_dep)->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
+
+        } elseif ($type == "parent") {
+            $subdepartment_ids = Departements::where('parent_id', $search_id)->pluck('id');
+            $all = User::whereIn('department_id', $subdepartment_ids)->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
+
+            $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
+            $person = User::whereIn('department_id', $subdepartment_ids)->where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
+
+
+            $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
+            $Officer = User::whereIn('department_id', $subdepartment_ids)->where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
+
+            $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
+            $Officer2 = User::whereIn('department_id', $subdepartment_ids)->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
+
+            // $all = User::where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
+
+            // // dd($all);
+            // $gradeperson = Grade::where('type', 3)->pluck('id')->toArray();
+            // $person = User::where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
+
+            // $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
+            // $Officer = User::where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
+
+            // $graseOfficer2 = Grade::where('type', 1)->pluck('id')->toArray();
+            // $Officer2 = User::where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
+
+        } else {
+            
+            $all = User::where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
+
+            // dd($all);
+            $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
+            $person = User::where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
+
+            $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
+            $Officer = User::where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
+
+            $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
+            $Officer2 = User::where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
+        }
 
         // Fetch related departments and sectors
         $departments = departements::all();
@@ -91,7 +170,7 @@ class UserController extends Controller
 
 
 
-        return view('user.view', compact('departments', 'department_id', 'sectors', 'Officer', 'Officer2', 'person', 'all', 'flag'));
+        return view('user.view', compact('departments', 'sectors', 'Officer', 'Officer2', 'person', 'all', 'flag', 'type', 'id', 'status'));
     }
 
 
@@ -134,7 +213,7 @@ class UserController extends Controller
         UpdateUserHistory($user->id);
         addUserHistory($user->id, $department_id, $sector_id);
 
-        return redirect()->route('user.employees', ['department_id' => $department_id, 'flag' => 'employee']);
+        return redirect()->route('user.employees', ['id' => $uuid, 'flag' => 'employee', 'type' => 'department']);
     }
 
 
@@ -142,10 +221,25 @@ class UserController extends Controller
     {
         $flag = $request->flag;
         $parentDepartment = Departements::find(Auth()->user()->department_id);
-
+        $status =  $request->get('status');
         $filter = $request->get('filter'); // Retrieve filter
-        $department_id = $request->get('amp;department_id'); // Fetch department_id from the request
+        $parent_department_id = 0;
+        $sector_id = 0;
+        $department_id = 0;
+        if (request()->has('type') && $request->get('type') == 'department') {
+            $id_department = $request->get('id'); // Fetch department_id from the request
+            $department_id = Departements::where('uuid', $id_department)->first()->id;
+        }
 
+        if (request()->has('type') && $request->get('type') == 'sector') {
+            $id_sector = $request->get('id'); // Fetch department_id from the request
+            $sector_id = Sector::where('uuid', $id_sector)->first()->id;
+        }
+
+        if (request()->has('type') && $request->get('type') == 'parent') {
+            $id_parent_department = $request->get('id'); // Fetch department_id from the request
+            $parent_department_id = Departements::where('uuid', $id_parent_department)->first()->id;
+        }
 
         // Apply the filter based on the type
 
@@ -173,26 +267,22 @@ class UserController extends Controller
                 }
             }
         }
-        // dd($request);
+        // dd(Input::get('sector_id'));
 
         // Apply additional filters using `request()->get()`
-        if (request()->has('department_id')) {
-            $data = $data->where('department_id', request()->get('department_id'));
-        } elseif ($request->has('parent_department_id')) {
-            $subdepartment_ids = Departements::where('parent_id', $request->get('parent_department_id'))->pluck('id');
+        if ($department_id) {
+            $data = $data->where('department_id', $department_id);
+        } elseif ($parent_department_id) {
+            $subdepartment_ids = Departements::where('parent_id', $parent_department_id)->pluck('id');
             $data = $data->whereIn('department_id', $subdepartment_ids);
         }
         //dd($request->amp;type);
-        if (request()->has('sector_id') && request()->has('amp;type')) {
-            if (request()->has('amp;type') == 0) {
-                $data = $data->where('sector', request()->get('sector_id'))->whereNull('department_id');
-            } else {
-                $data = $data->where('sector', request()->get('sector_id'))->whereNotNull('department_id');
+        if ($sector_id) {
+            if ($status == 'null') {
+                $data = $data->where('sector', $sector_id);
+            } else if ($status == 'notnull') {
+                $data = $data->where('sector', $sector_id);
             }
-        }
-        if (request()->has('sector_id')) {
-            if (request()->has('amp;type') != 1)
-                $data = $data->where('sector', request()->get('sector_id'))->whereNull('department_id');
         }
 
         if (request()->has('Civil_number')) {
@@ -200,27 +290,27 @@ class UserController extends Controller
                 $data = $data->where('Civil_number', request()->get('Civil_number'));
         }
 
+
         // $gradeIds = $users->pluck('grade_id'); // Get all grade IDs from users in this department
         if ($filter == 'all') {
 
             $all = Grade::pluck('id')->toArray();
-            $data->where('department_id', $department_id)->whereIn('grade_id', $all);
+            $data->whereIn('grade_id', $all);
         } elseif ($filter == 'person') {
-            $person = Grade::where('type', 3)->pluck('id')->toArray();
-            $data->where('department_id', $department_id)->whereIn('grade_id', $person);
+            $person = Grade::where('type', 1)->pluck('id')->toArray();
+            $data->whereIn('grade_id', $person);
         } elseif ($filter == 'Officer') {
             $Officer = Grade::where('type', 2)->pluck('id')->toArray();
-            $data->where('department_id', $department_id)->whereIn('grade_id', $Officer);
+            $data->whereIn('grade_id', $Officer);
             // dd($data->get());
         } elseif ($filter == 'Officer2') {
-            $Officer2 = Grade::where('type', 1)->pluck('id')->toArray();
-            $data->where('department_id', $department_id)->whereIn('grade_id', $Officer2);
+            $Officer2 = Grade::where('type', 3)->pluck('id')->toArray();
+            $data->whereIn('grade_id', $Officer2);
         }
         // Finally, fetch the results
         $data = $data->orderby('grade_id', 'asc')->get();
 
-        // dd($data);
-        return DataTables::of($data)->addColumn('action', function ($row) {
+       return DataTables::of($data)->addColumn('action', function ($row) {
             return $row;
         })
             ->addColumn('department', function ($row) {
@@ -400,27 +490,26 @@ class UserController extends Controller
 
     public function resend_code(Request $request)
     {
-        // dd($request);
+        $user = User::where('email', $request->number)->first();
+        // Generate a verification code
         $set = '123456789';
         $code = substr(str_shuffle($set), 0, 4);
-        // $msg = trans('message.please verified your account') . "\n" . trans('message.code activation') . "\n" . $code;
         $msg  = "يرجى التحقق من حسابك\nتفعيل الكود\n" . $code;
-        $user = User::where('military_number', $request->number)->orwhere('Civil_number', $request->number)->first();
-        // Send activation code via WhatsApp (assuming this is your preferred method)
-        $response = send_sms_code($msg, $user->phone, $user->country_code);
-        $result = json_decode($response, true);
-        // $code = $request->code;
-        $military_number = $request->military_number;
-        $number = $request->number;
-        $password = $request->password;
-        $sent = $result['sent'];
-        if ($sent === 'true') {
-            // dd("true");
-            return  view('verfication_code', compact('code', 'number', 'military_number', 'password'));
-        } else {
+        $password = 123456;
+        // Retrieve the user's email (assuming it's stored in the 'email' column)
+        $number = $user->email;
+        $user->code = $code;
+        $user->save();
+        $details = [
+            'title' => 'كود التفعيل',
+            'body' => "هذا هو كود التفعيل ",
+            'username' => $user->file_number,
+            'password' => null, // Pass the password if needed
+            'code' => $code, // Pass code
+        ];
 
-            return back()->with('error', 'سجل الدخول مرة أخرى');
-        }
+        Mail::to($number)->send(new SendEmail($details));
+        return  view('verfication_code', compact('code', 'number', 'password'));
     }
 
     public function verfication_code(Request $request)
@@ -443,11 +532,12 @@ class UserController extends Controller
         $code = $request->code;
         $number = $request->number;
         $password = $request->password;
-
+        // dd($request->verfication_code);
+        // dd($request->code, $request->verfication_code);
         // Check if the provided verification code matches the expected code
         if ($request->code === $request->verfication_code) {
             // Find the user by military number
-            $user = User::where('military_number', $number)->orwhere('Civil_number', $number)->first();
+            $user = User::where('email', $number)->first();
 
             // Save the activation code and password
             $user->code = $request->code;
@@ -455,21 +545,21 @@ class UserController extends Controller
 
 
             // dd($user);
-            $firstlogin = 0;
+            // $firstlogin = 0;
 
             // Coming from forget_password2
-            if ($user->token == null) {
-                $firstlogin = 1;
-                return view('resetpassword', compact('number', 'firstlogin'));
-                // }
+            // if ($user->token == null) {
+            //     $firstlogin = 1;
+            //     return view('resetpassword', compact('number', 'firstlogin'));
+            //     // }
 
+            // } else {
+            if (url()->previous() == route('forget_password2') || url()->previous() == route('resend_code') || url()->previous() == route('verfication_code')) {
+                return view('resetpassword', compact('number'));
             } else {
-                if (url()->previous() == route('forget_password2') || url()->previous() == route('resend_code') || url()->previous() == route('verfication_code')) {
-                    return view('resetpassword', compact('number', 'firstlogin'));
-                } else {
-                    return redirect()->route('home');
-                }
+                return redirect()->route('home');
             }
+            // }
         } else {
             // If verification code does not match, return back with error message and input values
             return view('verfication_code')->withErrors('الكود خاطئ.')
@@ -480,11 +570,11 @@ class UserController extends Controller
     }
 
 
+
     public function forget_password2(Request $request)
     {
-        // dd($request);
         $messages = [
-            'number.required' => 'رقم العسكري /الرقم المدنى مطلوب.',
+            'number.required' => 'رقم الملف مطلوب.',
         ];
 
         $validatedData = Validator::make($request->all(), [
@@ -495,36 +585,39 @@ class UserController extends Controller
             return back()->withErrors($validatedData)->withInput();
         }
 
-        $user = User::where('military_number', $request->number)->orwhere('Civil_number', $request->number)->first();
+        $user = User::where('file_number', $request->number)->first();
 
         if (!$user) {
-            return back()->with('error', 'الرقم العسكري لا يتطابق مع سجلاتنا');
+            return back()->with('error', 'الرقم الملف لا يتطابق مع سجلاتنا');
         } elseif ($user->flag !== 'user') {
             return back()->with('error', 'لا يسمح لك بدخول الهيئة');
         } else {
-            // Generate and send verification code
+            // Generate a verification code
             $set = '123456789';
             $code = substr(str_shuffle($set), 0, 4);
             $msg  = "يرجى التحقق من حسابك\nتفعيل الكود\n" . $code;
-            // $msg = trans('message.please verified your account') . "\n" . trans('message.code activation') . "\n" . $code;
-            $user = User::where('military_number', $request->number)->orwhere('Civil_number', $request->number)->first();
-            // Send activation code via WhatsApp (assuming this is your preferred method)
-            $response = send_sms_code($msg, $user->phone, $user->country_code);
-            $result = json_decode($response, true);
-            // $code = $request->code;
-            $number = $request->number;
-            $password = $request->password;
-            $sent = $result['sent'];
-            if ($sent === 'true') {
+            $password = 123456;
+            // Retrieve the user's email (assuming it's stored in the 'email' column)
+            $number = $user->email;
+            $user->code = $code;
+            $user->save();
+            $details = [
+                'title' => 'كود التفعيل',
+                'body' => "هذا هو كود التفعيل ",
+                'username' => $user->file_number,
+                'password' => null, // Pass the password if needed
+                'code' => $code, // Pass code
+            ];
 
-                return  view('verfication_code', compact('code', 'number', 'password'));
-            } else {
+            Mail::to($number)->send(new SendEmail($details));
 
-                return back()->with('error', 'سجل الدخول مرة أخرى');
-            }
+            // Sendmail('تحديث الباسورد', ' تم تجديد الباسورد',  $request->number,  $code, $number);
+
+
+            // After sending the email, redirect to the verification page with the code and other data
+            return  view('verfication_code', compact('code', 'number', 'password'));
         }
     }
-
     public function reset_password(Request $request)
     {
         $messages = [
@@ -542,11 +635,10 @@ class UserController extends Controller
         if ($validatedData->fails()) {
             return view('resetpassword')
                 ->withErrors($validatedData)
-                ->with('number', $request->number)
-                ->with('firstlogin', $request->firstlogin);
+                ->with('number', $request->number);
         }
 
-        $user = User::where('military_number', $request->number)->orwhere('Civil_number', $request->number)->first();
+        $user = User::where('email', $request->number)->first();
 
         if (!$user) {
             return back()->with('error', 'الرقم العسكري المقدم لا يتطابق مع سجلاتنا');
@@ -554,15 +646,9 @@ class UserController extends Controller
         if (Hash::check($request->password, $user->password) == true) {
             return view('resetpassword')
                 ->withErrors('لا يمكن أن تكون كلمة المرور الجديدة هي نفس كلمة المرور الحالية')
-                ->with('number', $request->number)
-                ->with('firstlogin', $request->firstlogin); // Define $firstlogin here if needed
+                ->with('number', $request->number); // Define $firstlogin here if needed
         }
 
-        // Update password and set token for first login if applicable
-
-        if ($request->firstlogin == 1) {
-            $user->token = "logined";
-        }
         $user->password = Hash::make($request->password);
         $user->save();
         Auth::login($user); // Log the user in
@@ -624,12 +710,6 @@ class UserController extends Controller
 
         // Fetch grades based on the selected violation type
         $grades = Grade::where('type', $selectedViolationType)->get();
-        // dd($user->department_id);
-        // if ($flag == "0") {
-        //     $alldepartment = departements::where('id', $user->department_id)->orwhere('parent_id', $user->department_id)->get();
-        // } else {
-        //     $alldepartment = departements::where('id', $user->public_administration)->orwhere('parent_id', $user->public_administration)->get();
-        // }
 
         if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
             $alluser = User::where('flag', 'employee')->get();
@@ -678,9 +758,9 @@ class UserController extends Controller
     public function unsigned(Request $request)
     {
         //
-        $user = User::find($request->id_employee);
+        $user = User::where('uuid', $request->id_employee)->first();
         UpdateUserHistory($user->id);
-        $user = User::find($request->id_employee);
+        $user = User::where('uuid', $request->id_employee)->first();
         $user->department_id  = Null;
         $user->sector  = Null;
         $user->flag  = 'employee';

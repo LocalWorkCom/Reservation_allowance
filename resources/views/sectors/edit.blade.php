@@ -58,6 +58,11 @@
     </div>
 
     <br>
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
 
     <form class="edit-grade-form" id="Qta3-form" action="{{ route('sectors.update', $data) }}" method="POST">
         @csrf
@@ -84,18 +89,11 @@
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
-                {{-- <div class="input-group moftsh px-md-5 px-3 pt-3" id="email_field"
+                <div class="input-group moftsh px-md-5 px-3 pt-3" id="email_field"
                     style= "{{ old('mangered', $data->manager ? 'display: block;' : 'display: none;') }}">
-                    <label for="email">الأيميل</label>
-                    <input type="email" name="email" id="email"
-                        value="{{ old('mangered', $data->manager ? $email : null) }}" class="form-control" required>
-                    @error('email')
-                        <div class="alert alert-danger">{{ $message }}</div>
-                    @enderror
-                </div> --}}
-                <div class="input-group moftsh px-md-5 px-3 pt-3" id="email_field" style= "{{ old('mangered', $data->manager ? 'display: block;' : 'display: none;') }}">
                     <label class="pb-3 w-100" for="email"> الايميل</label>
-                    <input type="email" name="email" id="email" value="{{ old('mangered', $data->manager ? $email : null) }}"  class="form-control" required>
+                    <input type="email" name="email" id="email"
+                        value="{{ old('mangered', $data->manager ? $email : null) }}" class="form-control">
                     @error('email')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
@@ -131,63 +129,101 @@
                 <div class="input-group moftsh px-md-5 px-3 pt-3">
                     <label for="" class="col-12">ميزانيه الحجز</label>
                     <div class="d-flex mt-3" dir="rtl">
-                        <input type="radio" class="toggle-radio-buttons mx-2"
-                            {{ (float) $data->reservation_allowance_amount > 0.0 ? 'checked' : '' }} name="budget_type"
-                            value="1" id="notFree" style="height:30px;">
-                        <label for="notFree" class="col-12">ميزانيه محدده</label>
+                        <input type="radio" class="toggle-radio-buttons mx-2" name="budget_type" value="1"
+                            id="notFree" style="height:30px;"
+                            {{ old('budget_type', $data->reservation_allowance_amount != '0.00' ? 1 : null) == 1 ? 'checked' : '' }}
+                            @if ($errors->has('budget')) checked @endif> <label for="notFree" class="col-12">ميزانيه
+                            محدده</label>
 
-                        <input type="radio" class="toggle-radio-buttons mx-2" name="budget_type"
-                            {{ (float) $data->reservation_allowance_amount == 0.0 ? 'checked' : '' }} value="2"
-                            id="free" style="height:30px;">
+                        <input type="radio" class="toggle-radio-buttons mx-2" name="budget_type" value="2"
+                            id="free" style="height:30px;"
+                            {{ old('budget_type', (float) $data->reservation_allowance_amount == 0.0 ? 2 : null) == 2 ? 'checked' : '' }}>
                         <label for="free" class="col-12">ميزانيه غير محدده</label>
                     </div>
                 </div>
 
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="budgetField"
-                    style={{ (float) $data->reservation_allowance_amount > 0.0 ? 'display: block' : 'display: none;' }}>
+                    style="{{ old('budget_type', (float) $data->reservation_allowance_amount > 0.0 ? 1 : null) == 1 ? 'display: block;' : 'display: none;' }}">
                     <label class="d-flex pb-3" for="budget">ميزانية بدل حجز</label>
                     <input type="text" name="budget" class="form-control"
-                        value=" {{ (float) $data->reservation_allowance_amount > 0.0 ? $data->reservation_allowance_amount : 00.0 }}"
+                        value="{{ old('budget', $data->reservation_allowance_amount > 0.0 ? $data->reservation_allowance_amount : '') }}"
                         id="budget" autocomplete="one-time-code">
-                    @error('budget')
-                        <div class="alert alert-danger">{{ $message }}</div>
-                    @enderror
+
                 </div>
+                @error('budget')
+                    <div class="alert alert-danger">{{ $message }}</div>
+                @enderror
                 <div class="input-group moftsh px-md-5 px-3 pt-3">
                     <label for="" class="col-12">صلاحيه الحجز</label>
                     <div class="d-flex mt-3" dir="rtl">
                         <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="fullBooking"
-                            style="height:30px;" @if ($data->reservation_allowance_type == 1 || $data->reservation_allowance_type == 3) checked @endif name="part[]">
-                        <label for="fullBooking" class="col-12"> حجز كلى</label>
+                            name="part[]" style="height:30px;"
+                            {{ in_array(1, old('part', $data->reservation_allowance_type == 1 || $data->reservation_allowance_type == 3 ? [1] : [])) ? 'checked' : '' }}>
+                        <label for="fullBooking" class="col-12">حجز كلى</label>
 
-                        <input type="checkbox" class="toggle-radio-buttons mx-2" style="height:30px;" value="2"
-                            id="partialBooking" @if ($data->reservation_allowance_type == 2 || $data->reservation_allowance_type == 3) checked @endif name="part[]">
+                        <input type="checkbox" class="toggle-radio-buttons mx-2" value="2" id="partialBooking"
+                            name="part[]" style="height:30px;"
+                            {{ in_array(2, old('part', $data->reservation_allowance_type == 2 || $data->reservation_allowance_type == 3 ? [2] : [])) ? 'checked' : '' }}>
                         <label for="partialBooking" class="col-12">حجز جزئى</label>
 
                         <input type="checkbox" class="toggle-radio-buttons mx-2" value="3" id="noBooking"
-                            style="height:30px;" @if ($data->reservation_allowance_type == 4) checked @endif name="part[]">
+                            name="part[]" style="height:30px;"
+                            {{ in_array(3, old('part', $data->reservation_allowance_type == 4 ? [3] : [])) ? 'checked' : '' }}>
                         <label for="noBooking" class="col-12">لا يوجد بدل حجز</label>
-
-                        @error('part')
-                            <div class="alert alert-danger">{{ $message }}</div>
-                        @enderror
                     </div>
-
+                    @error('part')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
                 </div>
-                    <div class="container col-11">
-                        <div class="form-row d-flex justify-content-end mt-4 mb-3">
-                            <button type="submit" class="btn-blue">
-                                <img src="{{ asset('frontend/images/white-add.svg') }}" alt="img" height="20px"
-                                    width="20px">
-                                اضافة
-                            </button>
-                        </div>
+
+                <div class="container col-11">
+                    <div class="form-row d-flex justify-content-end mt-4 mb-3">
+                        <button type="submit" class="btn-blue">
+                            <img src="{{ asset('frontend/images/white-add.svg') }}" alt="img" height="20px"
+                                width="20px">
+                            اضافة
+                        </button>
                     </div>
                 </div>
             </div>
+        </div>
     </form>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @if ($errors->any())
+    <script>
+        $(document).ready(function() {
+            var selectedManagerId = $('#mangered').val();
 
+            if (selectedManagerId) {
+                $('#email_field').show();
+                fetchManagerDetails(selectedManagerId, false);
+
+                var existingEmail = @json(old('email'));
+                var existingBudget = @json(old('budget'));
+
+                if (existingEmail) {
+                    $('#email_field').show();
+                    $('#email').val(@json(old('email')));
+                }
+
+                if (existingBudget) {
+                    $('#notFree').prop('checked', true);
+                    $('#budgetField').css({
+                        display: 'block',
+                        visibility: 'visible',
+                        opacity: 1
+                    });
+                    $('#budget').val(existingBudget);
+                } else {
+                    $('#Free').prop('checked', true);
+                }
+            } else {
+                $('#manager_details').hide();
+                $('#email_field').hide();
+            }
+        });
+    </script>
+@endif
     <script>
         // Initialize select2 for RTL
         $('.select2').select2({
@@ -195,18 +231,13 @@
         });
         $(document).ready(function() {
             var selectedManagerId = $('#mangered').val();
-            console.log("Selected Manager ID:", selectedManagerId);
 
             if (selectedManagerId) {
-                console.log("About to show #email_field and fetch manager details...");
                 $('#email_field').show();
                 fetchManagerDetails(selectedManagerId, false);
 
                 var existingEmail = @json(old('mangered', $data->manager ? $email : null));
                 var existingBudget = @json(old('budget', $data->reservation_allowance_amount ? $data->reservation_allowance_amount : ''));
-
-                console.log("Existing Email:", existingEmail);
-                console.log("Existing Budget:", existingBudget);
 
                 if (existingEmail) {
                     $('#email_field').css({
@@ -275,7 +306,7 @@
                     },
                     error: function(xhr) {
                         // Handle different error responses
-                        if (xhr.status === 404) {
+                        if (xhr.status === 405) {
                             Swal.fire({
                                 title: 'تحذير',
                                 text: xhr.responseJSON.error || 'عفوا هذا المستخدم غير موجود',
