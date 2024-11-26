@@ -23,7 +23,27 @@ class ReserveFetchController extends Controller
    
     private function fetchUser($fileNumber)
     {
-        return User::where('file_number', $fileNumber)->first();
+        $query = User::query()->where('file_number', $fileNumber);
+    
+        $manager = Auth::user();
+    
+        if ($manager->rule_id == 3) { // Department Manager
+            $accessibleDepartments = array_merge(
+                [$manager->department_id],
+                $this->getManagerAccessibleDepartments($manager->department_id)
+            );
+            $query->whereIn('department_id', $accessibleDepartments);
+        }
+    
+        if ($manager->rule_id == 4) { // Sector Manager
+            $accessibleDepartments = $this->getSectorDepartments($manager->sector);
+            $query->where(function ($q) use ($manager, $accessibleDepartments) {
+                $q->where('sector', $manager->sector)
+                  ->orWhereIn('department_id', $accessibleDepartments);
+            });
+        }
+    
+        return $query->first();
     }
 
     private function getManagerAccessibleDepartments($departmentId)
@@ -39,24 +59,25 @@ class ReserveFetchController extends Controller
     private function canAccessEmployeeData($manager, $employee)
     {
         if ($manager->rule_id == 2) {
-            return true; 
+            return true; // Super Admin: Access to all users
         }
-
-        if ($manager->rule_id == 3) { 
+    
+        if ($manager->rule_id == 3) { // Department Manager
             $accessibleDepartments = array_merge(
                 [$manager->department_id],
                 $this->getManagerAccessibleDepartments($manager->department_id)
             );
             return in_array($employee->department_id, $accessibleDepartments);
         }
-
-        if ($manager->rule_id == 4) { 
+    
+        if ($manager->rule_id == 4) { // Sector Manager
             $accessibleDepartments = $this->getSectorDepartments($manager->sector);
             return $employee->sector == $manager->sector || in_array($employee->department_id, $accessibleDepartments);
         }
-
+    
         return false;
     }
+    
 
     private function addCommonColumns($dataTable)
 {
@@ -70,15 +91,8 @@ class ReserveFetchController extends Controller
         ->addColumn('type', fn($row) => $row->type == 1 ? 'حجز كلي' : 'حجز جزئي')
         ->addColumn('amount', fn($row) => number_format($row->amount, 2) . ' د ك')
         ->addIndexColumn();
+        
 }
-
-
-    private function getGradeType($user)
-    {
-        return match (grade::find($user->grade_id)?->type ?? null) {
-            1 => 'فرد', 2 => 'ظابط', 3 => 'مهني', default => 'N/A',
-        };
-    }
 
     private function fetchReservations($userId, $startDate, $endDate)
     {
@@ -100,21 +114,21 @@ class ReserveFetchController extends Controller
 
 
     public function getAll(Request $request)
-{
-    $fileNumber = $request->input('file_number'); 
-    $employee = $this->fetchUser($fileNumber);
-
-    if ($employee && $this->canAccessEmployeeData(Auth::user(), $employee)) {
-        $reservations = ReservationAllowance::where('user_id', $employee->id)
-            ->with(['user', 'departements', 'sector', 'grade']) // Include relationships
-            ->get();
-
+    {
+        $fileNumber = $request->input('file_number'); 
+        $employee = $this->fetchUser($fileNumber);
+    
+        if ($employee && $this->canAccessEmployeeData(Auth::user(), $employee)) {
+            $reservations = ReservationAllowance::where('user_id', $employee->id)
+                ->with(['user', 'departements', 'sector', 'grade']) 
+                ->get();
+    
             return $this->handleReservationData($employee, $reservations);
         }
-
-    return $this->userNotFoundOrUnauthorizedResponse();
-}
-
+    
+        return $this->userNotFoundOrUnauthorizedResponse();
+    }
+    
     
     
 

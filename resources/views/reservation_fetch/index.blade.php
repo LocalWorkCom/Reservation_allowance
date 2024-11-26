@@ -168,7 +168,7 @@
 <!-- Results Table -->
 <div class="container col-11 py-4 mt-3" >
    
-        <table id="reservation-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
+        <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
             <thead>
                 <tr>
                     <th>الترتيب</th>
@@ -198,7 +198,7 @@
     let table = null;
 
     function initializeTable(url) {
-        table = $('#reservation-table').DataTable({
+        table = $('#users-table').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
@@ -221,7 +221,11 @@
                 }
             },
             columns: [
-                { data: null, name: 'order', orderable: false, searchable: false },
+                { data: null, name: 'order', orderable: false, searchable: false,
+                    render: function (data, type, row, meta) {
+                    return meta.row + 1; 
+                }
+                 },
                 { data: 'day', name: 'day' },
                 { data: 'date', name: 'date' },
                 { data: 'name', name: 'name' },
@@ -232,6 +236,7 @@
                 { data: 'type', name: 'type' },
                 { data: 'amount', name: 'amount' },
             ],
+            order: [[1, 'asc']],
             "oLanguage": {
                 "sSearch": "",
                 "sSearchPlaceholder": "بحث",
