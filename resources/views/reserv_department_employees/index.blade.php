@@ -98,6 +98,7 @@
                         return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
                     }
                 },
+                
             { 
                     data: 'allowance', 
                     name: 'allowance',
