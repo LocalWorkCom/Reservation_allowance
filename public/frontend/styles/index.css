@@ -344,7 +344,7 @@ box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 4px -1px;
 }
 .welcome p{
     font-family: Almarai;
-font-size: 38px;
+font-size: 35px;
 font-weight: 700;
 line-height: 44.64px;
 text-align: right;
@@ -363,14 +363,11 @@ footer p {
     font-size: 22px;
     font-weight: 700;
 }
-.details {
-    padding: 64px 65px 100px 65px;
-}
+
 .details p{
     font-family: Almarai;
 font-size: 33px;
 font-weight: 700;
-line-height: 35.71px;
 text-align: center;
 
 }
@@ -980,7 +977,6 @@ table.dataTable.no-footer {
 }
 #users-table td a {
     font-weight: 500;
-    font-size: 20px !important;
     justify-content: center !important;
   
 }
@@ -1660,6 +1656,6 @@ color: #2A2726;
     border-radius: 10px;
     padding: 5px;
 }
-.card-img img{
+.card-imgg img{
     height: 90px;
 }
