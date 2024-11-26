@@ -145,7 +145,7 @@ class sectorsController extends Controller
                 return $btn;
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
-                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount;
+                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount." د.ك";
             })
             ->addColumn('reservation_allowance', function ($row) {
                 if ($row->reservation_allowance_type == 1) {
@@ -193,7 +193,7 @@ class sectorsController extends Controller
             'budget_type.required' => 'يجب اختيار نوع الميزانيه.',
             'email.invalid_format' => 'البريد الإلكتروني للمدير غير صالح.', // Custom error message
         ];
-        
+
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'budget_type' => 'required',
@@ -210,11 +210,11 @@ class sectorsController extends Controller
                 },
             ],
         ], $messages);
-        
+
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        
+
 
 
 
@@ -376,7 +376,7 @@ class sectorsController extends Controller
             'budget_type.required' => 'يجب اختيار نوع الميزانيه.',
             'email.invalid_format' => 'البريد الإلكتروني للمدير غير صالح.', // Custom error message
         ];
-        
+
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'budget_type' => 'required',
@@ -393,7 +393,7 @@ class sectorsController extends Controller
                 },
             ],
         ], $messages);
-        
+
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }

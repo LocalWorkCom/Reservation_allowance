@@ -82,7 +82,7 @@ class DepartmentController extends Controller
                 return '<button class="btn btn-primary btn-sm">Edit</button>';
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
-                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount;
+                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount." د.ك";
             })
             ->addColumn('reservation_allowance', function ($row) {
                 switch ($row->reservation_allowance_type) {
@@ -265,7 +265,7 @@ class DepartmentController extends Controller
                 return '<button class="btn btn-primary btn-sm">Edit</button>';
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
-                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount;
+                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount." د.ك";
             })
             ->addColumn('reservation_allowance', function ($row) {
                 switch ($row->reservation_allowance_type) {
