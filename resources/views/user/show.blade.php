@@ -146,11 +146,10 @@
                             <th scope="row"> تاريخ الالتحاق </th>
                             <td> {{ $user->joining_date }} </td>
                         </tr>
-                        <tr>
+                        {{-- <tr>
                             <th scope="row"> مدة الخدمه </th>
-                            {{-- <td> {{ $end_of_service }} </td> --}}
                             <td> {{ $user->length_of_service }} </td>
-                        </tr>
+                        </tr> --}}
                         <tr>
                             <th scope="row"> الرتبه </th>
                             @foreach ($grade as $item)
@@ -214,10 +213,10 @@
                                 <td> موظف </td>
                             @endif
                         </tr>
-                        <tr>
+                        {{-- <tr>
                             <th scope="row"> الاقدامية </th>
                             <td> {{ $user->seniority }} </td>
-                        </tr>
+                        </tr> --}}
 
                         <tr>
                             <th scope="row">الإدارة العامة</th>
@@ -287,7 +286,7 @@
                         {{-- <tr>
                             <th> قطاع</th>
                             <td>
-                          
+
                                 @foreach ($sector as $item)
                                     @if ($user->sector == $item->id)
                                         <label>
@@ -295,13 +294,13 @@
                                         </label>
                                     @endif
                                 @endforeach
-                               
+
                             </td>
                         </tr> --}}
                         <tr>
                             {{-- <th> قطاع</th> --}}
                             {{-- <td>
-                                
+
                                 @foreach ($sector as $item)
                                     @if ($user->sector == $item->id)
                                         <label>
@@ -309,23 +308,10 @@
                                         </label>
                                     @endif
                                 @endforeach
-                      
+
                             </td> --}}
                         </tr>
-                        <tr>
-                            <th> المحافظة</th>
-                            {{-- <td>
-                                
-                                @foreach ($govermnent as $item)
-                                    @if ($user->Provinces == $item->id)
-                                        <label>
-                                            {{ $item->name }}
-                                        </label>
-                                    @endif
-                                @endforeach
-                              
-                            </td> --}}
-                        </tr>
+                       
                         <tr>
                             <th> المنطقة</th>
                             <td>
