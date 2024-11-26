@@ -1121,6 +1121,10 @@ class UserController extends Controller
                 $newsectormanger = Sector::find($request->sector);
                 $newsectormanger->manager = $user->id;
                 $newsectormanger->save();
+                if ($user->email && isValidEmail($user->email)) {
+
+                Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $user->Civil_number, 123456, $user->email);
+                }
             }
         }
 
@@ -1136,6 +1140,10 @@ class UserController extends Controller
                 $newdepmanger = departements::find($id_department);
                 $newdepmanger->manger = $user->id;
                 $newdepmanger->save();
+                if ($user->email && isValidEmail($user->email)) {
+
+                    Sendmail('مدير أداره', ' تم أضافتك كمدير أداره' . $request->name, $user->Civil_number, 123456, $user->email);
+                    }
             }
         }
 
