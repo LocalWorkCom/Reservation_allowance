@@ -77,6 +77,10 @@ Route::any('/reset_password', [UserController::class, 'reset_password'])->name('
 
 //  Auth verfication_code
 Route::middleware(['auth'])->group(function () {
+    Route::get('/clear-modal-session', function() {
+        session()->forget('modal_type');  // Clear the session variable
+        return redirect()->back();
+    })->name('modal.clearSession');
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/user-departments/{flag}', [UserController::class, 'index'])->name('user.departments')->middleware('check.permission:view User');
@@ -116,22 +120,6 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/rule_edit/{id}', [RuleController::class, 'edit'])->name('rule_edit')->middleware('check.permission:edit Rule');
     Route::any('/rule_show/{id}', [RuleController::class, 'show'])->name('rule_show')->middleware('check.permission:edit Rule');
     Route::any('/rule_update/{id}', [RuleController::class, 'update'])->name('rule_update')->middleware('check.permission:edit Rule');
-
-
-    // instantmission
-    // Route::any('/instant_mission', [InstantmissionController::class, 'index'])->name('instant_mission.index')->middleware('check.permission:view instantmission');
-    // Route::get('api/instant_mission', [InstantmissionController::class, 'getInstantMission'])->name('api.instant_mission')->middleware('check.permission:view instantmission');
-    // Route::any('/instant_mission/create', [InstantmissionController::class, 'create'])->name('instant_mission.create')->middleware('check.permission:create instantmission');
-    // Route::any('/instant_mission/edit/{id}', [InstantmissionController::class, 'edit'])->name('instant_mission.edit')->middleware('check.permission:edit instantmission');
-    // Route::any('/instant_mission/show/{id}', [InstantmissionController::class, 'show'])->name('instant_mission.show')->middleware('check.permission:view instantmission');
-    // Route::any('/instant_mission/update/{id}', [InstantmissionController::class, 'update'])->name('instant_mission.update')->middleware('check.permission:edit instantmission');
-    // Route::any('/instant_mission/store', [InstantmissionController::class, 'store'])->name('instant_mission.store')->middleware('check.permission:create instantmission');
-    // Route::any('/getGroups/{id}', [InstantmissionController::class, 'getGroups'])->name('instant_mission.getGroups')->middleware('check.permission:view instantmission');
-    // Route::any('/getInspector/{team_id}/{group_id}', [InstantmissionController::class, 'getInspector'])->name('instant_mission.getInspector')->middleware('check.permission:view instantmission');
-
-
-
-
 
     // export
     //Start Export routes
@@ -350,7 +338,7 @@ Route::middleware(['auth'])->group(function () {
 
     //reserv statics
  Route::group(['middleware' => ['check.permission:statistic ReservationAllowance']], function () {
-    
+
     //statistics
     Route::get('/statistics', [statisticController::class, 'index'])->name('statistic.show');
     Route::get('/statistics/search', [statisticController::class, 'getFilteredData'])->name('statistic.search');
