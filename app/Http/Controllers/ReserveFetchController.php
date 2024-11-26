@@ -169,20 +169,29 @@ class ReserveFetchController extends Controller
     public function getCustomDateRange(Request $request)
     {
         $fileNumber = $request->input('file_number');
-        $employee = $this->fetchUser($fileNumber);
-    
         $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
         $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
     
-        if ($employee && $this->canAccessEmployeeData(Auth::user(), $employee) && $startDate && $endDate) {
+        if (!$fileNumber || !$startDate || !$endDate) {
+            return response()->json(['error' => 'Invalid input provided.'], 400);
+        }
+    
+        $employee = $this->fetchUser($fileNumber); 
+        if (!$employee) {
+            return response()->json(['error' => 'Employee not found or unauthorized.'], 403);
+        }
+    
+        if ($employee && $this->canAccessEmployeeData(Auth::user(), $employee)) {
             $reservations = ReservationAllowance::where('user_id', $employee->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->with(['user', 'department', 'sector', 'grade'])
+                ->with(['user', 'departements', 'sector', 'grade']) 
                 ->get();
-                return $this->handleReservationData($employee, $reservations);
-            }
+    
+            return $this->handleReservationData($employee, $reservations);
+        }
+    
         return $this->userNotFoundOrUnauthorizedResponse();
     }
+    
     
     
 

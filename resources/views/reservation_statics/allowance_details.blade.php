@@ -11,7 +11,7 @@
 <div class="row">
     <div class="container welcome col-11">
         <div class="d-flex justify-content-between">
-            <p>تفاصيل بدل الحجز للموظف: {{ $employeeName }}</p>
+            <p>تفاصيل بدل الحجز للموظف : <span class="text-info">{{ $employeeName }}</span></p>
         </div>
     </div>
 </div>

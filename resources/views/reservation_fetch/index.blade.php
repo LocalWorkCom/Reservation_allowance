@@ -121,32 +121,13 @@
                 <button id="other-dates-button" class="btn-all " >تواريخ
 
                     أخرى ...</button>
-            
-           
-
-
-
 
             <button type="button" class="btn-blue mx-1" onclick="printPDF()">طباعة</button>    
 
             </div>
             <!-- Buttons Group -->
-        
-         
-   
-
             </div>
-           
-
         </div>
-  
-
-
-
-
-
-    
-   
    <!-- Date Range Picker (Initially Hidden) -->
    <div id="date-picker-container" class="row col-12 mt-3" style="display: none;">
    <div class="container welcome col-11 py-3" dir="rtl">
@@ -312,15 +293,16 @@
         $('#date-picker-container').toggle();
     });
     $('#custom-date-form').on('submit', function(e) {
-        e.preventDefault();
-        const startDate = $('#start_date').val();
-        const endDate = $('#end_date').val();
-        if (startDate && endDate) {
-            loadTable('{{ route('reservation_fetch.getCustomDateRange') }}');
-        } else {
-            alert('Please select both start and end dates');
-        }
-    });
+    e.preventDefault();
+    const startDate = $('#start_date').val();
+    const endDate = $('#end_date').val();
+    if (startDate && endDate) {
+        loadTable('{{ route('reservation_fetch.getCustomDateRange') }}'); // Ensure this matches
+    } else {
+        alert('Please select both start and end dates');
+    }
+});
+
 
     // Print function
     function printPDF() {

@@ -44,9 +44,12 @@
 
 @extends('layout.main')
 @push('style')
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
-    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
+    <script type="text/javascript" charset="utf8"
+        src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
     </script>
 @endpush
 
@@ -54,120 +57,150 @@
     القطاعات
 @endsection
 @section('content')
-<div class="row" >
+    <div class="row">
         <div class="container welcome col-11">
             <div class="d-flex justify-content-between">
 
-            @if (session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
-            @endif
-            @if (session('error'))
-                <div class="alert alert-danger">
-                    {{ session('error') }}
-                </div>
-            @endif
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
-                   
-                            <p> بدل الحجز</p>
-                        </div>
-
-                        <form class="" id="search_employee_allowances">
-                            @csrf
-                            <div class="row d-flex flex-wrap ">
-                                <!-- 1 for sector , 2 for department -->
-                                <input name="department_type" id="department_type" type="hidden"
-                                    value="{{ Auth::user()->department_id == null ? 1 : 2 }}">
-
-                                <div class="mx-1">
-                                    {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                                    <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
-                                    <select class="custom-select custom-select-lg select2" name="sector_id" id="sector_id" required>
-                                        <option value="0" selected>اختار القطاع</option>
-                                        @foreach ($sectors as $sector)
-                                            <option value="{{ $sector->id }}">
-                                                {{ $sector->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class=" mx-1" id="departement_div">
-                                    {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                                    <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
-                                    <select class="custom-select custom-select-lg select2" name="departement_id"
-                                        id="departement_id">
-                                        <option value="0" selected>اختار الادارة</option>
-                                    </select>
-                                </div>
-
-                                <div class=" mx-1">
-                                    <select id="year" name="year" class="custom-select custom-select-lg " style="color:gray !important;">
-                                        @for ($y = 2020; $y <= date('Y'); $y++)
-                                            <option value="{{ $y }}" {{ $y == now()->year ? 'selected' : '' }}>{{ $y }}</option>
-                                        @endfor
-                                    </select>
-                                </div>
-
-                            </div>
-                        </form>
-                        <!--  <div class="d-flex justify-content-between mt-2">
-                                <div class=" mx-2">
-                                    {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                                    <a class="btn-all py-2 px-2 " href="{{ route('reservation_allowances.create') }}"
-                                        style="color: #0D992C;">
-                                        <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                        اضافة بدل حجز جديد
-                                    </a>
-                                    {{-- @endif --}}
-                                </div> -->
-
+                @if (session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
                     </div>
-                    <!-- show_reservation_allowances_info -->
-                    <div id="show_reservation_allowances_info" class="col-12"></div>
-                    <!-- end of show_reservation_allowances_info -->
-                </div>
+                @endif
+                @if (session('error'))
+                    <div class="alert alert-danger">
+                        {{ session('error') }}
+                    </div>
+                @endif
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+
+                <p> بدل الحجز</p>
             </div>
+
+            <form class="" id="search_employee_allowances">
+                @csrf
+                <div class="row d-flex flex-wrap ">
+                    <!-- 1 for sector , 2 for department -->
+                    <input name="department_type" id="department_type"
+                        type="hidden"
+                        value="{{ Auth::user()->department_id == null ? 1 : 2 }}">
+
+                    <div class="mx-1">
+                        {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
+                        <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
+                        <select class="custom-select custom-select-lg select2"
+                            name="sector_id" id="sector_id" required>
+                            <option value="0" selected>اختار القطاع</option>
+                            @foreach ($sectors as $sector)
+                                <option value="{{ $sector->id }}">
+                                    {{ $sector->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class=" mx-1" id="departement_div">
+                        {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
+                        <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
+                        <select class="custom-select custom-select-lg select2"
+                            name="departement_id" id="departement_id">
+                            <option value="0" selected>اختار الادارة</option>
+                        </select>
+                    </div>
+
+                    <div class=" mx-1">
+                        <select id="year" name="year"
+                            class="custom-select custom-select-lg "
+                            style="color:gray !important;">
+                            @for ($y = 2020; $y <= date('Y'); $y++)
+                                <option value="{{ $y }}"
+                                    {{ $y == now()->year ? 'selected' : '' }}>
+                                    {{ $y }}</option>
+                            @endfor
+                        </select>
+                    </div>
+
+                </div>
+            </form>
+            <!--  <div class="d-flex justify-content-between mt-2">
+                                    <div class=" mx-2">
+                                        {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
+                                        <a class="btn-all py-2 px-2 " href="{{ route('reservation_allowances.create') }}"
+                                            style="color: #0D992C;">
+                                            <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                                            اضافة بدل حجز جديد
+                                        </a>
+                                        {{-- @endif --}}
+                                    </div> -->
+
         </div>
+        <!-- show_reservation_allowances_info -->
+        <div id="show_reservation_allowances_info" class="col-12"></div>
+        <!-- end of show_reservation_allowances_info -->
+    </div>
+    </div>
+    </div>
     </div>
     </div>
 
     <br>
     <div class="row">
         <div class="container col-11 p-4">
-            <div class="d-flex flex-wrap"  dir="rtl">
-                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(1)" >يناير </button>
+            <div class="d-flex flex-wrap" dir="rtl">
+                <button class="btn-all px-3 mx-2 mb-3"
+                    onclick="search_employee_allowances_with_month(1)">يناير
+                </button>
 
-                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(2)" >فبراير </button>
+                <button class="btn-all px-3 mx-2 mb-3"
+                    onclick="search_employee_allowances_with_month(2)">فبراير
+                </button>
 
-                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(3)" >مارس </button>
+                <button class="btn-all px-3 mx-2 mb-3"
+                    onclick="search_employee_allowances_with_month(3)">مارس
+                </button>
 
-                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(4)" >ابريل </button>
+                <button class="btn-all px-3 mx-2 mb-3"
+                    onclick="search_employee_allowances_with_month(4)">ابريل
+                </button>
 
-                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(5)" >مايو </button>
+                <button class="btn-all px-3 mx-2 mb-3"
+                    onclick="search_employee_allowances_with_month(5)">مايو
+                </button>
 
-                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(6)">يونيو </button>
+                <button class="btn-all px-3 mx-2 mb-3"
+                    onclick="search_employee_allowances_with_month(6)">يونيو
+                </button>
 
-                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(7)" >يوليو </button>
+                <button class="btn-all px-3 mx-2 mb-3"
+                    onclick="search_employee_allowances_with_month(7)">يوليو
+                </button>
 
-                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(8)" >اغسطس </button>
+                <button class="btn-all px-3 mx-2 mb-3"
+                    onclick="search_employee_allowances_with_month(8)">اغسطس
+                </button>
 
-                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(9)" >سبتمبر </button>
+                <button class="btn-all px-3 mx-2 mb-3"
+                    onclick="search_employee_allowances_with_month(9)">سبتمبر
+                </button>
 
-                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(10)" >اكتوبر </button>
+                <button class="btn-all px-3 mx-2 mb-3"
+                    onclick="search_employee_allowances_with_month(10)">اكتوبر
+                </button>
 
-                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(11)" >نوفمبر </button>
+                <button class="btn-all px-3 mx-2 mb-3"
+                    onclick="search_employee_allowances_with_month(11)">نوفمبر
+                </button>
 
-                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(12)" >ديسمبر </button>
+                <button class="btn-all px-3 mx-2 mb-3"
+                    onclick="search_employee_allowances_with_month(12)">ديسمبر
+                </button>
             </div>
 
             <div class="col-lg-12">
@@ -179,7 +212,8 @@
                     @endif
 
                     <div>
-                        <table id="users-table" class="display table table-responsive-sm  table-bordered table-hover dataTable">
+                        <table id="users-table"
+                            class="display table table-responsive-sm  table-bordered table-hover dataTable">
                             <thead>
                                 <tr>
                                     <th>الترتيب</th>
@@ -208,8 +242,10 @@
             // alert('select');
             // var managerId = $(this).val();
             var sectorid = $(this).val();
-            var department_type = document.getElementById('department_type').value;
-            var map_url = "{{ route('reservation_allowances.get_departement', ['id', 'type']) }}";
+            var department_type = document.getElementById('department_type')
+                .value;
+            var map_url =
+                "{{ route('reservation_allowances.get_departement', ['id', 'type']) }}";
             map_url = map_url.replace('id', sectorid);
             map_url = map_url.replace('type', department_type);
             $.get(map_url, function(data) {
@@ -231,17 +267,17 @@
 
 @endsection
 @push('scripts')
-
     <script>
-        function search_employee_allowances_with_month($month)
-        {
-            get_table_data("{{ route('reservation_allowances.getAllWithMonth') }}", $month);
+        function search_employee_allowances_with_month($month) {
+            get_table_data("{{ route('reservation_allowances.getAllWithMonth') }}",
+                $month);
         }
 
         $(document).ready(function() {
             var table = "";
             var sector_id = document.getElementById('sector_id').value;
-            var departement_id = document.getElementById('departement_id').value;
+            var departement_id = document.getElementById('departement_id')
+                .value;
             var year = document.getElementById('year').value;
             var filter = 'all'; // Default filter
 
@@ -258,33 +294,42 @@
             $('#search_employee_allowances').on('submit', function(e) {
                 var form = $(this);
                 e.preventDefault();
-                get_table_data("{{ route('reservation_allowances.getAll', 0) }}");
+                get_table_data(
+                    "{{ route('reservation_allowances.getAll', 0) }}"
+                    );
             });
 
 
-            window.get_table_data = function get_table_data(data_url, month)
-            {
+            window.get_table_data = function get_table_data(data_url,
+            month) {
                 var filter = 'all'; // Default filter
-                var sector_id = document.getElementById('sector_id').value;
-                var departement_id = document.getElementById('departement_id').value;
+                var sector_id = document.getElementById('sector_id')
+                    .value;
+                var departement_id = document.getElementById(
+                    'departement_id').value;
                 var year = document.getElementById('year').value;
-
+                $.fn.dataTable.ext.classes.sPageButton =
+                    'btn-pagination btn-sm'; // Change Pagination Button Class
                 table = $('#users-table').DataTable({
                     processing: true,
                     serverSide: true,
                     ajax: {
                         url: data_url,
                         data: function(d) {
-                            d.filter = filter; // Use the global filter variable
+                            d.filter =
+                            filter; // Use the global filter variable
                             d.sector_id = sector_id;
-                            d.departement_id = departement_id;
+                            d.departement_id =
+                                departement_id;
                             d.year = year;
                             d.month = month;
                         }
                     },
                     columns: [{
                             data: null,
-                            name: 'order', orderable: false, searchable: false
+                            name: 'order',
+                            orderable: false,
+                            searchable: false
                         },
                         {
                             data: 'employee_grade',
@@ -319,20 +364,20 @@
                         }
                     },
                     bDestroy: true,
-                   "oLanguage": {
-                    "sSearch": "",
-                    "sSearchPlaceholder": "بحث",
-                    "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
-                    "sInfoEmpty": 'لا توجد بيانات متاحه',
-                    "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
-                    "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
-                    "sZeroRecords": 'نأسف لا توجد نتيجة',
-                    "oPaginate": {
-                        "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>',
-                        "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>',
-                        "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>',
-                        "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>'
-                    }
+                    "oLanguage": {
+                        "sSearch": "",
+                        "sSearchPlaceholder": "بحث",
+                        "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
+                        "sInfoEmpty": 'لا توجد بيانات متاحه',
+                        "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
+                        "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
+                        "sZeroRecords": 'نأسف لا توجد نتيجة',
+                        "oPaginate": {
+                            "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
+                            "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
+                            "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
+                            "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
+                        }
                     },
                     "pagingType": "full_numbers",
                     "fnDrawCallback": function(oSettings) {
@@ -347,20 +392,28 @@
                         }
                     },
                     createdRow: function(row, data, dataIndex) {
-                        $('td', row).eq(0).html(dataIndex + 1); // Automatic numbering in the first column
+                        $('td', row).eq(0).html(dataIndex +
+                            1
+                            ); // Automatic numbering in the first column
                     }
                 });
                 $('.btn-filter').on('click', function() {
-                    filter = $(this).data('filter'); // Get the filter value from the clicked button
-                    table.ajax.reload(); // Reload the DataTable with the new filter
+                    filter = $(this).data(
+                    'filter'); // Get the filter value from the clicked button
+                    table.ajax
+                .reload(); // Reload the DataTable with the new filter
                 });
                 // Filter buttons click event
                 $('.btn-filter').click(function() {
-                    filter = $(this).data('filter'); // Update filter
-                    $('.btn-filter').removeClass('btn-active'); // Remove active class from all
-                    $(this).addClass('btn-active'); // Add active class to clicked button
+                    filter = $(this).data(
+                    'filter'); // Update filter
+                    $('.btn-filter').removeClass(
+                    'btn-active'); // Remove active class from all
+                    $(this).addClass(
+                    'btn-active'); // Add active class to clicked button
 
-                    table.page(0).draw(false); // Reset to first page and redraw the table
+                    table.page(0).draw(
+                    false); // Reset to first page and redraw the table
                 });
                 //end of call datatable
             }
