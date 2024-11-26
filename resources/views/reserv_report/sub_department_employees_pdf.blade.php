@@ -23,9 +23,24 @@
     </style>
 </head>
 <body>
-    <h3 style="text-align: center;">تفاصيل الموظفين للإدارة الفرعية: {{ $subDepartment->name }}</h3>
-    <p><strong>من تاريخ:</strong> {{ $startDate->format('Y-m-d') }} <strong>إلى تاريخ:</strong> {{ $endDate->format('Y-m-d') }}</p>
+<div class="row" >
+        <div class="container welcome col-11">
+            <div class="d-flex justify-content-between">
+    <p style="text-align: center;"> الموظفين للإدارة الفرعية: {{ $subDepartment->name }}</p>
     
+    
+    </div>
+           
+
+           </div>
+       </div>
+   
+      
+       <div class="container col-11 mt-3 py-5  " >
+       <div class="d-flex justify-content-between pb-3"dir="rtl">
+       <h4> الفترة من: <span class="text-info"> {{ $startDate->format('Y-m-d') }}</span> إلى: <span class="text-info">{{ $endDate->format('Y-m-d') }}</span></h4>
+           
+            </div>
     <table>
         <thead>
             <tr>

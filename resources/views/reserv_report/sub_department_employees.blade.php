@@ -10,17 +10,26 @@
     @endpush
 
 @section('content')
-    <div class="row" style="direction: rtl;"> 
+<div class="row" >
         <div class="container welcome col-11">
-        <div class="d-flex justify-content-between">
-            <p>تفاصيل الموظفين في الإدارة الفرعية: {{ $subDepartment->name }} الفترة من: {{ $startDate->format('Y-m-d') }} إلى: {{ $endDate->format('Y-m-d') }}</p>
-        </div>
-        <button id="print-report" class="btn btn-secondary">طباعة</button>
-    </div>
-</div>
+            <div class="d-flex justify-content-between">
+            <p>تفاصيل الموظفين في الإدارة الفرعية: {{ $subDepartment->name }}   </p>
+            </div>
+           
 
-    <div class="row" style="direction: rtl;">
+           </div>
+       </div>
+   
+
+<div class="container col-11 mt-3 py-5  " >
+<div class="d-flex justify-content-between pb-3"dir="rtl">
         <div class="container col-11 mt-3 p-0 pt-5 pb-4">
+        <h4> الفترة من: <span class="text-info">{{ $startDate->format('Y-m-d') }}</span> إلى: <span class="text-info">{{ $endDate->format('Y-m-d') }}</span></h4>
+
+        <button id="print-report" class="btn btn-secondary">طباعة</button>
+
+        </div>
+        <div class="mt-4 bg-white">
             <table id="users-table" class="display table table-bordered table-hover dataTable">
                 <thead>
                     <tr>
@@ -51,6 +60,7 @@
                 </tbody>
             </table>
         </div>
+    </div>
     </div>
 @endsection
 

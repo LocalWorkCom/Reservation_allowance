@@ -54,8 +54,9 @@
     القطاعات
 @endsection
 @section('content')
-    <div class="row">
-        <div class="container welcome col-11" style="height: auto !important">
+<div class="row" >
+        <div class="container welcome col-11">
+            <div class="d-flex justify-content-between">
 
             @if (session('success'))
                 <div class="alert alert-success">
@@ -77,22 +78,18 @@
                 </div>
             @endif
 
-
-            <div class="d-flex justify-content-between">
-                <div class="col-12">
-                    <div class="row d-flex " style="direction: rtl">
-                        <div class="col-2">
+                   
                             <p> بدل الحجز</p>
                         </div>
 
                         <form class="" id="search_employee_allowances">
                             @csrf
-                            <div class="row d-flex flex-wrap justify-content-between">
+                            <div class="row d-flex flex-wrap ">
                                 <!-- 1 for sector , 2 for department -->
                                 <input name="department_type" id="department_type" type="hidden"
                                     value="{{ Auth::user()->department_id == null ? 1 : 2 }}">
 
-                                <div class="d-flex">
+                                <div class="mx-1">
                                     {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                     <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
                                     <select class="custom-select custom-select-lg select2" name="sector_id" id="sector_id" required>
@@ -104,7 +101,7 @@
                                     </select>
                                 </div>
 
-                                <div class="d-flex mx-2" id="departement_div">
+                                <div class=" mx-1" id="departement_div">
                                     {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                     <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
                                     <select class="custom-select custom-select-lg select2" name="departement_id"
@@ -113,8 +110,8 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group  mx-2">
-                                    <select id="year" name="year" class="form-select me-3">
+                                <div class=" mx-1">
+                                    <select id="year" name="year" class="custom-select custom-select-lg " style="color:gray !important;">
                                         @for ($y = 2020; $y <= date('Y'); $y++)
                                             <option value="{{ $y }}" {{ $y == now()->year ? 'selected' : '' }}>{{ $y }}</option>
                                         @endfor
@@ -147,30 +144,30 @@
     <br>
     <div class="row">
         <div class="container col-11 p-4">
-            <div class="d-flex gap-2 flex-wrap" style="direction: rtl;">
-                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(1)" style="background-color: #3c7327; color:white; border-radius:10px; margin:10px;">يناير </button>
+            <div class="d-flex flex-wrap"  dir="rtl">
+                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(1)" >يناير </button>
 
-                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(2)" style="background-color: #732b27; color:white; border-radius:10px; margin:10px;">فبراير </button>
+                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(2)" >فبراير </button>
 
-                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(3)" style="background-color: #273b73; color:white; border-radius:10px; margin:10px;">مارس </button>
+                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(3)" >مارس </button>
 
-                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(4)" style="background-color: #6a98d1; color:white; border-radius:10px; margin:10px;">ابريل </button>
+                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(4)" >ابريل </button>
 
-                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(5)" style="background-color: #cacd2b; color:white; border-radius:10px; margin:10px;">مايو </button>
+                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(5)" >مايو </button>
 
-                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(6)" style="background-color: #56e71f; color:white; border-radius:10px; margin:10px;">يونيو </button>
+                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(6)">يونيو </button>
 
-                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(7)" style="background-color: #bf2c8b; color:white; border-radius:10px; margin:10px;">يوليو </button>
+                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(7)" >يوليو </button>
 
-                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(8)" style="background-color: #585bc3; color:white; border-radius:10px; margin:10px;">اغسطس </button>
+                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(8)" >اغسطس </button>
 
-                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(9)" style="background-color: #e34848; color:white; border-radius:10px; margin:10px;">سبتمبر </button>
+                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(9)" >سبتمبر </button>
 
-                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(10)" style="background-color: #61e5ba; color:white; border-radius:10px; margin:10px;">اكتوبر </button>
+                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(10)" >اكتوبر </button>
 
-                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(11)" style="background-color: #a76ae9; color:white; border-radius:10px; margin:10px;">نوفمبر </button>
+                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(11)" >نوفمبر </button>
 
-                    <button class="btn-all py-2 px-2" onclick="search_employee_allowances_with_month(12)" style="background-color: #db770f; color:white; border-radius:10px; margin:10px;">ديسمبر </button>
+                    <button class="btn-all px-3 mx-2 mb-3" onclick="search_employee_allowances_with_month(12)" >ديسمبر </button>
             </div>
 
             <div class="col-lg-12">

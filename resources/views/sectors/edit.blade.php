@@ -192,7 +192,7 @@
                         <label for="notFree" class="col-12">ميزانيه محدده</label>
 
                         <input type="radio" class="toggle-radio-buttons mx-2" name="budget_type"
-                            {{ $data->reservation_allowance_amount == '0.00' ? 'checked' : '' }} value="2"
+                            {{ (float) $data->reservation_allowance_amount == 0.0 ? 'checked' : '' }} value="2"
                             id="free" style="height:30px;">
                         <label for="free" class="col-12">ميزانيه غير محدده</label>
                     </div>
@@ -208,7 +208,6 @@
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
-
                 <div class="input-group moftsh px-md-5 px-3 pt-3">
                     <label for="" class="col-12">صلاحيه الحجز</label>
                     <div class="d-flex mt-3" dir="rtl">
@@ -243,25 +242,6 @@
         </div>
     </form>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        // Function to toggle the 'required' attribute of the email field based on the 'mangered' field value
-        document.getElementById('mangered').addEventListener('input', function() {
-            var managerId = this.value; // Get the value of the 'mangered' field
-            var emailField = document.getElementById('email'); // Get the 'email' input field
-            var emailFieldContainer = document.getElementById('email_field'); // Get the email field container
-
-            if (managerId) {
-                emailField.setAttribute('required', 'required'); // Make email required
-                emailFieldContainer.style.display = 'block'; // Show the email field container
-            } else {
-                emailField.removeAttribute('required'); // Remove the required attribute
-                emailFieldContainer.style.display = 'none'; // Hide the email field container
-            }
-        });
-
-        // Trigger the event once on page load to handle pre-filled values
-        document.getElementById('mangered').dispatchEvent(new Event('input'));
-    </script>
 
     <script>
         // Initialize select2 for RTL

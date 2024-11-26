@@ -9,17 +9,20 @@
 @endpush
 
 @section('content')
-<div class="row" style="direction: rtl;">
-    <div class="container welcome col-11">
-        <div class="d-flex justify-content-between">
-            <p> تفاصيل الموظفين المحجوزين في الإدارة الرئيسية: {{ $department->name }}  الفترة  من : {{ $startDate->format('Y-m-d') }} إلى: {{ $endDate->format('Y-m-d') }}</p>
+<div class="row" >
+        <div class="container welcome col-11">
+            <div class="d-flex justify-content-between">
+            <p> تفاصيل الموظفين المحجوزين في الإدارة : {{ $department->name }}     </p>
         </div>
-        <button id="print-report" class="btn btn-secondary">طباعة</button>
+        
     </div>
 </div>
 
-<div class="row" style="direction: rtl;">
-    <div class="container col-11 mt-3 p-0 pt-5 pb-4">
+<div class="container col-11 mt-3 py-5  " >
+<div class="d-flex justify-content-between pb-3"dir="rtl">
+<h4> الفترة من: <span class="text-info">{{ $startDate->format('Y-m-d') }}</span> إلى: <span class="text-info">{{ $endDate->format('Y-m-d') }}</span></h4>
+<button id="print-report" class="btn-blue">طباعة</button>
+</div>
         <table id="users-table" class="display table table-bordered table-hover dataTable">
             <thead>
                 <tr>
@@ -68,14 +71,14 @@ $(document).ready(function() {
             render: function(data, type, row) {
                 const startDate = '{{ $startDate->format('Y-m-d') }}';
                 const endDate = '{{ $endDate->format('Y-m-d') }}';
-                return `<a href="/reservation_report/user/${row.id}/details?start_date=${startDate}&end_date=${endDate}" style="color:blue !important;">${data}</a>`;
+                return `<a href="/reservation_report/user/${row.id}/details?start_date=${startDate}&end_date=${endDate}" style="color:#17a2b8 !important;">${data}</a>`;
             }
          },
         { data: 'days', name: 'days',
             render: function(data, type, row) {
                 const startDate = '{{ $startDate->format('Y-m-d') }}';
                 const endDate = '{{ $endDate->format('Y-m-d') }}';
-                return `<a href="/reservation_report/user/${row.id}/details?start_date=${startDate}&end_date=${endDate}" style="color:blue !important;">${data}</a>`;
+                return `<a href="/reservation_report/user/${row.id}/details?start_date=${startDate}&end_date=${endDate}" style="color:#17a2b8 !important;">${data}</a>`;
             }
          },
         { 
@@ -84,7 +87,7 @@ $(document).ready(function() {
             render: function(data, type, row) {
                 const startDate = '{{ $startDate->format('Y-m-d') }}';
                 const endDate = '{{ $endDate->format('Y-m-d') }}';
-                return `<a href="/reservation_report/user/${row.id}/details?start_date=${startDate}&end_date=${endDate}" style="color:blue !important;">${data}</a>`;
+                return `<a href="/reservation_report/user/${row.id}/details?start_date=${startDate}&end_date=${endDate}" style="color:#17a2b8 !important;">${data}</a>`;
             }
         }
     ],

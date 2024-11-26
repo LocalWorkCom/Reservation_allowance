@@ -90,7 +90,7 @@
                                 {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                 <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
                                 <select
-                                    class="custom-select custom-select-lg select2"
+                                    class="btn-all select2"
                                     name="sector_id" id="sector_id" required>
                                     <option value="0" selected>اختار القطاع
                                     </option>
@@ -105,7 +105,7 @@
                                 {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                 <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
                                 <select
-                                    class="custom-select custom-select-lg select2"
+                                    class="btn-all select2"
                                     name="departement_id" id="departement_id">
                                     <option value="0" selected>اختار الادارة
                                     </option>
@@ -115,11 +115,8 @@
                             <div class="">
                                 <label for="Civil_number">
                                     <button class="btn-all py-2 px-2"
-                                        id="get_crate_all_form" type="button"
-                                        style="color:green;">
-                                        <img src="{{ asset('frontend/images/add-btn.svg') }}"
-                                            alt="img">
-                                        اضافة بدل حجز بالهويات </button>
+                                        id="get_crate_all_form" type="button"> اضافة بدل حجز بالهويات  <img src="{{ asset('frontend/images/add-btn.svg') }}"
+                                            alt="img"></button>
 
                             </div>
                         </div>

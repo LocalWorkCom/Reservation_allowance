@@ -109,7 +109,7 @@
                                 {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                 <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
                                 <select class="custom-select custom-select-lg" name="departement_id"
-                                    id="departement_id">
+                                    id="departement_id" style="    color: #7c7b7b !important;">
                                     <option value="0">اختار الادارة</option>
                                     @if($get_departements)
                                     @foreach($get_departements as $departement)
@@ -165,10 +165,10 @@
 <div class="row " dir="rtl">
     <div class="container col-11 p-4">
         <div class=" d-flex flex-wrap justify-content-between">
-            <div class=" col-5 d-flex justify-content-between">
-                <h5 class="text-dark">التاريخ : <span class="text-info">{{$to_day}}</span></h5>
-                <h5 class="text-dark">القوة : <span class="text-info">{{count($employee_new_add)}}</span></h5>
-                <h5 class="text-dark">التكلفة : <span class="text-info">{{$total_grade_value}}</span></h5>
+            <div class=" col-5 d-flex mb-4  ">
+                <h5 class="text-dark mx-3">التاريخ : <span class="text-info">{{$to_day}}</span></h5>
+                <h5 class="text-dark mx-3">القوة : <span class="text-info">{{count($employee_new_add)}}</span></h5>
+                <h5 class="text-dark mx-3">التكلفة : <span class="text-info">{{$total_grade_value}}</span></h5>
 
                 <!-- <h5 class="text-dark">ملاحظات الملف : <span class="text-info">211</span></h5> -->
             </div>
