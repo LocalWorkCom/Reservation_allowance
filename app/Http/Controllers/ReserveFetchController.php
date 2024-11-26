@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Models\departements;
 use App\Models\grade;
 use App\Models\Sector;
-use TCPDF; 
+use TCPDF;
 use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Auth;
@@ -20,10 +20,30 @@ class ReserveFetchController extends Controller
         return view('reservation_fetch.index');
     }
 
-
+   
     private function fetchUser($fileNumber)
     {
-        return User::where('file_number', $fileNumber)->first();
+        $query = User::query()->where('file_number', $fileNumber);
+    
+        $manager = Auth::user();
+    
+        if ($manager->rule_id == 3) { // Department Manager
+            $accessibleDepartments = array_merge(
+                [$manager->department_id],
+                $this->getManagerAccessibleDepartments($manager->department_id)
+            );
+            $query->whereIn('department_id', $accessibleDepartments);
+        }
+    
+        if ($manager->rule_id == 4) { // Sector Manager
+            $accessibleDepartments = $this->getSectorDepartments($manager->sector);
+            $query->where(function ($q) use ($manager, $accessibleDepartments) {
+                $q->where('sector', $manager->sector)
+                  ->orWhereIn('department_id', $accessibleDepartments);
+            });
+        }
+    
+        return $query->first();
     }
 
     private function getManagerAccessibleDepartments($departmentId)
@@ -39,24 +59,25 @@ class ReserveFetchController extends Controller
     private function canAccessEmployeeData($manager, $employee)
     {
         if ($manager->rule_id == 2) {
-            return true;
+            return true; // Super Admin: Access to all users
         }
-
-        if ($manager->rule_id == 3) {
+    
+        if ($manager->rule_id == 3) { // Department Manager
             $accessibleDepartments = array_merge(
                 [$manager->department_id],
                 $this->getManagerAccessibleDepartments($manager->department_id)
             );
             return in_array($employee->department_id, $accessibleDepartments);
         }
-
-        if ($manager->rule_id == 4) {
+    
+        if ($manager->rule_id == 4) { // Sector Manager
             $accessibleDepartments = $this->getSectorDepartments($manager->sector);
             return $employee->sector == $manager->sector || in_array($employee->department_id, $accessibleDepartments);
         }
-
+    
         return false;
     }
+    
 
     private function addCommonColumns($dataTable)
 {
@@ -64,21 +85,14 @@ class ReserveFetchController extends Controller
         ->addColumn('day', fn($row) => Carbon::parse($row->date)->translatedFormat('l'))
         ->addColumn('date', fn($row) => Carbon::parse($row->date)->format('Y-m-d'))
         ->addColumn('name', fn($row) => optional($row->user)->name ?? 'N/A')
-        ->addColumn('department', fn($row) => optional($row->departements)->name ?? 'N/A')
-        ->addColumn('grade', fn($row) => optional($row->grade)->name ?? 'N/A')
-        ->addColumn('sector', fn($row) => optional($row->sector)->name ?? 'N/A')
+        ->addColumn('department', fn($row) => optional($row->departements)->name ?? 'N/A') 
+        ->addColumn('grade', fn($row) => optional($row->grade)->name ?? 'N/A') 
+        ->addColumn('sector', fn($row) => optional($row->sector)->name ?? 'N/A') 
         ->addColumn('type', fn($row) => $row->type == 1 ? 'حجز كلي' : 'حجز جزئي')
         ->addColumn('amount', fn($row) => number_format($row->amount, 2) . ' د ك')
         ->addIndexColumn();
+        
 }
-
-
-    private function getGradeType($user)
-    {
-        return match (grade::find($user->grade_id)?->type ?? null) {
-            1 => 'فرد', 2 => 'ظابط', 3 => 'مهني', default => 'N/A',
-        };
-    }
 
     private function fetchReservations($userId, $startDate, $endDate)
     {
@@ -96,33 +110,33 @@ class ReserveFetchController extends Controller
             ])
             ->make(true);
     }
-
+    
 
 
     public function getAll(Request $request)
-{
-    $fileNumber = $request->input('file_number');
-    $employee = $this->fetchUser($fileNumber);
-
-    if ($employee && $this->canAccessEmployeeData(Auth::user(), $employee)) {
-        $reservations = ReservationAllowance::where('user_id', $employee->id)
-            ->with(['user', 'departements', 'sector', 'grade']) // Include relationships
-            ->get();
-
+    {
+        $fileNumber = $request->input('file_number'); 
+        $employee = $this->fetchUser($fileNumber);
+    
+        if ($employee && $this->canAccessEmployeeData(Auth::user(), $employee)) {
+            $reservations = ReservationAllowance::where('user_id', $employee->id)
+                ->with(['user', 'departements', 'sector', 'grade']) 
+                ->get();
+    
             return $this->handleReservationData($employee, $reservations);
         }
-
-    return $this->userNotFoundOrUnauthorizedResponse();
-}
-
-
-
+    
+        return $this->userNotFoundOrUnauthorizedResponse();
+    }
+    
+    
+    
 
     private function getReservationsWithinDays(Request $request, $days)
     {
-        $fileNumber = $request->input('file_number');
+        $fileNumber = $request->input('file_number'); 
         $employee = $this->fetchUser($fileNumber);
-
+    
         if ($employee && $this->canAccessEmployeeData(Auth::user(), $employee)) {
             $startDate = Carbon::now()->subDays($days)->startOfDay();
             $endDate = Carbon::now()->endOfDay();
@@ -155,27 +169,36 @@ class ReserveFetchController extends Controller
     public function getCustomDateRange(Request $request)
     {
         $fileNumber = $request->input('file_number');
-        $employee = $this->fetchUser($fileNumber);
-
         $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
         $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
-
-        if ($employee && $this->canAccessEmployeeData(Auth::user(), $employee) && $startDate && $endDate) {
+    
+        if (!$fileNumber || !$startDate || !$endDate) {
+            return response()->json(['error' => 'Invalid input provided.'], 400);
+        }
+    
+        $employee = $this->fetchUser($fileNumber); 
+        if (!$employee) {
+            return response()->json(['error' => 'Employee not found or unauthorized.'], 403);
+        }
+    
+        if ($employee && $this->canAccessEmployeeData(Auth::user(), $employee)) {
             $reservations = ReservationAllowance::where('user_id', $employee->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->with(['user', 'department', 'sector', 'grade'])
+                ->with(['user', 'departements', 'sector', 'grade']) 
                 ->get();
-                return $this->handleReservationData($employee, $reservations);
-            }
+    
+            return $this->handleReservationData($employee, $reservations);
+        }
+    
         return $this->userNotFoundOrUnauthorizedResponse();
     }
-
-
+    
+    
+    
 
     private function userNotFoundOrUnauthorizedResponse()
     {
         return response()->json([
-            'draw' => 1,
+            'draw' => 1, 
             'recordsTotal' => 0,
             'recordsFiltered' => 0,
             'data' => [],
@@ -184,17 +207,17 @@ class ReserveFetchController extends Controller
 
     public function printReport(Request $request)
     {
-        $user = $this->fetchUser($request->input('file_number'));
+        $user = $this->fetchUser($request->input('file_number')); 
         if (!$user || !$this->canAccessEmployeeData(Auth::user(), $user)) {
             return redirect()->back()->with('error', 'No user found with this File Number');
         }
-
+    
         // Fetch reservations
         $reservations = ReservationAllowance::where('user_id', $user->id)->with('departements')->get();
         $totalAmount = $reservations->sum(function ($item) {
             return (float) $item->amount; // Ensure amount is treated as float
         });
-
+        
         $data = [
             'reservations' => $reservations,
             'user' => $user,
@@ -203,22 +226,22 @@ class ReserveFetchController extends Controller
             'grade' => grade::find($user->grade_id)->name ?? 'N/A',
             'totalAmount' => number_format((float) $totalAmount, 2) . ' د ك',
             'totalFullReservation' => number_format(
-                (float) $reservations->where('type', 1)->sum('amount'),
+                (float) $reservations->where('type', 1)->sum('amount'), 
                 2
             ) . ' د ك',
             'totalPartialReservation' => number_format(
-                (float) $reservations->where('type', 2)->sum('amount'),
+                (float) $reservations->where('type', 2)->sum('amount'), 
                 2
             ) . ' د ك',
         ];
-
+    
         // Generate PDF
         $pdf = $this->generatePDF($data);
         return $pdf->Output('reservation_report.pdf', 'I');
     }
+    
 
-
-
+    
     // Generate PDF with given data
     private function generatePDF($data)
     {

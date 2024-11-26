@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Sector;
 use App\Models\departements;
+use App\Models\grade;
 use App\Models\ReservationAllowance;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use TCPDF;
 
