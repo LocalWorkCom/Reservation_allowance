@@ -292,12 +292,12 @@
                                     @if ($user->department_id == null)
                                         <option selected disabled>اختار من القائمة</option>
                                     @endif
-                                    @foreach ($department as $item)
+                                    {{-- @foreach ($department as $item)
                                         <option value="{{ $item->id }}"
                                             {{ $user->department_id == $item->id ? 'selected' : '' }}>
                                             {{ $item->name }}
                                         </option>
-                                    @endforeach
+                                    @endforeach --}}
 
                                 </select>
                             </div>
@@ -406,7 +406,7 @@
 
     </section>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const flagSelect = document.getElementById('input13');
             const additionalFields = document.getElementById('additionalFields');
             const passwordField = document.getElementById('input3');
@@ -564,40 +564,46 @@
             });
         }
 
-        function getDepartment(id) {
+        function getDepartment(sectorId) {
+            console.log('Fetching departments for sector:', sectorId);
 
-            console.log(id);
+            var url = '/get-deprt-sector?sector=' + sectorId;
 
-            var url = '/get-deprt-sector?sector=' + id;
+            // Store the old department value from Blade
+            var oldDepartment = "{{ old('department_id', $user->department_id) }}";
 
             $.ajax({
                 url: url,
-                type: 'GET', // Use GET method
+                type: 'GET',
                 success: function(response) {
+
                     var $departmentDropdown = $('#department_id');
-                        $departmentDropdown.empty(); // Clear existing options
-                        $departmentDropdown.append('<option selected disabled>اختار من القائمة</option>');
+                    $departmentDropdown.empty(); // Clear existing options
+                    $departmentDropdown.append('<option selected disabled>اختار من القائمة</option>');
 
-                        // Populate dropdown with department options
-                        $.each(response, function(key, department) {
-                            $departmentDropdown.append(
-                                `<option value="${department.uuid}">${department.name}</option>`
-                            );
-                        });
-
-                        // Set the old department value after populating
-                        if (oldDepartment) {
-                            $departmentDropdown.val(oldDepartment);
-                        }
+                    // Populate dropdown with department options
+                    $.each(response, function(key, department) {
+                        $departmentDropdown.append(
+                            `<option value="${department.id}" ${department.id == oldDepartment ? 'selected' : ''}>
+                    ${department.name}
+                </option>`
+                        );
+                    });
                 },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error('Error fetching grades:', textStatus, errorThrown);
-                }
+                error: function(jqXHR, textStatus, errorThrown) {}
             });
 
         }
     </script>
+    <script>
+        $(document).ready(function() {
+            var selectedSector = "{{ old('sector', $user->sector) }}";
 
+            if (selectedSector) {
+                getDepartment(selectedSector); // Trigger department fetching
+            }
+        });
+    </script>
 
     {{-- <script>
         document.addEventListener('DOMContentLoaded', function() {
