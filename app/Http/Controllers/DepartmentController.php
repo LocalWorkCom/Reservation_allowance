@@ -393,6 +393,7 @@ class DepartmentController extends Controller
             'email.required' => 'الايميل مطلوب',
             'budget_type.required' => 'يجب اختيار نوع الميزانيه',
             'email.unique' => 'عفوا هذا الايميل مأخوذ مسبقا',
+            'email.invalid_format' => 'البريد الإلكتروني للمدير غير صالح.', // Custom error message
         ];
 
         $validator = Validator::make($request->all(), [
@@ -400,14 +401,16 @@ class DepartmentController extends Controller
             'budget' => 'nullable|numeric',
             'budget_type' => 'required',
             'part' => 'required',
-            'email' =>  'required',
-            Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
-            function ($attribute, $value, $fail) {
-                // Custom email format validation
-                if (!isValidEmail($value)) {
-                    return $fail('البريد الإلكتروني للمدير غير صالح.');
-                }
-            },
+            'email' => [
+                'nullable', // Allow email to be null unless manager is set
+                Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
+                function ($attribute, $value, $fail) {
+                    // Check if email format is invalid
+                    if ($value && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                        $fail('البريد الإلكتروني للمدير غير صالح.'); // Custom failure message
+                    }
+                },
+            ],
         ], $messages);
 
         if ($validator->fails()) {
@@ -519,6 +522,7 @@ class DepartmentController extends Controller
             'email.required' => 'الايميل مطلوب',
             'budget_type.required' => 'يجب اختيار نوع الميزانيه',
             'email.unique' => 'عفوا هذا الايميل مأخوذ مسبقا',
+            'email.invalid_format' => 'البريد الإلكتروني للمدير غير صالح.', // Custom error message
         ];
 
         $validator = Validator::make($request->all(), [
