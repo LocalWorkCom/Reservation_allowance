@@ -216,7 +216,7 @@
                             class="display table table-responsive-sm  table-bordered table-hover dataTable">
                             <thead>
                                 <tr>
-                                    <th>الترتيب</th>
+                                    <th style="width:5%">م</th>
                                     <th>الرتبة</th>
                                     <th>الاسم</th>
                                     <th>رقم الملف</th>
