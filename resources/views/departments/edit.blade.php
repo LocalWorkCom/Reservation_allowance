@@ -70,13 +70,18 @@
         <div class="row">
             <div class="container  col-11 mt-3 py-4 ">
                 <div class="container col-11" style="border:0.5px solid #C7C7CC;">
+                    @if (session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
                     <form action="{{ route('departments.update', $department) }}" method="POST"
                         enctype="multipart/form-data">
                         <!-- <div class="container col-10 mt-5 mb-3 pb-5"
-                                                    style="border:0.5px solid #C7C7CC;">
-                                                    <form
-                                                        action="{{ route('departments.update', $department->id) }}"
-                                                        method="POST" enctype="multipart/form-data"> -->
+                                                                        style="border:0.5px solid #C7C7CC;">
+                                                                        <form
+                                                                            action="{{ route('departments.update', $department->id) }}"
+                                                                            method="POST" enctype="multipart/form-data"> -->
                         @csrf
                         @method('PUT')
 
@@ -138,7 +143,8 @@
                                 <div class="col-12 div-info d-flex justify-content-between" style="direction: rtl">
                                     <div class="col-7">
                                         <div class="col-12 div-info-padding"><b>الرتبه : <span></span></b></div>
-                                        <div class="col-12 div-info-padding"><b>المسمى الوظيفى: <span></span></b></div>
+                                        <div class="col-12 div-info-padding"><b>المسمى الوظيفى: <span></span></b>
+                                        </div>
                                     </div>
                                     <div class="col-5">
                                         <div class="col-12 div-info-padding"><b>الأسم: <span></span></b></div>

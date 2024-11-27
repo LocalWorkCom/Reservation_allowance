@@ -11,6 +11,11 @@
 @endsection
 <div class="row " dir="rtl">
     <div class="container  col-11" style="background-color:transparent;">
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item "><a href="{{ route('home') }}">الرئيسيه</a></li>
