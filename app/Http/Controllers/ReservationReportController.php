@@ -124,52 +124,68 @@ class ReservationReportController extends Controller
     
     public function printReport(Request $request)
     {
-        $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
-        $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
+        try {
+            $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
+            $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
     
-        $data = ReservationAllowance::whereBetween('date', [$startDate, $endDate])
-            ->selectRaw('sector_id, COUNT(DISTINCT user_id) as user_count, SUM(amount) as total_amount')
-            ->groupBy('sector_id')
-            ->having('total_amount', '>', 0)
-            ->get()
-            ->map(function ($item) {
-                $item->sector_name = Sector::find($item->sector_id)->name ?? 'N/A';
+            // Filter sectors based on user role
+            if (auth()->user()->rule_id == 2) { // Super Admin
+                $sectors = Sector::pluck('id');
+            } elseif (auth()->user()->rule_id == 4) { // Sector Manager
+                $sectors = Sector::where('id', auth()->user()->sector)->pluck('id');
+            } else {
+                abort(403, 'Unauthorized action.');
+            }
     
-                $mainDepartments = departements::where('sector_id', $item->sector_id)
-                    ->whereNull('parent_id')
-                    ->get();
-                $item->main_departments_count = $mainDepartments->count();
+            $data = ReservationAllowance::whereBetween('date', [$startDate, $endDate])
+                ->whereIn('sector_id', $sectors)
+                ->selectRaw('sector_id, COUNT(DISTINCT user_id) as user_count, SUM(amount) as total_amount')
+                ->groupBy('sector_id')
+                ->having('total_amount', '>', 0)
+                ->get()
+                ->map(function ($item) {
+                    $item->sector_name = Sector::find($item->sector_id)->name ?? 'N/A';
     
-                $item->sub_departments_count = departements::where('sector_id', $item->sector_id)
-                    ->whereIn('parent_id', $mainDepartments->pluck('id'))
-                    ->count();
+                    $mainDepartments = departements::where('sector_id', $item->sector_id)
+                        ->whereNull('parent_id')
+                        ->get();
+                    $item->main_departments_count = $mainDepartments->count();
     
-                return $item;
-            });
+                    $item->sub_departments_count = departements::where('sector_id', $item->sector_id)
+                        ->whereIn('parent_id', $mainDepartments->pluck('id'))
+                        ->count();
     
-        $totalSectors = $data->count();
-        $totalDepartments = departements::whereIn('sector_id', $data->pluck('sector_id'))
-            ->distinct()
-            ->count();
-        $totalUsers = $data->sum('user_count');
-        $totalAmount = number_format($data->sum('total_amount'), 2) . ' د.ك';
+                    return $item;
+                });
     
-        
-        $pdf = new TCPDF();
-        $pdf->SetCreator('Your App');
-        $pdf->SetTitle('تقارير بدل حجز');
-        $pdf->AddPage();
-        $pdf->setRTL(true);
-        $pdf->SetFont('dejavusans', '', 12);
+            // Calculate totals
+            $totalSectors = $data->count();
+            $totalDepartments = departements::whereIn('sector_id', $data->pluck('sector_id'))
+                ->distinct()
+                ->count();
+            $totalUsers = $data->sum('user_count');
+            $totalAmount = number_format($data->sum('total_amount'), 2) . ' د.ك';
     
-        // Render HTML content with Blade view
-        $html = view('reserv_report.pdf', compact(
-            'data', 'totalSectors', 'totalDepartments', 'totalUsers', 'totalAmount', 'startDate', 'endDate'
-        ))->render();
-        
-        $pdf->writeHTML($html, true, false, true, false, '');
+            // Initialize PDF
+            $pdf = new TCPDF();
+            $pdf->SetCreator('Your App');
+            $pdf->SetTitle('تقارير بدل حجز');
+            $pdf->AddPage();
+            $pdf->setRTL(true);
+            $pdf->SetFont('dejavusans', '', 12);
     
-        return $pdf->Output('reserv_report.pdf', 'I');
+            // Render HTML content with Blade view
+            $html = view('reserv_report.pdf', compact(
+                'data', 'totalSectors', 'totalDepartments', 'totalUsers', 'totalAmount', 'startDate', 'endDate'
+            ))->render();
+    
+            $pdf->writeHTML($html, true, false, true, false, '');
+    
+            return $pdf->Output('reserv_report.pdf', 'I');
+        } catch (\Exception $e) {
+            \Log::error("Error generating report PDF: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to generate the report.');
+        }
     }
     
     
