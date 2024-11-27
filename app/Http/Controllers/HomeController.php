@@ -15,6 +15,10 @@ class HomeController extends Controller
     public function index(Request $request)
     {
         $empCount=User::where('active',1)->count();
+        $user = auth()->user();
+        $userGrade = $user->grade->name ?? 'N/A'; 
+        
+
         $depCount=departements::count();
         $outCount=outgoings::count();
         $ioCount=Iotelegram::count();
@@ -29,7 +33,7 @@ class HomeController extends Controller
         //     return redirect()->with('success', 'تم إعادة تعيين كلمة المرور بنجاح');
         // }
         
-        return view('home.index',compact('empCount','depCount','outCount','ioCount'));
+        return view('home.index',compact('empCount','depCount','outCount','ioCount', 'userGrade'));
 
     }
 }

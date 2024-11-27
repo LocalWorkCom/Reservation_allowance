@@ -6,7 +6,7 @@
 
 <div class="row ">
     <div class="container welcome col-11">
-        <p> {{auth()->user()->name}} مرحـــــــــــــــبا بك </p>
+        <p>  {{ $userGrade }} / {{auth()->user()->name}}  مرحـــــــــــــــبا بك </p>
     </div>
 
 </div>
