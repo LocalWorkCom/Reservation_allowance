@@ -59,7 +59,6 @@ class UserController extends Controller
 
     // }
     public function index($flag, $type = 0, $id = 0, $status = 0)
-
     {
         addUuidToTable('users');
 
@@ -683,7 +682,12 @@ class UserController extends Controller
         $violationTypeName = $request->input('violation_type');
 
         // Fetch grades based on the selected violation type
-        $grades = Grade::where('type', $violationTypeName)->get();
+        if ($violationTypeName == 2) {
+
+            $grades = Grade::where('type', 2)->get();
+        } else {
+            $grades = Grade::where('type', '<>', 2)->get();
+        }
 
         // Return the grades as a JSON response
         return response()->json($grades);
@@ -775,7 +779,7 @@ class UserController extends Controller
             $sector->manager = null;
             $sector->save();
         }
-        // addUserHistory($user->id, $department_id, $sector_id);
+        addUserHistory($user->id, null, null);
 
 
         return redirect()->back()->with('success', 'تم الغاء التعيين بنجاح');
@@ -1010,7 +1014,7 @@ class UserController extends Controller
             $department = departements::all();
         } else {
             if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
-                $department = departements::all();
+                $department = departements::where('sector_id', $user->sector)->get();
             } else {
                 $department = departements::where('id', $user->department_id)->orwhere('parent_id', $user->department_id)->get();
             }
@@ -1084,11 +1088,12 @@ class UserController extends Controller
             return redirect()->back()->withErrors($validatedData)->withInput();
         }
 
-        if ($request->filled('department_id')) {
-            $id_department = Departements::where('uuid', $request->department_id)->value('id');
-        } else {
-            $id_department = null;
-        }
+        // dd($request);
+        // if ($request->filled('department_id')) {
+        //     $id_department = Departements::where('uuid', $request->department_id)->value('id');
+        // } else {
+            $id_department =  $request->department_id;
+        // }
         // Additional checks for 'user' flag
         if ($request->flag == 'user') {
             if (!$request->filled('email')) {
@@ -1097,7 +1102,7 @@ class UserController extends Controller
             if (!$request->filled('rule_id')) {
                 return redirect()->back()->withErrors(['rule_id' => 'المهام مطلوبة ولا يمكن تركها فارغة.'])->withInput();
             }
-            if (!$request->filled('password') && !$user->password) {
+            if (empty($request->filled('password')) && !$user->password) {
                 return redirect()->back()->withErrors(['password' => 'كلمة المرور مطلوبة ولا يمكن تركها فارغة.'])->withInput();
             }
         }
@@ -1107,8 +1112,8 @@ class UserController extends Controller
         $old_flag = $user->flag;
 
         //if flag user and user sector manager , changed rule to dep manager
-        $is_sectormanager = Sector::where('manager',$user->id)->exists();
-        if($request->flag == 'user' && $is_sectormanager && $request->rule_id ==3){
+        $is_sectormanager = Sector::where('manager', $user->id)->exists();
+        if ($request->flag == 'user' && $is_sectormanager && $request->rule_id == 3) {
             return redirect()->back()->withErrors(['rule_id' => 'لا يمكن تعديل هذا المستخدم ,لأنه مدير قطاع'])->withInput();
         }
         if ($request->sector != $old_sector || $old_flag != $request->flag) {
@@ -1123,7 +1128,7 @@ class UserController extends Controller
                 $newsectormanger->save();
                 if ($user->email && isValidEmail($user->email)) {
 
-                Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $user->Civil_number, 123456, $user->email);
+                    Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $user->Civil_number, 123456, $user->email);
                 }
             }
         }
@@ -1143,7 +1148,7 @@ class UserController extends Controller
                 if ($user->email && isValidEmail($user->email)) {
 
                     Sendmail('مدير أداره', ' تم أضافتك كمدير أداره' . $request->name, $user->Civil_number, 123456, $user->email);
-                    }
+                }
             }
         }
 
@@ -1163,7 +1168,7 @@ class UserController extends Controller
         $user->Provinces = $request->Provinces;
         $user->sector = $request->sector;
         $user->region = $request->region;
-        $user->public_administration =$id_department;
+        $user->public_administration = $id_department;
         $user->department_id = $id_department;
         $user->work_location = $request->work_location;
         $user->qualification = $request->qualification;

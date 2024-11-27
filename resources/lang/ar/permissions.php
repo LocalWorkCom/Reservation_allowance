@@ -64,12 +64,14 @@ return [
     'create Country' => 'اضافه دولة',
     'edit Country' => 'تعديل دولة',
     'view Country' => 'عرض دولة',
+    'delete Country'=>'حذف دولة',
 
     'view Qualification' => 'عرض المؤهلات',
 
     'create Sector' => 'اضافه القطاعات',
     'edit Sector' => 'تعديل القطاعات',
     'view Sector' => 'عرض القطاعات',
+    'delete Sector' => 'حذف القطاعات',
 
     'add_employee User' => 'اضافه موظف',
 
