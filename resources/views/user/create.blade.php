@@ -75,7 +75,7 @@
                             <div class="form-group d-flex justify-content-center col-md-5 mx-2 pb-2">
                                 <!-- Violation type radio buttons -->
                                 @foreach ($violationTypeName as $key => $violation)
-                                {{-- {{ dd($violationTypeName) }} --}}
+                                    {{-- {{ dd($violationTypeName) }} --}}
 
                                     <div class="radio-btns" style="margin-left: 1.5rem; margin-right: 1.5rem;">
                                         <input type="radio" class="form-check-input" id="police_{{ $key }}"
@@ -227,9 +227,8 @@
                                     <option value="employee" @if (old('flag') == 'employee') selected @endif>لا</option>
                                 </select>
                             </div>
-                            <div class="form-row mx-md-3 d-flex justify-content-center flex-row-reverse col-12"
-                                id="additionalFields"
-                                style="visibility: {{ old('flag') == 'user' ? 'visible' : 'hidden' }}">
+                            <div class="form-row mx-md-3 d-flex justify-content-center {{ old('flag') === 'user' ? '' : 'd-none' }} flex-row-reverse col-12"
+                                id="additionalFields">
                                 <div class="form-group col-md-5 mx-2">
                                     <label for="input66">
                                         <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i> الباسورد
@@ -366,28 +365,31 @@
         </div>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                const flagSelect = document.getElementById('input13');
-                const ruleSelect = document.getElementById('input77');
-                const departmentSelect = document.getElementById('department_id');
-                const sectorSelect = document.getElementById('sector');
-                const additionalFields = document.getElementById('additionalFields');
+                const flagSelect = document.getElementById('input13'); // Flag selector
+                const ruleSelect = document.getElementById('input77'); // Rule selector
+                const departmentSelect = document.getElementById('department_id'); // Department
+                const sectorSelect = document.getElementById('sector'); // Sector
+                const additionalFields = document.getElementById('additionalFields'); // Additional fields div
 
-                // Handle visibility and required/disabled status dynamically
                 function handleDynamicFields() {
-                    const flagValue = flagSelect.value;
-                    const ruleValue = ruleSelect.value;
-                    console.log(flagValue, ruleValue)
+                    const flagValue = flagSelect.value; // Current flag value
+                    const ruleValue = ruleSelect.value; // Current rule value
+                    console.log("Flag:", flagValue, "Rule:", ruleValue);
 
-                    // Show or hide the additional fields when "user" is selected
-                    additionalFields.style.visibility = (flagValue === 'user') ? 'visible' : 'hidden';
+                    // Toggle the visibility of additional fields
+                    if (flagValue === 'user ') {
+                        additionalFields.style.display = 'block';
+                    } else {
+                        additionalFields.style.display = 'none';
+                    }
 
-                    // Reset validations and state
+                    // Reset attributes
                     departmentSelect.removeAttribute('required');
                     sectorSelect.removeAttribute('required');
                     departmentSelect.removeAttribute('disabled');
 
-                    // Apply validation based on rule_id
-                    if (ruleValue == 3 && flagValue === 'user') {
+                    // Apply rules for dynamic validation
+                    if (ruleValue == 3 && flagValue === 'user ') {
                         departmentSelect.setAttribute('required', true);
                     } else if (ruleValue == 4) {
                         sectorSelect.setAttribute('required', true);
@@ -395,30 +397,25 @@
                     }
                 }
 
-                // Event listener for flag and rule selection changes
+                // Attach event listeners
                 flagSelect.addEventListener('change', handleDynamicFields);
                 ruleSelect.addEventListener('change', handleDynamicFields);
 
-                // Trigger the function on page load to handle preselected values
+                // Trigger on load
                 handleDynamicFields();
             });
 
 
 
+
             $(document).ready(function() {
                 $('#input13').change(function() {
-
-
-                    if ($(this).val() == 'user') {
-                        console.log($(this).val());
-                        $('#additionalFields').css('visibility', 'visible');
-
+                    if ($(this).val() === 'user ') {
+                        $('#additionalFields').css('display', 'block');
                     } else {
-                        $('#additionalFields').css('visibility', 'hidden');
-
+                        $('#additionalFields').css('display', 'none');
                     }
                 });
-
             });
             // $(document).ready(function() {
             $('.select2').select2({
@@ -492,7 +489,7 @@
                     type: 'GET', // Use GET method
                     success: function(response) {
                         console.log(id);
-                        
+
                         console.log(response); // Log the response
 
                         // Clear the current grade options
