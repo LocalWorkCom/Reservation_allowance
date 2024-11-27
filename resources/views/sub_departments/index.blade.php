@@ -15,8 +15,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('home') }}">الرئيسيه</a></li>
-                    <li class="breadcrumb-item"><a
-                            href="{{ route('departments.index', $sectors->uuid) }}">الادارات</a>
+                    <li class="breadcrumb-item"><a href="{{ route('departments.index', $sectors->uuid) }}">الادارات</a>
                     </li>
 
                     @foreach ($breadcrumbs as $breadcrumb)
@@ -116,9 +115,11 @@
             ajax: '/api/sub_department/' + departmentId,
 
             columns: [{
-                sWidth: '50px',
+                    sWidth: '50px',
                     data: null,
-                    name: 'order', orderable: false, searchable: false
+                    name: 'order',
+                    orderable: false,
+                    searchable: false
                 },
                 {
                     data: 'name',
@@ -148,7 +149,8 @@
                     data: 'subDepartment',
                     name: 'subDepartment',
                     render: function(data, type, row) {
-                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showSubDepartments(\'' + row.uuid + '\')">' + data +
+                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showSubDepartments(\'' +
+                            row.uuid + '\')">' + data +
                             '</button>';
                     }
                 },
@@ -156,7 +158,8 @@
                     data: 'num_managers',
                     name: 'num_managers',
                     render: function(data, type, row) {
-                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showUsers(\'' + row.uuid + '\')">' + data +
+                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showUsers(\'' +
+                            row.uuid + '\')">' + data +
                             '</button>';
                     }
                 },
@@ -164,7 +167,8 @@
                     data: 'num_subdepartment_managers',
                     name: 'num_subdepartment_managers',
                     render: function(data, type, row) {
-                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showSubUsers(\'' + row.uuid + '\')">' + data +
+                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showSubUsers(\'' +
+                            row.uuid + '\')">' + data +
                             '</button>';
                     }
                 },
@@ -181,10 +185,10 @@
                 targets: -1,
                 render: function(data, type, row) {
                     console.log(row);
-                    var subdepartmentEdit =
+                    var departmentEdit =
                         '{{ route('sub_departments.edit', ':uuid') }}';
-                    subdepartmentEdit =
-                        subdepartmentEdit.replace(
+                    departmentEdit =
+                        departmentEdit.replace(
                             ':uuid', row.uuid);
                     var subdepartment =
                         '{{ route('sub_departments.create', ':uuid') }}';
@@ -202,19 +206,16 @@
                         addReservation = addReservation.replace(':id', row.id);*/
 
                     // Start building the buttons
-                    var buttons = `
-            <a href="${subdepartment}" class="btn btn-sm" style="background-color: #274373;"> <i class="fa fa-plus"></i> ادارات فرعيه</a>
-            <a href="${departmentShow}" class="btn btn-sm" style="background-color: #274373;"> <i class="fa fa-eye"></i> عرض</a>
+                    return `
+<select class="form-select form-select-sm btn-action" onchange="handleAction(this.value, '${row.uuid}')" aria-label="Actions" style="width: auto;">
+    <option value="" class="text-center" style=" color: gray; " selected disabled>الخيارات</option>
+    <option value="show" class="text-center" data-url="${departmentShow}" style=" color: #274373; "> عرض</option>
+    <option value="edit" class="text-center" data-url="${departmentEdit}" style=" color:#eb9526;">تعديل</option>
+    <option value="create"  class="${subdepartment}  text-center" style=" color:#008000
+;">اضافة ادارة فرعية</option>
+</select>
 
-
-                <a href="${subdepartmentEdit}" class="btn btn-sm"  style="background-color: #F7AF15;">
-                    <i class="fa fa-edit"></i>تعديل
-                </a>
-
-`;
-                    /*      <a href="${addReservation}" class="btn btn-sm" style="background-color: #274373;"> <i class="fa fa-edit"></i> اضافة بدل حجز</a> */
-
-                    return buttons;
+    `;
                 }
 
             }],
@@ -242,14 +243,14 @@
             },
             "pagingType": "full_numbers",
             "fnDrawCallback": function(oSettings) {
-                    var api = this.api();
-                    var pageInfo = api.page.info();
-                    // Check if the total number of records is less than or equal to the number of entries per page
-                    if (pageInfo.recordsTotal <= 10) { // Adjust this number based on your page length
-                        $('.dataTables_paginate').css('visibility', 'hidden'); // Hide pagination
-                    } else {
-                        $('.dataTables_paginate').css('visibility', 'visible'); // Show pagination
-                    }
+                var api = this.api();
+                var pageInfo = api.page.info();
+                // Check if the total number of records is less than or equal to the number of entries per page
+                if (pageInfo.recordsTotal <= 10) { // Adjust this number based on your page length
+                    $('.dataTables_paginate').css('visibility', 'hidden'); // Hide pagination
+                } else {
+                    $('.dataTables_paginate').css('visibility', 'visible'); // Show pagination
+                }
             },
             createdRow: function(row, data, dataIndex) {
                 $('td', row).eq(0).html(dataIndex + 1); // Automatic numbering in the first column
@@ -292,6 +293,29 @@
     function showSubUsers(parentDepartmentId) {
         window.location.href = '/employees/employee/parent/' + parentDepartmentId;
 
+    }
+
+    function handleAction(action, uuid) {
+        switch (action) {
+            case "show":
+                // Redirect to the "show" page
+                var showUrl = '{{ route('departments.show', ':uuid') }}'.replace(':uuid', uuid);
+                window.location.href = showUrl;
+                break;
+            case "edit":
+                // Redirect to the "edit" page
+                var editUrl = '{{ route('departments.edit', ':uuid') }}'.replace(':uuid', uuid);
+                window.location.href = editUrl;
+                break;
+            case "create":
+                // Redirect to the "create" page
+                var createSubDeptUrltUrl = '{{ route('sub_departments.create', ':uuid') }}'.replace(':uuid', uuid);
+                window.location.href = createSubDeptUrltUrl;
+                break;
+            default:
+                // Default case for invalid action
+                console.error("Invalid action selected: " + action);
+        }
     }
 </script>
 

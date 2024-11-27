@@ -343,15 +343,15 @@ class settingController extends Controller
             return $row;
         })
         ->addColumn('type', function ($row) {
-            if ($row->type == 2) $mode = 'ظابط';
-            elseif ($row->type == 1) $mode = ' فرد';
-            else $mode = 'مهني';
-            return $mode;
-        })
-        ->rawColumns(['action'])
-        ->make(true);
-}
 
+                if ($row->type == 2) $mode = 'ظابط';
+                elseif ($row->type == 1) $mode = ' فرد';
+                else $mode = 'مهني';
+                return $mode;
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
 
     public function creategrads()
     {
