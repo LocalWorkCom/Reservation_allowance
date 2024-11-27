@@ -21,18 +21,15 @@ class DepartmentController extends Controller
     public function index($uuid)
     {
         addUuidToTable('departements');
-
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
             $departments = departements::all();
-            $sectors = Sector::where('uuid', $uuid)->first();
         } elseif (Auth::user()->rule->id == 4) {
-            $departments = departements::where('sector_id', auth()->user()->sector)->get();
-            $sectors = Sector::where('uuid', $uuid)->first();
+            $departments = departements::where('sector_id', auth()->user()->sector);
         } elseif (Auth::user()->rule->id == 3) {
-            $departments = departements::where('id', auth()->user()->department_id)->first();
-            $sectors = Sector::where('id', $departments->sector_id)->first();
+            $departments = departements::where('id', auth()->user()->department_id);
         }
-
+        // Fetch the related sector information
+        $sectors = Sector::where('uuid', auth()->user()->sector)->first();
 
         return view('departments.index', compact('departments', 'sectors'));
     }
@@ -64,18 +61,15 @@ class DepartmentController extends Controller
 
     public function getDepartment($uuid)
     {
+        $sectors = Sector::where('uuid', $uuid)->first();
         if (in_array(Auth::user()->rule->id, [1, 2, 4])) {
 
-            $sectors = Sector::where('uuid', $uuid)->first();
 
             $data = departements::where('parent_id', null)
                 ->where('sector_id', $sectors->id)
                 ->orderBy('id', 'desc')
                 ->get();
         } else {
-             $current_department = departements::where('uuid', $uuid)->first();
-            $sectors = Sector::where('id', $current_department->sector_id)->first();
-
             $data = departements::where('parent_id', null)
                 ->where('sector_id', $sectors->id)
                 ->orderBy('id', 'desc')
@@ -144,8 +138,8 @@ class DepartmentController extends Controller
     }
     public function getManagerDetails($id)
     {
-        $isEditPage = request()->get('isEditPage', false);
-        $skipDepartmentCheck = request()->get('skipDepartmentCheck', false);
+        // Fetch manager data from the database
+        $isEditPage = request()->get('isEditPage', false); // Check if the request is from the edit page
 
         $user = User::where('file_number', $id)->first();
         if (!$user) {
@@ -154,49 +148,55 @@ class DepartmentController extends Controller
 
         // Check if the user is a sector manager
         $isSectorManager = Sector::where('manager', $user->id)->exists();
+        $manager = User::where('file_number', $id)->first();
+
+        // Handle if no manager is found
+        // if (!$manager) {
+        //     return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 405);
+        // }
+        // Prevent sector managers from being transferred or added
         if ($isSectorManager) {
             return response()->json(['error' => 'لا يمكن تعيين مدير قطاع كمدير أو موظف.'], 403);
         }
 
-        if ($isEditPage == 'true') {
-            $currentDepartment = $user->department_id;
-            $newDepartmentId = request()->get('department_id');
-            $newSectorId = request()->get('sector_id');
+        if (!$isEditPage) {
+            // Check if the user is already assigned to a department
+            if ($user->department_id) {
+                $currentDepartment = Departements::find($user->department_id);
+                $currentSector = $currentDepartment ? $currentDepartment->department_id : null;
+                $isDepartmentCheck = request()->has('skipDepartmentCheck') && request()->get('skipDepartmentCheck') === 'true';
+                // If the user is in a department in the same sector
+                if ($currentSector == request()->get('sector_id') && $isDepartmentCheck) {
+                    return response()->json([
+                        'warning' => 'هذا المستخدم موجود بالفعل في إدارة أخرى في نفس القطاع. هل تريد نقله إلى هذه الإدارة؟',
+                        'transfer' => true,
+                        'rank' => $user->grade_id ? $user->grade->name : 'لا يوجد رتبه',
+                        'seniority' => $user->joining_date ? Carbon::parse($user->joining_date)->diffInYears(Carbon::now()) : 'لا يوجد بيانات أقدميه',
+                        'job_title' => $user->job_title ?? 'لا يوجد مسمى وظيفى',
+                        'name' => $user->name,
+                        'phone' => $user->phone ?? 'لا يوجد رقم هاتف',
+                        'email' => $user->email ?? 'لا يوجد بريد الكتروني',
+                        'isEmployee' => $user->flag == 'employee' ? true : false,
+                    ]);
+                }
 
-            $isSameSector = (int)$newSectorId === (int)$user->sector;
-            $isTransferRequired = !$isSameSector || ($isSameSector && $currentDepartment != $newDepartmentId);
+                // If the user is in a department in a different sector
+                if ($currentSector !== request()->get('sector_id')  && $isDepartmentCheck) {
 
-            if ($isTransferRequired) {
-                return response()->json([
-                    'warning' => 'هذا المستخدم موجود بالفعل في إدارة أخرى . هل تريد نقله إلى هذه الإدارة؟',
-                    'transfer' => true,
-                    'rank' => $user->grade_id ? $user->grade->name : 'لا يوجد رتبه',
-                    'seniority' => $user->joining_date ? Carbon::parse($user->joining_date)->diffInYears(Carbon::now()) : 'لا يوجد بيانات أقدميه',
-                    'job_title' => $user->job_title ?? 'لا يوجد مسمى وظيفى',
-                    'name' => $user->name,
-                    'phone' => $user->phone ?? 'لا يوجد رقم هاتف',
-                    'email' => $user->email ?? 'لا يوجد بريد الكتروني',
-                    'isEmployee' => $user->flag == 'employee' ? true : false,
-                ]);
+                    return response()->json([
+                        'warning' => 'هذا المستخدم موجود بالفعل في قطاع آخر. هل تريد نقله إلى هذا القطاع وهذه الإدارة؟',
+                        'transfer' => true,
+                        'rank' => $user->grade_id ? $user->grade->name : 'لا يوجد رتبه',
+                        'seniority' => $user->joining_date ? Carbon::parse($user->joining_date)->diffInYears(Carbon::now()) : 'لا يوجد بيانات أقدميه',
+                        'job_title' => $user->job_title ?? 'لا يوجد مسمى وظيفى',
+                        'name' => $user->name,
+                        'phone' => $user->phone ?? 'لا يوجد رقم هاتف',
+                        'email' => $user->email ?? 'لا يوجد بريد الكتروني',
+                        'isEmployee' => $user->flag == 'employee' ? true : false,
+                    ]);
+                }
             }
-
-            // If the user is in a department in a different sector
-            // if ($currentSector !== request()->get('sector_id')  && $isDepartmentCheck) {
-
-            //     return response()->json([
-            //         'warning' => 'هذا المستخدم موجود بالفعل في قطاع آخر. هل تريد نقله إلى هذا القطاع وهذه الإدارة؟',
-            //         'transfer' => true,
-            //         'rank' => $user->grade_id ? $user->grade->name : 'لا يوجد رتبه',
-            //         'seniority' => $user->joining_date ? Carbon::parse($user->joining_date)->diffInYears(Carbon::now()) : 'لا يوجد بيانات أقدميه',
-            //         'job_title' => $user->job_title ?? 'لا يوجد مسمى وظيفى',
-            //         'name' => $user->name,
-            //         'phone' => $user->phone ?? 'لا يوجد رقم هاتف',
-            //         'email' => $user->email ?? 'لا يوجد بريد الكتروني',
-            //         'isEmployee' => $user->flag == 'employee' ? true : false,
-            //     ]);
-            // }
         }
-
 
 
         // If the user is not in any department or sector, return their details
@@ -435,7 +435,7 @@ class DepartmentController extends Controller
         // Create a new department
         $departements = new Departements();
         $departements->name = $request->name;
-        // $departements->manger = $manager ? $manager->id : null; // Assign the user's ID as manager
+        $departements->manger = $manager ? $manager->id : null; // Assign the user's ID as manager
         $departements->sector_id = $request->sector;
         $departements->description = $request->description;
         $departements->reservation_allowance_amount =  $request->budget_type == 2 ? 00.00 : $request->budget;
@@ -445,46 +445,32 @@ class DepartmentController extends Controller
         saveHistory($departements->reservation_allowance_amount, $departements->sector_id, $departements->id);
         UpdateUserHistory($manager->id);
         addUserHistory($manager->id, $departements->id,  $request->sector);
-
         if ($manager) {
+            // Handle manager assignment
+            if ($manager->department_id != $departements->id || $manager->department_id != null) {
+                $old_department = Departements::find($manager->department_id);
 
-            if ($manager->department_id) {
-                $oldDepartment = departements::find($manager->department_id);
-                $oldDepartment->manger = null;
-                $oldDepartment->save();
+                if ($old_department) {
+                    $old_department->manger = null;
+                    $old_department->save();
+                }
             }
 
-            $manager->department_id = $departements->id;
+            if ($manager->sector != $departements->sector_id || $manager->sector != null) {
+                $old_sector = Sector::find($manager->sector);
+
+                if ($old_sector) {
+                    $old_sector->manager = null;
+                    $old_sector->save();
+                }
+            }
+
             $manager->sector = $request->sector;
+            $manager->department_id = $departements->id;
             $manager->flag = 'user';
             $manager->rule_id = 3;
             $manager->password = Hash::make('123456');
             $manager->save();
-            // Handle manager assignment
-            // if ($manager->department_id != $departements->id || $manager->department_id != null) {
-            //     $old_department = Departements::find($manager->department_id);
-
-            //     if ($old_department) {
-            //         $old_department->manger = null;
-            //         $old_department->save();
-            //     }
-            // }
-
-            // if ($manager->sector != $departements->sector_id || $manager->sector != null) {
-            //     $old_sector = Sector::find($manager->sector);
-
-            //     if ($old_sector) {
-            //         $old_sector->manager = null;
-            //         $old_sector->save();
-            //     }
-            // }
-
-            // $manager->sector = $request->sector;
-            // $manager->department_id = $departements->id;
-            // $manager->flag = 'user';
-            // $manager->rule_id = 3;
-            // $manager->password = Hash::make('123456');
-            // $manager->save();
 
             // Send email to new manager
             if ($manager->email && isValidEmail($manager->email)) {
@@ -569,8 +555,7 @@ class DepartmentController extends Controller
         };
 
         $file_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->file_number);
-        $file_numbers = array_filter(explode(',', $file_numbers));
-
+        $file_numbers = array_filter(explode(',', $file_numbers)); // Ensure it's an array of valid numbers
         $manager = $request->mangered ? User::where('file_number', $request->mangered)->first() : null;
 
         // Create a new sub-department
@@ -585,56 +570,40 @@ class DepartmentController extends Controller
         $departements->save();
 
         if ($manager) {
+            // Assign the manager and handle the previous department/sector association
+            $edit_department = Departements::find($departements->id);
+            $edit_department->manger = $manager->id;
+            $edit_department->save();
 
-            if ($manager->department_id) {
-                $oldDepartment = departements::find($manager->department_id);
-                $oldDepartment->manger = null;
-                $oldDepartment->save();
+            $old_department = Departements::find($manager->department_id);
+            if ($old_department) {
+                $old_department->manger = null;
+                $old_department->save();
             }
 
-            $manager->department_id = $departments->id;
+            // $old_sector = Sector::find($manager->sector);
+            // if ($old_sector) {
+            //     $old_sector->manager = null;
+            //     $old_sector->save();
+            // }
+
             $manager->sector = $request->sector;
+            $manager->department_id = $departements->id;
             $manager->flag = 'user';
             $manager->rule_id = 3;
             $manager->email = $request->email;
             $manager->password = Hash::make('123456');
             $manager->save();
-        }
-
-        // Assign the manager and handle the previous department/sector association
-        // $edit_department = Departements::find($departements->id);
-        // $edit_department->manger = $manager->id;
-        // $edit_department->save();
-
-        // $old_department = Departements::find($manager->department_id);
-        // if ($old_department) {
-        //     $old_department->manger = null;
-        //     $old_department->save();
-        // }
-
-        // $old_sector = Sector::find($manager->sector);
-        // if ($old_sector) {
-        //     $old_sector->manager = null;
-        //     $old_sector->save();
-        // }
-
-        // $manager->sector = $request->sector;
-        // $manager->department_id = $departements->id;
-        // $manager->flag = 'user';
-        // $manager->rule_id = 3;
-        // $manager->email = $request->email;
-        // $manager->password = Hash::make('123456');
-        // $manager->save();
-
-        if ($manager->email && isValidEmail($manager->email)) {
-            // Send email to the new manager
-            Sendmail(
-                'مدير ادارة',
-                'تم أضافتك كمدير ادارة',
-                $manager->file_number,
-                123456,
-                $manager->email
-            );
+            if ($manager->email && isValidEmail($manager->email)) {
+                // Send email to the new manager
+                Sendmail(
+                    'مدير ادارة',
+                    'تم أضافتك كمدير ادارة',
+                    $manager->file_number,
+                    123456,
+                    $manager->email
+                );
+            }
         }
 
         UpdateUserHistory($request->mangered);
@@ -763,7 +732,7 @@ class DepartmentController extends Controller
 
 
         // Retrieve the old manager before updating
-        // $oldManager = $department->manger; //file_number
+        $oldManager = $department->manger; //file_number
         $manager = $request->mangered ? User::where('file_number', $request->mangered)->value('id') : null;
         // Handle reservation allowance type
         $part = $request->input('part');
@@ -778,122 +747,83 @@ class DepartmentController extends Controller
             $reservation_allowance_type = 4; // Only '3' selected
         }
 
-        $oldManager = $department->manger;
+        // Handle updating department details
         $department->name = $request->name;
         $department->sector_id = $request->sector;
         $department->description = $request->description;
-        $department->reservation_allowance_amount = $request->budget_type == 2 ? 00.00 : $request->budget;
+        $department->manger = $manager;
         $department->reservation_allowance_type = $reservation_allowance_type;
+        $department->reservation_allowance_amount =  $request->budget_type == 2 ? 00.00 : $request->budget;
         $department->created_by = Auth::user()->id;
-        $department->manger = $manager ? $manager->id : null;
         $department->save();
-
-        // Handle updating department details
-        // $department->name = $request->name;
-        // $department->sector_id = $request->sector;
-        // $department->description = $request->description;
-        // $department->manger = $manager;
-        // $department->reservation_allowance_type = $reservation_allowance_type;
-        // $department->reservation_allowance_amount =  $request->budget_type == 2 ? 00.00 : $request->budget;
-        // $department->created_by = Auth::user()->id;
-        // $department->save();
         saveHistory($department->reservation_allowance_amount, $department->sector_id, $department->id);
         UpdateUserHistory($manager);
         addUserHistory($manager, $department->id,  $request->sector);
         // Handle old and new manager updates
-
-
-        // if ($oldManager !== $manager) {
-        //     if ($oldManager) {
-        //         $oldManagerUser = User::find($oldManager);
-        //         if ($oldManagerUser) {
-        //             $oldManagerUser->sector = null;
-        //             $oldManagerUser->department_id = null;
-        //             $oldManagerUser->flag = 'employee';
-        //             $oldManagerUser->password = null;
-        //             $oldManagerUser->save();
-        //         }
-        //     }
+        if ($oldManager !== $manager) {
+            if ($oldManager) {
+                $oldManagerUser = User::find($oldManager);
+                if ($oldManagerUser) {
+                    $oldManagerUser->sector = null;
+                    $oldManagerUser->department_id = null;
+                    $oldManagerUser->flag = 'employee';
+                    $oldManagerUser->password = null;
+                    $oldManagerUser->save();
+                }
+            }
 
             if ($manager) {
-                if ($oldManager != $manager->id) {
-                    if ($oldManager) {
-                        $oldManagerUser = User::find($oldManager);
-                        $oldManagerUser->department_id = null;
-                        $oldManagerUser->sector = null;
-                        $oldManagerUser->save();
+                $newManager = User::find($manager);
+                if ($newManager->department_id != $department->id || $newManager->sector != null || $newManager->department_id != null) {
+                    $old_department = departements::find($newManager->department_id);
+                    if ($old_department) {
+                        $old_department->manger = null;
+                        $newManager->sector = $request->sector;
+                        $old_department->save();
                     }
-    
-                    $manager->department_id = $department->id;
-                    $manager->sector = $request->sector;
-                    $manager->flag = 'user';
-                    $manager->email = $request->email;
-                    $manager->rule_id = 3;
-                    $manager->password = Hash::make('123456');
-                    $manager->save();
+                }
+                if ($newManager) {
+                    $newManager->department_id = $department->id;
+                    $newManager->sector = $request->sector;
 
-                    if ($manager->email && isValidEmail($manager->email)) {
+                    $newManager->flag = 'user';
+                    $newManager->email = $request->email;
+                    $newManager->rule_id = 3;
+
+                    $newManager->password = Hash::make('123456');
+
+                    $newManager->save();
+
+                    if ($newManager->email && isValidEmail($newManager->email)) {
                         // Send email to the new manager
                         Sendmail(
                             'مدير ادارة', // Subject
                             'تم أضافتك كمدير ادارة', // Email body
-                            $manager->file_number,
+                            $newManager->file_number,
                             123456,
-                            $manager->email
+                            $newManager->email
                         );
                     }
                 }
             }
-                // $newManager = User::find($manager);
-                // if ($newManager->department_id != $department->id || $newManager->sector != null || $newManager->department_id != null) {
-                //     $old_department = departements::find($newManager->department_id);
-                //     if ($old_department) {
-                //         $old_department->manger = null;
-                //         $newManager->sector = $request->sector;
-                //         $old_department->save();
-                //     }
-                // }
-                // if ($newManager) {
-                //     $newManager->department_id = $department->id;
-                //     $newManager->sector = $request->sector;
+        } else {
+            $sector = Sector::find($request->id);
+            $Manager = User::find($manager);
+            if ($request->password) {
+                $Manager->sector = $sector->id;
+                $Manager->flag = 'user';
+                $Manager->rule_id = 3;
+                $Manager->email = $request->email;
 
-                //     $newManager->flag = 'user';
-                //     $newManager->email = $request->email;
-                //     $newManager->rule_id = 3;
+                $Manager->password = Hash::make('123456');
+                $Manager->save();
 
-                //     $newManager->password = Hash::make('123456');
-
-                //     $newManager->save();
-
-                    // if ($newManager->email && isValidEmail($newManager->email)) {
-                    //     // Send email to the new manager
-                    //     Sendmail(
-                    //         'مدير ادارة', // Subject
-                    //         'تم أضافتك كمدير ادارة', // Email body
-                    //         $newManager->file_number,
-                    //         123456,
-                    //         $newManager->email
-                    //     );
-                    // }
-                // }
-        // } else {
-        //     $sector = Sector::find($request->id);
-        //     $Manager = User::find($manager);
-        //     if ($request->password) {
-        //         $Manager->sector = $sector->id;
-        //         $Manager->flag = 'user';
-        //         $Manager->rule_id = 3;
-        //         $Manager->email = $request->email;
-
-        //         $Manager->password = Hash::make('123456');
-        //         $Manager->save();
-
-        //         if ($Manager->email && isValidEmail($Manager->email)) {
-        //             // Send email to the new manager
-        //             Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, 123456, $Manager->email);
-        //         }
-        //     }
-        // }
+                if ($Manager->email && isValidEmail($Manager->email)) {
+                    // Send email to the new manager
+                    Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, 123456, $Manager->email);
+                }
+            }
+        }
 
 
         // Handle employee updates
@@ -982,7 +912,7 @@ class DepartmentController extends Controller
         }
 
         // Retrieve old manager before updating
-        // $oldManager = $department->manger; //file_number
+        $oldManager = $department->manger; //file_number
         $manager = $request->mangered ? User::where('file_number', $request->mangered)->value('id') : null;
         // Handle reservation allowance type
         $part = $request->input('part');
@@ -998,7 +928,6 @@ class DepartmentController extends Controller
         }
 
         // Handle updating sub-department details
-        $oldManager = $department->manger;
         $department->name = $request->name;
         $department->sector_id = $request->sector;
         $department->description = $request->description;
@@ -1010,100 +939,71 @@ class DepartmentController extends Controller
         saveHistory($department->reservation_allowance_amount, $department->sector_id, $department->id);
         UpdateUserHistory($manager);
         addUserHistory($manager, $department->id,  $request->sector);
-        // Handle old and new manager updates for sub-department
-        if ($manager) {
-            if ($oldManager != $manager->id) {
-                if ($oldManager) {
-                    $oldManagerUser = User::find($oldManager);
+        // Handle old and new manager updates for sub-department        
+        if ($oldManager != $manager) {
+            if ($oldManager) {
+                $oldManagerUser = User::find($oldManager);
+                if ($oldManagerUser) {
                     $oldManagerUser->department_id = null;
                     $oldManagerUser->sector = null;
+                    $oldManagerUser->flag = 'employee';
                     $oldManagerUser->save();
                 }
+            }
 
-                $manager->department_id = $department->id;
-                $manager->sector = $request->sector;
-                $manager->flag = 'user';
-                $manager->email = $request->email;
-                $manager->rule_id = 3;
-                $manager->password = Hash::make('123456');
-                $manager->save();
+            if ($manager) {
+                $newManager = User::find($manager);
+                if ($newManager->department_id != $department->id || $newManager->sector != null || $newManager->department_id != null) {
+                    $old_department = departements::find($newManager->department_id);
+                    if ($old_department) {
+                        $old_department->manger = null;
+                        $newManager->sector = $request->sector_id;
+                        $old_department->save();
+                    }
+                }
 
-                if ($manager->email && isValidEmail($manager->email)) {
-                    // Send email to the new manager
-                    Sendmail(
-                        'مدير ادارة', // Subject
-                        'تم أضافتك كمدير ادارة', // Email body
-                        $manager->file_number,
-                        123456,
-                        $manager->email
-                    );
+                if ($newManager) {
+
+                    $newManager->department_id = $department->id;
+                    $newManager->sector = $request->sector_id;
+
+                    if ($request->password) {
+                        $newManager->flag = 'user';
+                        $newManager->rule_id = 3;
+                        $newManager->email = $request->email;
+                        $newManager->password = Hash::make(123456);
+                    }
+                    $newManager->save();
+
+
+                    if ($newManager->email && isValidEmail($newManager->email)) {
+                        // Send email notification to the new manager
+                        Sendmail(
+                            'مدير ادارة فرعية', // Subject
+                            'تم أضافتك كمدير ادارة فرعية', // Email body
+                            $newManager->file_number,
+                            123456,
+                            $newManager->email
+                        );
+                    }
                 }
             }
-        }        
-        // if ($oldManager != $manager) {
-        //     if ($oldManager) {
-        //         $oldManagerUser = User::find($oldManager);
-        //         if ($oldManagerUser) {
-        //             $oldManagerUser->department_id = null;
-        //             $oldManagerUser->sector = null;
-        //             $oldManagerUser->flag = 'employee';
-        //             $oldManagerUser->save();
-        //         }
-        //     }
+        } else {
+            // If manager is not changed but password is updated, handle accordingly
+            $Manager = User::find($manager);
+            if ($request->password) {
+                $Manager->sector = $department->sector_id;
+                $Manager->flag = 'user';
+                $Manager->rule_id = 3;
+                $Manager->email = $request->email;
 
-        //     if ($manager) {
-        //         $newManager = User::find($manager);
-        //         if ($newManager->department_id != $department->id || $newManager->sector != null || $newManager->department_id != null) {
-        //             $old_department = departements::find($newManager->department_id);
-        //             if ($old_department) {
-        //                 $old_department->manger = null;
-        //                 $newManager->sector = $request->sector_id;
-        //                 $old_department->save();
-        //             }
-        //         }
-
-        //         if ($newManager) {
-
-        //             $newManager->department_id = $department->id;
-        //             $newManager->sector = $request->sector_id;
-
-        //             if ($request->password) {
-        //                 $newManager->flag = 'user';
-        //                 $newManager->rule_id = 3;
-        //                 $newManager->email = $request->email;
-        //                 $newManager->password = Hash::make(123456);
-        //             }
-        //             $newManager->save();
-
-
-        //             if ($newManager->email && isValidEmail($newManager->email)) {
-        //                 // Send email notification to the new manager
-        //                 Sendmail(
-        //                     'مدير ادارة فرعية', // Subject
-        //                     'تم أضافتك كمدير ادارة فرعية', // Email body
-        //                     $newManager->file_number,
-        //                     123456,
-        //                     $newManager->email
-        //                 );
-        //             }
-        //         }
-        //     }
-        // } else {
-        //     // If manager is not changed but password is updated, handle accordingly
-        //     $Manager = User::find($manager);
-        //     if ($request->password) {
-        //         $Manager->sector = $department->sector_id;
-        //         $Manager->flag = 'user';
-        //         $Manager->rule_id = 3;
-        //         $Manager->email = $request->email;
-
-        //         $Manager->password = Hash::make(123456);
-        //         $Manager->save();
-        //         if ($Manager->email && isValidEmail($Manager->email)) {
-        //             Sendmail('مدير ادارة فرعية', 'تم أضافتك كمدير ادارة فرعية ' . $request->name, $Manager->file_number, 123456, $Manager->email);
-        //         }
-        //     }
-        // }
+                $Manager->password = Hash::make(123456);
+                $Manager->save();
+                if ($Manager->email && isValidEmail($Manager->email)) {
+                    Sendmail('مدير ادارة فرعية', 'تم أضافتك كمدير ادارة فرعية ' . $request->name, $Manager->file_number, 123456, $Manager->email);
+                }
+            }
+        }
 
         // Handle employee updates in the sub-department
         $file_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->file_number);
