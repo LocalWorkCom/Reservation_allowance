@@ -73,11 +73,11 @@ class DepartmentController extends Controller
                 ->orderBy('id', 'desc')
                 ->get();
         } else {
-             $current_department = departements::where('uuid', $uuid)->first();
+            $current_department = departements::where('uuid', $uuid)->first();
             $sectors = Sector::where('id', $current_department->sector_id)->first();
 
             $data = departements::where('parent_id', null)
-                ->where('sector_id', $sectors->id)
+                ->where('id', $current_department->id)
                 ->orderBy('id', 'desc')
                 ->get();
         }

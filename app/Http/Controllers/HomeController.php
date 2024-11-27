@@ -33,6 +33,8 @@ class HomeController extends Controller
             $sectorCount = Sector::where('id', $depSector->sector_id)->count();
         }
 
-        return view('home.index', compact('empCount', 'depMainCount', 'depChiledCount', 'sectorCount'));
+        $user = auth()->user();
+        $userGrade = $user->grade->name ?? 'N/A'; // Assuming the `grade` relationship exists
+        return view('home.index', compact('empCount', 'depMainCount', 'depChiledCount', 'sectorCount','userGrade'));
     }
 }
