@@ -329,43 +329,34 @@ class settingController extends Controller
         return DataTables::of($data)
         ->addColumn('action', function ($row) {
             // Safely handle null values and escape special characters for JavaScript
-            $name = $row->name ? json_encode($row->name) : "''"; // Use `json_encode` to escape quotes and special characters
-            $type = $row->type ? json_encode($row->type) : "''";
-            $order = $row->order ? json_encode($row->order) : "''";
-            $value_all = $row->value_all ? json_encode($row->value_all) : "''";
-            $value_part = $row->value_part ? json_encode($row->value_part) : "''";
+            $name = $row->name ?? '';
+            $type = json_encode($row->type ?? '');
+            $order = json_encode($row->order ?? '');
+            $value_all = $row->value_all ?? '';
+            $value_part = $row->value_part ?? '';
 
-            $edit_permission = '';
-            $delete_permission = '';
+            $options = '<option value="" class="text-center" style="color: gray;" selected disabled>الخيارات</option>';
 
+            // Check for edit permission
             if (Auth::user()->hasPermission('edit grade')) {
-                // Generate edit button with safe JavaScript parameters
-                $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;"
-                                        onclick="openedit(' . $row->id . ', ' . $name . ', ' . $type . ', ' . $value_all . ', ' . $value_part . ', ' . $order . ')">
-                                        <i class="fa fa-edit"></i> تعديل
-                                    </a>';
+                $options .= '<option value="edit" class="text-center" style="color:#eb9526;">تعديل</option>';
             }
 
-            if (Auth::user()->hasPermission('delete grade')) {
-                // Generate delete button
-                $delete_permission = '<a class="btn btn-sm" style="background-color: #C91D1D;"
-                                        onclick="opendelete(' . $row->id . ')">
-                                        <i class="fa-solid fa-trash"></i> حذف
-                                    </a>';
+            // Check for delete permission
+            if (Auth::user()->hasPermission(permission: 'delete grade')) {
+                $options .= '<option value="delete" onclick="opendelete(' . $row->id . ')" class="text-center" style="color:#c50c0c;">حذف</option>';
             }
-            $btn = '<select class="form-select form-select-sm btn-action" onchange="handleAction(this.value, '${row.uuid}')" aria-label="Actions" style="width: auto;">
-    <option value="" class="text-center" style=" color: gray; " selected disabled>الخيارات</option>
-    <option value="show" class="text-center" data-url="${usershow}" style=" color: #274373; ">عرض</option>
-    <option value="edit" class="text-center" data-url="${useredit}" style=" color:#eb9526;">تعديل</option>
-    <option value="unsigned"  class="${visibility}  text-center" style=" color:#c50c0c;">الغاء التعيين</option>
-</select>';
-            // Combine edit and delete buttons
-            $uploadButton = $edit_permission . ' ' . $delete_permission;
 
-            return $uploadButton;
+            // Generate dropdown
+            $btn = '<select class="form-select form-select-sm btn-action" onchange="handleAction(this.value,' . $row->id . ', ' . $name . ', ' . $type . ', ' . $value_all . ', ' . $value_part . ', ' . $order . ')"
+                        aria-label="Actions" style="width: auto;">
+                        ' . $options . '
+                    </select>';
+
+            return $btn;
         })
+        ->addColumn('type', function ($row) {
 
-            ->addColumn('type', function ($row) {
                 if ($row->type == 2) $mode = 'ظابط';
                 elseif ($row->type == 1) $mode = ' فرد';
                 else $mode = 'مهني';

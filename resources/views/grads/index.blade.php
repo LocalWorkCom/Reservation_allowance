@@ -55,10 +55,10 @@
                     <div class="col-lg-12">
                         <div class="bg-white ">
                             @if (session()->has('message'))
-                            <div class="alert alert-info">
-                                {{ session('message') }}
-                            </div>
-                        @endif
+                                <div class="alert alert-info">
+                                    {{ session('message') }}
+                                </div>
+                            @endif
                             <div>
                                 <table id="users-table"
                                     class="display table table-responsive-sm  table-bordered table-hover dataTable">
@@ -281,27 +281,6 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            function closeModal() {
-                $('#delete').modal('hide');
-            }
-
-            $('#closeButton').on('click', function() {
-                closeModal();
-            });
-        });
-    </script>
-    <script>
-        function opendelete(id) {
-            document.getElementById('id').value = id;
-            $('#delete').modal('show');
-        }
-
-        function confirmDelete() {
-            var id = document.getElementById('id').value;
-            var form = document.getElementById('delete-form');
-            form.submit();
-        }
-        $(document).ready(function() {
             // Check if there are errors
             @if ($errors->any())
                 // Check if it's an add or edit operation
@@ -312,22 +291,54 @@
                 @endif
             @endif
         });
+        $(document).ready(function() {
+            function closeModal() {
+                $('#delete').modal('hide');
+            }
+
+            $('#closeButton').on('click', function() {
+                closeModal();
+            });
+        });
+
+        function confirmDelete() {
+            var id = document.getElementById('id').value;
+            var form = document.getElementById('delete-form');
+            form.submit();
+        }
+
+        function opendelete(id) {
+            document.getElementById('id').value = id;
+            $('#delete').modal('show');
+        }
+    </script>
+    <script>
+        function handleAction(action, id, name, type, value_all, value_part, order) {
+            alert(action, id, name, type, value_all, value_part, order)
+            if (action === "edit") {
+                openedit(id, name, type, value_all, value_part, order);
+            } else if (action === "delete") {
+                opendelete(id);
+            }
+        }
 
         function openedit(id, name, type, value_all, value_part, order) {
-            document.getElementById('nameedit').value = name;
-            document.getElementById('idedit').value = id;
-            document.getElementById('typeedit').value = type; // Set the value for type
-            document.getElementById('value_alledit').value = value_all; // Set value_all
-            document.getElementById('value_partedit').value = value_part; // Set value_part
-            document.getElementById('orderedit').value = order; // Set value_part
+            // Set the modal fields
+            document.getElementById('nameedit').value = name || '';
+            document.getElementById('idedit').value = id || '';
+            document.getElementById('typeedit').value = type || ''; // Type
+            document.getElementById('value_alledit').value = value_all || ''; // Value All
+            document.getElementById('value_partedit').value = value_part || ''; // Value Part
+            document.getElementById('orderedit').value = order || ''; // Order
 
+            // Open the modal
             $('#edit').modal('show');
         }
+
 
         function confirmEdit() {
             var id = document.getElementById('id').value;
             var name = document.getElementById('nameedit').value;
-            console.log(name);
             var form = document.getElementById('edit-form')
         }
 
@@ -433,15 +444,15 @@
                 },
                 "pagingType": "full_numbers",
                 "fnDrawCallback": function(oSettings) {
-                var api = this.api();
-                var pageInfo = api.page.info();
-                // Check if the total number of records is less than or equal to the number of entries per page
-                if (pageInfo.recordsTotal <= 10) { // Adjust this number based on your page length
-                    $('.dataTables_paginate').css('visibility', 'hidden'); // Hide pagination
-                } else {
-                    $('.dataTables_paginate').css('visibility', 'visible'); // Show pagination
+                    var api = this.api();
+                    var pageInfo = api.page.info();
+                    // Check if the total number of records is less than or equal to the number of entries per page
+                    if (pageInfo.recordsTotal <= 10) { // Adjust this number based on your page length
+                        $('.dataTables_paginate').css('visibility', 'hidden'); // Hide pagination
+                    } else {
+                        $('.dataTables_paginate').css('visibility', 'visible'); // Show pagination
+                    }
                 }
-            }
             });
             $('.btn-filter').on('click', function() {
                 filter = $(this).data('filter'); // Get the filter value from the clicked button
