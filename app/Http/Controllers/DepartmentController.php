@@ -87,7 +87,7 @@ class DepartmentController extends Controller
                 return '<button class="btn btn-primary btn-sm">Edit</button>';
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
-                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount . " د.ك";
+                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount." د.ك";
             })
             ->addColumn('reservation_allowance', function ($row) {
                 switch ($row->reservation_allowance_type) {
@@ -270,7 +270,7 @@ class DepartmentController extends Controller
                 return '<button class="btn btn-primary btn-sm">Edit</button>';
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
-                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount . " د.ك";
+                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount." د.ك";
             })
             ->addColumn('reservation_allowance', function ($row) {
                 switch ($row->reservation_allowance_type) {
@@ -945,7 +945,7 @@ class DepartmentController extends Controller
         saveHistory($department->reservation_allowance_amount, $department->sector_id, $department->id);
         UpdateUserHistory($manager);
         addUserHistory($manager, $department->id,  $request->sector);
-        // Handle old and new manager updates for sub-department        
+        // Handle old and new manager updates for sub-department
         if ($oldManager != $manager) {
             if ($oldManager) {
                 $oldManagerUser = User::find($oldManager);

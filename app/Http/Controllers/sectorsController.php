@@ -114,14 +114,16 @@ class sectorsController extends Controller
         }
 
         return DataTables::of($data)
-            ->addColumn('action', function ($row) {
-                $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;" href=' . route('sectors.edit', $row->uuid) . '><i class="fa fa-edit"></i> تعديل</a>';
-                $add_permission = '<a class="btn btn-sm" style="background-color: #bb5207;" href="' .  route('department.create', $row->uuid) . '"><i class="fa fa-plus"></i> أضافة أداره</a>';
-                $reservationAllowence = '<a class="btn btn-sm" style="background-color: #1d88a1;" href=' . route('reservation_allowances.search_employee_new', 'sector_id=' . $row->hash_id) . '><i class="fa fa-plus"></i> اضافة بدل حجز جماعى</a>';
-                $show_permission = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('sectors.show', $row->uuid) . '> <i class="fa fa-eye"></i>عرض</a>';
-
-                return $show_permission . ' ' . $edit_permission . '' . $add_permission; //$reservationAllowence;
-            })
+        ->addColumn('action', function ($row) {
+            $btn = '
+                <select class="form-select form-select-sm btn-action" onchange="handleAction(this.value, \'' . $row->uuid . '\')" aria-label="Actions" style="width: auto;">
+                    <option value="" class="text-center" style="color: gray;" selected disabled>الخيارات</option>
+                    <option value="show" class="text-center" data-url="' . route('sectors.show', $row->uuid) . '" style="color: #274373;">عرض</option>
+                    <option value="edit" class="text-center" data-url="' . route('sectors.edit', $row->uuid) . '" style="color:#eb9526;">تعديل</option>
+                    <option value="create-department" class="text-center" data-url="' . route('department.create', $row->uuid) . '" style="color:#c50c0c;">أضافة أداره</option>
+                </select>';
+            return $btn;
+        })
             ->addColumn('manager_name', function ($row) {
                 // Check if manager exists before accessing its attributes
                 $manager = User::find($row->manager);
@@ -150,7 +152,7 @@ class sectorsController extends Controller
                 return $btn;
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
-                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه غير محدده' : $row->reservation_allowance_amount." د.ك";
+                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه غير محدده' : $row->reservation_allowance_amount . " د.ك";
             })
             ->addColumn('reservation_allowance', function ($row) {
                 if ($row->reservation_allowance_type == 1) {
@@ -487,10 +489,10 @@ class sectorsController extends Controller
                         $department->manger = null;
                         $department->save();
                     }
-                    $sector_manager = Sector::where('manager',$newManager)->whereNot('id',$sector->id)->get();
-                    if($sector_manager->isNotEmpty()){
-                        $sector_manage = Sector::where('manager',$newManager)->whereNot('id',$sector->id)->first();
-                        $sector_manage->manager= null;
+                    $sector_manager = Sector::where('manager', $newManager)->whereNot('id', $sector->id)->get();
+                    if ($sector_manager->isNotEmpty()) {
+                        $sector_manage = Sector::where('manager', $newManager)->whereNot('id', $sector->id)->first();
+                        $sector_manage->manager = null;
                         $sector_manage->save();
                     }
                     $newManager->sector = $sector->id;
@@ -506,12 +508,12 @@ class sectorsController extends Controller
                 }
             }
         } else {
-            $sector_manager = Sector::where('manager',$manager)->whereNot('id',$sector->id)->get();
-           // dd($sector_manager->isNotEmpty());
+            $sector_manager = Sector::where('manager', $manager)->whereNot('id', $sector->id)->get();
+            // dd($sector_manager->isNotEmpty());
 
-            if($sector_manager->isNotEmpty()){
-                $sector_manage = Sector::where('manager',$manager)->whereNot('id',$sector->id)->first();
-                $sector_manage->manager= null;
+            if ($sector_manager->isNotEmpty()) {
+                $sector_manage = Sector::where('manager', $manager)->whereNot('id', $sector->id)->first();
+                $sector_manage->manager = null;
                 $sector_manage->save();
             }
             $Manager = User::find($manager);
@@ -548,17 +550,16 @@ class sectorsController extends Controller
         foreach ($employeesToAdd as $Civil_number) {
             $number = trim($Civil_number);
             $employee = User::where('file_number', $number)->first();
-            if ($employee && $employee->grade_id != null ) {
+            if ($employee && $employee->grade_id != null) {
                 $is_manager = Sector::where('manager', $employee->id)->exists();
-if(!$is_manager){
-    $employee->sector = $sector->id;
+                if (!$is_manager) {
+                    $employee->sector = $sector->id;
 
-    $employee->department_id = null;
-    $employee->save();
-    UpdateUserHistory($employee->id);
-    addUserHistory($employee->id, null, $sector->id);
-}
-
+                    $employee->department_id = null;
+                    $employee->save();
+                    UpdateUserHistory($employee->id);
+                    addUserHistory($employee->id, null, $sector->id);
+                }
             } else {
                 // Add Civil_number to the failed list if the employee is not found or has no grade_id
                 $failed_civil_numbers[] = $Civil_number;
