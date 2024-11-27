@@ -356,6 +356,7 @@ class settingController extends Controller
             return $btn;
         })
         ->addColumn('type', function ($row) {
+
                 if ($row->type == 2) $mode = 'ظابط';
                 elseif ($row->type == 1) $mode = ' فرد';
                 else $mode = 'مهني';
