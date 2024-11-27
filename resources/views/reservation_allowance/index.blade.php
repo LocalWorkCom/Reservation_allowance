@@ -213,7 +213,7 @@
 
                     <div>
                         <table id="users-table"
-                            class="display table table-responsive-sm  table-bordered table-hover dataTable">
+                            class="display table table-responsive-sm  table-bordered table-hover dataTable" dir="rtl">
                             <thead>
                                 <tr>
                                     <th style="width:5%">م</th>

@@ -294,7 +294,7 @@
                         </div>
                         <div class="form-row mx-md-3  d-flex justify-content-center flex-row-reverse">
 
-                            <div class="form-group col-md-5 mx-2">
+                            <div class="form-group col-md-10 mx-2">
                                 <label for="gradeSelect"><i class="fa-solid fa-asterisk"
                                         style="color:red; font-size:10px;"></i>
                                     الرتبة</label>

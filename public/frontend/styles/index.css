@@ -1188,12 +1188,11 @@ width: 100px;
 margin-inline: 30px;
 }
 
-.eye-icon{
-position: relative;
-  position: relative;
-  font-size: 19px;
-  top: 12px;
-   right: 500px;
+.eye-icon {
+    position: relative;
+    font-size: 19px;
+    bottom: 30px;
+    right: 500px;
 }
 .hidden {
     display: none;
