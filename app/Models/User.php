@@ -104,20 +104,21 @@ class User extends Authenticatable
         return $this->code === $this->verfication_code; // Adjust logic as needed
     }
 
-    public function outgoingCreatedBy()
-    {
-        return $this->hasMany(outgoings::class, 'created_by');
-    }
+    // public function outgoingCreatedBy()
+    // {
+    //     return $this->hasMany(outgoings::class, 'created_by');
+    // }
 
-    public function outgoingUpdatedBy()
-    {
-        return $this->hasMany(outgoings::class, 'updated_by');
-    }
+    // public function outgoingUpdatedBy()
+    // {
+    //     return $this->hasMany(outgoings::class, 'updated_by');
+    // }
 
     public function createdDepartments()
     {
         return $this->hasMany(departements::class, 'created_by');
     }
+
     public function hasPermission($permission)
     {
         $userPermission = Rule::find(auth()->user()->rule_id);
@@ -138,16 +139,16 @@ class User extends Authenticatable
 
 
     }
-    public function createdViolations()
-    {
-        return $this->hasMany(ViolationTypes::class, 'created_by');
-    }
+    // public function createdViolations()
+    // {
+    //     return $this->hasMany(ViolationTypes::class, 'created_by');
+    // }
 
-    // Relationship with Violation for updated violations
-    public function updatedViolations()
-    {
-        return $this->hasMany(ViolationTypes::class, 'updated_by');
-    }
+    // // Relationship with Violation for updated violations
+    // public function updatedViolations()
+    // {
+    //     return $this->hasMany(ViolationTypes::class, 'updated_by');
+    // }
     public function department()
     {
         return $this->belongsTo(departements::class, 'department_id'); // Assuming 'department_id' is the foreign key
@@ -158,6 +159,7 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Rule::class);
     }
+
     public function grade()
     {
         return $this->belongsTo(grade::class, 'grade_id'); // Assuming 'grade_id' is the foreign key
@@ -168,26 +170,26 @@ class User extends Authenticatable
     //     return $this->belongsTo(grade::class, 'id'); // Assuming 'grade_id' is the foreign key
     // }
 
-    public function inspectors()
-    {
-        return $this->belongsTo(Inspector::class,'id');
-    }
-    public function pointDays()
-    {
-        return $this->hasMany(PointDays::class, 'created_by');
-    }
-    public function violations()
-    {
-        return $this->hasMany(Violation::class, 'user_id');
-    }
+    // public function inspectors()
+    // {
+    //     return $this->belongsTo(Inspector::class,'id');
+    // }
+    // public function pointDays()
+    // {
+    //     return $this->hasMany(PointDays::class, 'created_by');
+    // }
+    // public function violations()
+    // {
+    //     return $this->hasMany(Violation::class, 'user_id');
+    // }
     public function notifications()
     {
         return $this->hasMany(Notification::class);
     }
-    public function paperTransactions()
-    {
-        return $this->hasMany(PaperTransaction::class, 'created_by');
-    }
+    // public function paperTransactions()
+    // {
+    //     return $this->hasMany(PaperTransaction::class, 'created_by');
+    // }
 
     public function reservationAllowances()
     {
@@ -197,13 +199,14 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Sector::class, 'sector');
     }
-    public function managedSectors()
-    {
-        return $this->hasMany(Sector::class, 'manager');
-    }
+    // public function managedSectors()
+    // {
+    //     return $this->hasMany(Sector::class, 'manager');
+    // }
 
     // public function getHashIdAttribute()
     // {
     //     return md5($this->id);
     // }
+
 }
