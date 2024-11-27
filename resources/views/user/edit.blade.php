@@ -345,24 +345,6 @@
                             </div>
                         </div>
 
-                        {{--
-                        <div class="form-row mx-2 d-flex justify-content-center flex-row-reverse">
-                            <div class="form-group col-md-10 mx-2">
-                                <label for="input24"> الرتبة</label>
-                                <select id="input24" name="grade_id" class="form-control select2"
-                                    placeholder="الرتبة">
-                                    @if ($user->grade_id == null)
-                                        <option selected disabled>اختار من القائمة</option>
-                                    @endif
-                                    @foreach ($grade as $item)
-                                        <option value="{{ $item->id }}"
-                                            {{ $user->grade_id == $item->id ? 'selected' : '' }}>
-                                            {{ $item->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div> --}}
                         <div class="form-row mx-2 mx-2 d-flex justify-content-center flex-row-reverse">
                             <div class="form-group col-md-10">
                                 <label for="input5"> الملاحظات</label>
@@ -399,9 +381,6 @@
                 <br>
                 </form>
             </div>
-        </div>
-        </div>
-        </div>
         </div>
 
     </section>
@@ -479,23 +458,6 @@
         $('#sector').on('change', function() {
             getDepartment(this.value)
         });
-
-
-        // Function to toggle password visibility
-        function togglePasswordVisibility() {
-            var passwordInput = document.getElementById("input3");
-            var toggleIcon = document.getElementById("toggleIcon");
-
-            if (passwordInput.type === "password") {
-                passwordInput.type = "text";
-                toggleIcon.classList.remove("fa-eye");
-                toggleIcon.classList.add("fa-eye-slash");
-            } else {
-                passwordInput.type = "password";
-                toggleIcon.classList.remove("fa-eye-slash");
-                toggleIcon.classList.add("fa-eye");
-            }
-        }
     </script>
 
     <script>
@@ -516,13 +478,6 @@
     </script>
     <script>
         $(document).ready(function() {
-            // Get the current military type value from the database
-            // var currentMilitaryType = $('input[name="type_military"]:checked')
-            //     .val(); // Get the checked radio button value
-            // if (currentMilitaryType) {
-            //     getGrades(currentMilitaryType); // Populate grades based on the current value
-            // }
-
             // Listen for changes in the radio button
             $('input[name="type_military"]').on('change', function() {
 
