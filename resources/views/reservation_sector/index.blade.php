@@ -42,7 +42,21 @@
 
                     <form id="filter-form" class="pb-3">
                         <div class="d-flex justify-content-between">
-                            <div class="d-flex">
+                      <button type="submit" class="btn-all text-info">عرض
+                                الإحصائيات</button> 
+                                      <div class="d-flex">
+                               <!-- <label for="year-select" class="me-2">السنة :</label> -->
+                                <select id="year-select" name="year"
+                                    class="btn-all  mx-2">
+                                    <option selected disabled>
+                                        السنة
+                                    </option>
+                                    @for ($y = 2020; $y <= date('Y'); $y++)
+                                        <option value="{{ $y }}"
+                                            {{ $y == now()->year ?: '' }}>
+                                            {{ $y }}</option>
+                                    @endfor
+                                </select>   
                                 <!-- <label for="month-select" class="me-2">الشهر : </label> -->
                                 <select id="month-select" name="month"
                                     class="btn-all mx-2">
@@ -57,22 +71,10 @@
                                     @endfor
                                 </select>
 
-                                <!-- <label for="year-select" class="me-2">السنة :</label> -->
-                                <select id="year-select" name="year"
-                                    class="btn-all  mx-2">
-                                    <option selected disabled>
-                                        السنة
-                                    </option>
-                                    @for ($y = 2020; $y <= date('Y'); $y++)
-                                        <option value="{{ $y }}"
-                                            {{ $y == now()->year ?: '' }}>
-                                            {{ $y }}</option>
-                                    @endfor
-                                </select>
+                              
                             </div>
 
-                            <button type="submit" class="btn-all text-info">عرض
-                                الإحصائيات</button>
+                           
                         </div>
                     </form>
 
@@ -137,7 +139,7 @@
                                     .val();
                                 const year = $('#year-select')
                                     .val();
-                                return `<a href="/sector-employees/${row.uuid}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
+                                return `<a href="/sector-employees/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important;">${data}</a>`;
                             }
                         },
                         {
@@ -148,7 +150,7 @@
                                     .val();
                                 const year = $('#year-select')
                                     .val();
-                                return `<a href="/statistics_department/${row.uuid}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
+                                return `<a href="/statistics_department/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important;">${data}</a>`;
                             }
                         },
                         {
@@ -159,7 +161,7 @@
                                     .val();
                                 const year = $('#year-select')
                                     .val();
-                                return `<a href="/statistics_department/${row.uuid}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
+                                return `<a href="/statistics_department/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important;">${data}</a>`;
                             }
                         },
                         {
@@ -174,7 +176,7 @@
                                     .val();
                                 const year = $('#year-select')
                                     .val();
-                                return `<a href="/sector-employees/${row.uuid}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
+                                return `<a href="/sector-employees/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important;">${data}</a>`;
                             }
                         },
                         {
@@ -189,7 +191,7 @@
                                     .val();
                                 const year = $('#year-select')
                                     .val();
-                                return `<a href="/sector-users/${row.uuid}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
+                                return `<a href="/sector-users/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important;">${data}</a>`;
                             }
                         },
                         {
@@ -200,7 +202,7 @@
                                     .val();
                                 const year = $('#year-select')
                                     .val();
-                                return `<a href="/sector-employees/${row.uuid}?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
+                                return `<a href="/sector-employees/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important;">${data}</a>`;
                             }
                         },
                         {
@@ -211,7 +213,7 @@
                                     .val();
                                 const year = $('#year-select')
                                     .val();
-                                return `<a href="/sector-employees/${row.uuid}/not-reserved?month=${month}&year=${year}" style="color:#17a2b8 !important;">${data}</a>`;
+                                return `<a href="/sector-employees/${row.uuid}/not-reserved?month=${month}&year=${year}" style="color:#2f6289 !important;">${data}</a>`;
                             }
                         }
                     ],

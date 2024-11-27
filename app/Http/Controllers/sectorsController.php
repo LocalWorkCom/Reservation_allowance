@@ -150,7 +150,7 @@ class sectorsController extends Controller
                 return $btn;
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
-                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount." د.ك";
+                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه غير محدده' : $row->reservation_allowance_amount." د.ك";
             })
             ->addColumn('reservation_allowance', function ($row) {
                 if ($row->reservation_allowance_type == 1) {
@@ -487,7 +487,12 @@ class sectorsController extends Controller
                         $department->manger = null;
                         $department->save();
                     }
-
+                    $sector_manager = Sector::where('manager',$newManager)->whereNot('id',$sector->id)->get();
+                    if($sector_manager->isNotEmpty()){
+                        $sector_manage = Sector::where('manager',$newManager)->whereNot('id',$sector->id)->first();
+                        $sector_manage->manager= null;
+                        $sector_manage->save();
+                    }
                     $newManager->sector = $sector->id;
                     $newManager->department_id = null;
                     $newManager->flag = 'user';
@@ -501,6 +506,14 @@ class sectorsController extends Controller
                 }
             }
         } else {
+            $sector_manager = Sector::where('manager',$manager)->whereNot('id',$sector->id)->get();
+           // dd($sector_manager->isNotEmpty());
+
+            if($sector_manager->isNotEmpty()){
+                $sector_manage = Sector::where('manager',$manager)->whereNot('id',$sector->id)->first();
+                $sector_manage->manager= null;
+                $sector_manage->save();
+            }
             $Manager = User::find($manager);
             if ($request->password) {
                 $Manager->sector = $sector->id;
@@ -535,13 +548,17 @@ class sectorsController extends Controller
         foreach ($employeesToAdd as $Civil_number) {
             $number = trim($Civil_number);
             $employee = User::where('file_number', $number)->first();
-            $is_manager = Sector::where('manager', $employee->id)->exists();
-            if ($employee && $employee->grade_id != null && !$is_manager) {
-                $employee->sector = $sector->id;
-                $employee->department_id = null;
-                $employee->save();
-                UpdateUserHistory($employee->id);
-                addUserHistory($employee->id, null, $sector->id);
+            if ($employee && $employee->grade_id != null ) {
+                $is_manager = Sector::where('manager', $employee->id)->exists();
+if(!$is_manager){
+    $employee->sector = $sector->id;
+
+    $employee->department_id = null;
+    $employee->save();
+    UpdateUserHistory($employee->id);
+    addUserHistory($employee->id, null, $sector->id);
+}
+
             } else {
                 // Add Civil_number to the failed list if the employee is not found or has no grade_id
                 $failed_civil_numbers[] = $Civil_number;

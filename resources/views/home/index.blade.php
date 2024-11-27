@@ -12,86 +12,69 @@
 </div>
 <br>
 <div class="row">
-    
-    <div class=" container  col-11 ">
-        <div class=" col-12  col-md-11 col-sm-12 d-md-flex   my-4">
-            <div class=" card2 col-md-6 col-12 d-flex col-sm-10 mx-lg-4 mx-md-2 sm-mb-2"
-                style="background-color:#DCFCE7;">
-                <div class="details">
-                    <p>القطاعات</p>
-                    <p>{{$depCount}}</p>
-                </div>
-                <div class="card-img m-5" >
-                    <img src="{{ asset('frontend/images/managements.svg')}}" alt="">
-                </div>
-            </div>
-            <div class=" card1 col-md-6 col-12 d-flex col-sm-10 d-flex mx-lg-3 mx-md-2 sm-mb-2"
-                style="background-color:#FFF4DE;">
-                <div class="details">
-                    <p>الموظفين</p>
-                    <p>{{$empCount}}</p>
+
+    <div class="container col-11">
+        <div class="row justify-content-center p-4">
+            <!-- First Row with 2 Cards -->
+           
+            <div class="col-md-6 col-12  ">
+                <div class="card2 col-12 mb-4 d-flex justify-content-between align-items-center px-5"
+                    style="background-color:#DCFCE7;">
+                    <div class="details">
+                        <p>القطاعات</p>
+                        <p>{{$depCount}}</p>
+                    </div>
+                    <div class="card-imgg">
+                        <img src="{{ asset('frontend/images/statistics.png')}}" alt="">
+                    </div>
                 </div>
 
-                <div class="icon m-5" style="background-color: #E49500;">
-                    <img src="{{ asset('frontend/images/employees-card.svg')}}" alt="">
-                </div>
-            </div>
-
-        </div>
-        <div class="col-12 col-md-11 col-sm-12 d-md-flex ">
-            <div class="card3 col-md-6 col-12 d-flex col-sm-10 d-flex mx-lg-3 mx-md-2 sm-mb-2"
-                style="background-color:#F3E8FF;">
-                <div class="details">
-                    <p>عدد الادارات الفرعية</p>
-                    <p>{{$outCount}}</p>
+                <div class="card3 col-12 mb-4  d-flex justify-content-between align-items-center px-5"
+                    style="background-color:#E8F0FF;">
+                    <div class="details">
+                        <p>عدد الادارات الفرعية</p>
+                        <p>{{$ioCount}}</p>
+                    </div>
+                    <div class="card-imgg">
+                        <img src="{{ asset('frontend/images/management.png')}}" alt="">
+                    </div>
                 </div>
 
-                <div class="icon m-5" style="background-color: #A900E4;">
-                    <img src="{{ asset('frontend/images/imports-card.svg')}}" alt="">
-                </div>
+
+
             </div>
-            <div class="card4 col-md-6 col-12 d-flex col-sm-10 d-flex mx-lg-4 mx-md-2 mb-5 sm-mb-2"
-                style="background-color:#E8F0FF;">
-                <div class="details ">
-                    <p>الادارات</p>
-                    <p>{{$ioCount}}</p>
+ <div class="col-md-6 col-12  ">
+                <div class="card1 col-12 mb-4  d-flex justify-content-between align-items-center px-5"
+                    style="background-color:#FFF4DE;">
+                    <div class="details">
+                        <p>الموظفين</p>
+                        <p>{{$empCount}}</p>
+                    </div>
+                    <div class="card-imgg">
+                        <img src="{{ asset('frontend/images/division.png')}}" alt="">
+                    </div>
+                </div>
+                <div class="card3 col-12 mb-4 d-flex justify-content-between align-items-center px-5"
+                    style="background-color:#F3E8FF;">
+                    <div class="details">
+                        <p> الادارات </p>
+                        <p>{{$outCount}}</p>
+                    </div>
+                    <div class="card-imgg">
+                        <img src="{{ asset('frontend/images/team-management.png')}}" alt="">
+                    </div>
                 </div>
 
-                <div class="icon m-5" style="background-color: #005BE4;">
-                    <img src="{{ asset('frontend/images/exports-card.svg')}}" alt="">
-                </div>
+
+
             </div>
+            <!-- Second Row with 2 Cards -->
+
         </div>
     </div>
-    <div class="container container-responsive col-xs-11 col-11 mt-4 ">
-      <div class="header-side d-flex">
-       <p>المهام</p>
-       <img src="/images/tasks.svg" alt="">
-      </div> <br>
 
-<div class="resp d-flex justify-content-between align-items-center" dir="rtl">
-  <div class="progress blue mt-3">
-       <span class="progress-left">
-         <span class="progress-bar"></span>
-       </span>
-       <span class="progress-right">
-           <span class="progress-bar"></span>
-       </span>
-       <div class="progress-value">28/30</div>
-   </div>
-      <div class="footer-side">
-       <div class="name">
-         <p>تجديد هوية</p>
-         <h3>بشير سالم</h3>
-         <button class="order">
-           ordered
-         </button>
-        </div>
-      </div>
-</div>
 
-     </div>
-</div>
+
 
 
 </div>

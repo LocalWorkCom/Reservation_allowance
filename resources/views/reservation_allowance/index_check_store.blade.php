@@ -197,21 +197,21 @@
             <li class="nav-item " role="presentation ">
                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
                     role="tab" aria-controls="home" aria-selected="true">
-                    الموظفين الذين سيتم اضافتهم
+                    الموظفين الذين سيتم اضافتهم ( {{ $employee_new_add ? $employee_new_add->count() : 0}} )
                 </button>
             </li>
 
             <li class="nav-item" role="presentation">
                 <button class="nav-link " id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
                     role="tab" aria-controls="profile" aria-selected="false">
-                    الموظفين غير مسجلين فى الادارة او القطاع
+                    الموظفين غير مسجلين فى الادارة او القطاع ( {{ $employee_not_dept ? $employee_not_dept->count() : 0}} )
                 </button>
             </li>
 
             <li class="nav-item" role="presentation">
                 <button class="nav-link " id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
                     role="tab" aria-controls="contact" aria-selected="false">
-                    موظفين ارقام الملفات خطأ
+                    موظفين ارقام الملفات خطأ ( {{ $employee_not_found ? count($employee_not_found) : 0}} )
                 </button>
             </li>
         </ul>

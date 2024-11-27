@@ -29,8 +29,7 @@ class DepartmentController extends Controller
             $departments = departements::where('id', auth()->user()->department_id);
         }
         // Fetch the related sector information
-        $sectors = Sector::where('uuid', $uuid)->first();
-        $departments = departements::where('sector_id', $sectors->id)->get();
+        $sectors = Sector::where('uuid', auth()->user()->sector)->first();
 
         return view('departments.index', compact('departments', 'sectors'));
     }
@@ -393,6 +392,7 @@ class DepartmentController extends Controller
             'email.required' => 'الايميل مطلوب',
             'budget_type.required' => 'يجب اختيار نوع الميزانيه',
             'email.unique' => 'عفوا هذا الايميل مأخوذ مسبقا',
+            'email.invalid_format' => 'البريد الإلكتروني للمدير غير صالح.', // Custom error message
         ];
 
         $validator = Validator::make($request->all(), [
@@ -400,14 +400,16 @@ class DepartmentController extends Controller
             'budget' => 'nullable|numeric',
             'budget_type' => 'required',
             'part' => 'required',
-            'email' =>  'required',
-            Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
-            function ($attribute, $value, $fail) {
-                // Custom email format validation
-                if (!isValidEmail($value)) {
-                    return $fail('البريد الإلكتروني للمدير غير صالح.');
-                }
-            },
+            'email' => [
+                'required', // Allow email to be null unless manager is set
+                Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
+                function ($attribute, $value, $fail) {
+                    // Check if email format is invalid
+                    if ($value && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                        $fail('البريد الإلكتروني للمدير غير صالح.'); // Custom failure message
+                    }
+                },
+            ],
         ], $messages);
 
         if ($validator->fails()) {
@@ -519,6 +521,7 @@ class DepartmentController extends Controller
             'email.required' => 'الايميل مطلوب',
             'budget_type.required' => 'يجب اختيار نوع الميزانيه',
             'email.unique' => 'عفوا هذا الايميل مأخوذ مسبقا',
+            'email.invalid_format' => 'البريد الإلكتروني للمدير غير صالح.', // Custom error message
         ];
 
         $validator = Validator::make($request->all(), [
@@ -526,14 +529,16 @@ class DepartmentController extends Controller
             'budget' => 'nullable|numeric',
             'budget_type' => 'required',
             'part' => 'required',
-            'email' =>  'required',
-            Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
-            function ($attribute, $value, $fail) {
-                // Custom email format validation
-                if (!isValidEmail($value)) {
-                    return $fail('البريد الإلكتروني للمدير غير صالح.');
-                }
-            },
+            'email' => [
+                'required', // Allow email to be null unless manager is set
+                Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
+                function ($attribute, $value, $fail) {
+                    // Check if email format is invalid
+                    if ($value && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                        $fail('البريد الإلكتروني للمدير غير صالح.'); // Custom failure message
+                    }
+                },
+            ],
         ], $messages);
 
         if ($validator->fails()) {
@@ -566,7 +571,9 @@ class DepartmentController extends Controller
 
         if ($manager) {
             // Assign the manager and handle the previous department/sector association
-            $departements->manger = $manager->id;
+            $edit_department = Departements::find($departements->id);
+            $edit_department->manger = $manager->id;
+            $edit_department->save();
 
             $old_department = Departements::find($manager->department_id);
             if ($old_department) {
@@ -695,8 +702,7 @@ class DepartmentController extends Controller
             'budget_type' => 'required',
             'part' => 'required',
             'email' => [
-                'nullable', // Allow email to be null unless manager is set
-                'email', // Ensure valid email format
+                'required',
                 Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
                 function ($attribute, $value, $fail) use ($request) {
                     // If manager is set, email must not be empty
@@ -716,11 +722,14 @@ class DepartmentController extends Controller
 
         $allowanceData = json_decode($allowance->getContent(), true);  // Decode JSON response
 
-        // Now you can check the 'is_allow' value as expected
-        if ($allowanceData['is_allow'] === false) {
-            $validator->errors()->add('budget',  '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowanceData['total'] . ' لوجود بدلات حجز اكبر من القيمه المدخله');
-            return redirect()->back()->withErrors($validator)->withInput();
+        if ($request->budget_type == 1) {
+            // Now you can check the 'is_allow' value as expected
+            if ($allowanceData['is_allow'] === false) {
+                $validator->errors()->add('budget',  '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowanceData['total'] . ' لوجود بدلات حجز اكبر من القيمه المدخله');
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
         }
+
 
         // Retrieve the old manager before updating
         $oldManager = $department->manger; //file_number
@@ -751,7 +760,7 @@ class DepartmentController extends Controller
         UpdateUserHistory($manager);
         addUserHistory($manager, $department->id,  $request->sector);
         // Handle old and new manager updates
-        if ($oldManager != $manager) {
+        if ($oldManager !== $manager) {
             if ($oldManager) {
                 $oldManagerUser = User::find($oldManager);
                 if ($oldManagerUser) {
@@ -878,8 +887,7 @@ class DepartmentController extends Controller
             'budget_type' => 'required',
             'part' => 'required',
             'email' => [
-                'nullable', // Allow email to be null unless manager is set
-                'email', // Ensure valid email format
+                'required', // Allow email to be null unless manager is set
                 Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
                 function ($attribute, $value, $fail) use ($request) {
                     // If manager is set, email must not be empty
@@ -894,7 +902,7 @@ class DepartmentController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $allowance = $this->getAllowancedepart($request->budget, $request->id);
+        $allowance = $this->getAllowancedepart($request->budget, $department->id);
         $allowanceData = json_decode($allowance->getContent(), true);  // Decode JSON response
 
         // Now you can check the 'is_allow' value as expected
@@ -931,7 +939,7 @@ class DepartmentController extends Controller
         saveHistory($department->reservation_allowance_amount, $department->sector_id, $department->id);
         UpdateUserHistory($manager);
         addUserHistory($manager, $department->id,  $request->sector);
-        // Handle old and new manager updates for sub-department
+        // Handle old and new manager updates for sub-department        
         if ($oldManager != $manager) {
             if ($oldManager) {
                 $oldManagerUser = User::find($oldManager);
@@ -953,7 +961,9 @@ class DepartmentController extends Controller
                         $old_department->save();
                     }
                 }
+
                 if ($newManager) {
+
                     $newManager->department_id = $department->id;
                     $newManager->sector = $request->sector_id;
 
@@ -964,6 +974,8 @@ class DepartmentController extends Controller
                         $newManager->password = Hash::make(123456);
                     }
                     $newManager->save();
+
+
                     if ($newManager->email && isValidEmail($newManager->email)) {
                         // Send email notification to the new manager
                         Sendmail(

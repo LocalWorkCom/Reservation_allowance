@@ -15,12 +15,12 @@
 
                         @if (Auth::user()->rule_id == 2)
                             <li class="breadcrumb-item"><a
-                                    href="{{ route('user.employees',  $user->flag) }}">{{ $user->flag == 'employee' ? 'موظفين الوزارة' : 'المستخدمين والصلاحيات' }}</a>
+                                    href="{{ route('user.employees', $user->flag) }}">{{ $user->flag == 'employee' ? 'موظفين الوزارة' : 'المستخدمين والصلاحيات' }}</a>
                             </li>
                         @endif
                         @if (Auth::user()->rule_id != 2)
                             <li class="breadcrumb-item"><a
-                                    href="{{ route('user.employees',  $user->flag) }}">{{ $user->flag == 'employee' ? 'موظفين القوة' : 'المستخدمين والصلاحيات' }}</a>
+                                    href="{{ route('user.employees', $user->flag) }}">{{ $user->flag == 'employee' ? 'موظفين القوة' : 'المستخدمين والصلاحيات' }}</a>
                             </li>
                         @endif
                         <li class="breadcrumb-item active" aria-current="page"> <a href=""> تعديل </a></li>
@@ -33,10 +33,10 @@
             <div class="container welcome col-11">
 
                 @if (Auth::user()->rule_id == 2)
-                <p>{{ $user->flag == 'employee' ? 'موظفين الوزارة' : 'المستخدمين والصلاحيات' }} </p>
+                    <p>{{ $user->flag == 'employee' ? 'موظفين الوزارة' : 'المستخدمين والصلاحيات' }} </p>
                 @endif
                 @if (Auth::user()->rule_id != 2)
-                <p>{{ $user->flag == 'employee' ? 'موظفين القوة' : 'المستخدمين والصلاحيات' }}</p>
+                    <p>{{ $user->flag == 'employee' ? 'موظفين القوة' : 'المستخدمين والصلاحيات' }}</p>
                 @endif
             </div>
         </div>
@@ -154,7 +154,7 @@
                                     <option selected disabled>اختار من القائمة</option>
                                     @foreach ($area as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ old('region') == $item->id ? 'selected' : '' }}>
+                                            {{ old('region') == $item->id || $user->region == $item->id ? 'selected' : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -170,7 +170,7 @@
                             <div class="form-group col-md-5 mx-2">
                                 <label for="input44">العنوان</label>
                                 <textarea id="input44" name="address_1" class="form-control" placeholder="  العنوان"
-                                    value="{{ $user->address_1 }}"></textarea>
+                                    value="{{ $user->address1 }}">{{ $user->address1 }}</textarea>
                             </div>
 
                             <div class="form-group col-md-5 mx-2">
@@ -237,7 +237,8 @@
                                 </label>
                                 <div class="password-container">
                                     <input type="password" id="input3" name="password" class="form-control"
-                                        placeholder="الباسورد" dir="rtl">
+                                        value="{{ old('password') }}" placeholder="الباسورد" dir="rtl">
+
                                     <label class="toggle-password" onclick="togglePasswordVisibility()">
                                         <i id="toggleIcon" class="fa fa-eye eye-icon"></i>
                                     </label>
@@ -286,17 +287,17 @@
 
                                     الادارة
                                 </label>
-                                <select id="department_id" name="public_administration" class="form-control select2"
+                                <select id="department_id" name="department_id" class="form-control select2"
                                     placeholder="الادارة ">
                                     @if ($user->department_id == null)
                                         <option selected disabled>اختار من القائمة</option>
                                     @endif
-                                    @foreach ($department as $item)
+                                    {{-- @foreach ($department as $item)
                                         <option value="{{ $item->id }}"
                                             {{ $user->department_id == $item->id ? 'selected' : '' }}>
                                             {{ $item->name }}
                                         </option>
-                                    @endforeach
+                                    @endforeach --}}
 
                                 </select>
                             </div>
@@ -344,24 +345,6 @@
                             </div>
                         </div>
 
-                        {{-- 
-                        <div class="form-row mx-2 d-flex justify-content-center flex-row-reverse">
-                            <div class="form-group col-md-10 mx-2">
-                                <label for="input24"> الرتبة</label>
-                                <select id="input24" name="grade_id" class="form-control select2"
-                                    placeholder="الرتبة">
-                                    @if ($user->grade_id == null)
-                                        <option selected disabled>اختار من القائمة</option>
-                                    @endif
-                                    @foreach ($grade as $item)
-                                        <option value="{{ $item->id }}"
-                                            {{ $user->grade_id == $item->id ? 'selected' : '' }}>
-                                            {{ $item->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div> --}}
                         <div class="form-row mx-2 mx-2 d-flex justify-content-center flex-row-reverse">
                             <div class="form-group col-md-10">
                                 <label for="input5"> الملاحظات</label>
@@ -374,6 +357,12 @@
                                 <label for="input23">الصورة</label>
                                 <input type="file" class="form-control" name="image" id="input23"
                                     placeholder="الصورة" value="{{ $user->image }}">
+                                @if ($user->image)
+                                    <div id="currentImageDiv">
+                                        <img src="{{ $user->image }}" alt="Current Image" class="img-thumbnail"
+                                            style="max-width: 150px;" id="currentImage">
+                                    </div>
+                                @endif
                             </div>
 
                             <div style="background-image:  url('{{ $user->image }}')">
@@ -393,12 +382,59 @@
                 </form>
             </div>
         </div>
-        </div>
-        </div>
-        </div>
 
     </section>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const flagSelect = document.getElementById('input13');
+            const additionalFields = document.getElementById('additionalFields');
+            const passwordField = document.getElementById('input3');
+            const roleField = document.getElementById('input7');
+
+            // Function to toggle visibility and clear values
+            function toggleFields() {
+                if (flagSelect.value === 'employee') {
+                    additionalFields.style.visibility = 'hidden';
+                    passwordField.value = ''; // Clear password
+                    roleField.value = ''; // Clear selected role
+                } else {
+                    additionalFields.style.visibility = 'visible';
+                }
+            }
+
+            // Initial toggle based on pre-selected value
+            toggleFields();
+
+            // Toggle fields on change
+            flagSelect.addEventListener('change', toggleFields);
+        });
+
+        function togglePasswordVisibility() {
+            const passwordField = document.getElementById('input3');
+            const toggleIcon = document.getElementById('toggleIcon');
+
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+    </script>
+    <script>
+        const inputFile = document.getElementById('input23');
+        const currentImageDiv = document.getElementById('currentImageDiv');
+
+        // Event listener for file input change
+        inputFile.addEventListener('change', function() {
+            // If a new image is selected, hide the current image
+            if (inputFile.files && inputFile.files[0]) {
+                currentImageDiv.style.display = 'none'; // Hide the current image
+            }
+        });
         $('.select2').select2({
             dir: "rtl"
         });
@@ -422,138 +458,8 @@
         $('#sector').on('change', function() {
             getDepartment(this.value)
         });
-
-
-        // Function to toggle password visibility
-        function togglePasswordVisibility() {
-            var passwordInput = document.getElementById("input3");
-            var toggleIcon = document.getElementById("toggleIcon");
-
-            if (passwordInput.type === "password") {
-                passwordInput.type = "text";
-                toggleIcon.classList.remove("fa-eye");
-                toggleIcon.classList.add("fa-eye-slash");
-            } else {
-                passwordInput.type = "password";
-                toggleIcon.classList.remove("fa-eye-slash");
-                toggleIcon.classList.add("fa-eye");
-            }
-        }
     </script>
-    <script>
-        //     $(document).ready(function() {
-        //     $('#sector').on('change', function() {
-        //         var sector_id = $(this).val();
 
-
-        //         if (sector_id) {
-        //             $.ajax({
-        //                 url: '/getGoverment/' + sector_id,
-        //                 type: 'GET',
-        //                 dataType: 'json',
-        //                 success: function(data) {
-        //                     $('#Provinces').empty();
-        //                     $('#Provinces').append('<option selected> اختار من القائمة </option>');
-        //                     $.each(data, function(key, employee) {               
-        //                         console.log(employee);   
-        //                         $('#Provinces').append('<option value="' + employee.id + '">' + employee.name + '</option>');
-        //                     });                 
-        //                 },
-        //                 error: function(xhr, status, error) {
-        //                     console.log('Error:', error);
-        //                     console.log('XHR:', xhr.responseText);
-        //                 }
-        //             });
-        //         } else {
-        //             $('#Provinces').empty();
-        //         }
-        //     });
-        // });
-
-        $(document).ready(function() {
-            function loadRegions() {
-                var sector_id = $('#sector').val();
-                // 
-                var selectedProvincesId = '{{ $user->Provinces }}';
-                if (sector_id) {
-                    $.ajax({
-                        url: '/getGoverment/' + sector_id,
-                        type: 'GET',
-                        dataType: 'json',
-                        success: function(data) {
-                            $('#Provinces').empty();
-                            $('#region').empty();
-                            $('#Provinces').append(
-                                '<option selected value="null"> اختار من القائمة </option>');
-                            $.each(data, function(key, employee) {
-                                console.log(employee);
-                                var selected = (employee.id == selectedProvincesId) ?
-                                    'selected' : '';
-                                $('#Provinces').append('<option value="' + employee.id + '" ' +
-                                    selected + '>' + employee.name + '</option>');
-                            });
-                        },
-                        error: function(xhr, status, error) {
-                            console.log('Error:', error);
-                            console.log('XHR:', xhr.responseText);
-                        }
-                    });
-                } else {
-                    $('#Provinces').empty();
-                    $('#region').empty();
-                }
-            }
-
-            // Trigger loadRegions when Provinces changes
-            $('#sector').on('change', loadRegions);
-
-            // Trigger loadRegions when the page loads
-            loadRegions();
-        });
-
-        $(document).ready(function() {
-            function loadRegions() {
-                var Provinces_id = $('#Provinces').val();
-                var selectedregionId = '{{ $user->region }}';
-                if (Provinces_id) {
-                    $.ajax({
-                        url: '/getRegion/' + Provinces_id,
-                        type: 'GET',
-                        dataType: 'json',
-                        success: function(data) {
-                            $('#region').empty();
-                            $('#region').append(
-                                '<option selected value="null"> اختار من القائمة </option>');
-                            $.each(data, function(key, employee) {
-                                console.log(employee);
-                                var selected = (employee.id == selectedregionId) ? 'selected' :
-                                    '';
-                                $('#region').append('<option value="' + employee.id + '"  ' +
-                                    selected + '>' + employee.name + '</option>');
-                            });
-                        },
-                        error: function(xhr, status, error) {
-                            console.log('Error:', error);
-                            console.log('XHR:', xhr.responseText);
-                        }
-                    });
-                } else {
-                    $('#region').empty();
-                }
-            }
-
-            // Trigger loadRegions when Provinces changes
-            $('#Provinces').on('change', loadRegions);
-
-            // Trigger loadRegions when the page loads
-            loadRegions();
-        });
-    </script>
-    <script>
-        // $(document).ready(function() {
-        // $('.select2').select2({  dir: "rtl"});
-        //});
-    </script>
     <script>
         $(document).ready(function() {
             $('.image-popup').click(function(event) {
@@ -572,13 +478,6 @@
     </script>
     <script>
         $(document).ready(function() {
-            // Get the current military type value from the database
-            // var currentMilitaryType = $('input[name="type_military"]:checked')
-            //     .val(); // Get the checked radio button value
-            // if (currentMilitaryType) {
-            //     getGrades(currentMilitaryType); // Populate grades based on the current value
-            // }
-
             // Listen for changes in the radio button
             $('input[name="type_military"]').on('change', function() {
 
@@ -620,39 +519,46 @@
             });
         }
 
-        function getDepartment(id) {
+        function getDepartment(sectorId) {
+            console.log('Fetching departments for sector:', sectorId);
 
-            console.log(id);
+            var url = '/get-deprt-sector?sector=' + sectorId;
 
-            var url = '/get-deprt-sector?sector=' + id;
+            // Store the old department value from Blade
+            var oldDepartment = "{{ old('department_id', $user->department_id) }}";
 
             $.ajax({
                 url: url,
-                type: 'GET', // Use GET method
+                type: 'GET',
                 success: function(response) {
-                    console.log(response);
 
+                    var $departmentDropdown = $('#department_id');
+                    $departmentDropdown.empty(); // Clear existing options
+                    $departmentDropdown.append('<option selected disabled>اختار من القائمة</option>');
 
-                    // Clear the current grade options
-                    var department_id = document.getElementById('department_id');
-                    department_id.innerHTML = '<option selected disabled>اختار من القائمة</option>';
-
-                    // Populate the grade select with new options
-                    response.forEach(function(grade) { // Use `response` instead of `data`
-                        var option = document.createElement('option');
-                        option.value = grade.id;
-                        option.textContent = grade.name;
-                        department_id.appendChild(option);
+                    // Populate dropdown with department options
+                    $.each(response, function(key, department) {
+                        $departmentDropdown.append(
+                            `<option value="${department.id}" ${department.id == oldDepartment ? 'selected' : ''}>
+                    ${department.name}
+                </option>`
+                        );
                     });
                 },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error('Error fetching grades:', textStatus, errorThrown);
-                }
+                error: function(jqXHR, textStatus, errorThrown) {}
             });
 
         }
     </script>
+    <script>
+        $(document).ready(function() {
+            var selectedSector = "{{ old('sector', $user->sector) }}";
 
+            if (selectedSector) {
+                getDepartment(selectedSector); // Trigger department fetching
+            }
+        });
+    </script>
 
     {{-- <script>
         document.addEventListener('DOMContentLoaded', function() {

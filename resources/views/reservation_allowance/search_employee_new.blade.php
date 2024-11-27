@@ -176,18 +176,19 @@
                             style="direction:rtl">
                             <thead>
                                 <tr>
-                                    <th rowspan="2">
-                                        <p>الترتيب</p>
+                                    <th rowspan="2" style="width:5%">
+                                        <p>م</p>
                                     </th>
+                                    <th rowspan="2">
+                                        <p>الرتبة</p>
+                                    </th>                                    
                                     <th rowspan="2">
                                         <p>الاسم</p>
                                     </th>
                                     <th rowspan="2">
                                         <p>رقم الملف</p>
                                     </th>
-                                    <th rowspan="2">
-                                        <p>الرتبة</p>
-                                    </th>
+
                                     <th>بدل الحجز</th>
                                     <!-- <th style="width:150px;">العمليات</th>-->
                                 </tr>
@@ -246,10 +247,10 @@
                                 @foreach ($employees as $k_employee => $employee)
                                     @php($x++)
                                     <tr>
-                                        <th>{{ $x }}</th>
-                                        <th>{{ $employee->name }}</th>
-                                        <th>{{ $employee->file_number != null ? $employee->file_number : 'لا يوجد رقم ملف' }}
-                                        <th>{{ $employee->grade_id != null ? $employee->grade->name : 'لا يوجد رتبة' }}
+                                        <th style="text-align: center;">{{ $x }}</th>
+                                        <th style="text-align: center;">{{ $employee->grade_id != null ? $employee->grade->name : 'لا يوجد رتبة' }}
+                                        <th style="text-align: center;">{{ $employee->name }}</th>
+                                        <th style="text-align: center;">{{ $employee->file_number != null ? $employee->file_number : 'لا يوجد رقم ملف' }}
                                         </th>
                                         </th>
                                         <th>
@@ -257,7 +258,7 @@
                                                 style="justify-content: space-around !important">
                                                 @if ($reservation_allowance_type == 1 || $reservation_allowance_type == 3)
                                                     <div
-                                                        style="display: inline-flex; direction: ltr;">
+                                                        style="display: inline-flex; direction: ltr; text-align: center;">
                                                         <label for=""> حجز
                                                             كلى</label>
                                                         <input type="radio"
@@ -271,7 +272,7 @@
                                                 @endif
                                                 @if ($reservation_allowance_type == 2 || $reservation_allowance_type == 3)
                                                     <div
-                                                        style="display: inline-flex; direction: ltr;">
+                                                        style="display: inline-flex; direction: ltr; text-align: center;">
                                                         <label for=""> حجز
                                                             جزئى</label>
                                                         <input type="radio"
@@ -284,7 +285,7 @@
                                                     <span>|</span>
                                                 @endif
                                                 <div
-                                                    style="display: inline-flex; direction: ltr;">
+                                                    style="display: inline-flex; direction: ltr; text-align: center;">
                                                     <label for=""> لا
                                                         يوجد</label>
                                                     <input type="radio"
@@ -338,6 +339,7 @@
             $('#users-table').DataTable({
                 searching: true,
                 bDestroy: true,
+                pageLength: 500,
                 "oLanguage": {
                     "sSearch": "",
                     "sSearchPlaceholder": "بحث",
@@ -364,7 +366,7 @@
                 "fnDrawCallback": function(oSettings) {
                     var api = this.api();
                     var pageInfo = api.page.info();
-                    if (pageInfo.recordsTotal <= 10) {
+                    if (pageInfo.recordsTotal <= 500) {
                         $('.dataTables_paginate').css(
                             'visibility', 'hidden');
                     } else {
@@ -373,9 +375,7 @@
                     }
                 },
                 createdRow: function(row, data, dataIndex) {
-                    $('td', row).eq(0).html(dataIndex +
-                        1
-                        ); // Automatic numbering in the first column
+                    $('td', row).eq(0).html(dataIndex + 1); // Automatic numbering in the first column
                 }
             });
 

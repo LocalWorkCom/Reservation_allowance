@@ -206,10 +206,11 @@
                             <th>الرتبه</th>
                             <th>الاسم</th>
                             <th>رقم الملف</th>
-                            <th>الرقم المدني</th>
+                            {{-- <th>الرقم المدني</th> --}}
                             <th>الهاتف</th>
-                            <th>الادارة</th>
                             <th>القطاع</th>
+
+                            <th>الادارة</th>
                             <th style="width:150px !important;">العمليات</th>
                         </tr>
                     </thead>
@@ -321,22 +322,23 @@
                                     data: 'file_number',
                                     name: 'file_number'
                                 },
-                                {
-                                    data: 'Civil_number',
-                                    name: 'Civil_number'
-                                },
+                                // {
+                                //     data: 'Civil_number',
+                                //     name: 'Civil_number'
+                                // },
                                 {
                                     data: 'phone',
                                     name: 'phone'
                                 },
                                 {
-                                    data: 'department',
-                                    name: 'department'
-                                },
-                                {
                                     data: 'sector',
                                     name: 'sector'
                                 },
+                                {
+                                    data: 'department',
+                                    name: 'department'
+                                },
+
                                 {
                                     data: 'action',
                                     name: 'action',
@@ -349,6 +351,7 @@
                             columnDefs: [{
                                 targets: -1,
                                 render: function(data, type, row) {
+                                    console.log(row)
                                     // Using route generation correctly in JavaScript
                                     var useredit = '{{ route('user.edit', ':uuid') }}';
                                     useredit = useredit.replace(':uuid', row.uuid);
@@ -359,22 +362,28 @@
                                     unsigned = unsigned.replace(':uuid', row.uuid);
                                     var visibility = row.department_id != null ? 'd-block-inline' :
                                         'd-none';
+                                        var uu = 11;
 
                                     return `
+<select class="form-select form-select-sm btn-action" onchange="handleAction(this.value, '${row.uuid}')" aria-label="Actions" style="width: auto;">
+    <option value="" class="text-center" style=" color: gray; " selected disabled>الخيارات</option>
+    <option value="show" class="text-center" data-url="${usershow}" style=" color: #274373; "> عرض</option>
+    <option value="edit" class="text-center" data-url="${useredit}" style=" color:#eb9526;">تعديل</option>
+    <option value="unsigned"  class="${visibility}  text-center" style=" color:#c50c0c;">الغاء التعيين</option>
+</select>
 
-        <a href="` + usershow + `" class="btn btn-sm" style="background-color: #274373;">
-            <i class="fa fa-eye"></i> عرض
-        </a>
-        <a href="` + useredit + `" class="btn btn-sm" style="background-color: #F7AF15;">
-            <i class="fa fa-edit"></i> تعديل
-        </a>
-        <a class="btn btn-sm ${visibility}" style="background-color: #E3641E;" onclick="openTransferModal('${row.uuid}')">
-            <i class="fa-solid fa-user-tie"></i>  الغاء التعيين
-        </a>
     `;
                                 }
 
-
+                                // <a href="` + usershow + `" class="btn btn-sm" style="background-color: #274373;">
+                                //     <i class="fa fa-eye"></i> عرض
+                                // </a>
+                                // <a href="` + useredit + `" class="btn btn-sm" style="background-color: #F7AF15;">
+                                //     <i class="fa fa-edit"></i> تعديل
+                                // </a>
+                                // <a class="btn btn-sm ${visibility}" style="background-color: #E3641E;" onclick="openTransferModal('${row.uuid}')">
+                                //     <i class="fa-solid fa-user-tie"></i>  الغاء التعيين
+                                // </a>
                             }],
                             "oLanguage": {
                                 "sSearch": "",
@@ -432,6 +441,38 @@
                     });
                 </script>
 
+                <script>
+                    function handleAction(action, uuid) {
+                        switch (action) {
+                            case "show":
+                                // Redirect to the "show" page
+                                var showUrl = '{{ route('user.show', ':uuid') }}'.replace(':uuid', uuid);
+                                window.location.href = showUrl;
+                                break;
+                            case "edit":
+                                // Redirect to the "edit" page
+                                var editUrl = '{{ route('user.edit', ':uuid') }}'.replace(':uuid', uuid);
+                                window.location.href = editUrl;
+                                break;
+                            case "unsigned":
+                               openTransferModal(uuid)
+                                break;
+                            default:
+                                // Default case for invalid action
+                                console.error("Invalid action selected: " + action);
+                        }
+                    }
+
+                    // $(document).ready(function() {
+                    //     $('#users-table').on('change', '.btn-action', function() {
+                    //         var selectedAction = $(this).val(); // Get the selected value
+                    //         var uuid = $(this).data('uuid'); // Get the user's UUID
+                    //         if (selectedAction) {
+                    //             handleAction(selectedAction, uuid); // Call the function
+                    //         }
+                    //     });
+                    // });
+                </script>
 
             </div>
         </div>
