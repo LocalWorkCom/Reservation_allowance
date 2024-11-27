@@ -23,24 +23,13 @@
     </style>
 </head>
 <body>
-<div class="row" >
-        <div class="container welcome col-11">
-            <div class="d-flex justify-content-between">
-    <p style="text-align: center;"> الموظفين للإدارة الفرعية: {{ $subDepartment->name }}</p>
-    
-    
-    </div>
-           
+<img src="{{ asset('img/logo.png') }}" alt="Logo" width="50px"> 
 
-           </div>
-       </div>
-   
-      
-       <div class="container col-11 mt-3 py-5  " >
-       <div class="d-flex justify-content-between pb-3"dir="rtl">
-       <h4> الفترة من: <span class="text-info"> {{ $startDate->format('Y-m-d') }}</span> إلى: <span class="text-info">{{ $endDate->format('Y-m-d') }}</span></h4>
+    <h3> الموظفين للإدارة الفرعية: {{ $subDepartment->name }}</h3>
+    <p>الفترة من: {{ $startDate->format('Y-m-d') }} إلى: {{ $endDate->format('Y-m-d') }}</p>
+
+    
            
-            </div>
     <table>
         <thead>
             <tr>

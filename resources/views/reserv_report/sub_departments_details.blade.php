@@ -53,14 +53,14 @@
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $subDepartment['sub_department_name'] }}</td>
                                 <td>
-                                    <a href="{{ route('reservation_report.sub_department_employees', ['subDepartmentId' => $subDepartment['id']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8  !important;">
+                                    <a href="{{ route('reservation_report.sub_department_employees', ['subDepartmentId' => $subDepartment['uuid']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8  !important;">
                                         {{ $subDepartment['employee_count'] }}
                                     </a>
                                 </td>
                              
 
                                 <td>
-                                <a href="{{ route('reservation_report.sub_department_employees', ['subDepartmentId' => $subDepartment['id']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8  !important;">    
+                                <a href="{{ route('reservation_report.sub_department_employees', ['subDepartmentId' => $subDepartment['uuid']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8  !important;">    
                                 {{ $subDepartment['reservation_amount'] }}
                                 </a>
                             
@@ -120,7 +120,7 @@ $(document).ready(function() {
     $('#print-report').click(function() {
         const startDate = '{{ $startDate->format('Y-m-d') }}';
         const endDate = '{{ $endDate->format('Y-m-d') }}';
-        const url = `{{ route('reservation_report.main_department_sub_departments_print', ['departmentId' => $mainDepartment->id]) }}?start_date=${startDate}&end_date=${endDate}`;
+        const url = `{{ route('reservation_report.main_department_sub_departments_print', ['departmentId' => $mainDepartment->uuid]) }}?start_date=${startDate}&end_date=${endDate}`;
         window.open(url, '_blank');
     });
 });

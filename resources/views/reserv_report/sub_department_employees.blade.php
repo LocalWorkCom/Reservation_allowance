@@ -6,7 +6,16 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
     <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer></script>
-
+    <style>
+        .info-box {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
     @endpush
 
 @section('content')
@@ -23,7 +32,6 @@
 
 <div class="container col-11 mt-3 py-5  " >
 <div class="d-flex justify-content-between pb-3"dir="rtl">
-        <div class="container col-11 mt-3 p-0 pt-5 pb-4">
         <h4> الفترة من: <span class="text-info">{{ $startDate->format('Y-m-d') }}</span> إلى: <span class="text-info">{{ $endDate->format('Y-m-d') }}</span></h4>
 
         <button id="print-report" class="btn btn-secondary">طباعة</button>
@@ -39,7 +47,6 @@
                         <th>الرتبة</th>
                         <th>اسم الموظف</th>
                         <th>رقم الملف</th>
-                      
                         <th>نوع الحجز</th>
                         <th>المبلغ</th>
                     </tr>
@@ -108,7 +115,7 @@ $(document).ready(function() {
     $('#print-report').click(function() {
     const startDate = '{{ $startDate->format('Y-m-d') }}';
     const endDate = '{{ $endDate->format('Y-m-d') }}';
-    const url = `{{ route('reservation_report.sub_department_employees_print', ['subDepartmentId' => $subDepartment->id]) }}?start_date=${startDate}&end_date=${endDate}`;
+    const url = `{{ route('reservation_report.sub_department_employees_print', ['subDepartmentId' => $subDepartment->uuid]) }}?start_date=${startDate}&end_date=${endDate}`;
     window.open(url, '_blank');
 });
 
