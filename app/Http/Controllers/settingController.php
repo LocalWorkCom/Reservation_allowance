@@ -327,28 +327,36 @@ class settingController extends Controller
         $data = $data->get();
 
         return DataTables::of($data)
-            ->addColumn('action', function ($row) {
-                // Safely handle null values for JavaScript function parameters
-                $name = $row->name ? "'$row->name'" : "''";
-                $order = $row->order ? "'$row->order'" : "''";
-                $value_all = $row->value_all ? "'$row->value_all'" : "''";
-                $value_part = $row->value_part ? "'$row->value_part'" : "''";
+        ->addColumn('action', function ($row) {
+            // Safely handle null values and escape special characters for JavaScript
+            $name = $row->name ?? '';
+            $type = json_encode($row->type ?? '');
+            $order = json_encode($row->order ?? '');
+            $value_all = $row->value_all ?? '';
+            $value_part = $row->value_part ?? '';
 
-                $edit_permission = null;
-                $delete_permission = null;
+            $options = '<option value="" class="text-center" style="color: gray;" selected disabled>الخيارات</option>';
 
-                if (Auth::user()->hasPermission('edit grade')) {
-                    // Pass values safely to the JavaScript function
-                    $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;" onclick="openedit(' . $row->id . ',' . $name . ',' . $row->type . ',' . $value_all . ',' . $value_part . ',' . $order . ')">  <i class="fa fa-edit"></i> تعديل </a>';
-                }
-                if (Auth::user()->hasPermission('delete grade')) {
-                    $delete_permission = ' <a class="btn btn-sm" style="background-color: #C91D1D;" onclick="opendelete(' . $row->id . ')"> <i class="fa-solid fa-trash"></i> حذف</a>';
-                }
+            // Check for edit permission
+            if (Auth::user()->hasPermission('edit grade')) {
+                $options .= '<option value="edit" class="text-center" style="color:#eb9526;">تعديل</option>';
+            }
 
-                $uploadButton = $edit_permission . $delete_permission;
-                return $uploadButton;
-            })
-            ->addColumn('type', function ($row) {
+            // Check for delete permission
+            if (Auth::user()->hasPermission(permission: 'delete grade')) {
+                $options .= '<option value="delete" onclick="opendelete(' . $row->id . ')" class="text-center" style="color:#c50c0c;">حذف</option>';
+            }
+
+            // Generate dropdown
+            $btn = '<select class="form-select form-select-sm btn-action" onchange="handleAction(this.value,' . $row->id . ', ' . $name . ', ' . $type . ', ' . $value_all . ', ' . $value_part . ', ' . $order . ')"
+                        aria-label="Actions" style="width: auto;">
+                        ' . $options . '
+                    </select>';
+
+            return $btn;
+        })
+        ->addColumn('type', function ($row) {
+
                 if ($row->type == 2) $mode = 'ظابط';
                 elseif ($row->type == 1) $mode = ' فرد';
                 else $mode = 'مهني';

@@ -251,8 +251,8 @@
                 var sectorId = $('#sector').val();
 
                 $.ajax({
-                    url:'/get-manager-details/' + managerId + '?skipDepartmentCheck=' + skipDepartmentCheck +
-                        '&isEditPage=true',
+                    url: '/get-manager-details/' + managerId + '?skipDepartmentCheck=' + skipDepartmentCheck +
+                        '?isEditPage=' + true,
                     type: 'GET',
                     data: {
                         department_id: departmentId,

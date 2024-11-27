@@ -304,7 +304,7 @@
 
                 $.ajax({
                     url: '/get-manager-details/' + managerId + '?skipDepartmentCheck=' + skipDepartmentCheck +
-                        '&isEditPage=true',
+                        '?isEditPage=' + true,
                     type: 'GET',
                     data: {
                         department_id: departmentId,
