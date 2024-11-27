@@ -1205,6 +1205,20 @@ class DepartmentController extends Controller
         $employeesToRemove = array_diff($currentEmployees, $file_numbers);
         $employeesToAdd = array_diff($file_numbers, $currentEmployees);
 
+        $nonExistingFileNumbers = [];
+        foreach ($file_numbers as $file_number) {
+            $employee = User::where('file_number', $file_number)->first();
+            if (!$employee) {
+                $nonExistingFileNumbers[] = $file_number;
+            }
+        }
+        if (!empty($nonExistingFileNumbers)) {
+            // Return with error if any file number doesn't exist
+            return redirect()->back()->withErrors([
+                'file_number' => 'ارقام ملفات الموظفين التالية غير موجودة في النظام: ' . implode(', ', $nonExistingFileNumbers)
+            ])->withInput();
+        }
+
         // Remove employees that are no longer in this sub-department
         if (!empty($employeesToRemove)) {
             //  User::whereIn('Civil_number', $employeesToRemove)->update(['department_id' => null, 'sector' => null]);
