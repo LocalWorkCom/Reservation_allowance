@@ -449,8 +449,8 @@ class DepartmentController extends Controller
         $departements->created_by = Auth::user()->id;
         $departements->save();
         saveHistory($departements->reservation_allowance_amount, $departements->sector_id, $departements->id);
-        UpdateUserHistory($manager->id);
-        addUserHistory($manager->id, $departements->id,  $request->sector);
+        UpdateUserHistory($manager);
+        addUserHistory($manager, $departements->id,  $request->sector);
 
         if ($request->mangered) {
             $new_user = User::where('file_number', $request->mangered)->first();
