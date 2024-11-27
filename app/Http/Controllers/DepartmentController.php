@@ -407,7 +407,7 @@ class DepartmentController extends Controller
             'budget_type' => 'required',
             'part' => 'required',
             'email' => [
-                'required', // Allow email to be null unless manager is set
+                'nullable', // Allow email to be null unless manager is set
                 Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
                 function ($attribute, $value, $fail) {
                     // Check if email format is invalid
@@ -573,7 +573,7 @@ class DepartmentController extends Controller
             'budget_type' => 'required',
             'part' => 'required',
             'email' => [
-                'required', // Allow email to be null unless manager is set
+                'nullable', // Allow email to be null unless manager is set
                 Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
                 function ($attribute, $value, $fail) {
                     // Check if email format is invalid
@@ -745,7 +745,7 @@ class DepartmentController extends Controller
             'budget_type' => 'required',
             'part' => 'required',
             'email' => [
-                'required',
+                'nullable',
                 Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
                 function ($attribute, $value, $fail) use ($request) {
                     // If manager is set, email must not be empty
@@ -1001,7 +1001,7 @@ class DepartmentController extends Controller
             'budget_type' => 'required',
             'part' => 'required',
             'email' => [
-                'required', // Allow email to be null unless manager is set
+                'nullable', // Allow email to be null unless manager is set
                 Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
                 function ($attribute, $value, $fail) use ($request) {
                     // If manager is set, email must not be empty
