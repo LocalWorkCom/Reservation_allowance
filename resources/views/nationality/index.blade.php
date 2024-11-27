@@ -17,15 +17,14 @@
                 <div class="d-flex justify-content-between">
                     <p> الدول والجنسيات </p>
                     @if (Auth::user()->hasPermission('edit job'))
-                        <button type="button" class="btn-all  " onclick="openadd()" style="    color: #0D992C;">
+                        <button type="button" class="btn-all  " onclick="openadd()" >
 
-                            اضافة دولة جديدة <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                            اضافة دولة جديدة 
                         </button>
                     @endif
                 </div>
             </div>
         </div>
-        <br>
         <div class="row">
             <div class="container  col-11 mt-3 p-0  pt-5 pb-4">
 

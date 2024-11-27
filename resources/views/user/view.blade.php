@@ -86,13 +86,12 @@
 
                     @if (Auth::user()->hasPermission('add_employee User'))
                         @if ($flag == 'employee')
-                            <a href="{{ route('download-template') }}" class="btn-all text-info mx-2 p-2">تحميل
+                            <a href="{{ route('download-template') }}" class="btn-all text-info p-2">تحميل
                                 القالب</a>
                             @if (Auth::user()->hasPermission('create User'))
-                                <button type="button" class="wide-btn mx-2"
-                                    onclick="window.location.href='{{ route('user.create') }}'" style="color: #0D992C;">
-                                    اضافة موظف جديد <img src="{{ asset('frontend/images/add-btn.svg') }}"
-                                        alt="img">
+                                <button type="button" class="btn-all mx-2"
+                                    onclick="window.location.href='{{ route('user.create') }}'" >
+                                    اضافة موظف جديد 
                                 </button>
                             @endif
                         @endif
@@ -181,9 +180,9 @@
             </form> --}}
 
             @include('inc.flash')
-            <div class="col-lg-12 pt-5 pb-5">
+            <div class="col-lg-12 py-5 ">
                 <div class="row d-flex justify-content-between " dir="rtl">
-                    <div class="form-group moftsh mt-4  mx-4  d-flex">
+                    <div class="form-group moftsh d-flex">
                         <p class="filter "> تصفية حسب :</p>
                         <button class="btn-all px-3 mx-2 btn-filter btn-active" data-filter="all"
                             style="color: #274373;">
