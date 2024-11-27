@@ -117,11 +117,21 @@ class sectorsController extends Controller
         ->addColumn('action', function ($row) {
             $btn = '
                 <select class="form-select form-select-sm btn-action" onchange="handleAction(this.value, \'' . $row->uuid . '\')" aria-label="Actions" style="width: auto;">
-                    <option value="" class="text-center" style="color: gray;" selected disabled>الخيارات</option>
-                    <option value="show" class="text-center" data-url="' . route('sectors.show', $row->uuid) . '" style="color: #274373;">عرض</option>
-                    <option value="edit" class="text-center" data-url="' . route('sectors.edit', $row->uuid) . '" style="color:#eb9526;">تعديل</option>
-                    <option value="create-department" class="text-center" data-url="' . route('department.create', $row->uuid) . '" style="color:#c50c0c;">أضافة أداره</option>
-                </select>';
+                    <option value="" class="text-center" style="color: gray;" selected disabled>الخيارات</option>';
+
+            if (Auth::user()->hasPermission('view Sector')) {
+                $btn .= '<option value="show" class="text-center" data-url="' . route('sectors.show', $row->uuid) . '" style="color: #274373;">عرض</option>';
+            }
+
+            if (Auth::user()->hasPermission('edit Sector')) {
+                $btn .= '<option value="edit" class="text-center" data-url="' . route('sectors.edit', $row->uuid) . '" style="color:#eb9526;">تعديل</option>';
+            }
+
+            if (Auth::user()->hasPermission('create departements')) {
+                $btn .= '<option value="create-department" class="text-center" data-url="' . route('department.create', $row->uuid) . '" style="color:#c50c0c;">أضافة أداره</option>';
+            }
+
+            $btn .= '</select>';
             return $btn;
         })
             ->addColumn('manager_name', function ($row) {
@@ -148,7 +158,7 @@ class sectorsController extends Controller
             })
             ->addColumn('departments', function ($row) {
                 $num = departements::where('sector_id', $row->id)->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('departments.index', ['uuid' => $row->uuid]) . '> ' . $num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373;color: white;  padding-inline: 15px" href=' . route('departments.index', ['uuid' => $row->uuid]) . '> ' . $num . '</a>';
                 return $btn;
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
@@ -167,12 +177,12 @@ class sectorsController extends Controller
             })
             ->addColumn('employees', function ($row) {
                 $emp_num = User::where('sector', $row->id)->where('flag', 'employee')->where('department_id', null)->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373;" href=' . route('user.employees', ['id' => $row->uuid, 'type' => 'sector', 'status' => 'null', 'flag' => 'employee']) . '> ' . $emp_num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373;color: white; padding-inline: 15px" href=' . route('user.employees', ['id' => $row->uuid, 'type' => 'sector', 'status' => 'null', 'flag' => 'employee']) . '> ' . $emp_num . '</a>';
                 return $btn;
             })
             ->addColumn('employeesdep', function ($row) {
                 $emp_num = User::where('sector', $row->id)->where('flag', 'employee')->whereNotNull('department_id')->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373; padding-inline: 15p" href=' . route('user.employees', ['id' => $row->uuid, 'type' => 'sector', 'status' => 'notnull', 'flag' => 'employee']) . '> ' . $emp_num . '</a>';
+                $btn = '<a class="btn btn-sm" style="background-color: #274373;color: white;  padding-inline: 15px" href=' . route('user.employees', ['id' => $row->uuid, 'type' => 'sector', 'status' => 'notnull', 'flag' => 'employee']) . '> ' . $emp_num . '</a>';
 
                 return $btn;
             })
