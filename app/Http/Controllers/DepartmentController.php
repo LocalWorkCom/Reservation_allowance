@@ -21,18 +21,15 @@ class DepartmentController extends Controller
     public function index($uuid)
     {
         addUuidToTable('departements');
-
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
             $departments = departements::all();
-            $sectors = Sector::where('uuid', $uuid)->first();
         } elseif (Auth::user()->rule->id == 4) {
-            $departments = departements::where('sector_id', auth()->user()->sector)->get();
-            $sectors = Sector::where('uuid', $uuid)->first();
+            $departments = departements::where('sector_id', auth()->user()->sector);
         } elseif (Auth::user()->rule->id == 3) {
-            $departments = departements::where('id', auth()->user()->department_id)->first();
-            $sectors = Sector::where('id', $departments->sector_id)->first();
+            $departments = departements::where('id', auth()->user()->department_id);
         }
-
+        // Fetch the related sector information
+        $sectors = Sector::where('uuid', auth()->user()->sector)->first();
 
         return view('departments.index', compact('departments', 'sectors'));
     }
@@ -64,18 +61,15 @@ class DepartmentController extends Controller
 
     public function getDepartment($uuid)
     {
+        $sectors = Sector::where('uuid', $uuid)->first();
         if (in_array(Auth::user()->rule->id, [1, 2, 4])) {
 
-            $sectors = Sector::where('uuid', $uuid)->first();
 
             $data = departements::where('parent_id', null)
                 ->where('sector_id', $sectors->id)
                 ->orderBy('id', 'desc')
                 ->get();
         } else {
-             $current_department = departements::where('uuid', $uuid)->first();
-            $sectors = Sector::where('id', $current_department->sector_id)->first();
-
             $data = departements::where('parent_id', null)
                 ->where('sector_id', $sectors->id)
                 ->orderBy('id', 'desc')
@@ -87,7 +81,7 @@ class DepartmentController extends Controller
                 return '<button class="btn btn-primary btn-sm">Edit</button>';
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
-                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount." د.ك";
+                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount . " د.ك";
             })
             ->addColumn('reservation_allowance', function ($row) {
                 switch ($row->reservation_allowance_type) {
@@ -270,7 +264,7 @@ class DepartmentController extends Controller
                 return '<button class="btn btn-primary btn-sm">Edit</button>';
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
-                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount." د.ك";
+                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount . " د.ك";
             })
             ->addColumn('reservation_allowance', function ($row) {
                 switch ($row->reservation_allowance_type) {
