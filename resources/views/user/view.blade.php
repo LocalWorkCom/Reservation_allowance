@@ -362,7 +362,6 @@
                                     unsigned = unsigned.replace(':uuid', row.uuid);
                                     var visibility = row.department_id != null ? 'd-block-inline' :
                                         'd-none';
-                                        var uu = 11;
 
                                     return `
 <select class="form-select form-select-sm btn-action" onchange="handleAction(this.value, '${row.uuid}')" aria-label="Actions" style="width: auto;">
@@ -455,7 +454,7 @@
                                 window.location.href = editUrl;
                                 break;
                             case "unsigned":
-                               openTransferModal(uuid)
+                                openTransferModal(uuid)
                                 break;
                             default:
                                 // Default case for invalid action
