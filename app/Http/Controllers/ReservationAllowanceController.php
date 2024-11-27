@@ -390,8 +390,11 @@ class ReservationAllowanceController extends Controller
         $cache_name = auth()->user()->id."_employee_new_add";
         Cache::put($cache_name, $employee_new_add);
         //return Cache::get($cache_name);
-          
-        return view('reservation_allowance.index_check_store', compact('type', 'total_grade_value', 'sectors', 'get_departements', 'to_day', 'employee_not_found', 'employee_not_dept', 'employee_new_add', 'department_id', 'sector_id'));
+
+        $current_departement = departements::where('id', $department_id)->first();
+        $current_sector = Sector::where('id', $sector_id)->first();
+
+        return view('reservation_allowance.index_check_store', compact('type', 'current_sector','current_departement', 'total_grade_value', 'sectors', 'get_departements', 'to_day', 'employee_not_found', 'employee_not_dept', 'employee_new_add', 'department_id', 'sector_id'));
     }
 
     /**
