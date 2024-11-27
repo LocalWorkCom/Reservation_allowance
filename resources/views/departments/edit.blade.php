@@ -73,10 +73,10 @@
                     <form action="{{ route('departments.update', $department) }}" method="POST"
                         enctype="multipart/form-data">
                         <!-- <div class="container col-10 mt-5 mb-3 pb-5"
-                                style="border:0.5px solid #C7C7CC;">
-                                <form
-                                    action="{{ route('departments.update', $department->id) }}"
-                                    method="POST" enctype="multipart/form-data"> -->
+                            style="border:0.5px solid #C7C7CC;">
+                            <form
+                                action="{{ route('departments.update', $department->id) }}"
+                                method="POST" enctype="multipart/form-data"> -->
                         @csrf
                         @method('PUT')
 
@@ -291,7 +291,7 @@
 
                 $.ajax({
                     url: '/get-manager-details/' + managerId + '?skipDepartmentCheck=' + skipDepartmentCheck +
-                        '&isEditPage=true',
+                        '?isEditPage=' + true,
                     type: 'GET',
                     data: {
                         department_id: departmentId,
