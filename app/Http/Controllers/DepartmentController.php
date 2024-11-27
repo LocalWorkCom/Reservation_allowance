@@ -77,7 +77,7 @@ class DepartmentController extends Controller
             $sectors = Sector::where('id', $current_department->sector_id)->first();
 
             $data = departements::where('parent_id', null)
-                ->where('id', $current_department->id)
+                ->where('sector_id', $sectors->id)
                 ->orderBy('id', 'desc')
                 ->get();
         }
