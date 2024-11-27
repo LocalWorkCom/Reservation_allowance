@@ -192,11 +192,6 @@ class UserController extends Controller
                 $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
                 $Officer2 = User::where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
             }
-        
-
-
-
-
         }
 
         // Fetch related departments and sectors
@@ -1129,7 +1124,7 @@ class UserController extends Controller
         if ($request->filled('department_id')) {
             $id_department = Departements::where('uuid', $request->department_id)->value('id');
         } else {
-        $id_department =  null;
+            $id_department =  null;
         }
         // Additional checks for 'user' flag
         if ($request->flag == 'user') {
