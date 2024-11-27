@@ -1,9 +1,9 @@
 @extends('layout.main')
 @push('style')
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
-<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
-</script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
+    </script>
 @endpush
 @section('title')
     المحـــافظات
@@ -23,22 +23,18 @@
 
                 <div class="row " dir="rtl">
                     <div class="form-group mt-4  mx-md-2 col-12 d-flex ">
-                        {{-- <button type="button" class="btn-all  "
-                        onclick="openadd()" style="    color: #0D992C;">
-                        <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                            اضافة جديد
-                        </button> --}}
                     </div>
                 </div>
                 <div class="col-lg-12">
                     <div class="bg-white">
                         @if (session()->has('message'))
-                        <div class="alert alert-info">
-                            {{ session('message') }}
-                        </div>
+                            <div class="alert alert-info">
+                                {{ session('message') }}
+                            </div>
                         @endif
                         <div>
-                            <table id="users-table" class="display table table-responsive-sm  table-bordered table-hover dataTable">
+                            <table id="users-table"
+                                class="display table table-responsive-sm  table-bordered table-hover dataTable">
                                 <thead>
                                     <tr>
                                         <th>الاسم</th>
@@ -68,19 +64,19 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                <div class="container pt-4 pb-4" style="border: 0.2px solid rgb(166, 165, 165);">
-                    <form class="edit-grade-form" id="add-form" action=" {{ route('government.add') }}" method="POST">
-                        @csrf
-                        <div class="form-group">
-                            <label for="name">الاسم</label>
-                            <input type="text" id="nameadd" name="nameadd" class="form-control">
+                    <div class="container pt-4 pb-4" style="border: 0.2px solid rgb(166, 165, 165);">
+                        <form class="edit-grade-form" id="add-form" action=" {{ route('government.add') }}" method="POST">
+                            @csrf
+                            <div class="form-group">
+                                <label for="name">الاسم</label>
+                                <input type="text" id="nameadd" name="nameadd" class="form-control">
 
-                        </div>
-                        <!-- Save button -->
-                        <div class="text-end">
-                            <button type="submit" class="btn-blue" onclick="confirmAdd()">اضافه</button>
-                        </div>
-                    </form>
+                            </div>
+                            <!-- Save button -->
+                            <div class="text-end">
+                                <button type="submit" class="btn-blue" onclick="confirmAdd()">اضافه</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -99,71 +95,40 @@
                     </button>
                 </div>
                 <div class="modal-body mt-3 mb-5">
-                <div class="container pt-4 pb-4" style="border: 0.2px solid rgb(166, 165, 165);">
-                    <form class="edit-grade-form" id="edit-form" action=" {{ route('government.update') }}" method="POST">
-                        @csrf
-                        <div class="form-group">
-                            <label for="name">الاسم</label>
-                            <input type="text" id="nameedit" value="" name="name" class="form-control" dir="rtl" required>
-                            <input type="text" id="idedit" value="" name="id" hidden class="form-control">
+                    <div class="container pt-4 pb-4" style="border: 0.2px solid rgb(166, 165, 165);">
+                        <form class="edit-grade-form" id="edit-form" action=" {{ route('government.update') }}"
+                            method="POST">
+                            @csrf
+                            <div class="form-group">
+                                <label for="name">الاسم</label>
+                                <input type="text" id="nameedit" value="" name="name" class="form-control"
+                                    dir="rtl" required>
+                                <input type="text" id="idedit" value="" name="id" hidden
+                                    class="form-control">
 
-                        </div>
-                        <!-- Save button -->
-                        <div class="text-end">
-                            <button type="submit" class="btn-blue" onclick="confirmEdit()">تعديل</button>
-                        </div>
-                    </form>
-                </div>
+                            </div>
+                            <!-- Save button -->
+                            <div class="text-end">
+                                <button type="submit" class="btn-blue" onclick="confirmEdit()">تعديل</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    {{-- model for delete form --}}
-    {{-- <div class="modal fade" id="delete" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header d-flex justify-content-center">
-                    <div class="title d-flex flex-row align-items-center">
-                        <h5 class="modal-title" id="deleteModalLabel"> !تنبــــــيه</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> &times;
-                        </button>
-                    </div>
-                </div>
-                <form id="delete-form" action="{{ route('grads.delete') }}" method="POST">
-                    @csrf
-                    <div class="modal-body  d-flex justify-content-center">
-                        <h5 class="modal-title " id="deleteModalLabel"> هل تريد حذف هذه الرتبه ؟</h5>
-
-
-                        <input type="text" id="id" hidden name="id" class="form-control">
-                    </div>
-                    <div class="modal-footer mx-2 d-flex justify-content-center">
-                        <div class="text-end">
-                            <button type="button" class="btn-blue">لا</button>
-                        </div>
-                        <div class="text-end">
-                            <button type="submit" class="btn-blue" onclick="confirmDelete()">نعم</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div> --}}
 @endsection
 @push('scripts')
     <script>
-        // function opendelete(id) {
-        //     document.getElementById('id').value = id;
-        //     $('#delete').modal('show');
-        // }
+        function handleAction(action, id, name, regionshow) {
+            if (action === "edit") {
+                openedit(id, name);
+            } else if (action === "regions") {
+                // Redirect to the region URL
+                window.location.href = regionshow;
+            }
+        }
 
-        // function confirmDelete() {
-        //     var id = document.getElementById('id').value;
-        //     var form = document.getElementById('delete-form');
-
-        //     form.submit();
-
-        // }
 
         function openedit(id, name) {
             document.getElementById('nameedit').value = name;
@@ -181,6 +146,7 @@
             form.submit();
 
         }
+
         function openadd() {
             $('#add').modal('show');
         }
@@ -194,13 +160,14 @@
         }
         $(document).ready(function() {
             $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
+            var canEditGovernment = @json(Auth::user()->hasPermission('edit Government'));
+            var canViewRegion = @json(Auth::user()->hasPermission('view Region'));
 
             $('#users-table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: '{{ route('setting.getAllgovernment') }}', // Correct URL concatenation
-                columns: [
-                    {
+                columns: [{
                         data: 'name',
                         name: 'name'
                     },
@@ -213,48 +180,81 @@
                         searchable: false
                     }
                 ],
-                order: [[1, 'desc']],
+                order: [
+                    [1, 'desc']
+                ],
+                columnDefs: [{
+                    targets: -1,
+                    render: function(data, type, row) {
+                        // Get the correct route for region view
+                        var regionshow = '{{ route('regions.index', ':id') }}'.replace(':id', row.id);
+
+
+                        // Ensure the name is safe to use in JavaScript (escape any special characters like single quotes)
+                        var name = row.name ? row.name.replace(/'/g, "\\'") :
+                        "''"; // Escape single quotes for safety
+
+                        // Initialize options
+                        let options =
+                            `<option value="" class="text-center" style="color: gray;" selected disabled>الخيارات</option>`;
+
+                        // Conditionally render options based on permissions
+                        if (canEditGovernment) {
+                            options +=
+                                `<option value="edit" class="text-center" style="color:#eb9526;">تعديل</option>`;
+                        }
+                        if (canViewRegion) {
+                            options +=
+                                `<option value="regions" data-url="${regionshow}" class="text-center" style="color:#c50c0c;">مناطق</option>`;
+                        }
+
+                        // Return the dropdown with options
+                        return `
+            <select class="form-select form-select-sm btn-action" onchange="handleAction(this.value, '${row.id}', '${name}', '${regionshow}')" aria-label="Actions" style="width: auto;">
+                ${options}
+            </select>
+        `;
+                    }
+                }],
+
                 "oLanguage": {
-                                "sSearch": "",
-                                "sSearchPlaceholder":"بحث",
-                                                                            "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
-                                            "sInfoEmpty": 'لا توجد بيانات متاحه',
-                                            "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
-                                            "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
-                                            "sZeroRecords": 'نأسف لا توجد نتيجة',
-                                            "oPaginate": {
-                                                "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
-                                                "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
-                                                "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
-                                                "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
-                                                    }
+                    "sSearch": "",
+                    "sSearchPlaceholder": "بحث",
+                    "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
+                    "sInfoEmpty": 'لا توجد بيانات متاحه',
+                    "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
+                    "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
+                    "sZeroRecords": 'نأسف لا توجد نتيجة',
+                    "oPaginate": {
+                        "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', // This is the link to the first page
+                        "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', // This is the link to the previous page
+                        "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', // This is the link to the next page
+                        "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' // This is the link to the last page
+                    }
 
 
-                                        },
-                                        layout: {
-                                            bottomEnd: {
-                                                paging: {
-                                                    firstLast: false
-                                                }
-                                            }
-                                        },
-                                         "pagingType": "full_numbers",
-                                         "fnDrawCallback": function(oSettings) {
-                                            console.log('Page '+this.api().page.info().pages)
-                                            var page=this.api().page.info().pages;
-                                            console.log($('#users-table tr').length);
-                                            if (page ==1) {
-                                            //   $('.dataTables_paginate').hide();//css('visiblity','hidden');
-                                                $('.dataTables_paginate').css('visibility', 'hidden');  // to hide
+                },
+                layout: {
+                    bottomEnd: {
+                        paging: {
+                            firstLast: false
+                        }
+                    }
+                },
+                "pagingType": "full_numbers",
+                "fnDrawCallback": function(oSettings) {
+                    console.log('Page ' + this.api().page.info().pages)
+                    var page = this.api().page.info().pages;
+                    console.log($('#users-table tr').length);
+                    if (page == 1) {
+                        //   $('.dataTables_paginate').hide();//css('visiblity','hidden');
+                        $('.dataTables_paginate').css('visibility', 'hidden'); // to hide
 
-                                            }
-                                    }
+                    }
+                }
             });
 
 
-            });
-
-
-
+        });
     </script>
 @endpush

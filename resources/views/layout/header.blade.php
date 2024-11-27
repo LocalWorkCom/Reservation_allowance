@@ -22,12 +22,12 @@
                     </button>
                 @endif
             </div>
-            <button class="btn2 btn-2 mx-5" style="border-inline: 1px solid rgb(41, 41, 41); height: 100%;"
+            {{-- <button class="btn2 btn-2 mx-5" style="border-inline: 1px solid rgb(41, 41, 41); height: 100%;"
                 onclick="toggleDropdown2()">
                 <a class="bell mx-md-5">
                     <i class="fa-regular fa-bell"></i>
                 </a>
-            </button>
+            </button> --}}
             <div id="dropdownMenu2" class="dropdown-menu2">
                 <p>notification notification notification notification </p>
                 <hr>

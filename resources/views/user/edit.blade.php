@@ -295,8 +295,8 @@
                                     @endif
                                     @foreach ($department as $item)
                                     
-                                        <option value="{{ $item->id }}"
-                                            {{ $user->department_id == $item->id ? 'selected' : '' }}>
+                                        <option value="{{ $item->uuid }}"
+                                            {{ $user->department && $user->department->uuid == $item->uuid ? 'selected' : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -527,7 +527,7 @@
             var url = '/get-deprt-sector?sector=' + sectorId;
 
             // Store the old department value from Blade
-            var oldDepartment = "{{ old('department_id', $user->department_id) }}";
+            var oldDepartment = "{{ old('department_id', $user->uuid) }}";
 
             $.ajax({
                 url: url,
@@ -541,7 +541,7 @@
                     // Populate dropdown with department options
                     $.each(response, function(key, department) {
                         $departmentDropdown.append(
-                            `<option value="${department.id}" ${department.id == oldDepartment ? 'selected' : ''}>
+                            `<option value="${department.uuid}">
                     ${department.name}
                 </option>`
                         );
