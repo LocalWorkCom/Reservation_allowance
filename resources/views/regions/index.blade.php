@@ -15,11 +15,11 @@
             <div class="container welcome col-11">
                 <div class="d-flex justify-content-between">
                     <p> المنـــاطق</p>
-                    {{-- @if (Auth::user()->hasPermission('create Region')) --}}
+                    @if (Auth::user()->hasPermission('create Region'))
                     <button type="button" class="btn-all  " onclick="openadd()" style="color: #0D992C;">
                         اضافة منطقة جديدة <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
                     </button>
-                    {{-- @endif --}}
+                    @endif
                 </div>
             </div>
         </div>
@@ -30,14 +30,6 @@
 
                 <div class="row " dir="rtl">
                     <div class="form-group mt-4  mx-md-2 col-12 d-flex ">
-                        <!-- {{-- @if (Auth::user()->hasPermission('create Region')) --}}
-
-                                        <button type="button" class="btn-all  "
-                                        onclick="openadd()" style="color: #0D992C;">
-                                           
-                                            اضافة جديد  <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                        </button>
-                                        {{-- @endif --}} -->
 
                         <div class="form-group moftsh  mx-3  d-flex">
                             <h4 style="margin-left:10px;line-height: 1.8;"> تصفية  حسب   </h4>
@@ -53,11 +45,6 @@
                         </div>
                     </div>
                 </div>
-                {{-- <script>
-                    $('#government-select').click(
-                        $('#governorate').trigger('change');
-                    );
-                </script> --}}
                 <div class="col-lg-12">
                     <div class="bg-white">
                         @if (session()->has('message'))
@@ -182,37 +169,6 @@
             </div>
         </div>
     </div>
-    {{-- model for delete form --}}
-    {{-- <div class="modal fade" id="delete" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header d-flex justify-content-center">
-                    <div class="title d-flex flex-row align-items-center">
-                        <h5 class="modal-title" id="deleteModalLabel"> !تنبــــــيه</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> &times;
-                        </button>
-                    </div>
-                </div>
-                <form id="delete-form" action="{{ route('regions.delete') }}" method="POST">
-                    @csrf
-                    <div class="modal-body  d-flex justify-content-center">
-                        <h5 class="modal-title " id="deleteModalLabel"> هل تريد حذف هذه الرتبه ؟</h5>
-
-
-                        <input type="text" id="id" hidden name="id" class="form-control">
-                    </div>
-                    <div class="modal-footer mx-2 d-flex justify-content-center">
-                        <div class="text-end">
-                            <button type="button" class="btn-blue">لا</button>
-                        </div>
-                        <div class="text-end">
-                            <button type="submit" class="btn-blue" onclick="confirmDelete()">نعم</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div> --}}
 @endsection
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
@@ -221,15 +177,22 @@
         $('.select2').select2({
             dir: "rtl"
         });
+        function handleAction(action, id, name, government) {
+            if (action) {
+                document.querySelector('.btn-action').value = ''; // Reset dropdown
+                if (action === "edit") {
+                    openedit(id, name, government);
+                } else if (action === "delete") {
+                    opendelete(id);
+                }
+            }
+        }
 
         function openedit(id, name, government) {
-            document.getElementById('nameedit').value = name;
-            document.getElementById('government').value = government;
-            document.getElementById('idedit').value = id;
-
+            document.getElementById('nameedit').value = name || '';
+            document.getElementById('idedit').value = id || '';
+            document.getElementById('government').value = government || '';
             $('#edit').modal('show');
-
-
         }
 
         function confirmEdit() {
@@ -237,9 +200,6 @@
             var name = document.getElementById('nameedit').value;
             var government = document.getElementById('government').value;
             var form = document.getElementById('edit-form');
-
-            // form.submit();
-
         }
 
         function openadd() {
@@ -258,9 +218,6 @@
             var name = document.getElementById('nameadd').value;
             var government = document.getElementById('governmentid').value;
             var form = document.getElementById('add-form');
-
-            // form.submit();
-
         }
         var table;
 
@@ -295,6 +252,29 @@
                 order: [
                     [1, 'desc']
                 ],
+                 columnDefs: [{
+                    targets: -1,
+                    render: function(data, type, row) {
+                        console.log(row)
+                        let options = `
+        <option value="" class="text-center" style="color: gray;" selected disabled>الخيارات</option>
+    `;
+
+                        @if (Auth::user()->hasPermission('edit Region'))
+                            options +=
+                                `<option value="edit" class="text-center" style="color:#eb9526;">تعديل</option>`;
+                        @endif
+
+                        return `
+        <select class="form-select form-select-sm btn-action"
+                onchange="handleAction(this.value, '${row.id}', '${row.name}', '${row.government_id}')"
+                aria-label="Actions" style="width: auto;">
+            ${options}
+        </select>
+    `;
+                    }
+
+                }],
                 "oLanguage": {
                     "sSearch": "",
                     "sSearchPlaceholder": "بحث",
