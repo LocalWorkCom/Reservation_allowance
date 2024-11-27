@@ -77,7 +77,7 @@ class DepartmentController extends Controller
             $sectors = Sector::where('id', $current_department->sector_id)->first();
 
             $data = departements::where('parent_id', null)
-                ->where('sector_id', $sectors->id)
+                ->where('id', $current_department->id)
                 ->orderBy('id', 'desc')
                 ->get();
         }
@@ -945,7 +945,7 @@ class DepartmentController extends Controller
         saveHistory($department->reservation_allowance_amount, $department->sector_id, $department->id);
         UpdateUserHistory($manager);
         addUserHistory($manager, $department->id,  $request->sector);
-        // Handle old and new manager updates for sub-department        
+        // Handle old and new manager updates for sub-department
         if ($oldManager != $manager) {
             if ($oldManager) {
                 $oldManagerUser = User::find($oldManager);
