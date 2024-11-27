@@ -251,7 +251,7 @@
                                     <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i> المهام
                                 </label>
                                 <select id="input7" name="rule_id" class="form-control select2" placeholder="المهام">
-                                    <option disabled>اختار من القائمة</option>
+                                    <option >اختار من القائمة</option>
                                     @foreach ($rule as $item)
                                         @if ($item->name != 'localworkadmin')
                                             <option value="{{ $item->id }}"
@@ -282,6 +282,7 @@
                                 </select>
                             </div>
 
+                   
                             <div class="form-group col-md-5 mx-2">
                                 <label for="department_id">
 
@@ -292,12 +293,13 @@
                                     @if ($user->department_id == null)
                                         <option selected disabled>اختار من القائمة</option>
                                     @endif
-                                    {{-- @foreach ($department as $item)
+                                    @foreach ($department as $item)
+                                    
                                         <option value="{{ $item->id }}"
                                             {{ $user->department_id == $item->id ? 'selected' : '' }}>
                                             {{ $item->name }}
                                         </option>
-                                    @endforeach --}}
+                                    @endforeach
 
                                 </select>
                             </div>
@@ -597,11 +599,11 @@
     </script>
     <script>
         $(document).ready(function() {
-            var selectedSector = "{{ old('sector', $user->sector) }}";
+            // var selectedSector = "{{ old('sector', $user->sector) }}";
 
-            if (selectedSector) {
-                getDepartment(selectedSector); // Trigger department fetching
-            }
+            // if (selectedSector) {
+            //     getDepartment(selectedSector); // Trigger department fetching
+            // }
         });
     </script>
 

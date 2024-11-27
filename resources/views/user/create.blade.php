@@ -491,6 +491,8 @@
                     url: url,
                     type: 'GET', // Use GET method
                     success: function(response) {
+                        console.log(id);
+                        
                         console.log(response); // Log the response
 
                         // Clear the current grade options
