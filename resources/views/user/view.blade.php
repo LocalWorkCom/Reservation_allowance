@@ -88,11 +88,13 @@
                         @if ($flag == 'employee')
                             <a href="{{ route('download-template') }}" class="btn-all text-info mx-2 p-2">تحميل
                                 القالب</a>
+                            @if (Auth::user()->hasPermission('create User')) {
 
                             <button type="button" class="wide-btn mx-2"
                                 onclick="window.location.href='{{ route('user.create') }}'" style="color: #0D992C;">
                                 اضافة موظف جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
                             </button>
+                            }
                         @endif
 
                 </div>
