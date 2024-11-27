@@ -73,10 +73,10 @@
                     <form action="{{ route('departments.update', $department) }}" method="POST"
                         enctype="multipart/form-data">
                         <!-- <div class="container col-10 mt-5 mb-3 pb-5"
-                            style="border:0.5px solid #C7C7CC;">
-                            <form
-                                action="{{ route('departments.update', $department->id) }}"
-                                method="POST" enctype="multipart/form-data"> -->
+                                            style="border:0.5px solid #C7C7CC;">
+                                            <form
+                                                action="{{ route('departments.update', $department->id) }}"
+                                                method="POST" enctype="multipart/form-data"> -->
                         @csrf
                         @method('PUT')
 
@@ -165,9 +165,9 @@
                                     الملفات</label>
                                 <textarea class="form-control" name="file_number" id="file_number" style="height: 100px">
                                             @foreach ($employees as $employee)
-{{ $employee->file_number }}
-@endforeach
-                                        </textarea>
+                                                {{ $employee->file_number }}
+                                            @endforeach
+                                </textarea>
 
                             </div>
                             <div class="form-group col-md-12 mx-md-2">
