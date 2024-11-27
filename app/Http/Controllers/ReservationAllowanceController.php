@@ -391,8 +391,8 @@ class ReservationAllowanceController extends Controller
         Cache::put($cache_name, $employee_new_add);
         //return Cache::get($cache_name);
 
-        $current_departement = departements::where('id', $department_id)->first();
-        $current_sector = Sector::where('id', $sector_id)->first();
+        $current_departement = departements::where('id', $request->departement_id)->first();
+        $current_sector = Sector::where('id', $request->sector_id)->first();
 
         return view('reservation_allowance.index_check_store', compact('type', 'current_sector','current_departement', 'total_grade_value', 'sectors', 'get_departements', 'to_day', 'employee_not_found', 'employee_not_dept', 'employee_new_add', 'department_id', 'sector_id'));
     }
@@ -686,7 +686,8 @@ class ReservationAllowanceController extends Controller
     {
        // dd($type);
         if($type == 1){
-            $get_departements = departements::where('id', '!=', 1)->where('sector_id', $sector_id)->where('parent_id', null)->get();
+            $sector_details = Sector::where('uuid', $sector_id)->first();
+            $get_departements = departements::where('id', '!=', 1)->where('sector_id', $sector_details->id)->where('parent_id', null)->get();
         }else{
             $user = auth()->user();
             $get_departements = departements::where('id', '!=', 1)->where('id', $user->department_id)->get();
@@ -734,92 +735,7 @@ class ReservationAllowanceController extends Controller
         return view('reservation_allowance.check_sector_department', compact('check_sector', 'check_department'));
     }
 
-    public function search_employee_new(Request $request)
-    {
-        /*$messages = [
-            'sector_id.required' => 'اختيار القطاع مطلوب ولا يمكن تركه فارغاً.'
-        ];
-
-        $validatedData = Validator::make($request->all(), [
-            'sector_id' => 'required'
-        ], $messages);
-
-        if ($validatedData->fails()) {
-            return redirect()->back()->withErrors($validatedData)->withInput();
-        }*/
-
-        $today = Carbon::now()->format('Y-m-d');
-        if($request->has('date')){
-            $today = $request->date;
-        }
-
-        $to_day_name = Carbon::now()->translatedFormat('l');
-        $user = auth()->user();
-        if($user->rule_id == 2)
-        {
-            $sectors = Sector::get();
-        }else{
-            if($user->department_id == null){
-                $sectors[] = $user->sectors;
-            }else{
-                $sectors[] = $user->sectors;
-            }
-        }
-
-        $department_type = $request->department_type;
-        $sector_id = 0;
-        $departement_id = 0;
-        $get_departements = [];
-        if($request->sector_id){
-            $sector_id = $request->sector_id;
-        }
-
-        if($request->departement_id){
-            $departement_id = $request->departement_id;
-            if($user->department_id == null){
-                $get_departements = departements::where('id', '!=', 1)->where('sector_id', $sector_id)->where('parent_id', null)->get();
-            }else{
-                //$user = auth()->user();
-                $get_departements = departements::where('id', '!=', 1)->where('id', $user->department_id)->get();
-            }
-        }else{
-            $get_departements = departements::where('id', '!=', 1)->where('sector_id', $sector_id)->get();  
-        }
-
-
-        $reservation_allowance_type = 0;
-        if($sector_id != 0){
-            if($departement_id != 0){
-                $reservation_allowance_type = departements::where('id', $departement_id)->first()->reservation_allowance_type;
-            }else{
-                $reservation_allowance_type = Sector::where('id', $sector_id)->first()->reservation_allowance_type;
-            }
-        }
-
-
-
-        $data = [];
-
-        if($sector_id != 0){
-            //$data = User::query()->where('sector', $sector_id)->where('flag', 'employee');
-            $data = User::query()->where('sector', $sector_id);
-            $get_employee_reservation = ReservationAllowance::Query()->where('date', $today)->where('sector_id', $sector_id);
-            if($departement_id != 0){
-                $data = $data->where('department_id', $departement_id);
-                $get_employee_reservation = $get_employee_reservation->where('departement_id', $departement_id);
-            }else{
-                $data = $data->where('department_id', null);
-                $get_employee_reservation = $get_employee_reservation->where('departement_id', null);
-            }
-            $get_employee_reservation = $get_employee_reservation->pluck('user_id');
-            $data = $data->whereNotIn('id', $get_employee_reservation);
-            $data = $data->get();
-        }
-
-        $employees = $data;
-
-        return view('reservation_allowance.search_employee_new', compact('today' ,'department_type', 'reservation_allowance_type', 'sector_id', 'departement_id', 'sectors', 'get_departements', 'employees'));
-    }
+    
 
     public function search_employee(Request $request)
     {
@@ -937,8 +853,201 @@ class ReservationAllowanceController extends Controller
         return Cache::get(auth()->user()->id);
     }
 
-    public function confirm_reservation_allowances($date,$sector_id=0,$departement_id=0)
+    public function search_employee_new(Request $request)
     {
+
+        /*$messages = [
+            'sector_id.required' => 'اختيار القطاع مطلوب ولا يمكن تركه فارغاً.'
+        ];
+
+        $validatedData = Validator::make($request->all(), [
+            'sector_id' => 'required'
+        ], $messages);
+
+        if ($validatedData->fails()) {
+            return redirect()->back()->withErrors($validatedData)->withInput();
+        }*/
+
+        $today = Carbon::now()->format('Y-m-d');
+        if($request->has('date')){
+            $today = $request->date;
+        }
+
+        $to_day_name = Carbon::now()->translatedFormat('l');
+        $user = auth()->user();
+        if($user->rule_id == 2)
+        {
+            $sectors = Sector::get();
+        }else{
+            if($user->department_id == null){
+                $sectors[] = $user->sectors;
+            }else{
+                $sectors[] = $user->sectors;
+            }
+        }
+
+        $department_type = $request->department_type;
+        $sector_id = 0;
+        $departement_id = 0;
+        $sectorId = 0;
+        $departementId = 0;
+        $get_departements = [];
+        if($request->sector_id){
+            $sectorId = $request->sector_id;
+            $sector_id = Sector::where('uuid', $sectorId)->first()->id;
+        }
+
+        if($request->departement_id){
+            $departementId = $request->departement_id;
+            $departement_id = departements::where('uuid', $departementId)->first()->id;
+            if($user->department_id == null){
+                $get_departements = departements::where('id', '!=', 1)->where('sector_id', $sector_id)->where('parent_id', null)->get();
+            }else{
+                //$user = auth()->user();
+                $get_departements = departements::where('id', '!=', 1)->where('id', $user->department_id)->get();
+            }
+        }else{
+            $get_departements = departements::where('id', '!=', 1)->where('sector_id', $sector_id)->get();  
+        }
+
+
+        $reservation_allowance_type = 0;
+        if($sector_id != 0){
+            if($departement_id != 0){
+                $reservation_allowance_type = departements::where('id', $departement_id)->first()->reservation_allowance_type;
+            }else{
+                $reservation_allowance_type = Sector::where('id', $sector_id)->first()->reservation_allowance_type;
+            }
+        }
+
+
+
+        $data = [];
+
+        if($sector_id != 0){
+            //$data = User::query()->where('sector', $sector_id)->where('flag', 'employee');
+            $data = User::query()->where('sector', $sector_id);
+            $get_employee_reservation = ReservationAllowance::Query()->where('date', $today)->where('sector_id', $sector_id);
+            if($departement_id != 0){
+                $data = $data->where('department_id', $departement_id);
+                $get_employee_reservation = $get_employee_reservation->where('departement_id', $departement_id);
+            }else{
+                $data = $data->where('department_id', null);
+                $get_employee_reservation = $get_employee_reservation->where('departement_id', null);
+            }
+            $get_employee_reservation = $get_employee_reservation->pluck('user_id');
+            $data = $data->whereNotIn('id', $get_employee_reservation);
+            $data = $data->get();
+        }
+
+        $employees = $data;
+
+        return view('reservation_allowance.search_employee_new', compact('today' , 'departementId', 'sectorId','department_type', 'reservation_allowance_type', 'sector_id', 'departement_id', 'sectors', 'get_departements', 'employees'));
+    }
+
+    public function view_choose_reservation($date,$sectorId=0,$departementId=0)
+    {      
+        $current_departement = null;  
+        if($departementId != 0){
+            $current_departement = departements::where('uuid', $departementId)->first();
+            $departement_id = $current_departement->id;
+        }else{
+            $departement_id = 0;
+        }
+        
+        $current_sector = Sector::where('uuid', $sectorId)->first();
+        $sector_id = $current_sector->id;
+
+        $sector = $sector_id;
+        $departement = $departement_id;
+        $get_employee_for_all_reservations = [];
+        $get_employee_for_part_reservations = [];
+        
+        if(Cache::has(auth()->user()->id)){
+
+            $user = auth()->user();
+            $to_day = $date;
+            //$to_day = Carbon::now()->format('Y-m-d');
+            $to_day_name = Carbon::parse($date)->translatedFormat('l');
+            $get_employees = Cache::get(auth()->user()->id);
+            $employee_amount = 0;
+            $reservation_amout = 0;
+            $reservation_amount_part = 0;
+            $reservation_amount_all = 0;
+            // $sector_id = 0;
+            // $departement_id = 0;
+            
+            foreach($get_employees as $get_employee){
+                $employee = User::where('id', $get_employee['id'])->first();
+
+                if($employee){// check if employee
+                    if($employee->grade_id != null){ // check if employee has grade
+                        if($get_employee['type'] == 1){
+                            $grade_value = $employee->grade->value_all;
+                            $get_employee_for_all_reservations[] = $employee;
+                            $employee['grade_value'] = $grade_value;
+                            $reservation_amount_all += $employee->grade->value_all;
+                        }else{
+                            $grade_value = $employee->grade->value_part;
+                            $reservation_amount_part += $employee->grade->value_part;
+                            $employee['grade_value'] = $grade_value;
+                            $get_employee_for_part_reservations[] = $employee;
+                        }
+                        $employee_amount += $grade_value;
+                    }
+                }
+            }
+
+
+            //check to reservation month
+            $type_departement = 1;
+            $reservation_amout = sector::where('id', $sector_id)->first()->reservation_allowance_amount;
+            if($departement_id != 0){
+                $type_departement = 2;
+                $reservation_amout = departements::where('id', $departement_id)->first()->reservation_allowance_amount;
+            }
+
+            $first_day = date('Y-m-01');
+            $last_day = date('Y-m-t');
+            
+            $get_all_employee_amount = ReservationAllowance::Query();
+            if($departement_id != 0){
+                $get_all_employee_amount = $get_all_employee_amount->where('departement_id', $departement_id);
+            }
+            if($sector_id != 0){
+                $get_all_employee_amount = $get_all_employee_amount->where('sector_id', $sector_id);
+            }
+            $get_all_employee_amount = $get_all_employee_amount->whereBetween('date',[$first_day, $last_day])->sum('amount');
+
+            if($reservation_amout > 0){
+                $reservation_amout = $reservation_amout - $get_all_employee_amount;           
+                if($reservation_amout <= $employee_amount){
+                    return redirect()->back()->with('error','عفوا لقد تجاوزت ملبغ بدل الحجز');
+                }
+            }
+             
+        }
+
+        //return $get_employee_for_all_reservations;
+
+        return view('reservation_allowance.view_choose_reservation', compact('sectorId', 'departementId', 'reservation_amount_all', 'reservation_amount_part', 'get_employee_for_all_reservations', 'get_employee_for_part_reservations', 'date','current_departement', 'current_sector'));
+
+    }
+
+    public function confirm_reservation_allowances($date,$sectorId=0,$departementId=0)
+    {
+        $current_departement = null;  
+        if($departementId != 0){
+            $current_departement = departements::where('uuid', $departementId)->first();
+            $departement_id = $current_departement->id;
+        }else{
+            $departement_id = 0;
+        }
+        
+        $current_sector = Sector::where('uuid', $sectorId)->first();
+        $sector_id = $current_sector->id;
+
+
         $sector = $sector_id;
         $departement = $departement_id;
         $datey = $date;

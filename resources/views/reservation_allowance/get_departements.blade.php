@@ -1,7 +1,7 @@
 <option value="0" selected>اختار الادارة</option>
 @if ($get_departements)
     @foreach ($get_departements as $departement)
-        <option value="{{ $departement->id }}">{{ $departement->name }}</option>
+        <option value="{{ $departement->uuid }}">{{ $departement->name }}</option>
         @if (count($departement->children))
             @include('reservation_allowance.manageChildren', [
                 'children' => $departement->children,

@@ -161,6 +161,9 @@
 
 
 @endsection
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 @push('scripts')
     <script>
         $(".select2").select2({
@@ -212,14 +215,18 @@
                     .value;
                 var departement_id = document.getElementById(
                     'departement_id').value;
-                var map_url =
+                if(sectorid == 0){
+                    confirm_reservation();
+                }else{
+                    var map_url =
                     "{{ route('reservation_allowances.get_crate_all_form', ['sector', 'department']) }}";
-                map_url = map_url.replace('sector', sectorid);
-                map_url = map_url.replace('department',
-                    departement_id);
-                $.get(map_url, function(data) {
-                    $("#crate_all_form").html(data);
-                });
+                    map_url = map_url.replace('sector', sectorid);
+                    map_url = map_url.replace('department',
+                        departement_id);
+                    $.get(map_url, function(data) {
+                        $("#crate_all_form").html(data);
+                    });
+                }
             });
 
             /*$(document).on("click", "#get_check_sector_department", function() {
@@ -249,6 +256,38 @@
     </script>
     </script>
     <script>
+
+        function confirm_reservation() {
+            Swal.fire({
+                title: 'تنبيه',
+                text: 'يجب ان تختار قطاع اولا',
+                icon: 'warning',
+                showCancelButton: false,
+                confirmButtonText: 'إلغاء',
+                // cancelButtonText: 'إلغاء',
+                confirmButtonColor: '#3085d6'
+            }).then((result) => {
+                // if (result.isConfirmed) {
+                //     var reservation_date = document.getElementById('date')
+                //         .value;
+                //     var reservation_sector_id = document.getElementById(
+                //         'sector_id').value;
+                //     var reservation_departement_id = document
+                //         .getElementById('departement_id').value;
+                //     var map_url =
+                //         "{{ route('reservation_allowances.confirm_reservation_allowances', ['date', 'sector', 'departement']) }}";
+                //     map_url = map_url.replace('date', reservation_date);
+                //     map_url = map_url.replace('sector',
+                //         reservation_sector_id);
+                //     map_url = map_url.replace('departement',
+                //         reservation_departement_id);
+                //     window.location.href = map_url;
+                // } else {
+
+                // }
+            });
+        }
+        
         function opendelete(id) {
             document.getElementById('id').value = id;
             $('#delete').modal('show');
