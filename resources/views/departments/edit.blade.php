@@ -51,9 +51,9 @@
                         <li class="breadcrumb-item"><a href="/">الرئيسيه</a>
                         </li>
                         <li class="breadcrumb-item">
-                        <?php /* <a href="{{ route('departments.index', ['id' => $department->sector_id]) }}"> */?>
-                        <a href="{{ route('departments.index', $department->sectors->uuid) }}">
-                        {{-- {{ $department->name }} --}} الأدارات
+                            <?php /* <a href="{{ route('departments.index', ['id' => $department->sector_id]) }}"> */?>
+                            <a href="{{ route('departments.index', $department->sectors->uuid) }}">
+                                {{-- {{ $department->name }} --}} الأدارات
                             </a>
                         </li>
                         <li class="breadcrumb-item active" aria-current="page"><a href=""> تعديل ادارة</a></li>
@@ -68,15 +68,15 @@
         </div>
         <br>
         <div class="row">
-        <div class="container  col-11 mt-3 py-4 ">
-        <div class="container col-11" style="border:0.5px solid #C7C7CC;">
+            <div class="container  col-11 mt-3 py-4 ">
+                <div class="container col-11" style="border:0.5px solid #C7C7CC;">
                     <form action="{{ route('departments.update', $department) }}" method="POST"
                         enctype="multipart/form-data">
                         <!-- <div class="container col-10 mt-5 mb-3 pb-5"
-                        style="border:0.5px solid #C7C7CC;">
-                        <form
-                            action="{{ route('departments.update', $department->id) }}"
-                            method="POST" enctype="multipart/form-data"> -->
+                            style="border:0.5px solid #C7C7CC;">
+                            <form
+                                action="{{ route('departments.update', $department->id) }}"
+                                method="POST" enctype="multipart/form-data"> -->
                         @csrf
                         @method('PUT')
 
@@ -96,7 +96,7 @@
                                     value="{{ $department->sectors->name }}" disabled>
                                 <input type="hidden" name="sector" id="sector" class="form-control"
                                     value="{{ $department->sectors->id }}">
-                                    <input type="hidden" name="department_id" id="department_id" class="form-control"
+                                <input type="hidden" name="department_id" id="department_id" class="form-control"
                                     value="{{ $department->id }}">
                                 @error('sector')
                                     <div class="alert alert-danger">{{ $message }}
@@ -117,14 +117,16 @@
                             <div class="form-group col-md-12 mx-md-2" id="manager">
                                 <label for="mangered">رقم ملف المدير</label>
                                 <input type="text" name="mangered" id="mangered" class="form-control"
-                                    autocomplete="one-time-code" value="{{ old('mangered', $department->manager ? $fileNumber : null) }}">
+                                    autocomplete="one-time-code"
+                                    value="{{ old('mangered', $department->manager ? $fileNumber : null) }}">
 
                                 @error('mangered')
                                     <div class="alert alert-danger">{{ $message }}
                                     </div>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-12 mx-md-2" id="email_field" style="display: none;" @error('email') style="display: block;" @enderror>
+                            <div class="form-group col-md-12 mx-md-2" id="email_field" style="display: none;"
+                                @error('email') style="display: block;" @enderror>
                                 <label class="pb-3" for="email">الأيميل</label>
                                 <input type="email" name="email" id="email" class="form-control" required>
                                 @error('email')
@@ -141,7 +143,8 @@
                                     <div class="col-5">
                                         <div class="col-12 div-info-padding"><b>الأسم: <span></span></b></div>
                                         <div class="col-12 div-info-padding"><b>الهاتف: <span></span></b></div>
-                                        <div class="col-12 div-info-padding" style="direction: rtl"><b>الأيميل: <span></span></b></div>
+                                        <div class="col-12 div-info-padding" style="direction: rtl"><b>الأيميل:
+                                                <span></span></b></div>
 
                                     </div>
                                 </div>
@@ -149,8 +152,8 @@
 
                             <div class="form-group col-md-12 mx-md-2">
                                 <label for="description">الوصف </label>
-                                <input type="text" name="description" class="form-control"
-                                    autocomplete="one-time-code" value="{{ $department->description }}">
+                                <input type="text" name="description" class="form-control" autocomplete="one-time-code"
+                                    value="{{ $department->description }}">
                                 @error('description')
                                     <div class="alert alert-danger">
                                         {{ $message }}</div>
@@ -167,17 +170,18 @@
                                         </textarea>
 
                             </div>
-  <div class="form-group col-md-12 mx-md-2">
+                            <div class="form-group col-md-12 mx-md-2">
                                 <label for="">صلاحيه الحجز</label>
                                 <div class="d-flex mt-3 " dir="rtl">
-                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="1" id="fullBooking"
-                                        @if ($department->reservation_allowance_type == 1 || $department->reservation_allowance_type == 3) checked @endif name="part[]">
+                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="1"
+                                        id="fullBooking" @if ($department->reservation_allowance_type == 1 || $department->reservation_allowance_type == 3) checked @endif name="part[]">
                                     <label for="fullBooking"> حجز كلى</label>
-                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="2" name="part[]"
-                                        id="partialBooking" @if ($department->reservation_allowance_type == 2 || $department->reservation_allowance_type == 3) checked @endif>
+                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="2"
+                                        name="part[]" id="partialBooking"
+                                        @if ($department->reservation_allowance_type == 2 || $department->reservation_allowance_type == 3) checked @endif>
                                     <label for="partialBooking">حجز جزئى</label>
-                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="3" name="part[]"
-                                        id="noBooking" @if ($department->reservation_allowance_type == 4) checked @endif>
+                                    <input type="checkbox" class="toggle-radio-buttons mx-2" value="3"
+                                        name="part[]" id="noBooking" @if ($department->reservation_allowance_type == 4) checked @endif>
                                     <label for="noBooking">لا يوجد بدل حجز</label>
                                     {{-- @error('budget')
                                         <div class="alert alert-danger">{{ $message }}</div>
@@ -187,44 +191,49 @@
 
 
 
-                              <div class="form-group col-md-12 mx-md-2" dir="rtl">
+                            <div class="form-group col-md-12 mx-md-2" dir="rtl">
 
-                <h4 class="mb-3 d-flex justify-content-start">ميزانيه الحجز</h4>
+                                <h4 class="mb-3 d-flex justify-content-start">ميزانيه الحجز</h4>
 
 
-                <div class="d-flex mt-3">
-                    <label for="notFree" class="d-flex align-items-center">
-                    <input type="radio" class="toggle-radio-buttons mx-2" {{ (float)$department->reservation_allowance_amount > 0.00 ? 'checked' : '' }} name="budget_type"  value="1" id="notFree"
-                    style="height:20px;"> ميزانيه محدده
+                                <div class="d-flex mt-3">
+                                    <label for="notFree" class="d-flex align-items-center">
+                                        <input type="radio" class="toggle-radio-buttons mx-2"
+                                            {{ (float) $department->reservation_allowance_amount > 0.0 ? 'checked' : '' }}
+                                            name="budget_type" value="1" id="notFree" style="height:20px;">
+                                        ميزانيه محدده
 
-                    </label>
+                                    </label>
 
-                    <label for="free" class="d-flex align-items-center">
-                    <input type="radio" class="toggle-radio-buttons mx-2" name="budget_type"  {{ (float)$department->reservation_allowance_amount == 0.00 ? 'checked' : '' }} value="2" id="free"
-                    style="height:20px;">ميزانيه غير محدده
+                                    <label for="free" class="d-flex align-items-center">
+                                        <input type="radio" class="toggle-radio-buttons mx-2" name="budget_type"
+                                            {{ (float) $department->reservation_allowance_amount == 0.0 ? 'checked' : '' }}
+                                            value="2" id="free" style="height:20px;">ميزانيه غير محدده
 
-                    </label>
-                </div>
-            </div>
+                                    </label>
+                                </div>
+                            </div>
 
-                            <div class="form-group col-md-12 mx-md-2" id="budgetField" style= {{ (float)$department->reservation_allowance_amount > 0.00 ? "display: block": "display: none;" }}>
+                            <div class="form-group col-md-12 mx-md-2" id="budgetField"
+                                style={{ (float) $department->reservation_allowance_amount > 0.0 ? 'display: block' : 'display: none;' }}>
                                 <label class="d-flex pb-3" for="budget">ميزانية بدل حجز</label>
-                                <input type="text" name="budget" class="form-control" value=" {{ (float)$department->reservation_allowance_amount > 0.00 ? $department->reservation_allowance_amount : 00.00 }}"
+                                <input type="text" name="budget" class="form-control"
+                                    value=" {{ (float) $department->reservation_allowance_amount > 0.0 ? $department->reservation_allowance_amount : 00.0 }}"
                                     id="budget" autocomplete="one-time-code">
                                 @error('budget')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             </div>
 
-                            </div>
-        <div class="form-group col-md-12 mx-md-2">
-            <button class="btn-blue " type="submit"> اضافة </button>
-        </div>
+                        </div>
+                        <div class="form-group col-md-12 mx-md-2">
+                            <button class="btn-blue " type="submit"> اضافة </button>
+                        </div>
 
 
-        </form>
-        </div>
-        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -273,16 +282,20 @@
                 $('#email_field').hide();
             }
         });
+
         function fetchManagerDetails(managerId, skipDepartmentCheck = true) {
 
             if (managerId) {
                 var departmentId = $('#department_id').val();
+                var sectorId = $('#sector').val();
 
                 $.ajax({
-                    url: '/get-manager-details/' +  managerId  + '?skipDepartmentCheck=' + skipDepartmentCheck+ '?isEditPage=' + true,
+                    url: '/get-manager-details/' + managerId + '?skipDepartmentCheck=' + skipDepartmentCheck +
+                        '?isEditPage=' + true,
                     type: 'GET',
                     data: {
-                        department_id: departmentId
+                        department_id: departmentId,
+                        sector_id: sectorId
                     }, // Send sector_id to the backend
                     success: function(data) {
                         $('#manager_details').find('span').eq(0).text(
@@ -297,6 +310,7 @@
                             data.email);
                         $('#manager_details').show();
 
+
                         // Show password and rule fields for employees
                         if (data.email) {
                             $('#email_field').show();
@@ -308,11 +322,12 @@
                                 $('#email').val(data.email);
 
                             }
-                            $('#email').val(data.email);
                         } else {
-                            $('#email_field').hide();
+                            // $('#email_field').hide();
                             $('#email').val('');
                         }
+
+
                         // Handle transfer logic
                         if (data.transfer) {
                             Swal.fire({
@@ -371,12 +386,12 @@
         $('#mangered').on('blur', function() {
             var managerId = $(this).val();
             $('#email').val('');
-            fetchManagerDetails(managerId);
+            fetchManagerDetails(managerId, true);
         });
 
         var selectedManagerId = $('#mangered').val();
         if (selectedManagerId) {
-            fetchManagerDetails(selectedManagerId);
+            fetchManagerDetails(selectedManagerId, true);
         }
     </script>
     <script>

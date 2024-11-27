@@ -88,8 +88,8 @@
                                 {{-- <input type="hidden" name="parent"
                                     value="{{ $department->sector_id ? $department->sector_id : $sect->sector_id }}"> --}}
 
-                                <input type="hidden" name="parent" value="{{ $department->id }}">
-                                <input type="hidden" name="sector" value="{{ $department->sector_id }}">
+                                <input type="hidden" name="parent" id="department_id" value="{{ $department->id }}">
+                                <input type="hidden" name="sector" id="sector" value="{{ $department->sector_id }}">
                                 <input type="hidden" class="form-control" name="sector_id"
                                     value="{{ $department->sector_id ? $department->sectors->name : $sect->sectors->name }}"
                                     disabled>
@@ -183,15 +183,20 @@
                             <div class="form-group col-md-10 mx-md-2">
                                 <label for="" class="col-12">ميزانيه الحجز</label>
                                 <div class="d-flex mt-3" dir="rtl">
-                                    <input type="radio" class="toggle-radio-buttons mx-2"
-                                        {{ (float) $department->reservation_allowance_amount > 0.0 ? 'checked' : '' }}
-                                        name="budget_type" value="1" id="notFree">
-                                    <label for="notFree">ميزانيه محدده</label>
+                                    <label for="notFree" class="d-flex align-items-center">
+                                        <input type="radio" class="toggle-radio-buttons mx-2"
+                                            {{ (float) $department->reservation_allowance_amount > 0.0 ? 'checked' : '' }}
+                                            name="budget_type" value="1" id="notFree" style="height:20px;">
+                                        ميزانيه محدده
 
-                                    <input type="radio" class="toggle-radio-buttons mx-2" name="budget_type"
-                                        {{ (float) $department->reservation_allowance_amount == 0.0 ? 'checked' : '' }}
-                                        value="2" id="free">
-                                    <label for="free">ميزانيه غير محدده</label>
+                                    </label>
+
+                                    <label for="free" class="d-flex align-items-center">
+                                        <input type="radio" class="toggle-radio-buttons mx-2" name="budget_type"
+                                            {{ (float) $department->reservation_allowance_amount == 0.0 ? 'checked' : '' }}
+                                            value="2" id="free" style="height:20px;">ميزانيه غير محدده
+
+                                    </label>
                                 </div>
                             </div>
 
@@ -251,13 +256,18 @@
         });
         $(document).ready(function() {
             var selectedManagerId = $('#mangered').val();
+            console.log("Selected Manager ID:", selectedManagerId);
 
             if (selectedManagerId) {
+                console.log("About to show #email_field and fetch manager details...");
                 $('#email_field').show();
                 fetchManagerDetails(selectedManagerId, false);
 
                 var existingEmail = @json(old('mangered', $department->manager ? $email : null));
                 var existingBudget = @json(old('budget', $department->reservation_allowance_amount ? $department->reservation_allowance_amount : ''));
+
+                console.log("Existing Email:", existingEmail);
+                console.log("Existing Budget:", existingBudget);
 
                 if (existingEmail) {
                     $('#email_field').css({
@@ -285,23 +295,22 @@
             }
         });
 
-        function fetchManagerDetails(managerId) {
-            console.log('Manager ID:', managerId);
-            var sectorId = $('#sector').val();
-
+        function fetchManagerDetails(managerId, skipDepartmentCheck = true) {
 
             if (managerId) {
+                var departmentId = $('#department_id').val();
                 var sectorId = $('#sector').val();
-                var departmentId = $('#parent').val();
-                console.log('Manager ID:',sectorId);
-
+                var is_EditPages = true;
 
                 $.ajax({
-                    url: '/get-manager-details/' + managerId ,
+                    url: '/get-manager-details/' + managerId + '?skipDepartmentCheck=' + skipDepartmentCheck +
+                        '?isEditPage=' + true,
                     type: 'GET',
                     data: {
+                        department_id: departmentId,
                         sector_id: sectorId,
-                        department_id:departmentId
+                        isEditPages: is_EditPages,
+                        skipDepartmentCheck: skipDepartmentCheck
                     }, // Send sector_id to the backend
                     success: function(data) {
                         $('#manager_details').find('span').eq(0).text(
@@ -315,16 +324,25 @@
                         $('#manager_details').find('span').eq(4).text(
                             data.email);
                         $('#manager_details').show();
-                        $('#email_field').show();
+
+
                         // Show password and rule fields for employees
                         if (data.email) {
+                            $('#email_field').show();
+
                             if (data.email === 'لا يوجد بريد الكتروني') {
                                 $('#email').val('');
 
                             } else {
                                 $('#email').val(data.email);
+
                             }
+                        } else {
+                            // $('#email_field').hide();
+                            $('#email').val('');
                         }
+
+
                         // Handle transfer logic
                         if (data.transfer) {
                             Swal.fire({
@@ -337,15 +355,12 @@
                                 confirmButtonColor: '#3085d6'
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    // Populate manager details if no transfer is needed
-
 
                                 } else {
                                     // Handle cancel action: clear the manager input field
-                                    $('#mangered').val('');
-                                    $('#manager_details').hide();
+                                    $('#mangered').val(''); // Clear the input field
+                                    $('#manager_details').hide(); // Hide the manager details
                                     $('#email_field').hide();
-                                    $('#email').val('');
                                 }
                             });
                         }
@@ -353,7 +368,6 @@
                     error: function(xhr, status, error) {
                         // Display error or warning message based on the response
                         var response = JSON.parse(xhr.responseText);
-
                         // Handle error message
                         if (response.error) {
                             Swal.fire({
@@ -374,14 +388,15 @@
                 });
             } else {
                 // Reset the manager details if no manager ID is provided
-                $('#mangered').val('');
                 $('#manager_details').hide();
                 $('#email_field').hide();
-                $('#email').val('');
+                $('#email').hide();
             }
         }
+
         $('#manager_details').hide();
         $('#email_field').hide();
+
         // Use 'blur' event to trigger the check when the input field loses focus
         $('#mangered').on('blur', function() {
             var managerId = $(this).val();
@@ -396,68 +411,61 @@
     </script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Select the checkboxes by their IDs
-            const fullBooking = document.getElementById("fullBooking");
-            const partialBooking = document.getElementById("partialBooking");
-            const noBooking = document.getElementById("noBooking");
+            const noBookingCheckbox = document.getElementById('noBooking');
+            const fullBookingCheckbox = document.getElementById(
+                'fullBooking');
+            const partialBookingCheckbox = document.getElementById(
+                'partialBooking');
 
-            // Helper function to uncheck other checkboxes
-            function uncheckOthers(...checkboxes) {
-                checkboxes.forEach(checkbox => checkbox.checked = false);
-            }
-
-            // Event listener for "noBooking"
-            noBooking.addEventListener("change", function() {
+            noBookingCheckbox.addEventListener('change', function() {
                 if (this.checked) {
-                    uncheckOthers(fullBooking, partialBooking);
+                    fullBookingCheckbox.checked = false;
+                    partialBookingCheckbox.checked = false;
                 }
             });
 
-            // Event listener for "fullBooking"
-            fullBooking.addEventListener("change", function() {
-                if (this.checked) {
-                    noBooking.checked = false;
-                }
-            });
-
-            // Event listener for "partialBooking"
-            partialBooking.addEventListener("change", function() {
-                if (this.checked) {
-                    noBooking.checked = false;
-                }
-            });
+            [fullBookingCheckbox, partialBookingCheckbox].forEach(
+                checkbox => {
+                    checkbox.addEventListener('change', function() {
+                        if (this.checked) {
+                            noBookingCheckbox.checked = false;
+                        }
+                    });
+                });
         });
-    </script>
-    <script>
-        // Add event listeners for the radio buttons
-        document.getElementById('notFree').addEventListener('change', function() {
-            const budgetField = document.getElementById('budgetField');
-            if (this.checked) {
-                budgetField.style.display = 'block'; // Show the budget field for "ميزانيه محدده"
-            }
-        });
-
-        document.getElementById('free').addEventListener('change', function() {
-            const budgetField = document.getElementById('budgetField');
-            if (this.checked) {
-                budgetField.style.display = 'none'; // Hide the budget field for "ميزانيه غير محدده"
-            }
-        });
-
-        // Ensure the correct field is displayed on page load based on the selected radio button
         window.addEventListener('load', function() {
             const notFree = document.getElementById('notFree');
             const free = document.getElementById('free');
             const budgetField = document.getElementById('budgetField');
+            const budget = document.getElementById('budget'); // Input field for budget
+
+            // Check initial state of radio buttons on page load
             if (notFree.checked) {
-                budgetField.style.display = 'block';
+                budgetField.style.display = 'block'; // Show the budget field
             } else if (free.checked) {
-                budgetField.style.display = 'none';
+                budgetField.style.display = 'none'; // Hide the budget field
+                budget.value = ''; // Clear the budget field
             }
+
+            // Listen for changes on the radio buttons
+            notFree.addEventListener('change', function() {
+                if (notFree.checked) {
+                    budgetField.style.display = 'block'; // Show the budget field
+                }
+            });
+
+            free.addEventListener('change', function() {
+                if (free.checked) {
+                    budgetField.style.display = 'none'; // Hide the budget field
+                    budget.value = ''; // Clear the budget field
+                }
+            });
         });
+
         window.addEventListener('load', function() {
             const emailField = document.getElementById('email_field');
             const emailInput = document.getElementById('email');
+
             // Function to toggle the 'required' attribute based on email field visibility
             function toggleEmailRequired() {
                 if (emailField.style.display === 'block') {
@@ -466,7 +474,11 @@
                     emailInput.removeAttribute('required');
                 }
             }
+
+
+            // Call toggle function after changing visibility
             toggleEmailRequired();
+
         });
     </script>
 @endsection

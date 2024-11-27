@@ -59,7 +59,6 @@ class UserController extends Controller
 
     // }
     public function index($flag, $type = 0, $id = 0, $status = 0)
-
     {
         addUuidToTable('users');
 
@@ -149,18 +148,51 @@ class UserController extends Controller
             // $Officer2 = User::where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
 
         } else {
+            if (Auth::user()->rule->id == 4) {
+                $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
+                $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
+                $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
 
-            $all = User::where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
+                if (auth()->user()->sector && !auth()->user()->department_id) {
 
-            // dd($all);
-            $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
-            $person = User::where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
+                    $all = User::where('flag', $flag)->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeall)->count();
+                    $person = User::where('flag', $flag)->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeperson)->count();
+                    $Officer = User::where('flag', $flag)->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeOfficer)->count();
+                    $Officer2 = User::where('flag', $flag)->where('sector', auth()->user()->sector)->whereIn('grade_id', $graseOfficer2)->count();
+                } else if (auth()->user()->sector && auth()->user()->department_id) {
 
-            $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
-            $Officer = User::where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
+                    $all = User::where('flag', $flag)->where('sector', auth()->user()->sector)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeall)->count();
+                    $person = User::where('flag', $flag)->where('sector', auth()->user()->sector)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeperson)->count();
+                    $Officer = User::where('flag', $flag)->where('sector', auth()->user()->sector)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeOfficer)->count();
+                    $Officer2 = User::where('flag', $flag)->where('sector', auth()->user()->sector)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $graseOfficer2)->count();
+                }
+            } elseif (Auth::user()->rule->id == 3) {
+                $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
+                $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
+                $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
+                if (auth()->user()->sector && !auth()->user()->department_id) {
+                    $all = User::where('flag', $flag)->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeall)->count();
+                    $person = User::where('flag', $flag)->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeperson)->count();
+                    $Officer2 = User::where('flag', $flag)->where('sector', auth()->user()->sector)->whereIn('grade_id', $graseOfficer2)->count();
+                    $Officer = User::where('flag', $flag)->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeOfficer)->count();
+                } else if (auth()->user()->sector && auth()->user()->department_id) {
 
-            $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
-            $Officer2 = User::where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
+                    $all = User::where('flag', $flag)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeall)->count();
+                    $person = User::where('flag', $flag)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeperson)->count();
+                    $Officer2 = User::where('flag', $flag)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $graseOfficer2)->count();
+                    $Officer = User::where('flag', $flag)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeOfficer)->count();
+                }
+            } elseif (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
+                $all = User::where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
+                $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
+                $person = User::where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
+
+                $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
+                $Officer = User::where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
+
+                $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
+                $Officer2 = User::where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
+            }
         }
 
         // Fetch related departments and sectors
@@ -220,6 +252,7 @@ class UserController extends Controller
     {
         $flag = $request->flag;
         $parentDepartment = Departements::find(Auth()->user()->department_id);
+
         $status =  $request->get('status');
         $filter = $request->get('filter'); // Retrieve filter
         $parent_department_id = 0;
@@ -254,16 +287,19 @@ class UserController extends Controller
                 $data = User::where('flag', $flag)->where('sector', $sector);
             } else {
 
-                if (is_null($parentDepartment->parent_id)) {
-                    $subdepart = Departements::where('parent_id', $parentDepartment->id)->pluck('id')->toArray();
-                    $data = User::where('flag', $flag)->where(function ($query) use ($subdepart, $parentDepartment) {
-                        $query->whereIn('department_id', $subdepart)
-                            ->orWhere('department_id', $parentDepartment->id)
-                            ->orWhereNull('department_id');
-                    });
-                } else {
-                    $data = User::where('flag', $flag)->where('department_id', $parentDepartment->id);
+                // if (is_null($parentDepartment->parent_id)) {
+                // $subdepart = Departements::where('parent_id', $parentDepartment->id)->pluck('id')->toArray();
+                if (auth()->user()->sector && auth()->user()->department_id) {
+
+                    $data = User::where('flag', $flag)
+                        ->Where('department_id', Auth()->user()->department_id)->where('sector', auth()->user()->sector);
+                } else if (auth()->user()->sector && !auth()->user()->department_id) {
+                    $data = User::where('flag', $flag)
+                        ->where('sector', auth()->user()->sector);
                 }
+                // } else {
+                //     $data = User::where('flag', $flag)->where('department_id', $parentDepartment->id);
+                // }
             }
         }
         // dd(Input::get('sector_id'));
@@ -683,7 +719,12 @@ class UserController extends Controller
         $violationTypeName = $request->input('violation_type');
 
         // Fetch grades based on the selected violation type
-        $grades = Grade::where('type', $violationTypeName)->get();
+        if ($violationTypeName == 2) {
+
+            $grades = Grade::where('type', 2)->get();
+        } else {
+            $grades = Grade::where('type', '<>', 2)->get();
+        }
 
         // Return the grades as a JSON response
         return response()->json($grades);
@@ -700,7 +741,6 @@ class UserController extends Controller
         $countries = Country::all();
 
         $area = Region::all();
-        $sectors = Sector::all();
         $qualifications = Qualification::all();
         $violationTypeName = ViolationTypes::whereJsonContains('type_id', 0)->get();
 
@@ -712,6 +752,7 @@ class UserController extends Controller
         // dd( $violationTypeName  , $selectedViolationType , $grades);
         if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
             $alluser = User::where('flag', 'employee')->get();
+            $sectors = Sector::all();
         } else {
             $alluser = User::where('flag', 'employee')
                 ->leftJoin('departements', 'departements.id', '=', 'users.department_id') // Use leftJoin to handle `department_id = null`
@@ -722,6 +763,7 @@ class UserController extends Controller
                 })
                 ->select('users.*') // Ensure only `users` columns are selected
                 ->get();
+            $sectors = Sector::where('id',  Auth::user()->sector)->get();
         }
 
         if ($user->department_id == "NULL") {
@@ -746,10 +788,13 @@ class UserController extends Controller
 
     public function GetDepartmentsBySector()
     {
-
         $id = $_GET['sector'];
-        $data = departements::where('sector_id', $id)
-            ->orderBy('id', 'desc')
+        $data = departements::where('sector_id', $id);
+        if (Auth::user()->rule->id == 3) {
+            $data = $data->where('id', Auth::user()->department_id);
+        }
+
+        $data = $data->orderBy('id', 'desc')
             ->get();
 
         return $data;
@@ -775,7 +820,7 @@ class UserController extends Controller
             $sector->manager = null;
             $sector->save();
         }
-        // addUserHistory($user->id, $department_id, $sector_id);
+        addUserHistory($user->id, null, null);
 
 
         return redirect()->back()->with('success', 'تم الغاء التعيين بنجاح');
@@ -1010,7 +1055,7 @@ class UserController extends Controller
             $department = departements::all();
         } else {
             if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
-                $department = departements::all();
+                $department = departements::where('sector_id', $user->sector)->get();
             } else {
                 $department = departements::where('id', $user->department_id)->orwhere('parent_id', $user->department_id)->get();
             }
@@ -1084,10 +1129,11 @@ class UserController extends Controller
             return redirect()->back()->withErrors($validatedData)->withInput();
         }
 
+        // dd($request);
         if ($request->filled('department_id')) {
             $id_department = Departements::where('uuid', $request->department_id)->value('id');
         } else {
-            $id_department = null;
+            $id_department =  null;
         }
         // Additional checks for 'user' flag
         if ($request->flag == 'user') {
@@ -1097,7 +1143,7 @@ class UserController extends Controller
             if (!$request->filled('rule_id')) {
                 return redirect()->back()->withErrors(['rule_id' => 'المهام مطلوبة ولا يمكن تركها فارغة.'])->withInput();
             }
-            if (!$request->filled('password') && !$user->password) {
+            if (empty($request->filled('password')) && !$user->password) {
                 return redirect()->back()->withErrors(['password' => 'كلمة المرور مطلوبة ولا يمكن تركها فارغة.'])->withInput();
             }
         }
@@ -1107,8 +1153,8 @@ class UserController extends Controller
         $old_flag = $user->flag;
 
         //if flag user and user sector manager , changed rule to dep manager
-        $is_sectormanager = Sector::where('manager',$user->id)->exists();
-        if($request->flag == 'user' && $is_sectormanager && $request->rule_id ==3){
+        $is_sectormanager = Sector::where('manager', $user->id)->exists();
+        if ($request->flag == 'user' && $is_sectormanager && $request->rule_id == 3) {
             return redirect()->back()->withErrors(['rule_id' => 'لا يمكن تعديل هذا المستخدم ,لأنه مدير قطاع'])->withInput();
         }
         if ($request->sector != $old_sector || $old_flag != $request->flag) {
@@ -1123,7 +1169,7 @@ class UserController extends Controller
                 $newsectormanger->save();
                 if ($user->email && isValidEmail($user->email)) {
 
-                Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $user->Civil_number, 123456, $user->email);
+                    Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $user->Civil_number, 123456, $user->email);
                 }
             }
         }
@@ -1143,7 +1189,7 @@ class UserController extends Controller
                 if ($user->email && isValidEmail($user->email)) {
 
                     Sendmail('مدير أداره', ' تم أضافتك كمدير أداره' . $request->name, $user->Civil_number, 123456, $user->email);
-                    }
+                }
             }
         }
 
@@ -1163,7 +1209,7 @@ class UserController extends Controller
         $user->Provinces = $request->Provinces;
         $user->sector = $request->sector;
         $user->region = $request->region;
-        $user->public_administration =$id_department;
+        $user->public_administration = $id_department;
         $user->department_id = $id_department;
         $user->work_location = $request->work_location;
         $user->qualification = $request->qualification;

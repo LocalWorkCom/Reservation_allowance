@@ -29,8 +29,4 @@ class ViolationTypes extends Model
         return $this->belongsTo(departements::class,'type_id');
     }
 
-    public function violations()
-    {
-        return $this->hasMany(Violation::class, 'violation_type');
-    }
 }

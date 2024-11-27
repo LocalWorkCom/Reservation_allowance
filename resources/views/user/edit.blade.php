@@ -251,7 +251,7 @@
                                     <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i> المهام
                                 </label>
                                 <select id="input7" name="rule_id" class="form-control select2" placeholder="المهام">
-                                    <option disabled>اختار من القائمة</option>
+                                    <option >اختار من القائمة</option>
                                     @foreach ($rule as $item)
                                         @if ($item->name != 'localworkadmin')
                                             <option value="{{ $item->id }}"
@@ -282,6 +282,7 @@
                                 </select>
                             </div>
 
+                   
                             <div class="form-group col-md-5 mx-2">
                                 <label for="department_id">
 
@@ -292,12 +293,13 @@
                                     @if ($user->department_id == null)
                                         <option selected disabled>اختار من القائمة</option>
                                     @endif
-                                    {{-- @foreach ($department as $item)
+                                    @foreach ($department as $item)
+                                    
                                         <option value="{{ $item->id }}"
                                             {{ $user->department_id == $item->id ? 'selected' : '' }}>
                                             {{ $item->name }}
                                         </option>
-                                    @endforeach --}}
+                                    @endforeach
 
                                 </select>
                             </div>
@@ -345,24 +347,6 @@
                             </div>
                         </div>
 
-                        {{--
-                        <div class="form-row mx-2 d-flex justify-content-center flex-row-reverse">
-                            <div class="form-group col-md-10 mx-2">
-                                <label for="input24"> الرتبة</label>
-                                <select id="input24" name="grade_id" class="form-control select2"
-                                    placeholder="الرتبة">
-                                    @if ($user->grade_id == null)
-                                        <option selected disabled>اختار من القائمة</option>
-                                    @endif
-                                    @foreach ($grade as $item)
-                                        <option value="{{ $item->id }}"
-                                            {{ $user->grade_id == $item->id ? 'selected' : '' }}>
-                                            {{ $item->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div> --}}
                         <div class="form-row mx-2 mx-2 d-flex justify-content-center flex-row-reverse">
                             <div class="form-group col-md-10">
                                 <label for="input5"> الملاحظات</label>
@@ -399,9 +383,6 @@
                 <br>
                 </form>
             </div>
-        </div>
-        </div>
-        </div>
         </div>
 
     </section>
@@ -479,23 +460,6 @@
         $('#sector').on('change', function() {
             getDepartment(this.value)
         });
-
-
-        // Function to toggle password visibility
-        function togglePasswordVisibility() {
-            var passwordInput = document.getElementById("input3");
-            var toggleIcon = document.getElementById("toggleIcon");
-
-            if (passwordInput.type === "password") {
-                passwordInput.type = "text";
-                toggleIcon.classList.remove("fa-eye");
-                toggleIcon.classList.add("fa-eye-slash");
-            } else {
-                passwordInput.type = "password";
-                toggleIcon.classList.remove("fa-eye-slash");
-                toggleIcon.classList.add("fa-eye");
-            }
-        }
     </script>
 
     <script>
@@ -516,13 +480,6 @@
     </script>
     <script>
         $(document).ready(function() {
-            // Get the current military type value from the database
-            // var currentMilitaryType = $('input[name="type_military"]:checked')
-            //     .val(); // Get the checked radio button value
-            // if (currentMilitaryType) {
-            //     getGrades(currentMilitaryType); // Populate grades based on the current value
-            // }
-
             // Listen for changes in the radio button
             $('input[name="type_military"]').on('change', function() {
 
@@ -570,7 +527,7 @@
             var url = '/get-deprt-sector?sector=' + sectorId;
 
             // Store the old department value from Blade
-            var oldDepartment = "{{ old('department_id', $user->department_id) }}";
+            var oldDepartment = "{{ old('department_id', $user->uuid) }}";
 
             $.ajax({
                 url: url,
@@ -584,7 +541,7 @@
                     // Populate dropdown with department options
                     $.each(response, function(key, department) {
                         $departmentDropdown.append(
-                            `<option value="${department.id}" ${department.id == oldDepartment ? 'selected' : ''}>
+                            `<option value="${department.uuid}">
                     ${department.name}
                 </option>`
                         );
@@ -597,11 +554,11 @@
     </script>
     <script>
         $(document).ready(function() {
-            var selectedSector = "{{ old('sector', $user->sector) }}";
+            // var selectedSector = "{{ old('sector', $user->sector) }}";
 
-            if (selectedSector) {
-                getDepartment(selectedSector); // Trigger department fetching
-            }
+            // if (selectedSector) {
+            //     getDepartment(selectedSector); // Trigger department fetching
+            // }
         });
     </script>
 

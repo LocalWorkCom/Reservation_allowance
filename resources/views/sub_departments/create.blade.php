@@ -182,60 +182,66 @@
                                 <label for="file_number" class="col-12"> أرقام الملفات</label>
                                 <textarea class="form-control" name="file_number" id="file_number" style="height: 100px"></textarea>
                             </div>
-                            <div class="form-group col-md-12 mx-md-2">
-                                <label for="">صلاحيه الحجز</label>
-                                <div class="d-flex mt-3 " dir="rtl">
+
+
+                            <div class="form-group col-md-12 pt-4" dir="rtl">
+
+                                <h4 class="mb-3 d-flex justify-content-start">ميزانيه الحجز</h4>
+
+
+                                <div class="d-flex mt-3" dir="rtl">
+                                    <label for="notFree" class="d-flex align-items-center">
+                                        <input type="radio" class="toggle-radio-buttons " name="budget_type"
+                                            value="1" id="notFree" style="height:20px;"> ميزانيه محدده
+
+                                    </label>
+
+                                    <label for="free" class="d-flex align-items-center">
+                                        <input type="radio" class="toggle-radio-buttons me-2" name="budget_type"
+                                            value="2" id="free" style="height:20px;">ميزانيه غير محدده
+
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12 " id="budgetField" dir="rtl" style="display: none;">
+
+                                <label class="d-flex justify-content-start pb-3" for="budget" class="col-12">ميزانية
+                                    بدل
+                                    حجز</label>
+                                <input type="text" name="budget" class="form-control" value="{{ old('budget') }}"
+                                    autocomplete="one-time-code">
+                                @error('budget')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group col-md-12 pt-4 mx-md-2" dir="rtl">
+                                <h4 class="mb-3 d-flex justify-content-start">صلاحيه الحجز</h4>
+                                <div class="d-flex  mt-3">
                                     <input type="checkbox" class="toggle-radio-buttons mx-2" value="1"
                                         id="fullBooking" name="part[]">
-                                    <label for="part"> حجز كلى</label><input type="checkbox"
-                                        class="toggle-radio-buttons mx-2" value="2" id="partialBooking"
-                                        name="part[]">
-                                    <label for="part">حجز جزئى</label>
+                                    <label for="fullBooking"> حجز كلى</label>
                                     <input type="checkbox" class="toggle-radio-buttons mx-2" value="2"
-                                        id="noBooking" name="part[]">
-                                    <label for="part">لا يوجد بدل حجز</label>
+                                        id="partialBooking" name="part[]">
+                                    <label for="partialBooking">حجز جزئى</label>
                                     <input type="checkbox" class="toggle-radio-buttons mx-2" value="3"
                                         id="noBooking" name="part[]">
+                                    <label for="noBooking">لا يوجد بدل حجز</label>
                                     {{-- @error('part')
-                                    <div class="alert alert-danger">{{ $message }}
+                                        <div class="alert alert-danger">{{ $message }}
+                                </div>
+                                @enderror --}}
+                                </div>
+                            </div>
+                            @error('part')
+                                <div class="alert alert-danger moftsh px-md-5 px-3 pt-3" style="direction:rtl">
+                                    {{ $message }}</div>
+                            @enderror
+
                         </div>
-                        @enderror --}}
-                                </div>
-
-                                <div class="form-group col-md-12 mx-md-2" dir="rtl">
-
-                                    <h4 class="mb-3 d-flex justify-content-start">ميزانيه الحجز</h4>
-
-
-                                    <div class="d-flex mt-3">
-                                        <label for="notFree" class="d-flex align-items-center">
-                                            <input type="radio" class="toggle-radio-buttons " name="budget_type"
-                                                value="1" id="notFree" style="height:20px;"> ميزانيه محدده
-
-                                        </label>
-
-                                        <label for="free" class="d-flex align-items-center">
-                                            <input type="radio" class="toggle-radio-buttons me-2" name="budget_type"
-                                                value="2" id="free" style="height:20px;">ميزانيه غير محدده
-
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <div class="form-group col-md-12 mx-md-2" id="budgetField" style="display: none;">
-                                    <label class="d-flex pb-3" for="budget">ميزانية بدل حجز</label>
-                                    <input type="text" name="budget" class="form-control"
-                                        value="{{ old('budget') }}" autocomplete="one-time-code">
-                                    @error('budget')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-
-                            </div>
-                            <div class="form-group col-md-12 mx-md-2">
-                                <button class="btn-blue " type="submit"> اضافة </button>
-                            </div>
+                        <div class="form-group col-md-12 mx-md-2">
+                            <button class="btn-blue " type="submit"> اضافة </button>
+                        </div>
 
 
                     </form>
@@ -255,28 +261,54 @@
             dir: "rtl"
         });
 
-        function fetchManagerDetails(managerId) {
+        $(document).ready(function() {
+            var selectedManagerId = $('#mangered').val();
+            console.log("Selected Manager ID:", selectedManagerId);
+
+            if (selectedManagerId) {
+                console.log("About to show #email_field and fetch manager details...");
+                $('#email_field').show();
+                fetchManagerDetails(selectedManagerId, false);
+
+
+            } else {
+                $('#manager_details').hide();
+                $('#email_field').hide();
+            }
+        });
+
+        function fetchManagerDetails(managerId, skipDepartmentCheck = true) {
 
             if (managerId) {
+                var departmentId = $('#department_id').val();
                 var sectorId = $('#sector').val();
 
                 $.ajax({
-                    url: '/get-manager-details/' + managerId,
+                    url: '/get-manager-details/' + managerId + '?skipDepartmentCheck=' + skipDepartmentCheck +
+                        '?isEditPage=' + true,
                     type: 'GET',
                     data: {
+                        department_id: departmentId,
                         sector_id: sectorId
                     }, // Send sector_id to the backend
                     success: function(data) {
-                        $('#manager_details').find('span').eq(0).text(data.rank);
-                        $('#manager_details').find('span').eq(1).text(data.job_title);
-                        $('#manager_details').find('span').eq(2).text(data.name);
-                        $('#manager_details').find('span').eq(3).text(data.phone);
-                        $('#manager_details').find('span').eq(4).text(data.email);
+                        $('#manager_details').find('span').eq(0).text(
+                            data.rank);
+                        $('#manager_details').find('span').eq(1).text(
+                            data.job_title);
+                        $('#manager_details').find('span').eq(2).text(
+                            data.name);
+                        $('#manager_details').find('span').eq(3).text(
+                            data.phone);
+                        $('#manager_details').find('span').eq(4).text(
+                            data.email);
                         $('#manager_details').show();
+
 
                         // Show password and rule fields for employees
                         if (data.email) {
                             $('#email_field').show();
+
                             if (data.email === 'لا يوجد بريد الكتروني') {
                                 $('#email').val('');
 
@@ -285,9 +317,11 @@
 
                             }
                         } else {
-                            $('#email_field').hide();
+                            // $('#email_field').hide();
                             $('#email').val('');
                         }
+
+
                         // Handle transfer logic
                         if (data.transfer) {
                             Swal.fire({
@@ -300,24 +334,7 @@
                                 confirmButtonColor: '#3085d6'
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    $('#manager_details').find('span').eq(0).text(data.rank);
-                                    $('#manager_details').find('span').eq(1).text(data.job_title);
-                                    $('#manager_details').find('span').eq(2).text(data.name);
-                                    $('#manager_details').find('span').eq(3).text(data.phone);
-                                    $('#manager_details').find('span').eq(4).text(data.email);
-                                    $('#manager_details').show();
 
-                                    // Show password and rule fields for employees
-                                    if (data.email) {
-                                        $('#email_field').show();
-                                        if (data.email === 'لا يوجد بريد الكتروني') {
-                                            $('#email').val('');
-
-                                        } else {
-                                            $('#email').val(data.email);
-
-                                        }
-                                    }
                                 } else {
                                     // Handle cancel action: clear the manager input field
                                     $('#mangered').val(''); // Clear the input field
@@ -330,7 +347,6 @@
                     error: function(xhr, status, error) {
                         // Display error or warning message based on the response
                         var response = JSON.parse(xhr.responseText);
-
                         // Handle error message
                         if (response.error) {
                             Swal.fire({
@@ -353,7 +369,7 @@
                 // Reset the manager details if no manager ID is provided
                 $('#manager_details').hide();
                 $('#email_field').hide();
-                $('#email').val('');
+                $('#email').hide();
             }
         }
 
@@ -377,17 +393,12 @@
         const fullBooking = document.getElementById("fullBooking");
         const partialBooking = document.getElementById("partialBooking");
         const noBooking = document.getElementById("noBooking");
-
-        // Add an onchange event listener for the "noBooking" checkbox
         noBooking.addEventListener("change", function() {
             if (noBooking.checked) {
-                // Uncheck the other checkboxes if "noBooking" is checked
                 fullBooking.checked = false;
                 partialBooking.checked = false;
             }
         });
-
-        // Add event listeners for "fullBooking" and "partialBooking" to uncheck "noBooking" if either is checked
         fullBooking.addEventListener("change", function() {
             if (fullBooking.checked) {
                 noBooking.checked = false;

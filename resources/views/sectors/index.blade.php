@@ -1,11 +1,8 @@
 @extends('layout.main')
 @push('style')
-    <link rel="stylesheet" type="text/css"
-        href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
-    <script type="text/javascript" charset="utf8"
-        src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
-    <script type="text/javascript" charset="utf8"
-        src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
     </script>
 @endpush
 @section('title')
@@ -17,14 +14,11 @@
         <div class="container welcome col-11">
             <div class="d-flex justify-content-between">
                 <p> القطاعـــات</p>
-                @if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2)
-                    <button type="button" class="btn-all  "
-                        onclick="window.location.href='{{ route('sectors.create') }}'"
+                @if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2 || Auth::user()->hasPermission('create Sector'))
+                    <button type="button" class="btn-all  " onclick="window.location.href='{{ route('sectors.create') }}'"
                         style="color: #0D992C;">
 
-                        اضافة قطاع جديد <img
-                            src="{{ asset('frontend/images/add-btn.svg') }}"
-                            alt="img">
+                        اضافة قطاع جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
                     </button>
                 @endif
             </div>
@@ -73,7 +67,7 @@
     <script>
         $(document).ready(function() {
             $.fn.dataTable.ext.classes.sPageButton =
-            'btn-pagination btn-sm';
+                'btn-pagination btn-sm';
             var table = $('#users-table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -159,5 +153,27 @@
                 }
             });
         });
+
+        function handleAction(action, uuid) {
+            switch (action) {
+                case "show":
+                    // Redirect to the "show" page
+                    var showUrl = '{{ route('sectors.show', ':uuid') }}'.replace(':uuid', uuid);
+                    window.location.href = showUrl;
+                    break;
+                case "edit":
+                    // Redirect to the "edit" page
+                    var editUrl = '{{ route('sectors.edit', ':uuid') }}'.replace(':uuid', uuid);
+                    window.location.href = editUrl;
+                    break;
+                case "create-department":
+                    // Redirect to the "create department" page
+                    var createDeptUrl = '{{ route('department.create', ':uuid') }}'.replace(':uuid', uuid);
+                    window.location.href = createDeptUrl;
+                    break;
+                default:
+                    console.error("Invalid action selected: " + action);
+            }
+        }
     </script>
 @endpush

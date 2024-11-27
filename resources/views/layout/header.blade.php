@@ -152,7 +152,7 @@
                                         <a href="{{ route('reservation_fetch.index') }}">بحث بدل حجز</a>
                                     </li>
                                     @endif
-                                    
+
 
                                     @if (auth()->check() && in_array(auth()->user()->rule_id, [2, 4]))
                                     <li class="{{ request()->routeIs('reservation_fetch.index') ? 'active' : '' }}">
@@ -194,7 +194,7 @@
                 @else
                     <li
                         class="nav-item {{ request()->routeIs('departments.index') ? 'active' : '' }} @isset($search) @if ($search == 'dept') active @endif @endisset">
-                        <a href="{{ route('departments.index', ['id' => Auth::user()->sector_hash_id]) }}">
+                        <a href="{{ route('departments.index', Auth::user()->department->uuid) }}">
                             <img src="{{ asset('frontend/images/managements.svg') }}" alt="logo">
                             <h6>الأدارات</h6>
                         </a>
@@ -215,8 +215,8 @@
                         </a>
                         <div id="dropdownMenu4" class="dropdown-menu4">
                             <ul>
-                             
-                                
+
+
                                         @if (Auth::user()->hasPermission('view Setting'))
                                             <li class="{{ request()->routeIs('settings.index') ? 'active' : '' }}">
                                                 <img src="{{ asset('frontend/images/police.svg') }}" alt="logo"
@@ -256,8 +256,8 @@
 
 
 
-                                  
-                           
+
+
 
                                             <li class="{{ request()->routeIs('nationality.index') ? 'active' : '' }}">
                                                 <img src="{{ asset('frontend/images/holidays.svg') }}" alt="logo"
@@ -322,7 +322,7 @@
 
 
 
-                                    
+
                             </ul>
                         </div>
                     </li>
