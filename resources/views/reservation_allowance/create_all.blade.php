@@ -115,8 +115,7 @@
                             <div class="">
                                 <label for="Civil_number">
                                     <button class="btn-all py-2 px-2"
-                                        id="get_crate_all_form" type="button"> اضافة بدل حجز بالهويات  <img src="{{ asset('frontend/images/add-btn.svg') }}"
-                                            alt="img"></button>
+                                        id="get_crate_all_form" type="button"> اضافة بدل حجز بالهويات  </button>
 
                             </div>
                         </div>

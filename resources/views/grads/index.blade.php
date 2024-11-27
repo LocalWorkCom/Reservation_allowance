@@ -16,9 +16,9 @@
                 <div class="d-flex justify-content-between">
                     <p> الرتـــــــب</p>
                     @if (Auth::user()->hasPermission('create grade'))
-                        <button type="button" class="btn-all  " onclick="openadd()" style="    color: #0D992C;">
+                        <button type="button" class="btn-all  " onclick="openadd()" >
 
-                            اضافة رتبة جديده <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                            اضافة رتبة جديده 
                         </button>
                     @endif
                 </div>
@@ -30,7 +30,7 @@
             <div class="container  col-11 mt-3 pb-4 p-0 ">
                 <div class="row d-flex justify-content-between " dir="rtl">
                     <div class="form-group moftsh mt-4  mx-4  d-flex">
-                        <p class="filter "> تصفية حسب:</p>
+                        <p class="filter "> تصفية حسب :</p>
                         <button class="btn-all px-3 mx-2 btn-filter btn-active" data-filter="all" style="color: #274373;">
                             الكل ({{ $all }})
                         </button>

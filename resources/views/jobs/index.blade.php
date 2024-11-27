@@ -17,9 +17,9 @@
                 <div class="d-flex justify-content-between">
                     <p> المسمى الوظيفى</p>
                     @if (Auth::user()->hasPermission('edit job'))
-                        <button type="button" class="btn-all  " onclick="openadd()" style="    color: #0D992C;">
+                        <button type="button" class="btn-all  " onclick="openadd()" >
 
-                            اضافة وظيفة جديدة <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                            اضافة وظيفة جديدة 
                         </button>
                     @endif
                 </div>

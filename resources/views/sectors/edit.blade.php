@@ -57,7 +57,6 @@
         </div>
     </div>
 
-    <br>
     @if (session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
@@ -68,7 +67,7 @@
         @csrf
         @method('POST') <!-- This line indicates it's an update -->
         <div class="row" dir="rtl">
-            <div id="first-container" class="container moftsh col-11 py-3">
+            <div id="first-container" class="container moftsh col-11 py-2">
                 <div class="form-row mx-2 mb-2">
                     <h3 class=" px-md-5 px-3">اضف قطاع</h3>
                     <div class="input-group moftsh px-md-5 px-3 pt-3">

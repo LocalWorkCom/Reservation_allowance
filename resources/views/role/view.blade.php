@@ -14,9 +14,9 @@
             <div class="d-flex justify-content-between">
                 <p>المـــــــهام</p>
                 @if (Auth::user()->hasPermission('create Rule'))
-                    <button type="button" class="wide-btn" onclick="window.location.href='{{ route('rule.create') }}'"
-                        style="color: #0D992C;">
-                        اضافة جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                    <button type="button" class="btn-all" onclick="window.location.href='{{ route('rule.create') }}'"
+                        >
+                        اضافة جديد 
                     </button>
                 @endif
             </div>
@@ -24,7 +24,6 @@
     </div>
 
 
-    <br>
     <div class="row">
         <div class="container  col-11 mt-3 p-0 ">
             <div class="row " dir="rtl">
@@ -79,6 +78,7 @@
                 },
                 {
                     data: 'permissions',
+                    sWidth: '400px',
                     name: 'permissions'
                 },
                 {

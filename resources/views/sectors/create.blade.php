@@ -56,7 +56,7 @@
             </nav>
         </div>
     </div>
-    <br>
+
     <form class="edit-grade-form" id="Qta3-form" action=" {{ route('sectors.store') }}" method="POST">
         @csrf
         <div class="row" dir="rtl">
@@ -69,7 +69,7 @@
 
                 <div class="form-row mx-2 mb-2">
                     <h3 class=" px-md-5 px-3">اضف قطاع</h3>
-                    <div class="input-group moftsh px-md-5 px-3 pt-3">
+                    <div class="input-group moftsh px-md-5 px-3 pt-1">
                         <label class="pb-3" for="name">ادخل اسم القطاع</label>
                         <input type="text" id="name" name="name" class="form-control" value="{{ old('name') }}"
                             placeholder="قطاع واحد" required autocomplete="one-time-code" />
@@ -166,7 +166,7 @@
                 @enderror
 
                 <div class="container col-11">
-                    <div class="form-row d-flex justify-content-end mt-4 mb-3">
+                    <div class="form-row d-flex justify-content-end mt-2 ">
                         <button type="submit" class="btn-blue">
                             <img src="{{ asset('frontend/images/white-add.svg') }}" alt="img" height="20px"
                                 width="20px">

@@ -16,9 +16,9 @@
                 <p> الاعدادات</p>
                 {{-- @if (Auth::user()->hasPermission('create Sector')) --}}
                 <button type="button" class="btn-all" data-bs-toggle="modal" data-bs-target="#myModal1"
-                    style="color: #0D992C;">
+                >
 
-                    اضافة اعداد جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                    اضافة اعداد جديد 
                 </button>
                 {{-- @endif --}}
             </div>
