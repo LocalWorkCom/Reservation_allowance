@@ -164,36 +164,41 @@
 
 </section>
 <script>
-// Listen for clicks on the checkboxes and labels
-document.querySelectorAll('.form-check').forEach(function(element) {
-    // Handle click on the checkbox itself
-    element.querySelector('.form-check-input').addEventListener('click', function(event) {
-        handleCheckboxToggle(event.target);
+    document.getElementById('selectAll').addEventListener('click', function(event) {
+        var selectAllChecked = event.target.checked;
+        var checkboxes = document.querySelectorAll('.selectPermission');
+
+        checkboxes.forEach(function(checkbox) {
+            checkbox.checked = selectAllChecked;
+        });
+    });
+    // Listen for clicks on the checkboxes and labels
+    document.querySelectorAll('.form-check').forEach(function(element) {
+        // Handle click on the checkbox itself
+        element.querySelector('.form-check-input').addEventListener('click', function(event) {
+            handleCheckboxToggle(event.target);
+        });
+
+        // Handle click on the label
+        element.querySelector('.form-check-label').addEventListener('click', function(event) {
+            // Prevent the default action to allow manual control
+            event.preventDefault();
+            const checkbox = element.querySelector('.form-check-input');
+            checkbox.checked = !checkbox.checked; // Toggle checkbox state manually
+            handleCheckboxToggle(checkbox); // Call the function to handle additional logic if needed
+        });
     });
 
-    // Handle click on the label
-    element.querySelector('.form-check-label').addEventListener('click', function(event) {
-        // Prevent the default action to allow manual control
-        event.preventDefault();
-        const checkbox = element.querySelector('.form-check-input');
-        checkbox.checked = !checkbox.checked;  // Toggle checkbox state manually
-        handleCheckboxToggle(checkbox);  // Call the function to handle additional logic if needed
-    });
-});
-
-// Function to manage checkbox state (add additional logic if needed)
-function handleCheckboxToggle(checkbox) {
-    if (!checkbox.checked) {
-        // Custom behavior for unchecked state (optional)
-        console.log(`Unchecked: ${checkbox.value}`);
-    } else {
-        // Custom behavior for checked state (optional)
-        console.log(`Checked: ${checkbox.value}`);
+    // Function to manage checkbox state (add additional logic if needed)
+    function handleCheckboxToggle(checkbox) {
+        if (!checkbox.checked) {
+            // Custom behavior for unchecked state (optional)
+            console.log(`Unchecked: ${checkbox.value}`);
+        } else {
+            // Custom behavior for checked state (optional)
+            console.log(`Checked: ${checkbox.value}`);
+        }
     }
-}
-
-
-
 </script>
 
 
