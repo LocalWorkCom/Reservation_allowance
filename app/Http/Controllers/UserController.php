@@ -1126,11 +1126,11 @@ class UserController extends Controller
         }
 
         // dd($request);
-        // if ($request->filled('department_id')) {
-        //     $id_department = Departements::where('uuid', $request->department_id)->value('id');
-        // } else {
-        $id_department =  $request->department_id;
-        // }
+        if ($request->filled('department_id')) {
+            $id_department = Departements::where('uuid', $request->department_id)->value('id');
+        } else {
+        $id_department =  null;
+        }
         // Additional checks for 'user' flag
         if ($request->flag == 'user') {
             if (!$request->filled('email')) {
