@@ -86,13 +86,14 @@
 
                     @if (Auth::user()->hasPermission('add_employee User'))
                         @if ($flag == 'employee')
-                            <a href="{{ route('download-template') }}" class="btn-all text-info mx-2 p-2">تحميل
+                            <a href="{{ route('download-template') }}" class="btn-all text-info p-2">تحميل
                                 القالب</a>
-
-                            <button type="button" class="wide-btn mx-2"
-                                onclick="window.location.href='{{ route('user.create') }}'" style="color: #0D992C;">
-                                اضافة موظف جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                            </button>
+                            @if (Auth::user()->hasPermission('create User'))
+                                <button type="button" class="btn-all mx-2"
+                                    onclick="window.location.href='{{ route('user.create') }}'" >
+                                    اضافة موظف جديد 
+                                </button>
+                            @endif
                         @endif
 
                 </div>
@@ -179,9 +180,9 @@
             </form> --}}
 
             @include('inc.flash')
-            <div class="col-lg-12 pt-5 pb-5">
+            <div class="col-lg-12 py-5 ">
                 <div class="row d-flex justify-content-between " dir="rtl">
-                    <div class="form-group moftsh mt-4  mx-4  d-flex">
+                    <div class="form-group moftsh d-flex">
                         <p class="filter "> تصفية حسب :</p>
                         <button class="btn-all px-3 mx-2 btn-filter btn-active" data-filter="all"
                             style="color: #274373;">
@@ -206,11 +207,10 @@
                             <th>الرتبه</th>
                             <th>الاسم</th>
                             <th>رقم الملف</th>
-                            {{-- <th>الرقم المدني</th> --}}
+                            <th>الرقم المدني</th>
                             <th>الهاتف</th>
-                            <th>القطاع</th>
-
                             <th>الادارة</th>
+                            <th>القطاع</th>
                             <th style="width:150px !important;">العمليات</th>
                         </tr>
                     </thead>
@@ -322,23 +322,22 @@
                                     data: 'file_number',
                                     name: 'file_number'
                                 },
-                                // {
-                                //     data: 'Civil_number',
-                                //     name: 'Civil_number'
-                                // },
+                                {
+                                    data: 'Civil_number',
+                                    name: 'Civil_number'
+                                },
                                 {
                                     data: 'phone',
                                     name: 'phone'
                                 },
                                 {
-                                    data: 'sector',
-                                    name: 'sector'
-                                },
-                                {
                                     data: 'department',
                                     name: 'department'
                                 },
-
+                                {
+                                    data: 'sector',
+                                    name: 'sector'
+                                },
                                 {
                                     data: 'action',
                                     name: 'action',
@@ -351,7 +350,6 @@
                             columnDefs: [{
                                 targets: -1,
                                 render: function(data, type, row) {
-                                    console.log(row)
                                     // Using route generation correctly in JavaScript
                                     var useredit = '{{ route('user.edit', ':uuid') }}';
                                     useredit = useredit.replace(':uuid', row.uuid);
@@ -362,27 +360,21 @@
                                     unsigned = unsigned.replace(':uuid', row.uuid);
                                     var visibility = row.department_id != null ? 'd-block-inline' :
                                         'd-none';
+                                    var canEdit = `<?php echo Auth::user()->hasPermission('edit User') ? 'd-block-inline' : 'd-none'; ?>`;
+                                    var canShow = `<?php echo Auth::user()->hasPermission('view User') ? 'd-block-inline' : 'd-none'; ?>`;
 
                                     return `
-<select class="form-select form-select-sm btn-action" onchange="handleAction(this.value, '${row.uuid}')" aria-label="Actions" style="width: auto;">
-    <option value="" class="text-center" style=" color: gray; " selected disabled>الخيارات</option>
-    <option value="show" class="text-center" data-url="${usershow}" style=" color: #274373; "> عرض</option>
-    <option value="edit" class="text-center" data-url="${useredit}" style=" color:#eb9526;">تعديل</option>
-    <option value="unsigned"  class="${visibility}  text-center" style=" color:#c50c0c;">الغاء التعيين</option>
-</select>
 
-    `;
+                                            <select class="form-select form-select-sm btn-action" onchange="handleAction(this.value, '${row.uuid}')" aria-label="Actions" style="width: auto;">
+                                                <option value="" class="text-center" style=" color: gray; " selected disabled>الخيارات</option>
+                                                <option value="show" class="text-center ${canShow}" data-url="${usershow}" style=" color: #274373; "> عرض</option>
+                                                <option value="edit" class="text-center ${canEdit}" data-url="${useredit}" style=" color:#eb9526;">تعديل</option>
+                                                <option value="unsigned"  class="${visibility} ${canEdit}  text-center" style=" color:#c50c0c;">الغاء التعيين</option>
+                                            </select> `;
+
                                 }
 
-                                // <a href="` + usershow + `" class="btn btn-sm" style="background-color: #274373;">
-                                //     <i class="fa fa-eye"></i> عرض
-                                // </a>
-                                // <a href="` + useredit + `" class="btn btn-sm" style="background-color: #F7AF15;">
-                                //     <i class="fa fa-edit"></i> تعديل
-                                // </a>
-                                // <a class="btn btn-sm ${visibility}" style="background-color: #E3641E;" onclick="openTransferModal('${row.uuid}')">
-                                //     <i class="fa-solid fa-user-tie"></i>  الغاء التعيين
-                                // </a>
+
                             }],
                             "oLanguage": {
                                 "sSearch": "",
@@ -440,38 +432,6 @@
                     });
                 </script>
 
-                <script>
-                    function handleAction(action, uuid) {
-                        switch (action) {
-                            case "show":
-                                // Redirect to the "show" page
-                                var showUrl = '{{ route('user.show', ':uuid') }}'.replace(':uuid', uuid);
-                                window.location.href = showUrl;
-                                break;
-                            case "edit":
-                                // Redirect to the "edit" page
-                                var editUrl = '{{ route('user.edit', ':uuid') }}'.replace(':uuid', uuid);
-                                window.location.href = editUrl;
-                                break;
-                            case "unsigned":
-                                openTransferModal(uuid)
-                                break;
-                            default:
-                                // Default case for invalid action
-                                console.error("Invalid action selected: " + action);
-                        }
-                    }
-
-                    // $(document).ready(function() {
-                    //     $('#users-table').on('change', '.btn-action', function() {
-                    //         var selectedAction = $(this).val(); // Get the selected value
-                    //         var uuid = $(this).data('uuid'); // Get the user's UUID
-                    //         if (selectedAction) {
-                    //             handleAction(selectedAction, uuid); // Call the function
-                    //         }
-                    //     });
-                    // });
-                </script>
 
             </div>
         </div>

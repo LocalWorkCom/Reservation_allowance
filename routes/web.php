@@ -422,6 +422,8 @@ Route::group(['middleware' => ['check.permission:report ReservationAllowance']],
     Route::get('reservation_report/sub_department/{subDepartmentId}/employees/print', [ReservationReportController::class, 'printSubDepartmentEmployees'])->name('reservation_report.sub_department_employees_print');
     Route::get('/reservation_report/user/{userId}/details', [ReservationReportController::class, 'showUserDetails'])->name('reservation_report.user_details');
     Route::get('/reservation_report/user/{userId}/details_data', [ReservationReportController::class, 'getUserDetailsData'])->name('reservation_report.user_details_data');
+    Route::get('reservation_report/user/{userUuid}/details/print', [ReservationReportController::class, 'printUserDetails'])->name('reservation_report.user_details_print');
+
 });
 
 

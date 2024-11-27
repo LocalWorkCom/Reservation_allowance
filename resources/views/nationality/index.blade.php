@@ -17,15 +17,14 @@
                 <div class="d-flex justify-content-between">
                     <p> الدول والجنسيات </p>
                     @if (Auth::user()->hasPermission('edit job'))
-                        <button type="button" class="btn-all  " onclick="openadd()" style="    color: #0D992C;">
+                        <button type="button" class="btn-all  " onclick="openadd()" >
 
-                            اضافة دولة جديدة <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                            اضافة دولة جديدة 
                         </button>
                     @endif
                 </div>
             </div>
         </div>
-        <br>
         <div class="row">
             <div class="container  col-11 mt-3 p-0  pt-5 pb-4">
 
@@ -64,7 +63,8 @@
                     <div class="title d-flex flex-row align-items-center">
                         <h5 class="modal-title" id="lable"> أضافه دولة جديدة</h5>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="closeModalBtn" aria-label="Close">&times;</button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="closeModalBtn"
+                        aria-label="Close">&times;</button>
                 </div>
                 <div class="modal-body mt-3 mb-5">
                     <div class="container pt-5 pb-4" style="border: 0.2px solid rgb(166, 165, 165);">
@@ -109,11 +109,13 @@
                     <div class="title d-flex flex-row align-items-center">
                         <h5 class="modal-title" id="lable"> تعديل على مسمى الدولة ؟</h5>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="closeModalBtn1" aria-label="Close"> &times; </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="closeModalBtn1" aria-label="Close">
+                        &times; </button>
                 </div>
                 <div class="modal-body mt-3 mb-5">
                     <div class="container pt-5 pb-4" style="border: 0.2px solid rgb(166, 165, 165);">
-                        <form class="edit-grade-form" id="edit-form" action="{{ route('nationality.update') }}" method="POST">
+                        <form class="edit-grade-form" id="edit-form" action="{{ route('nationality.update') }}"
+                            method="POST">
                             @csrf
 
                             <div class="form-group">
@@ -244,15 +246,24 @@
 
         }
 
-        function openedit(id, name, code) {
-            document.getElementById('nameedit').value = name;
-            document.getElementById('idedit').value = id;
-            document.getElementById('codeedit').value = code;
-
-            $('#edit').modal('show');
-
-
+        function handleAction(action, id, name, code) {
+            if (action) {
+                document.querySelector('.btn-action').value = ''; // Reset dropdown
+                if (action === "edit") {
+                    openedit(id, name, code);
+                } else if (action === "delete") {
+                    opendelete(id);
+                }
+            }
         }
+
+        function openedit(id, name, code) {
+            document.getElementById('nameedit').value = name || '';
+            document.getElementById('idedit').value = id || '';
+            document.getElementById('codeedit').value = code || '';
+            $('#edit').modal('show');
+        }
+
 
         function confirmEdit() {
             var id = document.getElementById('id').value;
@@ -315,6 +326,32 @@
                 order: [
                     [1, 'desc']
                 ],
+                columnDefs: [{
+                    targets: -1,
+                    render: function(data, type, row) {
+                        let options = `
+        <option value="" class="text-center" style="color: gray;" selected disabled>الخيارات</option>
+    `;
+
+                        @if (Auth::user()->hasPermission('edit Country'))
+                            options +=
+                                `<option value="edit" class="text-center" style="color:#eb9526;">تعديل</option>`;
+                        @endif
+                        @if (Auth::user()->hasPermission('delete Country'))
+                            options +=
+                                `<option value="delete" class="text-center" style="color:#c50c0c;">حذف</option>`;
+                        @endif
+
+                        return `
+        <select class="form-select form-select-sm btn-action"
+                onchange="handleAction(this.value, '${row.id}', '${row.country_name_ar}', '${row.code}')"
+                aria-label="Actions" style="width: auto;">
+            ${options}
+        </select>
+    `;
+                    }
+
+                }],
                 "oLanguage": {
                     "sSearch": "",
                     "sSearchPlaceholder": "بحث",

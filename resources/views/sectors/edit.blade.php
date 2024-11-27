@@ -57,7 +57,6 @@
         </div>
     </div>
 
-    <br>
     @if (session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
@@ -68,7 +67,7 @@
         @csrf
         @method('POST') <!-- This line indicates it's an update -->
         <div class="row" dir="rtl">
-            <div id="first-container" class="container moftsh col-11 py-3">
+            <div id="first-container" class="container moftsh col-11 py-2">
                 <div class="form-row mx-2 mb-2">
                     <h3 class=" px-md-5 px-3">اضف قطاع</h3>
                     <div class="input-group moftsh px-md-5 px-3 pt-3">
@@ -90,14 +89,15 @@
                     @enderror
                 </div>
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="email_field"
-                    style= "{{ old('mangered', $data->manager ? 'display: block;' : 'display: none;') }}">
-                    <label class="pb-3 w-100" for="email"> الايميل</label>
+                    style="{{ old('mangered', $data->manager ? 'display: block;' : 'display: none;') }}">
+                    <label class="pb-3 w-100" for="email">الايميل</label>
                     <input type="email" name="email" id="email"
                         value="{{ old('mangered', $data->manager ? $email : null) }}" class="form-control">
                     @error('email')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
+
                 <div class="input-group moftsh px-md-5 px-3 pt-3" id="manager_details" style="display: none;">
                     <div class="col-12 div-info d-flex justify-content-between" style="direction: rtl">
                         <div class="col-7">
@@ -417,23 +417,28 @@
             });
         });
 
-        window.addEventListener('load', function() {
-            const emailField = document.getElementById('email_field');
-            const emailInput = document.getElementById('email');
+        window.addEventListener('load', function () {
+    const mangeredInput = document.getElementById('mangered');
+    const emailField = document.getElementById('email_field');
+    const emailInput = document.getElementById('email');
 
-            // Function to toggle the 'required' attribute based on email field visibility
-            function toggleEmailRequired() {
-                if (emailField.style.display === 'block') {
-                    emailInput.setAttribute('required', 'required');
-                } else {
-                    emailInput.removeAttribute('required');
-                }
-            }
+    // Function to toggle visibility and 'required' attribute
+    function toggleEmailField() {
+        if (mangeredInput.value.trim() !== '') {
+            emailField.style.display = 'block';
+            emailInput.setAttribute('required', 'required');
+        } else {
+            emailField.style.display = 'none';
+            emailInput.removeAttribute('required');
+        }
+    }
 
+    // Call the function on page load to set the initial state
+    toggleEmailField();
 
-            // Call toggle function after changing visibility
-            toggleEmailRequired();
+    // Attach event listener to mangered input to detect changes
+    mangeredInput.addEventListener('input', toggleEmailField);
+});
 
-        });
     </script>
 @endsection

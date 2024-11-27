@@ -16,9 +16,9 @@
                 <p> القطاعـــات</p>
                 @if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2 || Auth::user()->hasPermission('create Sector'))
                     <button type="button" class="btn-all  " onclick="window.location.href='{{ route('sectors.create') }}'"
-                        style="color: #0D992C;">
+                      >
 
-                        اضافة قطاع جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                        اضافة قطاع جديد 
                     </button>
                 @endif
             </div>

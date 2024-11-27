@@ -43,18 +43,8 @@ class settingController extends Controller
     {
         $data = job::orderBy('updated_at', 'desc')->orderBy('created_at', 'desc')->get();
 
-        return DataTables::of($data)->addColumn('action', function ($row) {
-            $name = "'$row->name'";
-            $edit_permission = null;
-            $delete_permission = null;
-            if (Auth::user()->hasPermission('edit job')) {
-                $edit_permission = '<a class="btn btn-sm"  style="background-color: #F7AF15;"  onclick="openedit(' . $row->id . ',' . $name . ')">  <i class="fa fa-edit"></i> تعديل </a>';
-            }
-            if (Auth::user()->hasPermission('delete job')) {
-                $delete_permission = ' <a class="btn  btn-sm" style="background-color: #C91D1D;"   onclick="opendelete(' . $row->id . ')"> <i class="fa-solid fa-trash"></i> حذف</a>';
-            }
-            $uploadButton = $edit_permission . $delete_permission;
-            return $uploadButton;
+        return DataTables::of($data)  ->addColumn('action', function ($row) {
+            return $row;
         })
             ->rawColumns(['action'])
             ->make(true);
@@ -148,23 +138,9 @@ class settingController extends Controller
 
         // Return the filtered data as DataTable response
         return DataTables::of($data)
-            ->addColumn('action', function ($row) {
-                // Action buttons with permissions
-                $name = $row->country_name_ar ? "'$row->country_name_ar'" : "''";
-                $order = $row->code ? "'$row->code'" : "''";
-
-                $edit_permission = null;
-                $delete_permission = null;
-
-                if (Auth::user()->hasPermission('edit grade')) {
-                    $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;" onclick="openedit(' . $row->id . ',' . $name . ',\'' . $row->code . '\')">  <i class="fa fa-edit"></i> تعديل </a>';
-                }
-                if (Auth::user()->hasPermission('delete grade')) {
-                    $delete_permission = ' <a class="btn btn-sm" style="background-color: #C91D1D;" onclick="opendelete(' . $row->id . ')"> <i class="fa-solid fa-trash"></i> حذف</a>';
-                }
-
-                return $edit_permission . $delete_permission;
-            })
+        ->addColumn('action', function ($row) {
+            return $row;
+        })
             ->rawColumns(['action'])
             ->make(true);
     }
@@ -311,49 +287,36 @@ class settingController extends Controller
 
     //get data for GRAD
     public function getAllgrads(Request $request)
-    {
-        $data = grade::orderBy('order', 'ASC');
-        $filter = $request->get('filter'); // Retrieve filter
-        // dd($filter);
-        // Apply the filter based on the type
-        if ($filter == 'assigned') {
-            $data->where('type', 2);
-        } elseif ($filter == 'unassigned') {
-            // Filter for type 1 and 2
-            $data->whereIn('type', [1, 3]);
-        }
+{
+    $data = grade::orderBy('order', 'ASC');
+    $filter = $request->get('filter'); // Retrieve filter
 
-        // Get the filtered data
-        $data = $data->get();
+    // Apply the filter based on the type
+    if ($filter == 'assigned') {
+        $data->where('type', 2);
+    } elseif ($filter == 'unassigned') {
+        $data->whereIn('type', [1, 3]);
+    }
 
-        return DataTables::of($data)
+    // Get the filtered data
+    $data = $data->get();
+
+    // Check user permissions
+    $canEdit = Auth::user()->hasPermission('edit grade');
+    $canDelete = Auth::user()->hasPermission('delete grade');
+
+    // Modify the data to include permission flags
+    $data->transform(function ($item) use ($canEdit, $canDelete) {
+        // Append permission flags to each row
+        $item->canEdit = $canEdit;
+        $item->canDelete = $canDelete;
+        return $item;
+    });
+
+    // Return the data for DataTables with the permissions included
+    return DataTables::of($data)
         ->addColumn('action', function ($row) {
-            // Safely handle null values and escape special characters for JavaScript
-            $name = $row->name ?? '';
-            $type = json_encode($row->type ?? '');
-            $order = json_encode($row->order ?? '');
-            $value_all = $row->value_all ?? '';
-            $value_part = $row->value_part ?? '';
-
-            $options = '<option value="" class="text-center" style="color: gray;" selected disabled>الخيارات</option>';
-
-            // Check for edit permission
-            if (Auth::user()->hasPermission('edit grade')) {
-                $options .= '<option value="edit" class="text-center" style="color:#eb9526;">تعديل</option>';
-            }
-
-            // Check for delete permission
-            if (Auth::user()->hasPermission(permission: 'delete grade')) {
-                $options .= '<option value="delete" onclick="opendelete(' . $row->id . ')" class="text-center" style="color:#c50c0c;">حذف</option>';
-            }
-
-            // Generate dropdown
-            $btn = '<select class="form-select form-select-sm btn-action" onchange="handleAction(this.value,' . $row->id . ', ' . $name . ', ' . $type . ', ' . $value_all . ', ' . $value_part . ', ' . $order . ')"
-                        aria-label="Actions" style="width: auto;">
-                        ' . $options . '
-                    </select>';
-
-            return $btn;
+            return $row;
         })
         ->addColumn('type', function ($row) {
 

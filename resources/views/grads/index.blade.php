@@ -15,10 +15,10 @@
             <div class="container welcome col-11">
                 <div class="d-flex justify-content-between">
                     <p> الرتـــــــب</p>
-                    @if (Auth::user()->hasPermission('edit grade'))
-                        <button type="button" class="btn-all  " onclick="openadd()" style="    color: #0D992C;">
+                    @if (Auth::user()->hasPermission('create grade'))
+                        <button type="button" class="btn-all  " onclick="openadd()" >
 
-                            اضافة رتبة جديده <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                            اضافة رتبة جديده 
                         </button>
                     @endif
                 </div>
@@ -30,7 +30,7 @@
             <div class="container  col-11 mt-3 pb-4 p-0 ">
                 <div class="row d-flex justify-content-between " dir="rtl">
                     <div class="form-group moftsh mt-4  mx-4  d-flex">
-                        <p class="filter "> تصفية حسب:</p>
+                        <p class="filter "> تصفية حسب :</p>
                         <button class="btn-all px-3 mx-2 btn-filter btn-active" data-filter="all" style="color: #274373;">
                             الكل ({{ $all }})
                         </button>
@@ -314,7 +314,8 @@
     </script>
     <script>
         function handleAction(action, id, name, type, value_all, value_part, order) {
-            alert(action, id, name, type, value_all, value_part, order)
+            // Debugging: Check the passed parameters
+
             if (action === "edit") {
                 openedit(id, name, type, value_all, value_part, order);
             } else if (action === "delete") {
@@ -336,9 +337,11 @@
         }
 
 
+
         function confirmEdit() {
             var id = document.getElementById('id').value;
             var name = document.getElementById('nameedit').value;
+            console.log(name);
             var form = document.getElementById('edit-form')
         }
 
@@ -418,6 +421,32 @@
                     }
                 ],
                 "order": [0, 'asc'],
+                columnDefs: [{
+                    targets: -1,
+                    render: function(data, type, row) {
+                        // Initialize options
+                        let options = `
+                    <option value="" class="text-center" style="color: gray;" selected disabled>الخيارات</option>
+                `;
+
+                        // Conditionally render options based on permissions
+                        @if (Auth::user()->hasPermission('edit grade'))
+                            options +=
+                                `<option value="edit" class="text-center" style="color:#eb9526;">تعديل</option>`;
+                                @endif
+                        @if (Auth::user()->hasPermission('delete grade'))
+                            options +=
+                                `<option value="delete" class="text-center" style="color:#c50c0c;">حذف</option>`;
+
+                                @endif
+                        // Return the dropdown with options
+                        return `
+                    <select class="form-select form-select-sm btn-action" onchange="handleAction(this.value, '${row.id}', '${row.name}', '${row.type}', '${row.value_all}', '${row.value_part}', '${row.order}')" aria-label="Actions" style="width: auto;">
+                        ${options}
+                    </select>
+                `;
+                    }
+                }],
 
                 "oLanguage": {
                     "sSearch": "",

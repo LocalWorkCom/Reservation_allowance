@@ -118,16 +118,7 @@
         justify-content: flex-end;
         padding-right: 20px;
     }
-    /* .dropdown-menu4 {
-        z-index: 1;
-        top: 76px;
-        left: 370px;
-        height: 109px;
-        width: 150px !important;
-        border-radius: 5px;
-        padding-inline: 10px;
-        font-size: 20px;
-    } */
+
     .breadcrumb a {
         text-decoration: none;
         color: #081d64;
@@ -145,36 +136,7 @@
         /* padding: 7px; */
         font-size: 16px;
     }
-    /* .dropdown-menu3 {
-        z-index: 1;
-        top: 76px;
-        right: 395px;
-        height: 110px;
-        width: 135px !important;
-        border-radius: 5px;
-        padding-inline: 10px;
-        font-size: 23px;
-    } */
-    .dropdown-menu {
-        display: none;
-        position: absolute;
-        background-color: #fff;
-        border: 1px solid #ccc;
-        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-        z-index: 1;
-        top: 60px;
-        left: 0px;
-        height: 46px;
-        width: 185px !important;
-        /* text-align: center; */
-        padding-inline: 45px;
-        /* font-size: 6px; */
-    }
-    #dropdownMenu a {
-        color: red;
-        background-color: #ffffff;
-        font-size: 15px;
-    }
+  
     .navbar{
         width: 100%;
     }
@@ -371,32 +333,8 @@
         text-decoration: none;
         font-weight: 400;
     }
-    .dropdown-menu4 {
-        top: 100%;
-        left: -104px;
-        padding-inline: 10px;
-        font-size: 21px;
-        height: 177px;
-        width: 347px !important;
-    }
-    .dropdown-menu5 {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: -37px;
-        background-color: white;
-        border: 1px solid #ccc;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        z-index: 1000;
-        overflow-y: auto;
-        padding-inline: 0px;
-        font-size: 21px;
-        height: 175px;
-        width: 225px !important;
-    }
-    /* .first-section {
-        margin-left: -110px;
-    } */
+   
+   
     .container-responsive {
         display: none;
     }
@@ -520,29 +458,8 @@
         top: 14px;
         right: 272px;
     }
-    .dropdown-menu4 {
-        top: 100%;
-        left: -107px;
-        padding-inline: 10px;
-        font-size: 21px;
-        height: 176px;
-        width: 342px !important;
-    }
-    .dropdown-menu5 {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: -63px;
-        background-color: white;
-        border: 1px solid #ccc;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        z-index: 1000;
-        overflow-y: auto;
-        padding-inline: 0px;
-        font-size: 21px;
-        height: 175px;
-        width: 230px !important;
-    }
+  
+  
     .dropdown-menu6 {
         display: none;
         position: absolute;
@@ -641,14 +558,7 @@
         height: 44px;
         width: 159px !important;
     }
-    .dropdown-menu2 {
-        top: 65px;
-        left: 149px;
-        height: 204px;
-        width: 159px !important;
-        border-radius: 5px;
-        padding: 7px;
-    }
+ 
     footer p {
         font-size: 18px;
     }
@@ -781,14 +691,7 @@
         height: 124px;
         width: 150px !important;
     }
-    .dropdown-menu4 {
-        top: 100%;
-        left: -102px;
-        padding-inline: 10px;
-        font-size: 21px;
-        height: 170px;
-        width: 320px !important;
-    }
+
     #dropdownMenu3 a, #dropdownMenu4 a {
         color: #1C1B1B;
         background-color: #ffffff;
@@ -797,13 +700,7 @@
         font-weight: 400;
     }
 
-    .dropdown-menu2 {
-        top: 65px;
-        left: 152px;
-        height: 200px;
-        width: 149px !important;
-        padding: 2px;
-    }
+ 
     .container-responsive {
         display: none;
     }
@@ -888,14 +785,7 @@
         text-decoration: none;
         font-weight: 400;
     }
-    .dropdown-menu4{
-        top: 100%;
-        left: -87px;
-        padding-inline: 10px;
-        font-size: 21px;
-        height: 174px;
-        width: 316px !important;
-    }
+
     .second-section input {
         width: 188px;
         height: 34px;
@@ -1071,14 +961,7 @@
     .colors{
         visibility: hidden;
     }
-    .dropdown-menu4 {
-        top: 100%;
-        left: -85px;
-        /* padding-inline: 10px; */
-        font-size: 21px;
-        height: 126px;
-        width: 316px !important;
-    }
+    
     .second-section .input-group{
         display: none;
     }
@@ -1090,39 +973,8 @@
         height: 116px;
         width: 139px !important;
     }
-    .dropdown-menu5 {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: -28px;
-        background-color: white;
-        border: 1px solid #ccc;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        z-index: 1000;
-        overflow-y: auto;
-        padding-inline: 10px;
-        font-size: 21px;
-        height: 127px;
-        width: 135px !important;
-    }
-    .dropdown-menu6 {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: -14px;
-        background-color: white;
-        border: 1px solid #ccc;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        z-index: 1000;
-        overflow-y: auto;
-        padding-inline: 10px;
-        font-size: 15px;
-        height: 110px;
-        width: 115px !important;
-    }
-    /* .first-section {
-        margin-left: -92px;
-    } */
+    
+    
     .second-section .bell i {
         font-size: 17px;
     }
@@ -1225,15 +1077,8 @@
         width: 132px !important;
         padding: 7px;
     }
-    .dropdown-menu {
-        top: 60px;
-        left: -30px;
-        height: 44px;
-        width: 102px !important;
-    }
-    #dropdownMenu a {
-        font-size: 12px;
-    }
+   
+  
     .wide-btn {
         width: auto;
         height: 30px;
@@ -1572,14 +1417,7 @@
         top: 6px;
         right: 227px;
     }
-    .dropdown-menu4 {
-        top: 100%;
-        left: -77px;
-        /* padding-inline: 10px; */
-        font-size: 21px;
-        height: 191px;
-        width: 266px !important;
-    }
+   
     .header-side {
         height: 50px;
     }
