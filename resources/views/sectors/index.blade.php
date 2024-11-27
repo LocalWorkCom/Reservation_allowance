@@ -14,7 +14,7 @@
         <div class="container welcome col-11">
             <div class="d-flex justify-content-between">
                 <p> القطاعـــات</p>
-                @if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2)
+                @if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2 || Auth::user()->hasPermission('create Sector'))
                     <button type="button" class="btn-all  " onclick="window.location.href='{{ route('sectors.create') }}'"
                         style="color: #0D992C;">
 
