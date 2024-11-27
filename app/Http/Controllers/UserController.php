@@ -1182,8 +1182,15 @@ class UserController extends Controller
                 $checkdepmanger->save();
             }
             if ($request->rule_id == 3) {
-                // dd($request->department_id);
+                // dd($request->department_id, $id_department);
                 $newdepmanger = departements::find($id_department);
+                if ($newdepmanger) {
+                    $old_user = User::find($newdepmanger->manger);
+                    $old_user->flag = 'employee';
+                    $old_user->password = null;
+                    $old_user->rule_id = null;
+                    $old_user->save();
+                }
                 $newdepmanger->manger = $user->id;
                 $newdepmanger->save();
                 if ($user->email && isValidEmail($user->email)) {

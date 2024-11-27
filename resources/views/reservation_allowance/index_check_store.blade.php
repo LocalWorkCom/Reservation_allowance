@@ -92,23 +92,25 @@
                             <input name="department_type" id="department_type" type="hidden"
                                 value="{{ Auth::user()->department_id == null ? 1 : 2 }}">
 
-                            <div class="mx-1">
+                                <div class="form-group  mx-2">
                                 {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                 <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
-                                <select class="custom-select custom-select-lg select2" name="sector_id" id="sector_id"
+                                <!-- <select class="custom-select custom-select-lg select2" name="sector_id" id="sector_id"
                                     required>
                                     <option value="0" selected>اختار القطاع</option>
                                     @foreach ($sectors as $sector)
                                     <option value="{{ $sector->id }}" {{$sector->id == $sector_id ? "selected" : ""}}>
                                         {{ $sector->name }}</option>
                                     @endforeach
-                                </select>
-                            </div>
+                                </select> -->
+                                <input class="form-control" type="text" name="sector_id" id="sector_id"
+                                value="{{$current_sector->name}}" readonly>
+                                </div>
 
-                            <div class=" mx-1" id="departement_div">
+                                <div class="form-group  mx-2">
                                 {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                 <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
-                                <select class="custom-select custom-select-lg" name="departement_id"
+                                <!-- <select class="custom-select custom-select-lg" name="departement_id"
                                     id="departement_id" style="    color: #7c7b7b !important;">
                                     <option value="0">اختار الادارة</option>
                                     @if($get_departements)
@@ -125,12 +127,14 @@
                                     @endforeach
                                     @endif
 
-                                </select>
+                                </select> -->
+                                <input class="form-control" type="text" name="departement_id" id="departement_id"
+                                    value="{{$current_departement->name}}" readonly>
                             </div>
 
                             <div class="form-group  mx-2">
                                 <input class="form-control" type="date" name="date" id="date" max="{{$to_day}}"
-                                    value="{{$to_day}}" required>
+                                    value="{{$to_day}}" readonly>
                             </div>
 
                             <!-- <div class="">
@@ -197,14 +201,14 @@
             <li class="nav-item " role="presentation ">
                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
                     role="tab" aria-controls="home" aria-selected="true">
-                    الموظفين الذين سيتم اضافتهم ( {{ $employee_new_add ? $employee_new_add->count() : 0}} )
+                    الموظفين الذين سيتم اضافتهم ( {{ $employee_new_add ? count($employee_new_add) : 0}} )
                 </button>
             </li>
 
             <li class="nav-item" role="presentation">
                 <button class="nav-link " id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
                     role="tab" aria-controls="profile" aria-selected="false">
-                    الموظفين غير مسجلين فى الادارة او القطاع ( {{ $employee_not_dept ? $employee_not_dept->count() : 0}} )
+                    الموظفين غير مسجلين فى الادارة او القطاع ( {{ $employee_not_dept ? count($employee_not_dept) : 0}} )
                 </button>
             </li>
 
@@ -222,10 +226,10 @@
                     <table class="table table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th>ت</th>
-                                <th>رقم الملف</th>
+                                <th style="width:5%">م</th>
                                 <th>الرتبة</th>
                                 <th>الاسم</th>
+                                <th>رقم الملف</th>
                                 <th>التكلفة</th>
                                 <th>الادارة</th>
                             </tr>
@@ -234,9 +238,9 @@
                             @foreach($employee_new_add as $K_employee_newadd=>$employee_newadd)
                                 <tr>
                                     <td>{{$K_employee_newadd+1}}</td>
-                                    <td>{{$employee_newadd->file_number}}</td>
                                     <td>{{$employee_newadd->grade != null ? $employee_newadd->grade->name : ""}}</td>
                                     <td>{{$employee_newadd->name}}</td>
+                                    <td>{{$employee_newadd->file_number}}</td>
                                     <td>{{$employee_newadd->grade_value}}</td>
                                     <td>{{$employee_newadd->department_id != null ? $employee_newadd->department->name : ""}}</td>
                                 </tr>

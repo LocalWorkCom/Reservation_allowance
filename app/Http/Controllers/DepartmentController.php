@@ -87,7 +87,7 @@ class DepartmentController extends Controller
                 return '<button class="btn btn-primary btn-sm">Edit</button>';
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
-                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount." د.ك";
+                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه غير محددة' : $row->reservation_allowance_amount . " د.ك";
             })
             ->addColumn('reservation_allowance', function ($row) {
                 switch ($row->reservation_allowance_type) {
@@ -270,7 +270,7 @@ class DepartmentController extends Controller
                 return '<button class="btn btn-primary btn-sm">Edit</button>';
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
-                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount." د.ك";
+                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه غير محددة' : $row->reservation_allowance_amount . " د.ك";
             })
             ->addColumn('reservation_allowance', function ($row) {
                 switch ($row->reservation_allowance_type) {
@@ -407,7 +407,7 @@ class DepartmentController extends Controller
             'budget_type' => 'required',
             'part' => 'required',
             'email' => [
-                'required', // Allow email to be null unless manager is set
+                'nullable', // Allow email to be null unless manager is set
                 Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
                 function ($attribute, $value, $fail) {
                     // Check if email format is invalid
@@ -449,8 +449,8 @@ class DepartmentController extends Controller
         $departements->created_by = Auth::user()->id;
         $departements->save();
         saveHistory($departements->reservation_allowance_amount, $departements->sector_id, $departements->id);
-        UpdateUserHistory($manager->id);
-        addUserHistory($manager->id, $departements->id,  $request->sector);
+        UpdateUserHistory($manager);
+        addUserHistory($manager, $departements->id,  $request->sector);
 
         if ($request->mangered) {
             $new_user = User::where('file_number', $request->mangered)->first();
@@ -573,7 +573,7 @@ class DepartmentController extends Controller
             'budget_type' => 'required',
             'part' => 'required',
             'email' => [
-                'required', // Allow email to be null unless manager is set
+                'nullable', // Allow email to be null unless manager is set
                 Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
                 function ($attribute, $value, $fail) {
                     // Check if email format is invalid
@@ -745,7 +745,7 @@ class DepartmentController extends Controller
             'budget_type' => 'required',
             'part' => 'required',
             'email' => [
-                'required',
+                'nullable',
                 Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
                 function ($attribute, $value, $fail) use ($request) {
                     // If manager is set, email must not be empty
@@ -849,18 +849,18 @@ class DepartmentController extends Controller
                 $sector = Sector::find($request->id);
                 $Manager = User::find($department->manger);
                 //if ($request->password) {
-                    //$Manager->sector = $sector->id;
-                    $Manager->flag = 'user';
-                    //$Manager->rule_id = 3;
-                    $Manager->email = $request->email;
+                //$Manager->sector = $sector->id;
+                $Manager->flag = 'user';
+                //$Manager->rule_id = 3;
+                $Manager->email = $request->email;
 
-                    //$Manager->password = Hash::make('123456');
-                    $Manager->save();
+                //$Manager->password = Hash::make('123456');
+                $Manager->save();
 
-                    if ($Manager->email && isValidEmail($Manager->email)) {
-                        // Send email to the new manager
-                        Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, 123456, $Manager->email);
-                    }
+                if ($Manager->email && isValidEmail($Manager->email)) {
+                    // Send email to the new manager
+                    Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, 123456, $Manager->email);
+                }
                 //}
             }
         }
@@ -941,10 +941,9 @@ class DepartmentController extends Controller
 
 
         // Handle employee updates
-        $currentEmployees = User::where('sector', $request->sector)
-            ->where('department_id', null)
-            ->pluck('file_number')
-            ->toArray();
+        $currentEmployees = User::where('department_id', $department->id)
+            ->pluck('file_number')->toArray();
+
 
         $file_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->file_number);
         $file_numbers = array_filter(explode(',', $file_numbers)); // Convert to array of file Numbers
@@ -952,10 +951,20 @@ class DepartmentController extends Controller
         $employeesToRemove = array_diff($currentEmployees, $file_numbers);
         $employeesToAdd = array_diff($file_numbers, $currentEmployees);
 
-        /*   if (!empty($employeesToRemove)) {//file_number
-            User::whereIn('Civil_number', $employeesToRemove)
-                ->update(['sector' => null, 'department_id' => null]);
-        } */
+        $nonExistingFileNumbers = [];
+        foreach ($file_numbers as $file_number) {
+            $employee = User::where('file_number', $file_number)->first();
+            if (!$employee) {
+                $nonExistingFileNumbers[] = $file_number;
+            }
+        }
+        if (!empty($nonExistingFileNumbers)) {
+            // Return with error if any file number doesn't exist
+            return redirect()->back()->withErrors([
+                'file_number' => 'ارقام ملفات الموظفين التالية غير موجودة في النظام: ' . implode(', ', $nonExistingFileNumbers)
+            ])->withInput();
+        }
+
         if (!empty($employeesToRemove)) { //file_number
             User::whereIn('file_number', $employeesToRemove)
                 ->update(['sector' => null, 'department_id' => null]);
@@ -1001,7 +1010,7 @@ class DepartmentController extends Controller
             'budget_type' => 'required',
             'part' => 'required',
             'email' => [
-                'required', // Allow email to be null unless manager is set
+                'nullable', // Allow email to be null unless manager is set
                 Rule::unique('users', 'email')->ignore($request->mangered, 'file_number'),
                 function ($attribute, $value, $fail) use ($request) {
                     // If manager is set, email must not be empty
@@ -1101,18 +1110,18 @@ class DepartmentController extends Controller
                 $sector = Sector::find($request->id);
                 $Manager = User::find($department->manger);
                 //if ($request->password) {
-                    //$Manager->sector = $sector->id;
-                    $Manager->flag = 'user';
-                    //$Manager->rule_id = 3;
-                    $Manager->email = $request->email;
+                //$Manager->sector = $sector->id;
+                $Manager->flag = 'user';
+                //$Manager->rule_id = 3;
+                $Manager->email = $request->email;
 
-                    //$Manager->password = Hash::make('123456');
-                    $Manager->save();
+                //$Manager->password = Hash::make('123456');
+                $Manager->save();
 
-                    if ($Manager->email && isValidEmail($Manager->email)) {
-                        // Send email to the new manager
-                        Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, 123456, $Manager->email);
-                    }
+                if ($Manager->email && isValidEmail($Manager->email)) {
+                    // Send email to the new manager
+                    Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, 123456, $Manager->email);
+                }
                 //}
             }
         }
@@ -1195,6 +1204,20 @@ class DepartmentController extends Controller
 
         $employeesToRemove = array_diff($currentEmployees, $file_numbers);
         $employeesToAdd = array_diff($file_numbers, $currentEmployees);
+
+        $nonExistingFileNumbers = [];
+        foreach ($file_numbers as $file_number) {
+            $employee = User::where('file_number', $file_number)->first();
+            if (!$employee) {
+                $nonExistingFileNumbers[] = $file_number;
+            }
+        }
+        if (!empty($nonExistingFileNumbers)) {
+            // Return with error if any file number doesn't exist
+            return redirect()->back()->withErrors([
+                'file_number' => 'ارقام ملفات الموظفين التالية غير موجودة في النظام: ' . implode(', ', $nonExistingFileNumbers)
+            ])->withInput();
+        }
 
         // Remove employees that are no longer in this sub-department
         if (!empty($employeesToRemove)) {

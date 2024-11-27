@@ -43,18 +43,8 @@ class settingController extends Controller
     {
         $data = job::orderBy('updated_at', 'desc')->orderBy('created_at', 'desc')->get();
 
-        return DataTables::of($data)->addColumn('action', function ($row) {
-            $name = "'$row->name'";
-            $edit_permission = null;
-            $delete_permission = null;
-            if (Auth::user()->hasPermission('edit job')) {
-                $edit_permission = '<a class="btn btn-sm"  style="background-color: #F7AF15;"  onclick="openedit(' . $row->id . ',' . $name . ')">  <i class="fa fa-edit"></i> تعديل </a>';
-            }
-            if (Auth::user()->hasPermission('delete job')) {
-                $delete_permission = ' <a class="btn  btn-sm" style="background-color: #C91D1D;"   onclick="opendelete(' . $row->id . ')"> <i class="fa-solid fa-trash"></i> حذف</a>';
-            }
-            $uploadButton = $edit_permission . $delete_permission;
-            return $uploadButton;
+        return DataTables::of($data)  ->addColumn('action', function ($row) {
+            return $row;
         })
             ->rawColumns(['action'])
             ->make(true);
@@ -148,23 +138,9 @@ class settingController extends Controller
 
         // Return the filtered data as DataTable response
         return DataTables::of($data)
-            ->addColumn('action', function ($row) {
-                // Action buttons with permissions
-                $name = $row->country_name_ar ? "'$row->country_name_ar'" : "''";
-                $order = $row->code ? "'$row->code'" : "''";
-
-                $edit_permission = null;
-                $delete_permission = null;
-
-                if (Auth::user()->hasPermission('edit grade')) {
-                    $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;" onclick="openedit(' . $row->id . ',' . $name . ',\'' . $row->code . '\')">  <i class="fa fa-edit"></i> تعديل </a>';
-                }
-                if (Auth::user()->hasPermission('delete grade')) {
-                    $delete_permission = ' <a class="btn btn-sm" style="background-color: #C91D1D;" onclick="opendelete(' . $row->id . ')"> <i class="fa-solid fa-trash"></i> حذف</a>';
-                }
-
-                return $edit_permission . $delete_permission;
-            })
+        ->addColumn('action', function ($row) {
+            return $row;
+        })
             ->rawColumns(['action'])
             ->make(true);
     }
@@ -311,61 +287,39 @@ class settingController extends Controller
 
     //get data for GRAD
     public function getAllgrads(Request $request)
-    {
-        $data = grade::orderBy('order', 'ASC');
-        $filter = $request->get('filter'); // Retrieve filter
-        // dd($filter);
-        // Apply the filter based on the type
-        if ($filter == 'assigned') {
-            $data->where('type', 2);
-        } elseif ($filter == 'unassigned') {
-            // Filter for type 1 and 2
-            $data->whereIn('type', [1, 3]);
-        }
+{
+    $data = grade::orderBy('order', 'ASC');
+    $filter = $request->get('filter'); // Retrieve filter
 
-        // Get the filtered data
-        $data = $data->get();
+    // Apply the filter based on the type
+    if ($filter == 'assigned') {
+        $data->where('type', 2);
+    } elseif ($filter == 'unassigned') {
+        $data->whereIn('type', [1, 3]);
+    }
 
-        return DataTables::of($data)
+    // Get the filtered data
+    $data = $data->get();
+
+    // Check user permissions
+    $canEdit = Auth::user()->hasPermission('edit grade');
+    $canDelete = Auth::user()->hasPermission('delete grade');
+
+    // Modify the data to include permission flags
+    $data->transform(function ($item) use ($canEdit, $canDelete) {
+        // Append permission flags to each row
+        $item->canEdit = $canEdit;
+        $item->canDelete = $canDelete;
+        return $item;
+    });
+
+    // Return the data for DataTables with the permissions included
+    return DataTables::of($data)
         ->addColumn('action', function ($row) {
-            // Safely handle null values and escape special characters for JavaScript
-            $name = $row->name ? json_encode($row->name) : "''"; // Use `json_encode` to escape quotes and special characters
-            $type = $row->type ? json_encode($row->type) : "''";
-            $order = $row->order ? json_encode($row->order) : "''";
-            $value_all = $row->value_all ? json_encode($row->value_all) : "''";
-            $value_part = $row->value_part ? json_encode($row->value_part) : "''";
-
-            $edit_permission = '';
-            $delete_permission = '';
-
-            if (Auth::user()->hasPermission('edit grade')) {
-                // Generate edit button with safe JavaScript parameters
-                $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;"
-                                        onclick="openedit(' . $row->id . ', ' . $name . ', ' . $type . ', ' . $value_all . ', ' . $value_part . ', ' . $order . ')">
-                                        <i class="fa fa-edit"></i> تعديل
-                                    </a>';
-            }
-
-            if (Auth::user()->hasPermission('delete grade')) {
-                // Generate delete button
-                $delete_permission = '<a class="btn btn-sm" style="background-color: #C91D1D;"
-                                        onclick="opendelete(' . $row->id . ')">
-                                        <i class="fa-solid fa-trash"></i> حذف
-                                    </a>';
-            }
-            $btn = '<select class="form-select form-select-sm btn-action" onchange="handleAction(this.value, '${row.uuid}')" aria-label="Actions" style="width: auto;">
-    <option value="" class="text-center" style=" color: gray; " selected disabled>الخيارات</option>
-    <option value="show" class="text-center" data-url="${usershow}" style=" color: #274373; ">عرض</option>
-    <option value="edit" class="text-center" data-url="${useredit}" style=" color:#eb9526;">تعديل</option>
-    <option value="unsigned"  class="${visibility}  text-center" style=" color:#c50c0c;">الغاء التعيين</option>
-</select>';
-            // Combine edit and delete buttons
-            $uploadButton = $edit_permission . ' ' . $delete_permission;
-
-            return $uploadButton;
+            return $row;
         })
+        ->addColumn('type', function ($row) {
 
-            ->addColumn('type', function ($row) {
                 if ($row->type == 2) $mode = 'ظابط';
                 elseif ($row->type == 1) $mode = ' فرد';
                 else $mode = 'مهني';

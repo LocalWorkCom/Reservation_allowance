@@ -88,11 +88,13 @@
                         @if ($flag == 'employee')
                             <a href="{{ route('download-template') }}" class="btn-all text-info mx-2 p-2">تحميل
                                 القالب</a>
-
-                            <button type="button" class="wide-btn mx-2"
-                                onclick="window.location.href='{{ route('user.create') }}'" style="color: #0D992C;">
-                                اضافة موظف جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                            </button>
+                            @if (Auth::user()->hasPermission('create User'))
+                                <button type="button" class="wide-btn mx-2"
+                                    onclick="window.location.href='{{ route('user.create') }}'" style="color: #0D992C;">
+                                    اضافة موظف جديد <img src="{{ asset('frontend/images/add-btn.svg') }}"
+                                        alt="img">
+                                </button>
+                            @endif
                         @endif
 
                 </div>
@@ -359,19 +361,18 @@
                                     unsigned = unsigned.replace(':uuid', row.uuid);
                                     var visibility = row.department_id != null ? 'd-block-inline' :
                                         'd-none';
+                                    var canEdit = `<?php echo Auth::user()->hasPermission('edit User') ? 'd-block-inline' : 'd-none'; ?>`;
+                                    var canShow = `<?php echo Auth::user()->hasPermission('view User') ? 'd-block-inline' : 'd-none'; ?>`;
 
                                     return `
 
-        <a href="` + usershow + `" class="btn btn-sm" style="background-color: #274373;">
-            <i class="fa fa-eye"></i> عرض
-        </a>
-        <a href="` + useredit + `" class="btn btn-sm" style="background-color: #F7AF15;">
-            <i class="fa fa-edit"></i> تعديل
-        </a>
-        <a class="btn btn-sm ${visibility}" style="background-color: #E3641E;" onclick="openTransferModal('${row.uuid}')">
-            <i class="fa-solid fa-user-tie"></i>  الغاء التعيين
-        </a>
-    `;
+                                            <select class="form-select form-select-sm btn-action" onchange="handleAction(this.value, '${row.uuid}')" aria-label="Actions" style="width: auto;">
+                                                <option value="" class="text-center" style=" color: gray; " selected disabled>الخيارات</option>
+                                                <option value="show" class="text-center ${canShow}" data-url="${usershow}" style=" color: #274373; "> عرض</option>
+                                                <option value="edit" class="text-center ${canEdit}" data-url="${useredit}" style=" color:#eb9526;">تعديل</option>
+                                                <option value="unsigned"  class="${visibility} ${canEdit}  text-center" style=" color:#c50c0c;">الغاء التعيين</option>
+                                            </select> `;
+
                                 }
 
 

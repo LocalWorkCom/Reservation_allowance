@@ -39,7 +39,7 @@
                         </tr>
                         <tr>
                             <th scope="row">ميزانية البدل</th>
-                            <td>{{ $data->reservation_allowance_amount == 0.0 ? 'ميزانيه مفتوحه' : $data->reservation_allowance_amount }}
+                            <td>{{ $data->reservation_allowance_amount == 0.0 ? 'ميزانيه غير محددة' : $data->reservation_allowance_amount }}
                             </td>
                         </tr>
                         <tr>

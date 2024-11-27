@@ -24,8 +24,7 @@
                     </button>
                 @endif
             </div>
-          
-          
+
             <div class="input-group mx-2">
             {{--     <button type="button" id="search-btn" class="btn mt-4" data-mdb-ripple-init>
                     <i class="fas fa-search"></i>

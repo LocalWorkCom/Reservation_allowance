@@ -11,10 +11,16 @@
 @endsection
 <div class="row " dir="rtl">
     <div class="container  col-11" style="background-color:transparent;">
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item "><a href="{{ route('home') }}">الرئيسيه</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('sectors.index', ['uuid' => $sectors->uuid]) }}">القطاعات</a>
+                <li class="breadcrumb-item"><a
+                        href="{{ route('sectors.index', ['uuid' => $sectors->uuid]) }}">القطاعات</a>
                 </li>
                 <li class="breadcrumb-item active" aria-current="page"> <a href="">
                         الادارات الرئيسية</a></li>
@@ -35,7 +41,7 @@
                         <button type="button" class="wide-btn "
                             onclick="window.location.href='{{ route('department.create', $uuid) }}'"
                             style="    color: #0D992C;">
-                            اضافة جديد 
+                            اضافة جديد
                             <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
                         </button>
                     @endif
@@ -109,7 +115,9 @@
             columns: [{
                     sWidth: '50px',
                     data: null,
-                    name: 'order', orderable: false, searchable: false
+                    name: 'order',
+                    orderable: false,
+                    searchable: false
                 },
                 {
                     data: 'name',
@@ -135,32 +143,34 @@
                     data: 'subDepartment',
                     name: 'subDepartment',
                     render: function(data, type, row) {
-                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showSubDepartments(\'' + row.uuid + '\')">' + data + '</button>';
+                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showSubDepartments(\'' +
+                            row.uuid + '\')">' + data + '</button>';
                     }
                 },
                 {
                     data: 'num_managers',
                     name: 'num_managers',
                     render: function(data, type, row) {
-                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showUsers(\'' + row.uuid + '\')">' + data + '</button>';
+                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showUsers(\'' +
+                            row.uuid + '\')">' + data + '</button>';
                     }
                 },
                 {
                     data: 'num_subdepartment_managers',
                     name: 'num_subdepartment_managers',
                     render: function(data, type, row) {
-                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showSubUsers(\'' + row.uuid + '\')">' + data + '</button>';
+                        return '<button class="btn btn-sm" style="background-color: #274373; color: white; padding-inline: 15px" onclick="showSubUsers(\'' +
+                            row.uuid + '\')">' + data + '</button>';
                     }
                 },
                 {
                     data: 'action',
                     name: 'action',
-                    sWidth: '100px',
+                    sWidth: '200px',
                     orderable: false,
                     searchable: false
                 }
             ],
-            order: [0, 'asc'],
             columnDefs: [{
                 targets: -1,
                 render: function(data, type, row) {
@@ -178,21 +188,16 @@
 
                     // Get the authenticated user's department ID from Blade
                     // var authDepartmentId = {{ Auth::user()->department_id }};
+                    return `
+<select class="form-select form-select-sm btn-action" onchange="handleAction(this.value, '${row.uuid}')" aria-label="Actions" style="width: auto;">
+    <option value="" class="text-center" style=" color: gray; " selected disabled>الخيارات</option>
+    <option value="show" class="text-center" data-url="${departmentShow}" style=" color: #274373; "> عرض</option>
+    <option value="edit" class="text-center" data-url="${departmentEdit}" style=" color:#eb9526;">تعديل</option>
+    <option value="create"  class="${subdepartment}  text-center" style=" color:#008000
+;">اضافة ادارة فرعية</option>
+</select>
 
-                    // Start building the buttons
-                    var buttons = `
-                    <a href="${subdepartment}" class="btn btn-sm" style="background-color: #274373;"> <i class="fa fa-plus"></i> ادارات فرعيه</a>
-                    <a href="${departmentShow}" class="btn btn-sm" style="background-color: #274373;"> <i class="fa fa-eye"></i> عرض</a>
-                    `;
-
-                    // Only show the Edit button if the row's department ID matches the authenticated user's department ID and is not 1
-                    // if (row.id === authDepartmentId) {
-                    buttons += `<a href="${departmentEdit}" class="btn btn-sm" style="background-color: #F7AF15;"> <i class="fa fa-edit"></i> تعديل</a>`;
-
-                    /*    <a href="${addReservation}" class="btn btn-sm" style="background-color: #274373;"> <i class="fa fa-edit"></i> اضافة بدل حجز</a> */
-                    // }
-
-                    return buttons; // Return the constructed buttons
+    `;
                 }
             }],
             "oLanguage": {
@@ -263,8 +268,32 @@
     function showUsers(departmentId) {
         window.location.href = '/employees/employee/department/' + departmentId;
     }
+
     function showSubUsers(parentDepartmentId) {
         window.location.href = '/employees/employee/parent/' + parentDepartmentId;
+    }
+
+    function handleAction(action, uuid) {
+        switch (action) {
+            case "show":
+                // Redirect to the "show" page
+                var showUrl = '{{ route('departments.show', ':uuid') }}'.replace(':uuid', uuid);
+                window.location.href = showUrl;
+                break;
+            case "edit":
+                // Redirect to the "edit" page
+                var editUrl = '{{ route('departments.edit', ':uuid') }}'.replace(':uuid', uuid);
+                window.location.href = editUrl;
+                break;
+            case "create":
+                // Redirect to the "create" page
+                var createSubDeptUrltUrl = '{{ route('sub_departments.create', ':uuid') }}'.replace(':uuid', uuid);
+                window.location.href = createSubDeptUrltUrl;
+                break;
+            default:
+                // Default case for invalid action
+                console.error("Invalid action selected: " + action);
+        }
     }
 </script>
 

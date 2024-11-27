@@ -26,34 +26,31 @@
     </style>
 </head>
 <body>
-<img src="{{ asset('img/logo.png') }}" alt="Logo" width="50px"> 
-
-
-    <h3>تفاصيل الإدارات الرئيسية للقطاع: {{ $sector->name }}</h3>
-    <p>الفترة من: {{ $startDate->format('Y-m-d') }} إلى: {{ $endDate->format('Y-m-d') }}</p>
+    <img src="{{ asset('img/logo.png') }}" alt="Logo" width="50px">
+    <h3>تفاصيل الحجز للموظف: {{ $user->name }}</h3>
+    <p><strong>الفترة من:</strong> {{ $startDate->format('Y-m-d') }} <strong>إلى:</strong> {{ $endDate->format('Y-m-d') }}</p>
 
     <table>
         <thead>
             <tr>
                 <th>الترتيب</th>
-                <th>اسم الإدارة الرئيسية</th>
-                <th>عدد الإدارات الفرعية</th>
-                <th>عدد الموظفين</th>
-                <th>مبلغ الحجز</th> 
+                <th>اليوم</th>
+                <th>التاريخ</th>
+                <th>نوع الحجز</th>
+                <th>المبلغ</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($mainDepartments as $index => $department)
+            @foreach ($reservations as $index => $reservation)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $department['department_name'] }}</td>
-                    <td>{{ $department['sub_departments_count'] }}</td>
-                    <td>{{ $department['employee_count'] }}</td>
-                    <td>{{ $department['reservation_amount'] }}</td> 
+                    <td>{{ $reservation['day'] }}</td>
+                    <td>{{ $reservation['date'] }}</td>
+                    <td>{{ $reservation['type'] }}</td>
+                    <td>{{ $reservation['amount'] }}</td>
                 </tr>
             @endforeach
         </tbody>
     </table>
-
 </body>
 </html>

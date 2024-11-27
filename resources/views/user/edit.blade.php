@@ -295,8 +295,8 @@
                                     @endif
                                     @foreach ($department as $item)
                                     
-                                        <option value="{{ $item->id }}"
-                                            {{ $user->department_id == $item->id ? 'selected' : '' }}>
+                                        <option value="{{ $item->uuid }}"
+                                            {{ $user->department && $user->department->uuid == $item->uuid ? 'selected' : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
