@@ -43,18 +43,8 @@ class settingController extends Controller
     {
         $data = job::orderBy('updated_at', 'desc')->orderBy('created_at', 'desc')->get();
 
-        return DataTables::of($data)->addColumn('action', function ($row) {
-            $name = "'$row->name'";
-            $edit_permission = null;
-            $delete_permission = null;
-            if (Auth::user()->hasPermission('edit job')) {
-                $edit_permission = '<a class="btn btn-sm"  style="background-color: #F7AF15;"  onclick="openedit(' . $row->id . ',' . $name . ')">  <i class="fa fa-edit"></i> تعديل </a>';
-            }
-            if (Auth::user()->hasPermission('delete job')) {
-                $delete_permission = ' <a class="btn  btn-sm" style="background-color: #C91D1D;"   onclick="opendelete(' . $row->id . ')"> <i class="fa-solid fa-trash"></i> حذف</a>';
-            }
-            $uploadButton = $edit_permission . $delete_permission;
-            return $uploadButton;
+        return DataTables::of($data)  ->addColumn('action', function ($row) {
+            return $row;
         })
             ->rawColumns(['action'])
             ->make(true);
@@ -148,23 +138,9 @@ class settingController extends Controller
 
         // Return the filtered data as DataTable response
         return DataTables::of($data)
-            ->addColumn('action', function ($row) {
-                // Action buttons with permissions
-                $name = $row->country_name_ar ? "'$row->country_name_ar'" : "''";
-                $order = $row->code ? "'$row->code'" : "''";
-
-                $edit_permission = null;
-                $delete_permission = null;
-
-                if (Auth::user()->hasPermission('edit grade')) {
-                    $edit_permission = '<a class="btn btn-sm" style="background-color: #F7AF15;" onclick="openedit(' . $row->id . ',' . $name . ',\'' . $row->code . '\')">  <i class="fa fa-edit"></i> تعديل </a>';
-                }
-                if (Auth::user()->hasPermission('delete grade')) {
-                    $delete_permission = ' <a class="btn btn-sm" style="background-color: #C91D1D;" onclick="opendelete(' . $row->id . ')"> <i class="fa-solid fa-trash"></i> حذف</a>';
-                }
-
-                return $edit_permission . $delete_permission;
-            })
+        ->addColumn('action', function ($row) {
+            return $row;
+        })
             ->rawColumns(['action'])
             ->make(true);
     }
