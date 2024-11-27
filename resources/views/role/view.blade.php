@@ -13,10 +13,12 @@
         <div class="container welcome col-11">
             <div class="d-flex justify-content-between">
                 <p>المـــــــهام</p>
-                <button type="button" class="wide-btn" onclick="window.location.href='{{ route('rule.create') }}'"
-                    style="color: #0D992C;">
-                    اضافة جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                </button>
+                @if (Auth::user()->hasPermission('create Rule'))
+                    <button type="button" class="wide-btn" onclick="window.location.href='{{ route('rule.create') }}'"
+                        style="color: #0D992C;">
+                        اضافة جديد <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                    </button>
+                @endif
             </div>
         </div>
     </div>
@@ -98,12 +100,14 @@
                     // Using route generation correctly in JavaScript
                     var ruleedit = '{{ route('rule_edit', ':id') }}'.replace(':id', row.id);
                     var ruleshow = '{{ route('rule_show', ':id') }}'.replace(':id', row.id);
+                    var canEdit = `<?php echo Auth::user()->hasPermission('edit Rule') ? 'd-block-inline' : 'd-none'; ?>`;
+                    var canShow = `<?php echo Auth::user()->hasPermission('view Rule') ? 'd-block-inline' : 'd-none'; ?>`;
 
                     return `
             <select class="form-select form-select-sm btn-action" onchange="handleAction(this.value, '${row.id}', '${ruleshow}', '${ruleedit}')" aria-label="Actions" style="width: auto;">
                 <option value="" class="text-center" style="color: gray;" selected disabled>الخيارات</option>
-                <option value="show" class="text-center" data-url="${ruleshow}" style="color: #274373;">عرض</option>
-                <option value="edit" class="text-center" data-url="${ruleedit}" style="color:#eb9526;">تعديل</option>
+                <option value="show" class="text-center ${canShow}" data-url="${ruleshow}" style="color: #274373;">عرض</option>
+                <option value="edit" class="text-center ${canEdit}" data-url="${ruleedit}" style="color:#eb9526;">تعديل</option>
             </select>
         `;
                 }

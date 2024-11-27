@@ -330,7 +330,6 @@
                 columnDefs: [{
                     targets: -1,
                     render: function(data, type, row) {
-                        console.log(row)
                         let options = `
         <option value="" class="text-center" style="color: gray;" selected disabled>الخيارات</option>
     `;

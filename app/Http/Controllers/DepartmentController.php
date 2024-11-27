@@ -87,7 +87,7 @@ class DepartmentController extends Controller
                 return '<button class="btn btn-primary btn-sm">Edit</button>';
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
-                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount." د.ك";
+                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount . " د.ك";
             })
             ->addColumn('reservation_allowance', function ($row) {
                 switch ($row->reservation_allowance_type) {
@@ -270,7 +270,7 @@ class DepartmentController extends Controller
                 return '<button class="btn btn-primary btn-sm">Edit</button>';
             })
             ->addColumn('reservation_allowance_amount', function ($row) {
-                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount." د.ك";
+                return $row->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' : $row->reservation_allowance_amount . " د.ك";
             })
             ->addColumn('reservation_allowance', function ($row) {
                 switch ($row->reservation_allowance_type) {
@@ -849,18 +849,18 @@ class DepartmentController extends Controller
                 $sector = Sector::find($request->id);
                 $Manager = User::find($department->manger);
                 //if ($request->password) {
-                    //$Manager->sector = $sector->id;
-                    $Manager->flag = 'user';
-                    //$Manager->rule_id = 3;
-                    $Manager->email = $request->email;
+                //$Manager->sector = $sector->id;
+                $Manager->flag = 'user';
+                //$Manager->rule_id = 3;
+                $Manager->email = $request->email;
 
-                    //$Manager->password = Hash::make('123456');
-                    $Manager->save();
+                //$Manager->password = Hash::make('123456');
+                $Manager->save();
 
-                    if ($Manager->email && isValidEmail($Manager->email)) {
-                        // Send email to the new manager
-                        Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, 123456, $Manager->email);
-                    }
+                if ($Manager->email && isValidEmail($Manager->email)) {
+                    // Send email to the new manager
+                    Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, 123456, $Manager->email);
+                }
                 //}
             }
         }
@@ -941,10 +941,9 @@ class DepartmentController extends Controller
 
 
         // Handle employee updates
-        $currentEmployees = User::where('sector', $request->sector)
-            ->where('department_id', null)
-            ->pluck('file_number')
-            ->toArray();
+        $currentEmployees = User::where('department_id', $department->id)
+            ->pluck('file_number')->toArray();
+
 
         $file_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->file_number);
         $file_numbers = array_filter(explode(',', $file_numbers)); // Convert to array of file Numbers
@@ -1101,18 +1100,18 @@ class DepartmentController extends Controller
                 $sector = Sector::find($request->id);
                 $Manager = User::find($department->manger);
                 //if ($request->password) {
-                    //$Manager->sector = $sector->id;
-                    $Manager->flag = 'user';
-                    //$Manager->rule_id = 3;
-                    $Manager->email = $request->email;
+                //$Manager->sector = $sector->id;
+                $Manager->flag = 'user';
+                //$Manager->rule_id = 3;
+                $Manager->email = $request->email;
 
-                    //$Manager->password = Hash::make('123456');
-                    $Manager->save();
+                //$Manager->password = Hash::make('123456');
+                $Manager->save();
 
-                    if ($Manager->email && isValidEmail($Manager->email)) {
-                        // Send email to the new manager
-                        Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, 123456, $Manager->email);
-                    }
+                if ($Manager->email && isValidEmail($Manager->email)) {
+                    // Send email to the new manager
+                    Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, 123456, $Manager->email);
+                }
                 //}
             }
         }
