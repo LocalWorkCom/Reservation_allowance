@@ -67,6 +67,9 @@ Route::any('/logout', [UserController::class, 'logout'])->name('logout');
 Route::any('/verfication_code', [UserController::class, 'verfication_code'])->name('verfication_code');
 Route::any('/set-password/{number}', [UserController::class, 'setpasswordManager'])->name('passwordManager');
 
+
+// Route::any('/set-password/{number}', [UserController::class, 'normalLogin'])->name('passwordManager');\\\\
+
 Route::post('/resend_code', [UserController::class, 'resend_code'])->name('resend_code');
 
 Route::get('/forget-password', function () {
