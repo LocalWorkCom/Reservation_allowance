@@ -1,9 +1,6 @@
 @extends('layout.main')
 @push('style')
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
-    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
-    </script>
+
 @endpush
 
 @section('title')
@@ -41,17 +38,8 @@
                             رتب الأفراد و المهنيين ({{ $Officer2 + $person }})
                         </button>
                     </div>
-                    {{-- <div class="form-group mt-4 mx-4  d-flex justify-content-end ">
-                        <button class="btn-all px-3 " style="color: #FFFFFF; background-color: #274373;"
-                            onclick="window.print()">
-                            <img src="{{ asset('frontend/images/print.svg') }}" alt=""> طباعة
-                        </button>
-                    </div> --}}
                 </div>
-
                 <div class="container  col-11 mt-3 p-0  pt-5 pb-4">
-
-
                     <div class="col-lg-12">
                         <div class="bg-white ">
                             @if (session()->has('message'))
@@ -237,7 +225,6 @@
             </div>
         </div>
     </div>
-
     {{-- model for delete form --}}
     <div class="modal fade" id="delete" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -322,31 +309,34 @@
                 opendelete(id);
             }
         }
-
         function openedit(id, name, type, value_all, value_part, order) {
-            // Set the modal fields
-            document.getElementById('nameedit').value = name || '';
-            document.getElementById('idedit').value = id || '';
-            document.getElementById('typeedit').value = type || ''; // Type
-            document.getElementById('value_alledit').value = value_all || ''; // Value All
-            document.getElementById('value_partedit').value = value_part || ''; // Value Part
-            document.getElementById('orderedit').value = order || ''; // Order
-            const typeDropdown = document.getElementById('typeedit');
+    // Set other fields
+    document.getElementById('nameedit').value = name || '';
+    document.getElementById('idedit').value = id || '';
+    document.getElementById('value_alledit').value = value_all || '';
+    document.getElementById('value_partedit').value = value_part || '';
+    document.getElementById('orderedit').value = order || '';
 
-            // Reset the dropdown to ensure no incorrect selection
-            typeDropdown.value = '';
-            Array.from(typeDropdown.options).forEach(option => {
-                option.selected = false;
-            });
+    const typeDropdown = document.getElementById('typeedit');
 
-            // Select the correct option based on the type value
-            const selectedOption = Array.from(typeDropdown.options).find(option => option.value === String(type));
-            if (selectedOption) {
-                selectedOption.selected = true; // Mark it as selected
-            }
-            // Open the modal
-            $('#edit').modal('show');
-        }
+    // Reset the dropdown to avoid stale data
+    typeDropdown.value = '';
+
+    // Find the option by matching its text content with the `type` parameter
+    const matchingOption = Array.from(typeDropdown.options).find(
+        (option) => option.text.trim() === type.trim()
+    );
+
+    if (matchingOption) {
+        matchingOption.selected = true; // Select the matched option
+        console.log(`Option selected: ${matchingOption.text}`);
+    } else {
+        console.warn(`No matching option found for type: ${type}`);
+    }
+
+    // Open the modal
+    $('#edit').modal('show');
+}
 
 
 

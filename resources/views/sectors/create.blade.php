@@ -306,7 +306,16 @@
                                 confirmButtonText: 'نعم, استمر',
                                 cancelButtonText: 'لا',
                                 confirmButtonColor: '#3085d6',
-                                cancelButtonColor: '#d33'
+                                cancelButtonColor: '#d33',
+                                willClose: () => {
+                                    // Handle the case when the user does not select Yes or No
+                                    $('#mangered').val(''); // Clear manager input field
+                                    $('#email_field').hide(); // Hide the email field
+                                    $('#email').val(''); // Clear the email input field
+                                    $('#email').removeAttr(
+                                    'required'); // Remove the 'required' attribute
+                                    $('#manager_details').hide(); // Hide manager details
+                                }
                             }).then((result) => {
                                 if (result.isConfirmed) {
                                     fetchManagerDetails(managerId, false);
@@ -341,7 +350,16 @@
                                 text: 'هذا الموظف غير موجود و يرجى أدخال رقم ملف صحيح',
                                 icon: 'error',
                                 confirmButtonText: 'إلغاء',
-                                confirmButtonColor: '#3085d6'
+                                confirmButtonColor: '#3085d6',
+                                willClose: () => {
+                                    // Handle the case when the user does not select Yes or No
+                                    $('#mangered').val(''); // Clear manager input field
+                                    $('#email_field').hide(); // Hide the email field
+                                    $('#email').val(''); // Clear the email input field
+                                    $('#email').removeAttr(
+                                    'required'); // Remove the 'required' attribute
+                                    $('#manager_details').hide(); // Hide manager details
+                                }
                             });
                             $('#mangered').val('');
                         }
