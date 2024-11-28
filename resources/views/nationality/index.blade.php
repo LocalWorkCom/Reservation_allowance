@@ -1,6 +1,5 @@
 @extends('layout.main')
 @push('style')
-
 @endpush
 
 @section('title')
@@ -14,7 +13,7 @@
                 <div class="d-flex justify-content-between">
                     <p> الدول والجنسيات </p>
                     @if (Auth::user()->hasPermission('edit job'))
-                        <button type="button" class="btn-all  " onclick="openadd()" >
+                        <button type="button" class="btn-all  " onclick="openadd()">
 
                             اضافة دولة جديدة
                         </button>
