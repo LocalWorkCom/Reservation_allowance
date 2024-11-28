@@ -330,6 +330,7 @@ function convertToArabicNumerals($number)
 }
 function addUserHistory($user_id, $department_id, $sector_id)
 {
+    
     DB::table('user_departments')->insert([
         'user_id' => $user_id,
         'department_id' => $department_id,

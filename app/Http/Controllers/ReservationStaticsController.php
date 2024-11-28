@@ -51,6 +51,7 @@ public function getAll(Request $request, $sectorUuid)
         if (!$sector) {
             return response()->json(['error' => 'Sector not found'], 404);
         }
+        Log::error(" " . $sector->id);
 
         $query = departements::withCount('children')
             ->where('sector_id', $sector->id) 
@@ -67,9 +68,18 @@ public function getAll(Request $request, $sectorUuid)
                     ->where('department_id', $row->id)
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
-                    ->value('amount');
-                return $amount ? number_format($amount, 2) . ' د.ك' : 'ميزانية غير محدده';
+                    ->orderBy('date', 'desc') 
+                    ->value('amount'); 
+            
+                
+                if (is_null($amount) || $amount == 0) {
+                    return 'ميزانية غير محدده'; 
+                }
+            
+                return number_format($amount, 2) . ' د.ك'; 
             })
+            
+            
             ->addColumn('registered_by', function ($row) use ($month, $year) {
                 $sum = ReservationAllowance::where('departement_id', $row->id)
                     ->whereYear('date', $year)
@@ -82,12 +92,20 @@ public function getAll(Request $request, $sectorUuid)
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
                     ->sum('amount');
-                $historicalAmount = DB::table('history_allawonces')
+                    $historicalAmount = DB::table('history_allawonces')
                     ->where('department_id', $row->id)
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
+                    ->orderBy('date', 'desc') 
                     ->value('amount');
-                return $historicalAmount ? number_format($historicalAmount - $registeredAmount, 2) . ' د.ك' : '-';
+                
+             
+                if (is_null($historicalAmount) || $historicalAmount == 0) {
+                    return '-'; 
+                }
+                
+                return number_format($historicalAmount - $registeredAmount, 2) . ' د.ك';
+                
             })
             ->addColumn('number_of_employees', function ($row) use ($month, $year) {
                 return DB::table('user_departments')
@@ -95,7 +113,7 @@ public function getAll(Request $request, $sectorUuid)
                     ->whereYear('created_at', $year)
                     ->whereMonth('created_at', $month)
                     ->distinct('user_id')
-                    ->count('user_id'); // Correct count for distinct users
+                    ->count('user_id'); 
             })
             
             ->addColumn('received_allowance_count', function ($row) use ($month, $year) {
