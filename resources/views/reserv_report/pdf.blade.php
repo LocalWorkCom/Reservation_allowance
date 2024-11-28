@@ -46,6 +46,7 @@
                 <th>المبلغ</th>
             </tr>
         </thead>
+        
         <tbody>
             @foreach ($data as $index => $row)
                 <tr>

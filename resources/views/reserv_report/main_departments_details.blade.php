@@ -57,7 +57,7 @@
                                 <td>{{ $department['department_name'] }}</td>
                                 <td>
                                     @if(isset($department['id']))
-                                        <a href="{{ route('reservation_report.main_department_sub_departments', ['departmentId' => $department['id']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8 !important;">
+                                        <a href="{{ route('reservation_report.main_department_sub_departments', ['departmentId' => $department['uuid']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8 !important;">
                                             {{ $department['sub_departments_count'] }}
                                         </a>
                                     @else
@@ -65,12 +65,12 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <a href="{{ route('reservation_report.main_department_employees', ['departmentId' => $department['id']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8 !important;">
+                                    <a href="{{ route('reservation_report.main_department_employees', ['departmentId' => $department['uuid']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8 !important;">
                                         {{ $department['employee_count'] }}
                                     </a>
                                 </td>
                                 <td>
-                                <a href="{{ route('reservation_report.main_department_employees', ['departmentId' => $department['id']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8 !important;">
+                                <a href="{{ route('reservation_report.main_department_employees', ['departmentId' => $department['uuid']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8 !important;">
 
                                     {{ $department['reservation_amount'] }}
                                 
@@ -129,7 +129,7 @@ $(document).ready(function() {
     $('#print-report').click(function() {
         const startDate = '{{ $startDate->format('Y-m-d') }}';
         const endDate = '{{ $endDate->format('Y-m-d') }}';
-        const url = `{{ route('reservation_report.sector_main_departments_print', ['sectorId' => $sector->id]) }}?start_date=${startDate}&end_date=${endDate}`;
+        const url = `{{ route('reservation_report.sector_main_departments_print', ['sectorId' => $sector->uuid]) }}?start_date=${startDate}&end_date=${endDate}`;
         window.open(url, '_blank');
     });
 });

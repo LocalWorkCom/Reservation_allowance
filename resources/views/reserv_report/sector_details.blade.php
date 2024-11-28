@@ -60,7 +60,7 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: '{{ route('reservation_report.sector_details_data', ['sectorId' => $sector->id]) }}',
+                url: '{{ route("reservation_report.sector_details_data", $sector->uuid) }}',
                 data: {
                     start_date: '{{ $startDate->format('Y-m-d') }}',
                     end_date: '{{ $endDate->format('Y-m-d') }}'
@@ -77,22 +77,22 @@
                 },
                 { data: 'grade', name: 'grade' },
                 { data: 'name', name: 'name', render: function(data, type, row) {
-                        return `<a href="/reservation_report/user/${row.id}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8 !important;">${data}</a>`;
+                        return `<a href="/reservation_report/user/${row.uuid}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8 !important;">${data}</a>`;
                     } },
                 { data: 'file_number', name: 'file_number', render: function(data, type, row) {
-                        return `<a href="/reservation_report/user/${row.id}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8 !important;">${data}</a>`;
+                        return `<a href="/reservation_report/user/${row.uuid}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8 !important;">${data}</a>`;
                     } },
                 { data: 'department', name: 'department' },
                 { data: 'days', name: 'days',
                     render: function(data, type, row) {
-                        return `<a href="/reservation_report/user/${row.id}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8 !important;">${data}</a>`;
+                        return `<a href="/reservation_report/user/${row.uuid}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8 !important;">${data}</a>`;
                     }
                  },
                 { 
                     data: 'allowance', 
                     name: 'allowance',
                     render: function(data, type, row) {
-                        return `<a href="/reservation_report/user/${row.id}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8 !important;">${data}</a>`;
+                        return `<a href="/reservation_report/user/${row.uuid}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8 !important;">${data}</a>`;
                     }
                 }
             ],

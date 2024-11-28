@@ -332,6 +332,7 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/reservation_allowances/search_employee_new', [ReservationAllowanceController::class, 'search_employee_new'])->name('reservation_allowances.search_employee_new')->middleware('check.permission:view ReservationAllowance');
     Route::any('/reservation_allowances/add_reservation_allowances_employess/{type}/{id}', [ReservationAllowanceController::class, 'add_reservation_allowances_employess'])->name('reservation_allowances.add_reservation_allowances_employess')->middleware('check.permission:create ReservationAllowance');
     Route::any('/reservation_allowances/view_reservation_allowances_employess', [ReservationAllowanceController::class, 'view_reservation_allowances_employess'])->name('reservation_allowances.view_reservation_allowances_employess')->middleware('check.permission:creategit  ReservationAllowance');
+    Route::get('/reservation_allowances/view_choose_reservation/{date}/{sector_id}/{departement_id}', [ReservationAllowanceController::class, 'view_choose_reservation'])->name('reservation_allowances.view_choose_reservation')->middleware('check.permission:view ReservationAllowance');
     Route::any('/reservation_allowances/confirm_reservation_allowances/{date}/{sector_id}/{departement_id}', [ReservationAllowanceController::class, 'confirm_reservation_allowances'])->name('reservation_allowances.confirm_reservation_allowances')->middleware('check.permission:view ReservationAllowance');
     Route::any('/reservation_allowances/create_employee_new', [ReservationAllowanceController::class, 'create_employee_new'])->name('reservation_allowances.create_employee_new')->middleware('check.permission:create ReservationAllowance');
     Route::any('/reservation_allowances/create_employee_all', [ReservationAllowanceController::class, 'create_employee_all'])->name('reservation_allowances.create_employee_all')->middleware('check.permission:create ReservationAllowance');
@@ -421,6 +422,8 @@ Route::group(['middleware' => ['check.permission:report ReservationAllowance']],
     Route::get('reservation_report/sub_department/{subDepartmentId}/employees/print', [ReservationReportController::class, 'printSubDepartmentEmployees'])->name('reservation_report.sub_department_employees_print');
     Route::get('/reservation_report/user/{userId}/details', [ReservationReportController::class, 'showUserDetails'])->name('reservation_report.user_details');
     Route::get('/reservation_report/user/{userId}/details_data', [ReservationReportController::class, 'getUserDetailsData'])->name('reservation_report.user_details_data');
+    Route::get('reservation_report/user/{userUuid}/details/print', [ReservationReportController::class, 'printUserDetails'])->name('reservation_report.user_details_print');
+
 });
 
 

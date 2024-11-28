@@ -83,7 +83,7 @@
                     <div class="d-flex mx-2">
                         <label for="Civil_number">
                             <button class="btn-all py-2 px-2" type="submit">
-                                اضافة بدل حجز اختياري
+                                عرض الموظفين 
                             </button>
                     </div>
                     <input name="department_type" id="department_type"
@@ -97,8 +97,8 @@
                             <option value="0" selected>اختار الادارة</option>
                             @if ($get_departements)
                                 @foreach ($get_departements as $departement)
-                                    <option value="{{ $departement->id }}"
-                                        {{ $departement_id == $departement->id ? 'selected' : '' }}>
+                                    <option value="{{ $departement->uuid }}"
+                                        {{ $departementId == $departement->uuid ? 'selected' : '' }}>
                                         {{ $departement->name }}</option>
                                     @if (count($departement->children))
                                         @include(
@@ -121,8 +121,8 @@
                             required>
                             <option value="0" selected>اختار القطاع</option>
                             @foreach ($sectors as $sector)
-                                <option value="{{ $sector->id }}"
-                                    {{ $sector->id == $sector_id ? 'selected' : '' }}>
+                                <option value="{{ $sector->uuid }}"
+                                    {{ $sector->uuid == $sectorId ? 'selected' : '' }}>
                                     {{ $sector->name }}</option>
                             @endforeach
                         </select>
@@ -306,13 +306,14 @@
                     </div>
 
                     @if ($reservation_allowance_type != 4)
+                        @if ($employees)
                         <div>
-                            <button class="btn-blue px-2"
-                                onclick="confirm_reservation()"
-                                class="menu-link ">
+                            <a class="btn-blue px-2"
+                                href="{{ route('reservation_allowances.view_choose_reservation', [$today, $sectorId, $departementId]) }}">
 
-                                اضف بدل حجز</button>
+                                اضف بدل حجز</a>
                         </div>
+                        @endif
                     @endif
 
                 </div>
@@ -448,11 +449,11 @@
 
         function confirm_reservation() {
             Swal.fire({
-                title: 'تحذير',
+                title: 'تنبيه',
                 text: 'هل انت متاكد من انك تريد ان تضيف بدل حجز لهؤلاء الموظفين',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'نعم, نقل',
+                confirmButtonText: 'نعم, اضف',
                 cancelButtonText: 'إلغاء',
                 confirmButtonColor: '#3085d6'
             }).then((result) => {
