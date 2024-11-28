@@ -191,7 +191,8 @@
                     <option selected disabled>وكيل الوزارة المساعد لشئون امن المنافذ</option>
                     <option>1</option>
                 </select> -->
-                @if(Cache::get(auth()->user()->id."_employee_new_add") != null)
+                <?php /*@if(Cache::get(auth()->user()->id."_employee_new_add") != null)*/?>
+                @if(Cache::get(auth()->user()->id) != null)
                 <div class="col-lg-12" style="text-align: right">
                         <input type="hidden" name="date" id="date" value="{{$date}}">
                         <input type="hidden" name="sector_id" id="sector_id" value="{{$sectorId}}">
@@ -302,7 +303,7 @@ function confirm_reservation() {
         text: 'هل انت متاكد من انك تريد ان تضيف بدل حجز لهؤلاء الموظفين',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'نعم, اضف',
+        confirmButtonText: 'نعم, اعتمد',
         cancelButtonText: 'إلغاء',
         confirmButtonColor: '#3085d6'
     }).then((result) => {

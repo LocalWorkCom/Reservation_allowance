@@ -197,8 +197,8 @@
                         @csrf
                         <input type="hidden" name="date" value="{{$to_day}}">
                         <input type="hidden" name="type" value="{{$type}}">
-                        <input type="hidden" name="sector_id" value="{{$sector_id}}">
-                        <input type="hidden" name="departement_id" value="{{$department_id}}">
+                        <input type="hidden" name="sector_id" value="{{$sectorId}}">
+                        <input type="hidden" name="departement_id" value="{{$departmentId}}">
                         <button class="btn btn-success py-2 px-3 mx-2" type="submit">اعتماد الكشف</button>
                         <button class="btn btn-danger py-2 px-3" onclick="history.back()" type="button">الغاء</button>
                         </from>
