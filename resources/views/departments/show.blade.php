@@ -35,7 +35,7 @@
 
                         <tr>
                             <th scope="row">ميزانية البدل</th>
-                            <td>{{ $department->reservation_allowance_amount == 0.00 ? 'ميزانيه مفتوحه' :  $department->reservation_allowance_amount }}</td>
+                            <td>{{ $department->reservation_allowance_amount == 0.00 ? 'ميزانيه غير محددة' :  $department->reservation_allowance_amount }}</td>
                         </tr>
                         <tr>
                             <th scope="row">صلاحيه الحجز</th>
