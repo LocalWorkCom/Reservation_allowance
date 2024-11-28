@@ -93,6 +93,15 @@
                         type="hidden"
                         value="{{ Auth::user()->department_id == null ? 1 : 2 }}">
 
+                    <div class=" mx-1" id="departement_div">
+                        {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
+                        <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
+                        <select class="custom-select custom-select-lg select2"
+                            name="departement_id" id="departement_id">
+                            <option value="0" selected>اختار الادارة</option>
+                        </select>
+                    </div>
+
                     <div class="mx-1">
                         {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                         <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
@@ -100,18 +109,9 @@
                             name="sector_id" id="sector_id" required>
                             <option value="0" selected>اختار القطاع</option>
                             @foreach ($sectors as $sector)
-                                <option value="{{ $sector->id }}">
+                                <option value="{{ $sector->uuid }}">
                                     {{ $sector->name }}</option>
                             @endforeach
-                        </select>
-                    </div>
-
-                    <div class=" mx-1" id="departement_div">
-                        {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                        <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
-                        <select class="custom-select custom-select-lg select2"
-                            name="departement_id" id="departement_id">
-                            <option value="0" selected>اختار الادارة</option>
                         </select>
                     </div>
 
@@ -220,6 +220,7 @@
                                     <th>الرتبة</th>
                                     <th>الاسم</th>
                                     <th>رقم الملف</th>
+                                    <th>نوع بدل الحجز</th>
                                     <th>نوع بدل الحجز</th>
                                     <th>اليومية</th>
                                     <!-- <th style="width:150px;">العمليات</th>-->
@@ -344,8 +345,12 @@
                             name: 'employee_file_num'
                         },
                         {
-                            data: 'employee_allowance_type_btn',
-                            name: 'employee_allowance_type_btn'
+                            data: 'employee_allowance_all_btn',
+                            name: 'employee_allowance_all_btn'
+                        },
+                        {
+                            data: 'employee_allowance_part_btn',
+                            name: 'employee_allowance_part_btn'
                         },
                         {
                             data: 'employee_allowance_amount',

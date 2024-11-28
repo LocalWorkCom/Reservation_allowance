@@ -87,26 +87,29 @@
 
                         <form class="" id="search_employee_allowances">
                             @csrf
+                            <input type="hidden" name="sector_id" id="sector_id" value="{{$sector_id}}">
+                            <input type="hidden" name="departement_id" id="departement_id" value="{{$departement_id}}">
                             <div class="row d-flex flex-wrap justify-content-between">
                                 <!-- 1 for sector , 2 for department -->
                                 <input name="department_type" id="department_type" type="hidden"
                                     value="{{ Auth::user()->department_id == null ? 1 : 2 }}">
 
-                                <div class="d-flex mx-2">
+                                <div class="form-group  mx-2">
                                     {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                     <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
-                                    <select class="custom-select custom-select-lg select2" name="sector_id" id="sector_id" required>
+                                    <?php /*<select class="custom-select custom-select-lg select2" name="sector_id" id="sector_id" required>
                                         <option value="0" selected>اختار القطاع</option>
                                         @foreach ($sectors as $sector)
                                             <option value="{{ $sector->id }}" {{$sector->id == $sector_id ? "selected" : ""}}> {{ $sector->name }}</option>
                                         @endforeach
-                                    </select>
+                                    </select>*/?>
+                                    <input class="form-control" type="text" readonly name="sector" value="{{$current_departement->name}}">
                                 </div>
 
-                                <div class="d-flex mx-2" id="departement_div">
+                                <div class="form-group  mx-2">
                                     {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                     <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
-                                    <select class="custom-select custom-select-lg" name="departement_id" id="departement_id">
+                                    <?php /*<select class="custom-select custom-select-lg" name="departement_id" id="departement_id">
                                         <option value="0" >اختار الادارة</option>
                                         @if($get_departements)
                                             @foreach($get_departements as $departement)
@@ -119,11 +122,13 @@
                                                 @endif
                                             @endforeach
                                         @endif
-                                    </select>
+                                    </select>*/?>
+                                    <input class="form-control" type="text" readonly name="departement" value="{{$current_sector->name}}">
+
                                 </div>
 
                                 <div class="form-group  mx-2">
-                                    <input class="form-control" type="date" name="date" id="date" max="{{$to_day}}" value="{{$to_day}}" required>
+                                    <input class="form-control" type="date" name="date" id="date" readonly value="{{$to_day}}">
                                 </div>
 
                                 <!-- <div class="">
@@ -174,6 +179,7 @@
                                     <th>الرتبة</th>
                                     <th>الاسم</th>
                                     <th>رقم الملف</th>
+                                    <th>نوع بدل الحجز</th>
                                     <th>نوع بدل الحجز</th>
                                     <th>اليومية</th>
                                     <!-- <th style="width:150px;">العمليات</th>-->
@@ -259,8 +265,12 @@
                             name: 'employee_file_num'
                         },
                         {
-                            data: 'employee_allowance_type_btn',
-                            name: 'employee_allowance_type_btn'
+                            data: 'employee_allowance_all_btn',
+                            name: 'employee_allowance_all_btn'
+                        },
+                        {
+                            data: 'employee_allowance_part_btn',
+                            name: 'employee_allowance_part_btn'
                         },
                         {
                             data: 'employee_allowance_amount',
