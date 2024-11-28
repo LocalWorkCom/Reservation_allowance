@@ -336,7 +336,13 @@ class ReservationAllowanceController extends Controller
         Cache::put($cache_name, $Civil_numbers);
         
         $current_departement = departements::where('uuid', $request->departement_id)->first();
+        if($current_departement){
+            $department_id = $current_departement->id;
+        }
         $current_sector = Sector::where('uuid', $request->sector_id)->first();
+        if($current_sector){
+            $sector_id = $current_sector->id;
+        }
 
         $employee_not_found = array();
         $employee_not_dept = array();
@@ -354,18 +360,18 @@ class ReservationAllowanceController extends Controller
                     }
 
                     $check_sector = 1;
-                    if($employee->sector != $current_sector->id){
+                    if($employee->sector != $sector_id){
                         $check_sector = 0;
                     }
 
                     if($employee->department_id != null){
-                        if($employee->department_id != $current_departement->id){
+                        if($employee->department_id != $department_id){
                             $check_sector = 0;
                         }
                     }
 
                     if($employee->department_id == null && $request->departement_id != 0){
-                        if($employee->department_id != $current_departement->id){
+                        if($employee->department_id != $cdepartment_id){
                             $check_sector = 0;
                         }
                     }
@@ -376,8 +382,8 @@ class ReservationAllowanceController extends Controller
                     }
 
                     if($check_sector == 1){
-                        $sector_id = $current_sector->id;
-                        $department_id = $current_departement->id;
+                        $sector_id = $sector_id;
+                        $department_id = $department_id;
                         $employee['grade_value'] = $grade_value;
                         $total_grade_value += $grade_value;
                         $employee_new_add[] = $employee;
@@ -441,7 +447,13 @@ class ReservationAllowanceController extends Controller
             $to_day = $request->date;
             $to_day_name = Carbon::parse($to_day)->translatedFormat('l');
             $current_departement = departements::where('uuid', $request->departement_id)->first();
+            if($current_departement){
+                $department_id = $current_departement->id;
+            }
             $current_sector = Sector::where('uuid', $request->sector_id)->first();
+            if($current_sector){
+                $sector_id = $current_sector->id;
+            }
     
             /*$Civil_numbers = str_replace(array("\r","\r\n","\n"),',',$request->Civil_number);
             $Civil_numbers = explode(',,',$Civil_numbers);*/
@@ -479,10 +491,10 @@ class ReservationAllowanceController extends Controller
             $last_day = date('Y-m-t');
             $get_all_employee_amount = ReservationAllowance::Query();
             if($request->departement_id != 0){
-                $get_all_employee_amount = $get_all_employee_amount->where('departement_id', $current_departement->id);
+                $get_all_employee_amount = $get_all_employee_amount->where('departement_id', $department_id);
             }
             if($request->sector_id != 0){
-                $get_all_employee_amount = $get_all_employee_amount->where('sector_id', $current_sector->id);
+                $get_all_employee_amount = $get_all_employee_amount->where('sector_id', $sector_id);
             }
 
             $get_all_employee_amount = $get_all_employee_amount->whereBetween('date',[$first_day, $last_day])->sum('amount');
@@ -509,12 +521,12 @@ class ReservationAllowanceController extends Controller
                         }
 
                         $check_sector = 1;
-                        if($employee->sector != $current_sector->id){
+                        if($employee->sector != $csector_id){
                             $check_sector = 0;
                         }
 
                         if($employee->department_id != 0){
-                            if($employee->department_id != $current_departement->id){
+                            if($employee->department_id != $department_id){
                                 $check_sector = 0;
                             }
                         }
