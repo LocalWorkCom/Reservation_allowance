@@ -190,40 +190,40 @@
     </form>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @if ($errors->any())
-    <script>
-        $(document).ready(function() {
-            var selectedManagerId = $('#mangered').val();
+        <script>
+            $(document).ready(function() {
+                var selectedManagerId = $('#mangered').val();
 
-            if (selectedManagerId) {
-                $('#email_field').show();
-                fetchManagerDetails(selectedManagerId, false);
-
-                var existingEmail = @json(old('email'));
-                var existingBudget = @json(old('budget'));
-
-                if (existingEmail) {
+                if (selectedManagerId) {
                     $('#email_field').show();
-                    $('#email').val(@json(old('email')));
-                }
+                    fetchManagerDetails(selectedManagerId, false);
 
-                if (existingBudget) {
-                    $('#notFree').prop('checked', true);
-                    $('#budgetField').css({
-                        display: 'block',
-                        visibility: 'visible',
-                        opacity: 1
-                    });
-                    $('#budget').val(existingBudget);
+                    var existingEmail = @json(old('email'));
+                    var existingBudget = @json(old('budget'));
+
+                    if (existingEmail) {
+                        $('#email_field').show();
+                        $('#email').val(@json(old('email')));
+                    }
+
+                    if (existingBudget) {
+                        $('#notFree').prop('checked', true);
+                        $('#budgetField').css({
+                            display: 'block',
+                            visibility: 'visible',
+                            opacity: 1
+                        });
+                        $('#budget').val(existingBudget);
+                    } else {
+                        $('#Free').prop('checked', true);
+                    }
                 } else {
-                    $('#Free').prop('checked', true);
+                    $('#manager_details').hide();
+                    $('#email_field').hide();
                 }
-            } else {
-                $('#manager_details').hide();
-                $('#email_field').hide();
-            }
-        });
-    </script>
-@endif
+            });
+        </script>
+    @endif
     <script>
         // Initialize select2 for RTL
         $('.select2').select2({
@@ -315,7 +315,16 @@
                                 confirmButtonText: 'نعم, استمر',
                                 cancelButtonText: 'لا',
                                 confirmButtonColor: '#3085d6',
-                                cancelButtonColor: '#d33'
+                                cancelButtonColor: '#d33',
+                                willClose: () => {
+                                    // Handle the case when the user does not select Yes or No
+                                    $('#mangered').val(''); // Clear manager input field
+                                    $('#email_field').hide(); // Hide the email field
+                                    $('#email').val(''); // Clear the email input field
+                                    $('#email').removeAttr(
+                                    'required'); // Remove the 'required' attribute
+                                    $('#manager_details').hide(); // Hide manager details
+                                }
                             }).then((result) => {
                                 if (result.isConfirmed) {
                                     fetchManagerDetails(managerId, false);
@@ -345,7 +354,16 @@
                                 text: 'هذا الموظف غير موجود و يرجى أدخال رقم ملف صحيح',
                                 icon: 'error',
                                 confirmButtonText: 'إلغاء',
-                                confirmButtonColor: '#3085d6'
+                                confirmButtonColor: '#3085d6',
+                                willClose: () => {
+                                    // Handle the case when the user does not select Yes or No
+                                    $('#mangered').val(''); // Clear manager input field
+                                    $('#email_field').hide(); // Hide the email field
+                                    $('#email').val(''); // Clear the email input field
+                                    $('#email').removeAttr(
+                                    'required'); // Remove the 'required' attribute
+                                    $('#manager_details').hide(); // Hide manager details
+                                }
                             });
                             $('#mangered').val('');
                         }
@@ -417,28 +435,27 @@
             });
         });
 
-        window.addEventListener('load', function () {
-    const mangeredInput = document.getElementById('mangered');
-    const emailField = document.getElementById('email_field');
-    const emailInput = document.getElementById('email');
+        window.addEventListener('load', function() {
+            const mangeredInput = document.getElementById('mangered');
+            const emailField = document.getElementById('email_field');
+            const emailInput = document.getElementById('email');
 
-    // Function to toggle visibility and 'required' attribute
-    function toggleEmailField() {
-        if (mangeredInput.value.trim() !== '') {
-            emailField.style.display = 'block';
-            emailInput.setAttribute('required', 'required');
-        } else {
-            emailField.style.display = 'none';
-            emailInput.removeAttribute('required');
-        }
-    }
+            // Function to toggle visibility and 'required' attribute
+            function toggleEmailField() {
+                if (mangeredInput.value.trim() !== '') {
+                    emailField.style.display = 'block';
+                    emailInput.setAttribute('required', 'required');
+                } else {
+                    emailField.style.display = 'none';
+                    emailInput.removeAttribute('required');
+                }
+            }
 
-    // Call the function on page load to set the initial state
-    toggleEmailField();
+            // Call the function on page load to set the initial state
+            toggleEmailField();
 
-    // Attach event listener to mangered input to detect changes
-    mangeredInput.addEventListener('input', toggleEmailField);
-});
-
+            // Attach event listener to mangered input to detect changes
+            mangeredInput.addEventListener('input', toggleEmailField);
+        });
     </script>
 @endsection

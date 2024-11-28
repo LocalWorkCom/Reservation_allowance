@@ -1,9 +1,5 @@
 @extends('layout.main')
 @push('style')
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
-    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
-    </script>
 @endpush
 @section('title')
     القطاعات
@@ -15,10 +11,8 @@
             <div class="d-flex justify-content-between">
                 <p> القطاعـــات</p>
                 @if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2 || Auth::user()->hasPermission('create Sector'))
-                    <button type="button" class="btn-all  " onclick="window.location.href='{{ route('sectors.create') }}'"
-                      >
-
-                        اضافة قطاع جديد 
+                    <button type="button" class="btn-all  " onclick="window.location.href='{{ route('sectors.create') }}'">
+                        اضافة قطاع جديد
                     </button>
                 @endif
             </div>
@@ -29,7 +23,6 @@
     <div class="row">
         <div class="container  col-11 mt-3 p-0  pt-5 pb-4">
             <div class="row " dir="rtl">
-
             </div>
             <div class="col-lg-12">
                 <div class="bg-white">

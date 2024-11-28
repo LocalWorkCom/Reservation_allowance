@@ -108,26 +108,26 @@ class sectorsController extends Controller
         }
 
         return DataTables::of($data)
-        ->addColumn('action', function ($row) {
-            $btn = '
+            ->addColumn('action', function ($row) {
+                $btn = '
                 <select class="form-select form-select-sm btn-action" onchange="handleAction(this.value, \'' . $row->uuid . '\')" aria-label="Actions" style="width: auto;">
                     <option value="" class="text-center" style="color: gray;" selected disabled>الخيارات</option>';
 
-            if (Auth::user()->hasPermission('view Sector')) {
-                $btn .= '<option value="show" class="text-center" data-url="' . route('sectors.show', $row->uuid) . '" style="color: #274373;">عرض</option>';
-            }
+                if (Auth::user()->hasPermission('view Sector')) {
+                    $btn .= '<option value="show" class="text-center" data-url="' . route('sectors.show', $row->uuid) . '" style="color: #274373;">عرض</option>';
+                }
 
-            if (Auth::user()->hasPermission('edit Sector')) {
-                $btn .= '<option value="edit" class="text-center" data-url="' . route('sectors.edit', $row->uuid) . '" style="color:#eb9526;">تعديل</option>';
-            }
+                if (Auth::user()->hasPermission('edit Sector')) {
+                    $btn .= '<option value="edit" class="text-center" data-url="' . route('sectors.edit', $row->uuid) . '" style="color:#eb9526;">تعديل</option>';
+                }
 
-            if (Auth::user()->hasPermission('create departements')) {
-                $btn .= '<option value="create-department" class="text-center" data-url="' . route('department.create', $row->uuid) . '" style="color:#c50c0c;">أضافة أداره</option>';
-            }
+                if (Auth::user()->hasPermission('create departements')) {
+                    $btn .= '<option value="create-department" class="text-center" data-url="' . route('department.create', $row->uuid) . '" style="color:#c50c0c;">أضافة أداره</option>';
+                }
 
-            $btn .= '</select>';
-            return $btn;
-        })
+                $btn .= '</select>';
+                return $btn;
+            })
             ->addColumn('manager_name', function ($row) {
                 // Check if manager exists before accessing its attributes
                 $manager = User::find($row->manager);
@@ -272,8 +272,11 @@ class sectorsController extends Controller
 
         // Save history
         saveHistory($sector->reservation_allowance_amount, $sector->id, $request->department_id);
-        UpdateUserHistory($manager);
-        addUserHistory($manager, null, $sector->id);
+        if ($sector->manager) {
+            UpdateUserHistory($manager);
+            addUserHistory($manager, null, $sector->id);
+        }
+
 
         if ($manager) {
             $user = User::find($manager);
@@ -410,7 +413,7 @@ class sectorsController extends Controller
         $allowanceData = json_decode($allowance->getContent(), true);  // Decode JSON response
 
         // Now you can check the 'is_allow' value as expected
-        if ($allowanceData['is_allow'] === false) {
+        if ($allowanceData['is_allow'] === false && $request->budget_type == 1) {
             $errorMessage = '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total'] . ' لوجود بدلات حجز اكبر من القيمه المدخله';
 
             // Add the custom budget error to the validator's errors
@@ -447,12 +450,17 @@ class sectorsController extends Controller
         $sector->updated_by = Auth::id();
         $sector->save();
         saveHistory($sector->reservation_allowance_amount, $sector->id, $request->department_id);
-        UpdateUserHistory($manager);
-        addUserHistory($manager, null, $sector->id);
+        if ($sector->manager) {
+            UpdateUserHistory($manager);
+            addUserHistory($manager, null, $sector->id);
+        }
         // Handle old and new manager updates
         if ($oldManager != $manager) {
+
             // Update old manager's sector to null
             if ($oldManager) {
+                UpdateUserHistory($oldManager);
+                addUserHistory($oldManager, null, null);
                 $oldManagerUser = User::find($oldManager);
                 if ($oldManagerUser) {
                     $oldManagerUser->sector = null;
