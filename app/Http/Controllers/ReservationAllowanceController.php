@@ -70,14 +70,26 @@ class ReservationAllowanceController extends Controller
             }
         }*/
 
+        // $current_departement = departements::where('uuid', $departement_id)->first();
+        // $current_sector = Sector::where('uuid', $sector_id)->first();
         $current_departement = departements::where('uuid', $departement_id)->first();
+        if($current_departement){
+            $department_id = $current_departement->id;
+        }else{
+            $department_id = 0;
+        }
         $current_sector = Sector::where('uuid', $sector_id)->first();
+        if($current_sector){
+            $sector_id = $current_sector->id;
+        }else{
+            $sector_id = 0;
+        }
 
 
         if($departement_id == null){
-            $get_departements = departements::with('children')->where('id', '!=', 1)->where('sector_id', $current_sector->id)->where('parent_id', null)->get();
+            $get_departements = departements::with('children')->where('id', '!=', 1)->where('sector_id', $sector_id)->where('parent_id', null)->get();
         }else{
-            $get_departements = departements::with('children')->where('id', '!=', 1)->where('id', $current_departement->id)->get();
+            $get_departements = departements::with('children')->where('id', '!=', 1)->where('id', $department_id)->get();
         }
 
 
@@ -521,7 +533,7 @@ class ReservationAllowanceController extends Controller
                         }
 
                         $check_sector = 1;
-                        if($employee->sector != $csector_id){
+                        if($employee->sector != $sector_id){
                             $check_sector = 0;
                         }
 

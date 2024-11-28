@@ -96,18 +96,6 @@
 
                                 <div class="form-group  mx-2">
                                     {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                                    <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
-                                    <?php /*<select class="custom-select custom-select-lg select2" name="sector_id" id="sector_id" required>
-                                        <option value="0" selected>اختار القطاع</option>
-                                        @foreach ($sectors as $sector)
-                                            <option value="{{ $sector->id }}" {{$sector->id == $sector_id ? "selected" : ""}}> {{ $sector->name }}</option>
-                                        @endforeach
-                                    </select>*/?>
-                                    <input class="form-control" type="text" readonly name="sector" value="{{$current_departement->name}}">
-                                </div>
-
-                                <div class="form-group  mx-2">
-                                    {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
                                     <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
                                     <?php /*<select class="custom-select custom-select-lg" name="departement_id" id="departement_id">
                                         <option value="0" >اختار الادارة</option>
@@ -123,8 +111,20 @@
                                             @endforeach
                                         @endif
                                     </select>*/?>
-                                    <input class="form-control" type="text" readonly name="departement" value="{{$current_sector->name}}">
+                                    <input class="form-control" type="text" readonly name="departement" value="{{$current_sector ? $current_sector->name : 'لا يوجد قطاع'}}">
 
+                                </div>
+
+                                <div class="form-group  mx-2">
+                                    {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
+                                    <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
+                                    <?php /*<select class="custom-select custom-select-lg select2" name="sector_id" id="sector_id" required>
+                                        <option value="0" selected>اختار القطاع</option>
+                                        @foreach ($sectors as $sector)
+                                            <option value="{{ $sector->id }}" {{$sector->id == $sector_id ? "selected" : ""}}> {{ $sector->name }}</option>
+                                        @endforeach
+                                    </select>*/?>
+                                    <input class="form-control" type="text" readonly name="sector" value="{{$current_departement ? $current_departement->name : 'لا يوجد ادارة'}}">
                                 </div>
 
                                 <div class="form-group  mx-2">
@@ -175,7 +175,7 @@
                         <table id="users-table" class="display table table-responsive-sm  table-bordered table-hover dataTable">
                             <thead>
                                 <tr>
-                                    <th>الترتيب</th>
+                                    <th style="width:5%">م</th>
                                     <th>الرتبة</th>
                                     <th>الاسم</th>
                                     <th>رقم الملف</th>
@@ -235,7 +235,8 @@
             var departement_id = document.getElementById('departement_id').value;
             var date = document.getElementById('date').value;
             var filter = 'all'; // Default filter
-
+            $.fn.dataTable.ext.classes.sPageButton =
+            'btn-pagination btn-sm'; // Change Pagination Button Class
                 table = $('#users-table').DataTable({
                     processing: true,
                     serverSide: true,
