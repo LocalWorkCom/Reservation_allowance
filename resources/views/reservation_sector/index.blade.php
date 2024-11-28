@@ -264,6 +264,12 @@
 
                 $('#filter-form').on('submit', function(e) {
                     e.preventDefault();
+                    const month = $('#month-select').val();
+                    const year = $('#year-select').val();
+                    if (!month || !year) {
+        alert('يرجي اختيار نطاق تاريخ صحيح');
+        return; // Prevent form submission
+    }
                     table.ajax.reload();
                 });
             });
