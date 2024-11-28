@@ -1,9 +1,6 @@
 @extends('layout.main')
 @push('style')
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" defer>
-    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
-    </script>
+
 @endpush
 @section('title')
     المناطق
@@ -16,9 +13,9 @@
                 <div class="d-flex justify-content-between">
                     <p> المنـــاطق</p>
                     @if (Auth::user()->hasPermission('create Region'))
-                    <button type="button" class="btn-all  " onclick="openadd()" style="color: #0D992C;">
-                        اضافة منطقة جديدة <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                    </button>
+                        <button type="button" class="btn-all  " onclick="openadd()" style="color: #0D992C;">
+                            اضافة منطقة جديدة <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                        </button>
                     @endif
                 </div>
             </div>
@@ -32,13 +29,14 @@
                     <div class="form-group mt-4  mx-md-2 col-12 d-flex ">
 
                         <div class="form-group moftsh  mx-3  d-flex">
-                            <h4 style="margin-left:10px;line-height: 1.8;"> تصفية  حسب   </h4>
+                            <h4 style="margin-left:10px;line-height: 1.8;"> تصفية حسب </h4>
                             <select name="government-select" id="government-select" onchange="filterRegions()"
                                 class=" form-group mx-md-2 btn-all  custom-select custom-select-lg mb-3 select2   "
                                 style="text-align: center; color:#ff8f00;height: 40px;font-size: 19px; padding-inline:10px;">
-                                <option value="" selected disabled > المحافظه</option>
+                                <option value="" selected disabled> المحافظه</option>
                                 @foreach (getgovernments() as $government)
-                                    <option value="{{ $government->hash_id }}" @if ($government->hash_id == $id) selected @endif>
+                                    <option value="{{ $government->hash_id }}"
+                                        @if ($government->hash_id == $id) selected @endif>
                                         {{ $government->name }}</option>
                                 @endforeach
                             </select>
@@ -135,8 +133,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="container pt-4 pb-4" style="border: 0.2px solid rgb(166, 165, 165);">
-                        <form class="edit-grade-form" id="edit-form" action=" {{ route('regions.update') }}"
-                            method="POST">
+                        <form class="edit-grade-form" id="edit-form" action=" {{ route('regions.update') }}" method="POST">
                             @csrf
                             <div class="form-group">
                                 <label for="name">الاسم</label>
@@ -171,12 +168,12 @@
     </div>
 @endsection
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 
     <script>
         $('.select2').select2({
             dir: "rtl"
         });
+
         function handleAction(action, id, name, government) {
             if (action) {
                 document.querySelector('.btn-action').value = ''; // Reset dropdown
@@ -252,7 +249,7 @@
                 order: [
                     [1, 'desc']
                 ],
-                 columnDefs: [{
+                columnDefs: [{
                     targets: -1,
                     render: function(data, type, row) {
                         console.log(row)
@@ -292,15 +289,15 @@
                 },
                 "pagingType": "full_numbers",
                 "fnDrawCallback": function(oSettings) {
-                                        console.log('Page '+this.api().page.info().pages)
-                                        var page=this.api().page.info().pages;
-                                        console.log($('#users-table tr').length);
-                                        if (page ==1) {
-                                         //   $('.dataTables_paginate').hide();//css('visiblity','hidden');
-                                            $('.dataTables_paginate').css('visibility', 'hidden');  // to hide
+                    console.log('Page ' + this.api().page.info().pages)
+                    var page = this.api().page.info().pages;
+                    console.log($('#users-table tr').length);
+                    if (page == 1) {
+                        //   $('.dataTables_paginate').hide();//css('visiblity','hidden');
+                        $('.dataTables_paginate').css('visibility', 'hidden'); // to hide
 
-                                        }
-                                    }
+                    }
+                }
             });
 
             $('#government-select').change(function() {
