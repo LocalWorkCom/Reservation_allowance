@@ -941,6 +941,8 @@ class ReservationAllowanceController extends Controller
             return redirect()->back()->withErrors($validatedData)->withInput();
         }*/
 
+        Cache::forget(auth()->user()->id);
+
         $today = Carbon::now()->format('Y-m-d');
         if($request->has('date')){
             $today = $request->date;
@@ -993,8 +995,6 @@ class ReservationAllowanceController extends Controller
                 $reservation_allowance_type = Sector::where('id', $sector_id)->first()->reservation_allowance_type;
             }
         }
-
-
 
         $data = [];
 
