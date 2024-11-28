@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,13 +9,17 @@
     <link rel="stylesheet" href="{{ asset('frontend/styles/bootstrap.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('frontend/styles/login-styles.css') }}" />
     <link rel="stylesheet" href="{{ asset('frontend/styles/login-responsive.css') }}" />
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('frontend/images/favicon/apple-touch-icon.png')}}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('frontend/images/favicon/favicon-32x32.png')}}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('frontend/images/favicon/favicon-16x16.png')}}">
-    <link rel="manifest" href="{{ asset('frontend/images/favicon/site.webmanifest')}}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('frontend/images/favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32"
+        href="{{ asset('frontend/images/favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16"
+        href="{{ asset('frontend/images/favicon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ asset('frontend/images/favicon/site.webmanifest') }}">
 </head>
+
 <body>
     <div class="container pt-5 pb-5">
         <div class="row col-12 pt-5">
@@ -43,21 +48,22 @@
                             </ul>
                         </div>
                     @endif
-                    @if(session('success'))
+                    @if (session('success'))
                         <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
-                    <label for="username" class="login-label">اسم المستخدم</label> <br>
-                    <input type="text" name="number" id="username" class="login-input"> <br>
-                    <!-- <label for="password" class="login-label">كلمة المرور</label> <br>
+                    <input type="hidden" name="number" id="" value="{{ $number }}">
+
+                    <label for="password" class="login-label">كلمة المرور</label> <br>
                     <div class="password-container">
                         <input type="password" name="password" id="password" class="login-input">
                         <label class="toggle-password" onclick="togglePasswordVisibility()">
                             <i id="toggleIcon" class="fa fa-eye"></i>
                         </label>
-                    </div> -->
-                    <!-- <a href="{{ route('forget_password') }}" class="forget-pass-a" style="text-decoration:underline !important;">هل نسيت كلمة المرور؟</a> -->
+                    </div>
+                    <a href="{{ route('forget_password') }}" class="forget-pass-a"
+                        style="text-decoration:underline !important;">هل نسيت كلمة المرور؟</a>
                     <div class="btns">
-                        <button class="btn1" type="submit"> التالي</button>
+                        <button class="btn1" type="submit">تسجيل دخول</button>
                     </div>
                 </form>
             </div>
@@ -86,4 +92,5 @@
         }
     </script>
 </body>
+
 </html>

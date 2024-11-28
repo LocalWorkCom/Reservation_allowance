@@ -447,13 +447,13 @@ class UserController extends Controller
     public function login(Request $request)
     {
         $messages = [
-            'number.required' => 'رقم العسكري مطلوب.',
-            'password.required' => 'كلمة المرور مطلوبة.',
+            // 'number.required' => 'رقم العسكري مطلوب.',
+            // 'password.required' => 'كلمة المرور مطلوبة.',
         ];
 
         $validatedData = $request->validate([
-            'number' => 'required|string',
-            'password' => 'required|string',
+            // 'number' => 'required|string',
+            // 'password' => 'required|string',
         ], $messages);
 
         $number = $request->number;
@@ -466,12 +466,8 @@ class UserController extends Controller
         if (!$user) {
             return back()->with('error', 'الرقم العسكري / الرقم المدنى لا يتطابق مع سجلاتنا')->withInput();
         }
-        if ($user && $user->last_login == null && $user->password == null) {
-            return redirect()->route('passwordManager',['number'=>$number])->with('error', 'يرجى أنشأ كلمه السر الخاصه بك')->withInput();
-        }else{
-            return redirect()->route('normalLogin',['number'=>$number]);
 
-        }
+
         // Check if the user has the correct flag
         if ($user->flag !== 'user') {
             return back()->with('error', 'لا يسمح لك بدخول الهيئة')->withInput();
@@ -489,54 +485,35 @@ class UserController extends Controller
             $credentials['civil_number'] = $number;
         }
         $twoHoursAgo = now()->subHours(6);
+        if ($user && $user->last_login == null && $user->password == null) {
+            return redirect()->route('passwordManager', ['number' => $number])->with('error', 'يرجى أنشأ كلمه السر الخاصه بك')->withInput();
+        } else if ($user && $user->last_login != null && $user->password != null && $password) {
+            if (Auth::attempt($credentials)) {
 
-        if (Auth::attempt($credentials)) {
-            // to not send code
-            if ($user->token == 'logined') {
                 Auth::login($user); // Log the user in
                 $update = User::find($user->id);
                 $update->last_login = now();
                 $update->save();
-                //
                 return redirect()->route('home');
             }
-            //end code
-            // if ($user->updated_at >= $twoHoursAgo) {
-            //     if ($user->token == null) {
-            //         $firstlogin = 1;
-
-            //         $set = '123456789';
-            //         $code = substr(str_shuffle($set), 0, 4);
-
-            //         $msg = "يرجى التحقق من حسابك\nتفعيل الكود\n" . $code;
-            //         $response = send_sms_code($msg, $user->phone, $user->country_code);
-            //         $result = json_decode($response, true);
-
-            //         // if (isset($result['sent']) && $result['sent'] === 'true') {
-            //         //     return view('verfication_code', compact('code', 'military_number', 'password'));
-            //         // } else {
-            //         //     return back()->with('error', 'سجل الدخول مرة أخرى')->withInput();
-            //         // }
-            //     }
-            // }
-
-            Auth::login($user); // Log the user in
-            $update = User::find($user->id);
-            $update->last_login = now();
-            $update->save();
-            return redirect()->route('home');
+        } else {
+            return redirect()->route('normalLogin', ['number' => $number]);
         }
+
 
         return back()->with('error', 'كلمة المرور لا تتطابق مع سجلاتنا')->withInput();
     }
 
-    public function normalLogin(Request $request){
-        return view('setPasswordManager');//
+    public function normalLogin($number)
+    {
+
+        return view('login2', compact('number')); //
 
     }
-    public function setpasswordManager(Request $request){
-        return view('setPasswordManager');
+    public function setpasswordManager(Request $request)
+    {
 
+        return view('setPasswordManager');
     }
     public function resend_code(Request $request)
     {
@@ -698,7 +675,13 @@ class UserController extends Controller
                 ->withErrors('لا يمكن أن تكون كلمة المرور الجديدة هي نفس كلمة المرور الحالية')
                 ->with('number', $request->number); // Define $firstlogin here if needed
         }
-
+        if (!$user->last_login) {
+            // Auth::login($user); // Log the user in
+            // $update = User::find($user->id);
+            $user->last_login = now();
+            $user->save();
+            //
+        }
         $user->password = Hash::make($request->password);
         $user->save();
         Auth::login($user); // Log the user in

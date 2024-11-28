@@ -168,15 +168,15 @@
                                         {{ $message }}</div>
                                 @enderror
                             </div>
-
-                            <div class="input-group moftsh col-md-10 mx-md-2">
+                            <div class="form-group col-md-10 mx-md-2">
                                 <label for="file_number" class="col-12"> أرقام
                                     الملفات</label>
                                 <textarea class="form-control" name="file_number" id="file_number" style="height: 100px">
-                                            @foreach ($employees as $employee)
-{{ $employee->file_number }}
+                                    @foreach ($department->employees as $employee)
+{{ $employee->file_number }},
 @endforeach
-                                        </textarea>
+                                </textarea>
+
                             </div>
                         </div>
                         <div class="form-row mx-2 d-flex justify-content-center">
@@ -250,24 +250,66 @@
     </main>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    @if ($errors->any())
+        <script>
+            $(document).ready(function() {
+                var selectedManagerId = $('#mangered').val();
+
+                if (selectedManagerId) {
+                    $('#email_field').show();
+                    fetchManagerDetails(selectedManagerId, false);
+
+                    var existingEmail = @json(old('email'));
+                    var existingBudget = @json(old('budget'));
+
+                    if (existingEmail) {
+                        $('#email_field').show();
+                        $('#email').val(@json(old('email')));
+                    }
+
+                    if (existingBudget) {
+                        $('#notFree').prop('checked', true);
+                        $('#budgetField').css({
+                            display: 'block',
+                            visibility: 'visible',
+                            opacity: 1
+                        });
+                        $('#budget').val(existingBudget);
+                    } else {
+                        $('#Free').prop('checked', true);
+                    }
+                } else {
+                    $('#manager_details').hide();
+                    $('#email_field').hide();
+                }
+            });
+        </script>
+    @endif
     <script>
         $('.select2').select2({
             dir: "rtl"
         });
         $(document).ready(function() {
             var selectedManagerId = $('#mangered').val();
-            console.log("Selected Manager ID:", selectedManagerId);
+            // $('#mangered').on('input', function() {
+            //     var managerId = $(this).val();
+            //     if (!managerId) {
+            //         $('#email_field').hide(); // Hide email field if no manager is selected
+            //         $('#email').val(''); // Clear the email input
+            //     } else {
+            //         $('#email_field').show(); // Show email field when manager is selected
+            //         fetchManagerDetails(managerId); // Fetch manager details
+            //     }
+            // });
+
+            // When the form is submitted, check if the manager is removed
 
             if (selectedManagerId) {
-                console.log("About to show #email_field and fetch manager details...");
                 $('#email_field').show();
                 fetchManagerDetails(selectedManagerId, false);
 
                 var existingEmail = @json(old('mangered', $department->manager ? $email : null));
                 var existingBudget = @json(old('budget', $department->reservation_allowance_amount ? $department->reservation_allowance_amount : ''));
-
-                console.log("Existing Email:", existingEmail);
-                console.log("Existing Budget:", existingBudget);
 
                 if (existingEmail) {
                     $('#email_field').css({
@@ -329,6 +371,7 @@
 
                         // Show password and rule fields for employees
                         if (data.email) {
+                            $('#email_field').show();
 
                             if (data.email === 'لا يوجد بريد الكتروني') {
                                 $('#email').val('');
@@ -390,24 +433,30 @@
                 // Reset the manager details if no manager ID is provided
                 $('#manager_details').hide();
                 $('#email_field').hide();
-                $('#email').hide();
+                $('#email').val('');
             }
         }
 
-        $('#manager_details').hide();
-        $('#email_field').hide();
+        // $('#manager_details').hide();
+        // $('#email_field').hide();
 
         // Use 'blur' event to trigger the check when the input field loses focus
         $('#mangered').on('blur', function() {
             var managerId = $(this).val();
             $('#email').val('');
-            fetchManagerDetails(managerId);
+            fetchManagerDetails(managerId, true);
+        });
+        $('#Qta3-form').on('submit', function() {
+            var managerId = $('#mangered').val();
+            if (!managerId) {
+                $('#mangered').val(null);
+            }
         });
 
-        var selectedManagerId = $('#mangered').val();
-        if (selectedManagerId) {
-            fetchManagerDetails(selectedManagerId);
-        }
+        // var selectedManagerId = $('#mangered').val();
+        // if (selectedManagerId) {
+        //     fetchManagerDetails(selectedManagerId);
+        // }
     </script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -467,17 +516,18 @@
             const emailInput = document.getElementById('email');
 
             // Function to toggle the 'required' attribute based on email field visibility
-            function toggleEmailRequired() {
-                if (emailField.style.display === 'block') {
-                    emailInput.setAttribute('required', 'required');
-                } else {
-                    emailInput.removeAttribute('required');
-                }
-            }
+            // function toggleEmailRequired() {
+            //     if (emailField.style.display === 'block') {
+            //         emailInput.setAttribute('required', 'required');
+            //     } else {
+            //         emailInput.removeAttribute('required');
+            //     }
+            // }
 
 
-            // Call toggle function after changing visibility
-            toggleEmailRequired();
+            // // Call toggle function after changing visibility
+            // toggleEmailRequired();
+            // mangeredInput.addEventListener('input', toggleEmailField);
 
         });
     </script>
