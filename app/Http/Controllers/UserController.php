@@ -984,6 +984,8 @@ class UserController extends Controller
         }
         UpdateUserHistory($newUser->id);
         addUserHistory($newUser->id,  $id_department,  $request->sector);
+        UpdateUserGradeHistory($newUser->id);
+        addUserGradeHistory($newUser->id, $newUser->grade_id);
         // $id = $request->type;
         return redirect()->route('user.employees', $request->flag);
     }
@@ -1270,6 +1272,8 @@ class UserController extends Controller
         // }
         UpdateUserHistory($user->id);
         addUserHistory($user->id,  $id_department,  $request->sector);
+        UpdateUserGradeHistory($user->id);
+        addUserGradeHistory($user->id, $user->grade_id);
         session()->flash('success', 'تم الحفظ بنجاح.');
         return redirect()->route('user.employees', $request->flag);
     }
