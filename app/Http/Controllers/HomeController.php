@@ -15,6 +15,7 @@ class HomeController extends Controller
     //
     public function index(Request $request)
     {
+        // dd(0);
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) { //superadmin
             $empCount = User::where('flag','employee')->count();
             $depMainCount = departements::where('parent_id', null)->count();
