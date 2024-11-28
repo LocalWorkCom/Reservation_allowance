@@ -43,11 +43,6 @@ class sectorsController extends Controller
             ], 405);
         }
 
-        // Calculate seniority (years of service)
-        $joiningDate = $manager->joining_date ? Carbon::parse($manager->joining_date) : Carbon::parse($manager->created_at);
-        $today = Carbon::now();
-        $yearsOfService = $joiningDate->diffInYears($today) ?? 'لا يوجد بيانات أقدميه';
-
         // Check if the manager is an employee (based on the 'employee' flag)
         $isEmployee = $manager->flag === 'employee';
 
@@ -55,7 +50,6 @@ class sectorsController extends Controller
         return response()->json([
             'rank' => $manager->grade_id ? $manager->grade->name : 'لا يوجد رتبه',
             'job_title' => $manager->job_title ?? 'لا يوجد مسمى وظيفى',
-
             'name' => $manager->name,
             'phone' => $manager->phone ?? 'لا يوجد رقم هاتف',
             'email' => $manager->email ?? 'لا يوجد بريد الكتروني',
@@ -231,10 +225,6 @@ class sectorsController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-
-
-
-
         // Process Civil_numbers input into an array
         $Civil_numbers = str_replace(["\r", "\r\n", "\n"], ',', $request->Civil_number);
         $Civil_numbers = explode(',', $Civil_numbers);
@@ -382,7 +372,6 @@ class sectorsController extends Controller
 
     public function update(Request $request, Sector $sector)
     {
-        // dd($request->all());
         $sector = Sector::find($request->id);
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
@@ -417,15 +406,7 @@ class sectorsController extends Controller
 
         // Check allowance condition and add custom error if needed
         $allowance = $this->getAllowance($request->budget, $request->id);
-        // If the budget condition doesn't pass
-        // if ($allowance->original['is_allow']) {
-        //     $errorMessage = '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowance->original['total'] . ' لوجود بدلات حجز اكبر من القيمه المدخله';
 
-        //     // Add the custom budget error to the validator's errors
-        //     $validator->errors()->add('budget', $errorMessage);
-
-        //     return redirect()->back()->withErrors($validator)->withInput();
-        // }
         $allowanceData = json_decode($allowance->getContent(), true);  // Decode JSON response
 
         // Now you can check the 'is_allow' value as expected
@@ -437,7 +418,6 @@ class sectorsController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
         // Continue with further logic if validation passes
-
 
         $oldManager = $sector->manager;
         $manager = $request->mangered ? User::where('file_number', $request->mangered)->value('id') : null;
@@ -519,7 +499,6 @@ class sectorsController extends Controller
             }
         } else {
             $sector_manager = Sector::where('manager', $manager)->whereNot('id', $sector->id)->get();
-            // dd($sector_manager->isNotEmpty());
 
             if ($sector_manager->isNotEmpty()) {
                 $sector_manage = Sector::where('manager', $manager)->whereNot('id', $sector->id)->first();

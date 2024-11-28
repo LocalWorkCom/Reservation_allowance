@@ -9,7 +9,7 @@ class outgoings extends Model
 {
     use HasFactory;
     protected $table = 'outgoings';
-    protected $fillable = [ 
+    protected $fillable = [
         "name",
         "num",
         "note",
@@ -18,18 +18,6 @@ class outgoings extends Model
         "created_by",
         "updated_by ",
     ];
-    // public function department_External()
-    // {
-    //     return $this->belongsTo(ExternalDepartment::class,'department_id');
-    // }
-    // public function files()
-    // {
-    //     return $this->belongsTo(outgoing_files::class,'');
-    // }
-    // public function personTo()
-    // {
-    //     return $this->belongsTo(exportuser::class, 'person_to', 'id');
-    // }
 
     public function createdBy()
     {
@@ -44,5 +32,5 @@ class outgoings extends Model
     {
         return $this->belongsTo(departements::class);
     }
-    
+
 }

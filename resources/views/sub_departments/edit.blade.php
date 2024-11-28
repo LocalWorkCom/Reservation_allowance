@@ -324,11 +324,11 @@
                         $('#manager_details').find('span').eq(4).text(
                             data.email);
                         $('#manager_details').show();
+                        $('#email_field').show();
 
 
                         // Show password and rule fields for employees
                         if (data.email) {
-                            $('#email_field').show();
 
                             if (data.email === 'لا يوجد بريد الكتروني') {
                                 $('#email').val('');

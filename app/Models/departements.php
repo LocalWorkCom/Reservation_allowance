@@ -25,21 +25,16 @@ class departements extends Model
     protected $hidden = [
         'id'
     ];
-    
+
     public function getRouteKeyName()
     {
         return 'uuid';
     }
-   
+
     public function employees()
     {
         return $this->hasMany(User::class , 'department_id');
     }
-    // Relationships
-    // public function manager()
-    // {
-    //     return $this->belongsTo(User::class, 'manger');
-    // }
 
     public function manager()
     {
@@ -66,7 +61,7 @@ class departements extends Model
     {
         return $this->hasMany(Iotelegram::class , 'from_departement');
     }
-    
+
     public function outgoings()
     {
         return $this->hasMany(outgoings::class, 'created_department');
@@ -82,7 +77,7 @@ class departements extends Model
         return $this->belongsTo(Sector::class, 'sector_id');
     }
 
-    public function reservationAllowances() 
+    public function reservationAllowances()
     {
         return $this->hasMany(ReservationAllowance::class, 'departement_id');
     }

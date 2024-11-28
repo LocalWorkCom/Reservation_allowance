@@ -1,28 +1,29 @@
 <?php
 
-use App\Models\history_allawonce;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Groups;
 use App\Models\Sector;
+use App\Mail\SendEmail;
 use App\Models\Country;
 use App\Models\Io_file;
 use App\Models\Inspector;
+use App\Models\UserGrade;
 use App\Models\Government;
 use App\Models\departements;
-use App\Models\GroupSectorHistory;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
-use App\Models\InspectorGroupHistory;
-use Intervention\Image\Facades\Image;
-use Illuminate\Support\Facades\Storage;
-use Google\Client as GoogleClient;
-use App\Mail\SendEmail;
 use App\Models\UserDepartment;
-use Illuminate\Support\Facades\Mail;
+use App\Models\history_allawonce;
+use App\Models\GroupSectorHistory;
+use Google\Client as GoogleClient;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use App\Models\InspectorGroupHistory;
 use Illuminate\Support\Facades\Crypt;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Contracts\Encryption\DecryptException;
 
 if (!function_exists('whats_send')) {
@@ -330,6 +331,7 @@ function convertToArabicNumerals($number)
 }
 function addUserHistory($user_id, $department_id, $sector_id)
 {
+    
     DB::table('user_departments')->insert([
         'user_id' => $user_id,
         'department_id' => $department_id,
@@ -342,6 +344,27 @@ function UpdateUserHistory($user_id)
 {
 
     $all_rec = UserDepartment::where('user_id', $user_id)->get();
+    if ($all_rec->count()) {
+
+        foreach ($all_rec as $value) {
+            $value->flag = '0';
+            $value->save();
+        }
+    }
+}
+function addUserGradeHistory($user_id, $grade_id)
+{
+    DB::table('user_grades')->insert([
+        'user_id' => $user_id,
+        'grade_id' => $grade_id,
+        'flag' => "1",
+        'created_at' => now(),
+    ]);
+}
+function UpdateUserGradeHistory($user_id)
+{
+
+    $all_rec = UserGrade::where('user_id', $user_id)->get();
     if ($all_rec->count()) {
 
         foreach ($all_rec as $value) {

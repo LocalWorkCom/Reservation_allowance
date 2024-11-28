@@ -63,14 +63,17 @@ class ReserveSectorController extends Controller
                 })
                 ->addColumn('reservation_allowance_budget', function ($row) use ($month, $year) {
                     $amount = DB::table('history_allawonces')
-                        ->where('sector_id', $row->id)
-                        ->whereYear('date', $year)
-                        ->whereMonth('date', $month)
-                        ->value('amount');
-                        if (is_null($amount) || $amount == 0) {
-                            return "ميزانية غير محدده"; // Open budget
-                        }
-                    return number_format($amount, 2) . ' د.ك';
+                    ->where('sector_id', $row->id)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->orderBy('date', 'desc') 
+                    ->value('amount'); 
+                
+                if (is_null($amount) || $amount == 0) {
+                    return "ميزانية غير محدده"; 
+                }
+                
+                return number_format($amount, 2) . ' د.ك';
                 })
                 // Total registered amount for the selected period
                 ->addColumn('registered_amount', function ($row) use ($month, $year) {
@@ -88,16 +91,21 @@ class ReserveSectorController extends Controller
                         ->whereYear('date', $year)
                         ->whereMonth('date', $month)
                         ->sum('amount');
-                    $historicalAmount = DB::table('history_allawonces')
+                        $historicalAmount = DB::table('history_allawonces')
                         ->where('sector_id', $row->id)
                         ->whereYear('date', $year)
                         ->whereMonth('date', $month)
+                        ->orderBy('date', 'desc') 
                         ->value('amount');
-                 if ( $historicalAmount == 0 || is_null( $historicalAmount)) {
-                        return "-";
+                    
+                    if (is_null($historicalAmount) || $historicalAmount == 0) {
+                        return "-"; 
                     }
+                    
                     $remainingAmount = $historicalAmount - $registeredAmount;
+                    
                     return number_format($remainingAmount, 2) . " د.ك";
+                    
                 })
                 ->addColumn('employees_count', function ($row) use ($month, $year) {
                     return DB::table('user_departments')

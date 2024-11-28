@@ -16,9 +16,9 @@
                 <div class="d-flex justify-content-between">
                     <p> الرتـــــــب</p>
                     @if (Auth::user()->hasPermission('create grade'))
-                        <button type="button" class="btn-all  " onclick="openadd()" >
+                        <button type="button" class="btn-all  " onclick="openadd()">
 
-                            اضافة رتبة جديده 
+                            اضافة رتبة جديده
                         </button>
                     @endif
                 </div>
@@ -331,7 +331,19 @@
             document.getElementById('value_alledit').value = value_all || ''; // Value All
             document.getElementById('value_partedit').value = value_part || ''; // Value Part
             document.getElementById('orderedit').value = order || ''; // Order
+            const typeDropdown = document.getElementById('typeedit');
 
+            // Reset the dropdown to ensure no incorrect selection
+            typeDropdown.value = '';
+            Array.from(typeDropdown.options).forEach(option => {
+                option.selected = false;
+            });
+
+            // Select the correct option based on the type value
+            const selectedOption = Array.from(typeDropdown.options).find(option => option.value === String(type));
+            if (selectedOption) {
+                selectedOption.selected = true; // Mark it as selected
+            }
             // Open the modal
             $('#edit').modal('show');
         }
@@ -433,12 +445,11 @@
                         @if (Auth::user()->hasPermission('edit grade'))
                             options +=
                                 `<option value="edit" class="text-center" style="color:#eb9526;">تعديل</option>`;
-                                @endif
+                        @endif
                         @if (Auth::user()->hasPermission('delete grade'))
                             options +=
                                 `<option value="delete" class="text-center" style="color:#c50c0c;">حذف</option>`;
-
-                                @endif
+                        @endif
                         // Return the dropdown with options
                         return `
                     <select class="form-select form-select-sm btn-action" onchange="handleAction(this.value, '${row.id}', '${row.name}', '${row.type}', '${row.value_all}', '${row.value_part}', '${row.order}')" aria-label="Actions" style="width: auto;">
