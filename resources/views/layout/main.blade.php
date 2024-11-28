@@ -22,8 +22,8 @@
     <link rel="stylesheet" href="{{ asset('frontend/styles/all.min.css') }}">
 
     <link href="{{ asset('frontend/styles/font-awesome.min.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('frontend/styles/webfonts/fa-regular-400.woff2') }}">
-    <link rel="stylesheet" href="{{ asset('frontend/styles/webfonts/fa-regular-400.woff2') }}">
+    <link rel="stylesheet" href="{{ asset('frontend/styles/font-awesome/css/all.min.css') }}">
+
 
     <!-- Bootstrap-->
     <link href="{{ asset('frontend/styles/bootstrap.min.css') }}" rel="stylesheet" id="bootstrap-css">
