@@ -206,7 +206,17 @@
                         $('#email').val(@json(old('email')));
                     }
 
-                
+                    if (existingBudget) {
+                        $('#notFree').prop('checked', true);
+                        $('#budgetField').css({
+                            display: 'block',
+                            visibility: 'visible',
+                            opacity: 1
+                        });
+                        $('#budget').val(existingBudget);
+                    } else {
+                        $('#Free').prop('checked', true);
+                    }
                 } else {
                     $('#manager_details').hide();
                     $('#email_field').hide();
@@ -238,7 +248,17 @@
                     $('#email').val(existingEmail);
                 }
 
-     
+                if (existingBudget) {
+                    $('#notFree').prop('checked', true);
+                    $('#budgetField').css({
+                        display: 'block',
+                        visibility: 'visible',
+                        opacity: 1
+                    });
+                    $('#budget').val(existingBudget);
+                } else {
+                    $('#Free').prop('checked', true);
+                }
             } else {
                 $('#manager_details').hide();
                 $('#email_field').hide();
@@ -386,6 +406,34 @@
             });
         });
 
+        window.addEventListener('load', function() {
+            const notFree = document.getElementById('notFree');
+            const free = document.getElementById('free');
+            const budgetField = document.getElementById('budgetField');
+            const budget = document.getElementById('budget'); // Input field for budget
+
+            // Check initial state of radio buttons on page load
+            if (notFree.checked) {
+                budgetField.style.display = 'block'; // Show the budget field
+            } else if (free.checked) {
+                budgetField.style.display = 'none'; // Hide the budget field
+                budget.value = ''; // Clear the budget field
+            }
+
+            // Listen for changes on the radio buttons
+            notFree.addEventListener('change', function() {
+                if (notFree.checked) {
+                    budgetField.style.display = 'block'; // Show the budget field
+                }
+            });
+
+            free.addEventListener('change', function() {
+                if (free.checked) {
+                    budgetField.style.display = 'none'; // Hide the budget field
+                    budget.value = ''; // Clear the budget field
+                }
+            });
+        });
 
         window.addEventListener('load', function() {
             const mangeredInput = document.getElementById('mangered');
