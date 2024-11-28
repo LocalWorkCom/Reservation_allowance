@@ -25,8 +25,4 @@ class Notification extends Model
     /**
      * Get the mission that owns the notification.
      */
-    public function mission()
-    {
-        return $this->belongsTo(InspectorMission::class, 'mission_id');
-    }
 }

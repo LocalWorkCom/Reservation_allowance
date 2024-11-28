@@ -314,9 +314,9 @@ class UserController extends Controller
         //dd($request->amp;type);
         if ($sector_id) {
             if ($status == 'null') {
-                $data = $data->where('sector', $sector_id);
+                $data = $data->where('sector', $sector_id)->whereNull('department_id');
             } else if ($status == 'notnull') {
-                $data = $data->where('sector', $sector_id);
+                $data = $data->where('sector', $sector_id)->whereNotNull('department_id');
             }
         }
 
@@ -1186,10 +1186,13 @@ class UserController extends Controller
                 $newdepmanger = departements::find($id_department);
                 if ($newdepmanger) {
                     $old_user = User::find($newdepmanger->manger);
-                    $old_user->flag = 'employee';
-                    $old_user->password = null;
-                    $old_user->rule_id = null;
-                    $old_user->save();
+                    if ($old_user) {
+
+                        $old_user->flag = 'employee';
+                        $old_user->password = null;
+                        $old_user->rule_id = null;
+                        $old_user->save();
+                    }
                 }
                 $newdepmanger->manger = $user->id;
                 $newdepmanger->save();

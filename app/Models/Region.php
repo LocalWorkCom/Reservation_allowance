@@ -14,13 +14,9 @@ class Region extends Model
     protected $fillable = [
         'name'
     ];
-    
+
     public function government()
     {
         return $this->belongsTo(Government::class, 'government_id ', 'id');
-    }
-    public function points()
-    {
-        return $this->hasMany(Point::class);
     }
 }
