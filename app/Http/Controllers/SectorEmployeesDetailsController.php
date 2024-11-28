@@ -36,67 +36,100 @@ class SectorEmployeesDetailsController extends Controller
     }
     
     public function getData($sectorUuid, Request $request)
-    {
-        $sector = Sector::where('uuid', $sectorUuid)->first();
-        if (!$sector) {
-            return response()->json(['error' => 'Sector not found'], 404);
-        }
-
-        $month = $request->input('month');
-        $year = $request->input('year');
-
-        $employees = User::whereIn('id', function ($query) use ($sector, $month, $year) {
-                $query->select('user_id')
-                      ->from('reservation_allowances')
-                      ->where('sector_id', $sector->id)
-                      ->whereYear('date', $year)
-                      ->whereMonth('date', $month);
-            })
-            ->with(['grade', 'department'])
-            ->get();
-
-        return DataTables::of($employees)
-            ->addColumn('file_number', fn($user) => $user->file_number)
-            ->addColumn('name', fn($user) => $user->name)
-            ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
-            ->addColumn('department', fn($user) => $user->department->name ?? 'N/A')
-            ->addColumn('days', function ($user) use ($sector, $month, $year) {
-                $fullDays = ReservationAllowance::where('user_id', $user->id)
-                            ->where('sector_id', $sector->id)
-                            ->whereYear('date', $year)
-                            ->whereMonth('date', $month)
-                            ->where('type', 1)
-                            ->count();
-
-                $partialDays = ReservationAllowance::where('user_id', $user->id)
-                               ->where('sector_id', $sector->id)
-                               ->whereYear('date', $year)
-                               ->whereMonth('date', $month)
-                               ->where('type', 2)
-                               ->count();
-
-                return "كلي: $fullDays | جزئي: $partialDays | مجموع: " . ($fullDays + $partialDays);
-            })
-            ->addColumn('allowance', function ($user) use ($sector, $month, $year) {
-                $fullAllowance = ReservationAllowance::where('user_id', $user->id)
-                                 ->where('sector_id', $sector->id)
-                                 ->whereYear('date', $year)
-                                 ->whereMonth('date', $month)
-                                 ->where('type', 1)
-                                 ->sum('amount');
-
-                $partialAllowance = ReservationAllowance::where('user_id', $user->id)
-                                    ->where('sector_id', $sector->id)
-                                    ->whereYear('date', $year)
-                                    ->whereMonth('date', $month)
-                                    ->where('type', 2)
-                                    ->sum('amount');
-
-                return "كلي: " . number_format($fullAllowance, 2) . " د.ك | جزئي: " . number_format($partialAllowance, 2) . " د.ك | مجموع: " . number_format($fullAllowance + $partialAllowance, 2) . " د.ك";
-            })
-            ->addIndexColumn()
-            ->make(true);
+{
+    $sector = Sector::where('uuid', $sectorUuid)->first();
+    if (!$sector) {
+        return response()->json(['error' => 'Sector not found'], 404);
     }
+
+    $month = $request->input('month');
+    $year = $request->input('year');
+
+    $employees = User::whereIn('id', function ($query) use ($sector, $month, $year) {
+            $query->select('user_id')
+                  ->from('reservation_allowances')
+                  ->where('sector_id', $sector->id)
+                  ->whereYear('date', $year)
+                  ->whereMonth('date', $month);
+        })
+        ->with(['grade', 'department'])
+        ->get();
+
+    return DataTables::of($employees)
+        ->addColumn('file_number', fn($user) => $user->file_number)
+        ->addColumn('name', fn($user) => $user->name)
+        ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
+        ->addColumn('department', fn($user) => $user->department->name ?? 'N/A')
+        ->addColumn('full_days', function ($user) use ($sector, $month, $year) {
+            return ReservationAllowance::where('user_id', $user->id)
+                ->where('sector_id', $sector->id)
+                ->whereYear('date', $year)
+                ->whereMonth('date', $month)
+                ->where('type', 1)
+                ->count();
+        })
+        ->addColumn('partial_days', function ($user) use ($sector, $month, $year) {
+            return ReservationAllowance::where('user_id', $user->id)
+                ->where('sector_id', $sector->id)
+                ->whereYear('date', $year)
+                ->whereMonth('date', $month)
+                ->where('type', 2)
+                ->count();
+        })
+        ->addColumn('total_days', function ($user) use ($sector, $month, $year) {
+            $fullDays = ReservationAllowance::where('user_id', $user->id)
+                ->where('sector_id', $sector->id)
+                ->whereYear('date', $year)
+                ->whereMonth('date', $month)
+                ->where('type', 1)
+                ->count();
+
+            $partialDays = ReservationAllowance::where('user_id', $user->id)
+                ->where('sector_id', $sector->id)
+                ->whereYear('date', $year)
+                ->whereMonth('date', $month)
+                ->where('type', 2)
+                ->count();
+
+            return $fullDays + $partialDays;
+        })
+        ->addColumn('full_allowance', function ($user) use ($sector, $month, $year) {
+            return ReservationAllowance::where('user_id', $user->id)
+                ->where('sector_id', $sector->id)
+                ->whereYear('date', $year)
+                ->whereMonth('date', $month)
+                ->where('type', 1)
+                ->sum('amount');
+        })
+        ->addColumn('partial_allowance', function ($user) use ($sector, $month, $year) {
+            return ReservationAllowance::where('user_id', $user->id)
+                ->where('sector_id', $sector->id)
+                ->whereYear('date', $year)
+                ->whereMonth('date', $month)
+                ->where('type', 2)
+                ->sum('amount');
+        })
+        ->addColumn('total_allowance', function ($user) use ($sector, $month, $year) {
+            $fullAllowance = ReservationAllowance::where('user_id', $user->id)
+                ->where('sector_id', $sector->id)
+                ->whereYear('date', $year)
+                ->whereMonth('date', $month)
+                ->where('type', 1)
+                ->sum('amount');
+
+            $partialAllowance = ReservationAllowance::where('user_id', $user->id)
+                ->where('sector_id', $sector->id)
+                ->whereYear('date', $year)
+                ->whereMonth('date', $month)
+                ->where('type', 2)
+                ->sum('amount');
+
+            return $fullAllowance + $partialAllowance;
+        })
+        ->addIndexColumn()
+        ->make(true);
+}
+
 
     public function notReservedUsers(Request $request, $sectorUuid)
     {
