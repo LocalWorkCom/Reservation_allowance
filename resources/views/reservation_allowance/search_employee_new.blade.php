@@ -189,15 +189,15 @@
                                         <p>رقم الملف</p>
                                     </th>
 
-                                    <th>بدل الحجز</th>
+                                    <th colspan="3">بدل الحجز</th>
                                     <!-- <th style="width:150px;">العمليات</th>-->
                                 </tr>
 
                                 <tr>
+                                    @if ($reservation_allowance_type == 1 || $reservation_allowance_type == 3)
                                     <th>
                                         <div class="d-flex"
                                             style="justify-content: space-around !important">
-                                            @if ($reservation_allowance_type == 1 || $reservation_allowance_type == 3)
                                                 <div
                                                     style="display: inline-flex; direction: ltr;">
                                                     <label for=""> حجز كلى
@@ -208,10 +208,15 @@
                                                         onclick="check_all(1)"
                                                         value="1"
                                                         class="form-control">
-                                                </div>
-                                                <span>|</span>
-                                            @endif
-                                            @if ($reservation_allowance_type == 2 || $reservation_allowance_type == 3)
+                                                </div>                                            
+                                        </div>
+                                    </th>
+                                    @endif
+
+                                    @if ($reservation_allowance_type == 2 || $reservation_allowance_type == 3)
+                                    <th>
+                                        <div class="d-flex"
+                                            style="justify-content: space-around !important">
                                                 <div
                                                     style="display: inline-flex; direction: ltr;">
                                                     <label for=""> حجز جزئى
@@ -223,8 +228,13 @@
                                                         value="2"
                                                         class="form-control">
                                                 </div>
-                                                <span>|</span>
-                                            @endif
+                                        </div>
+                                    </th>
+                                    @endif
+
+                                    <th>
+                                        <div class="d-flex"
+                                            style="justify-content: space-around !important">
                                             <div
                                                 style="display: inline-flex; direction: ltr;">
                                                 <label for=""> لا يوجد
@@ -250,13 +260,12 @@
                                         <th style="text-align: center;">{{ $x }}</th>
                                         <th style="text-align: center;">{{ $employee->grade_id != null ? $employee->grade->name : 'لا يوجد رتبة' }}
                                         <th style="text-align: center;">{{ $employee->name }}</th>
-                                        <th style="text-align: center;">{{ $employee->file_number != null ? $employee->file_number : 'لا يوجد رقم ملف' }}
-                                        </th>
-                                        </th>
+                                        <th style="text-align: center;">{{ $employee->file_number != null ? $employee->file_number : 'لا يوجد رقم ملف' }}</th>
+                                        
+                                        @if ($reservation_allowance_type == 1 || $reservation_allowance_type == 3)
                                         <th>
                                             <div class="d-flex"
                                                 style="justify-content: space-around !important">
-                                                @if ($reservation_allowance_type == 1 || $reservation_allowance_type == 3)
                                                     <div
                                                         style="display: inline-flex; direction: ltr; text-align: center;">
                                                         <label for=""> حجز
@@ -268,9 +277,14 @@
                                                             value="{{ $employee->id }}"
                                                             class="form-control emlpoyee_allowance_radio">
                                                     </div>
-                                                    <span>|</span>
-                                                @endif
-                                                @if ($reservation_allowance_type == 2 || $reservation_allowance_type == 3)
+                                            </div>
+                                        </th>
+                                        @endif
+
+                                        @if ($reservation_allowance_type == 2 || $reservation_allowance_type == 3)
+                                        <th>
+                                            <div class="d-flex"
+                                                style="justify-content: space-around !important">
                                                     <div
                                                         style="display: inline-flex; direction: ltr; text-align: center;">
                                                         <label for=""> حجز
@@ -281,9 +295,14 @@
                                                             onclick="add_to_cache(2, {{ $employee->id }})"
                                                             value="{{ $employee->id }}"
                                                             class="form-control emlpoyee_allowance_radio">
-                                                    </div>
-                                                    <span>|</span>
-                                                @endif
+                                                    </div>                                                
+                                            </div>
+                                        </th>
+                                        @endif
+
+                                        <th>
+                                            <div class="d-flex"
+                                                style="justify-content: space-around !important">
                                                 <div
                                                     style="display: inline-flex; direction: ltr; text-align: center;">
                                                     <label for=""> لا

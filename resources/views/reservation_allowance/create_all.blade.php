@@ -95,7 +95,7 @@
                                     <option value="0" selected>اختار القطاع
                                     </option>
                                     @foreach ($sectors as $sector)
-                                        <option value="{{ $sector->id }}">
+                                        <option value="{{ $sector->uuid }}">
                                             {{ $sector->name }}</option>
                                     @endforeach
                                 </select>
