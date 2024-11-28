@@ -247,7 +247,7 @@
                                         <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i> المهام
                                     </label>
                                     <select id="input77" name="rule_id" class="form-control select2"
-                                        placeholder="المهام">
+                                        placeholder="المهام" style="width:100% !important;">
                                         <option disabled>اختار من القائمة</option>
                                         @foreach ($rule as $item)
                                             <option value="{{ $item->id }}"
@@ -377,11 +377,12 @@
                     console.log("Flag:", flagValue, "Rule:", ruleValue);
 
                     // Toggle the visibility of additional fields
-                    if (flagValue === 'user ') {
-                        additionalFields.style.display = 'block';
-                    } else {
-                        additionalFields.style.display = 'none';
-                    }
+                    if (flagValue === 'user') {
+    additionalFields.classList.remove('d-none'); // Remove the class that hides the element
+} else {
+    additionalFields.classList.add('d-none'); // Add the class to hide the element
+}
+
 
                     // Reset attributes
                     departmentSelect.removeAttribute('required');
@@ -410,7 +411,7 @@
 
             $(document).ready(function() {
                 $('#input13').change(function() {
-                    if ($(this).val() === 'user ') {
+                    if ($(this).val() === 'user') {
                         $('#additionalFields').css('display', 'block');
                     } else {
                         $('#additionalFields').css('display', 'none');
