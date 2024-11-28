@@ -23,7 +23,7 @@ class Sector extends Model
     protected $hidden = [
         'id'
     ];
-    
+
     public function getRouteKeyName()
     {
         return 'uuid';
@@ -38,10 +38,6 @@ class Sector extends Model
     public function government()
     {
         return $this->belongsTo(Government::class, 'governments_IDs', 'id');
-    }
-    public function points()
-    {
-        return $this->hasMany(Point::class);
     }
 
     public function departements()

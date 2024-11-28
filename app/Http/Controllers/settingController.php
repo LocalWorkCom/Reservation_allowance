@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTables\gradeDataTable;
-use App\DataTables\jobDataTable;
 use App\Http\Controllers\Controller;
-use App\Models\Government;
 use App\Models\grade;
 use App\Models\job;
-use Illuminate\Validation\Rule; // Ensure this is at the top
+use Illuminate\Validation\Rule;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
@@ -24,8 +21,6 @@ class settingController extends Controller
     {
         $this->middleware('auth');
     }
-
-
     //START JOB
     //show JOB
     public function indexjob()
@@ -70,7 +65,6 @@ class settingController extends Controller
         $job->save();
         $message = "تم اضافه الوظيفه";
         return redirect()->route('job.index')->with('message', $message);
-        //return redirect()->back()->with(compact('activeTab','message'));
     }
     //show JOB
     public function showjob($id)
@@ -96,8 +90,6 @@ class settingController extends Controller
         $job->save();
         $message = 'تم تعديل المسمى الوظيفى';
         return redirect()->route('job.index')->with('message', $message);
-        // return redirect()->back()->with(compact('activeTab'));
-
     }
 
     //delete JOB
@@ -105,7 +97,6 @@ class settingController extends Controller
     {
 
         $isForeignKeyUsed = DB::table('users')->where('job_id', $request->id)->exists();
-        //dd($isForeignKeyUsed);
         if ($isForeignKeyUsed) {
             return redirect()->route('job.index')->with(['message' => 'لا يمكن حذف هذه الوظيفه يوجد موظفين لها']);
         } else {
@@ -124,7 +115,6 @@ class settingController extends Controller
     public function getAllNationality(Request $request)
     {
         $data = Country::query();
-
         // Check if there is a search query
         if ($search = $request->get('search')['value']) {
             $data->where(function ($query) use ($search) {
@@ -132,7 +122,6 @@ class settingController extends Controller
                     ->orWhere('code', 'LIKE', "%$search%");
             });
         }
-
         // Order the data (same as before)
         $data = $data->orderBy('country_name_en', 'ASC');
 
