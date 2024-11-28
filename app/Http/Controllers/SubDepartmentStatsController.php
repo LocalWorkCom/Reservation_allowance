@@ -44,12 +44,18 @@ class SubDepartmentStatsController extends Controller
                 ->addColumn('sub_department_name', fn($row) => $row->name)
                 ->addColumn('reservation_allowance_budget', function ($row) use ($month, $year) {
                     $amount = DB::table('history_allawonces')
-                        ->where('department_id', $row->id)
-                        ->whereYear('date', $year)
-                        ->whereMonth('date', $month)
-                        ->sum('amount');
+                    ->where('department_id', $row->id)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->sum('amount');
 
-                    return $amount ? number_format($amount, 2) . " د.ك" : "ميزانية غير محدده";
+                // Check if the amount is null or zero
+                if (is_null($amount) || $amount == 0) {
+                    return "ميزانية غير محدده"; // Return "Unspecified Budget"
+                }
+
+                return number_format($amount, 2) . " د.ك";
+
                 })
                 ->addColumn('registered_by', function ($row) use ($month, $year) {
                     $sum = ReservationAllowance::where('departement_id', $row->id)
