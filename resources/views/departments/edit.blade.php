@@ -75,13 +75,8 @@
                             {{ session('success') }}
                         </div>
                     @endif
-                    <form action="{{ route('departments.update', $department) }}" method="POST"
-                        enctype="multipart/form-data">
-                        <!-- <div class="container col-10 mt-5 mb-3 pb-5"
-                                                                        style="border:0.5px solid #C7C7CC;">
-                                                                        <form
-                                                                            action="{{ route('departments.update', $department->id) }}"
-                                                                            method="POST" enctype="multipart/form-data"> -->
+                    <form class="edit-grade-form" id="Qta3-form" action="{{ route('departments.update', $department) }}"
+                        method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -123,13 +118,13 @@
                                 <label for="mangered">رقم ملف المدير</label>
                                 <input type="text" name="mangered" id="mangered" class="form-control"
                                     autocomplete="one-time-code"
-                                    value="{{ old('mangered', $department->manager ? $fileNumber : null) }}">
+                                    value="{{ old('mangered', $department->manager ? $fileNumber : '') }}">
 
                                 @error('mangered')
-                                    <div class="alert alert-danger">{{ $message }}
-                                    </div>
+                                    <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             </div>
+
                             <div class="form-group col-md-12 mx-md-2" id="email_field" style="display: none;"
                                 @error('email') style="display: block;" @enderror>
                                 <label class="pb-3" for="email">الأيميل</label>
@@ -250,18 +245,13 @@
         });
         $(document).ready(function() {
             var selectedManagerId = $('#mangered').val();
-            console.log("Selected Manager ID:", selectedManagerId);
 
             if (selectedManagerId) {
-                console.log("About to show #email_field and fetch manager details...");
                 $('#email_field').show();
                 fetchManagerDetails(selectedManagerId, false);
 
                 var existingEmail = @json(old('mangered', $department->manager ? $email : null));
                 var existingBudget = @json(old('budget', $department->reservation_allowance_amount ? $department->reservation_allowance_amount : ''));
-
-                console.log("Existing Email:", existingEmail);
-                console.log("Existing Budget:", existingBudget);
 
                 if (existingEmail) {
                     $('#email_field').css({
@@ -294,6 +284,7 @@
             if (managerId) {
                 var departmentId = $('#department_id').val();
                 var sectorId = $('#sector').val();
+                var is_EditPages = true;
 
                 $.ajax({
                     url: '/get-manager-details/' + managerId + '?skipDepartmentCheck=' + skipDepartmentCheck +
@@ -301,7 +292,9 @@
                     type: 'GET',
                     data: {
                         department_id: departmentId,
-                        sector_id: sectorId
+                        sector_id: sectorId,
+                        isEditPages: is_EditPages,
+                        skipDepartmentCheck: skipDepartmentCheck
                     }, // Send sector_id to the backend
                     success: function(data) {
                         $('#manager_details').find('span').eq(0).text(
@@ -316,10 +309,10 @@
                             data.email);
                         $('#manager_details').show();
 
+                        $('#email_field').show();
 
                         // Show password and rule fields for employees
                         if (data.email) {
-                            $('#email_field').show();
 
                             if (data.email === 'لا يوجد بريد الكتروني') {
                                 $('#email').val('');
@@ -392,12 +385,12 @@
         $('#mangered').on('blur', function() {
             var managerId = $(this).val();
             $('#email').val('');
-            fetchManagerDetails(managerId, true);
+            fetchManagerDetails(managerId);
         });
 
         var selectedManagerId = $('#mangered').val();
         if (selectedManagerId) {
-            fetchManagerDetails(selectedManagerId, true);
+            fetchManagerDetails(selectedManagerId);
         }
     </script>
     <script>
@@ -469,6 +462,9 @@
 
             // Call toggle function after changing visibility
             toggleEmailRequired();
+
+            mangeredInput.addEventListener('input', toggleEmailField);
+
 
         });
     </script>
