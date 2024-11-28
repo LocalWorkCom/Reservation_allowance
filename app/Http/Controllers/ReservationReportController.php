@@ -353,15 +353,19 @@ class ReservationReportController extends Controller
     
 
 
-public function printSectorDetails(Request $request, $sectorId)
+    public function printSectorDetails(Request $request, $sectorId)
 {
     $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
     $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
 
-    $sector = Sector::where('uuid', $$sectorId)->first();
-    $reservations = ReservationAllowance::where('sector_id', $sectorId)
+    $sector = Sector::where('uuid', $sectorId)->first();
+        if (!$sector) {
+            return response()->json(['error' => 'Sector not found'], 404);
+        }
+
+    $reservations = ReservationAllowance::where('sector_id', $sector->id)
         ->whereBetween('date', [$startDate, $endDate])
-        ->with(['user.grade', 'user.department']) 
+        ->with(['user.grade', 'user.department'])
         ->get()
         ->sortBy(function ($reservation) {
             return optional($reservation->user->grade)->name; 
@@ -375,12 +379,14 @@ public function printSectorDetails(Request $request, $sectorId)
     $pdf->setRTL(true);
     $pdf->SetFont('dejavusans', '', 12);
 
-    // Pass the data to a view and render it as HTML for the PDF
+    // Pass the data to a Blade view and render it as HTML for the PDF
     $html = view('reserv_report.sector_details_pdf', compact('reservations', 'sector', 'startDate', 'endDate'))->render();
     $pdf->writeHTML($html, true, false, true, false, '');
 
     return $pdf->Output("sector_details_report_{$sector->name}.pdf", 'I');
 }
+
+    
 
 
 ////

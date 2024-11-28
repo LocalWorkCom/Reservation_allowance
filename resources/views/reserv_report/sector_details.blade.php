@@ -130,11 +130,15 @@
                 }
             }
         });
-
         $('#print-report').click(function() {
-            const url = `{{ route('reservation_report.sector_details_print', ['sectorId' => $sector->id]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}`;
-            window.open(url, '_blank');
-        });
+    const startDate = '{{ $startDate->format('Y-m-d') }}';
+    const endDate = '{{ $endDate->format('Y-m-d') }}';
+    const url = `{{ route('reservation_report.sector_details_print', ['sectorId' => $sector->uuid]) }}?start_date=${startDate}&end_date=${endDate}`;
+    window.open(url, '_blank');
+});
+
+
+
     });
 </script>
 
