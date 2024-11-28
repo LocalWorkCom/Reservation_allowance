@@ -128,7 +128,9 @@
                             <div class="form-group col-md-12 mx-md-2" id="email_field" style="display: none;"
                                 @error('email') style="display: block;" @enderror>
                                 <label class="pb-3" for="email">الأيميل</label>
-                                <input type="email" name="email" id="email" class="form-control" required>
+                                <input type="email" name="email" id="email"
+                                    value="{{ old('mangered', $department->manger ? $email : null) }}" class="form-control"
+                                    required>
                                 @error('email')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
@@ -245,13 +247,18 @@
         });
         $(document).ready(function() {
             var selectedManagerId = $('#mangered').val();
+            console.log("Selected Manager ID:", selectedManagerId);
 
             if (selectedManagerId) {
+                console.log("About to show #email_field and fetch manager details...");
                 $('#email_field').show();
                 fetchManagerDetails(selectedManagerId, false);
 
                 var existingEmail = @json(old('mangered', $department->manager ? $email : null));
                 var existingBudget = @json(old('budget', $department->reservation_allowance_amount ? $department->reservation_allowance_amount : ''));
+
+                console.log("Existing Email:", existingEmail);
+                console.log("Existing Budget:", existingBudget);
 
                 if (existingEmail) {
                     $('#email_field').css({
@@ -308,8 +315,8 @@
                         $('#manager_details').find('span').eq(4).text(
                             data.email);
                         $('#manager_details').show();
-
                         $('#email_field').show();
+
 
                         // Show password and rule fields for employees
                         if (data.email) {
@@ -462,9 +469,6 @@
 
             // Call toggle function after changing visibility
             toggleEmailRequired();
-
-            mangeredInput.addEventListener('input', toggleEmailField);
-
 
         });
     </script>
