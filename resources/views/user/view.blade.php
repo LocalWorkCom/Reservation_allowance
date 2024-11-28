@@ -90,8 +90,8 @@
                                 القالب</a>
                             @if (Auth::user()->hasPermission('create User'))
                                 <button type="button" class="btn-all mx-2"
-                                    onclick="window.location.href='{{ route('user.create') }}'" >
-                                    اضافة موظف جديد 
+                                    onclick="window.location.href='{{ route('user.create') }}'">
+                                    اضافة موظف جديد
                                 </button>
                             @endif
                         @endif
@@ -362,15 +362,17 @@
                                         'd-none';
                                     var canEdit = `<?php echo Auth::user()->hasPermission('edit User') ? 'd-block-inline' : 'd-none'; ?>`;
                                     var canShow = `<?php echo Auth::user()->hasPermission('view User') ? 'd-block-inline' : 'd-none'; ?>`;
-
                                     return `
+    <select class="form-select form-select-sm btn-action" 
+            onchange="handleAction(this.value, '${row.uuid}', '${usershow}', '${useredit}')" 
+            aria-label="Actions" style="width: auto;">
+        <option value="" class="text-center" style="color: gray;" selected disabled>الخيارات</option>
+        <option value="show" class="text-center ${canShow}" data-url="${usershow}" style="color: #274373;">عرض</option>
+        <option value="edit" class="text-center ${canEdit}" data-url="${useredit}" style="color: #eb9526;">تعديل</option>
+        <option value="unsigned" class="${visibility} ${canEdit} text-center" style="color: #c50c0c;">إلغاء التعيين</option>
+    </select>
+`;
 
-                                            <select class="form-select form-select-sm btn-action" onchange="handleAction(this.value, '${row.uuid}')" aria-label="Actions" style="width: auto;">
-                                                <option value="" class="text-center" style=" color: gray; " selected disabled>الخيارات</option>
-                                                <option value="show" class="text-center ${canShow}" data-url="${usershow}" style=" color: #274373; "> عرض</option>
-                                                <option value="edit" class="text-center ${canEdit}" data-url="${useredit}" style=" color:#eb9526;">تعديل</option>
-                                                <option value="unsigned"  class="${visibility} ${canEdit}  text-center" style=" color:#c50c0c;">الغاء التعيين</option>
-                                            </select> `;
 
                                 }
 
@@ -430,6 +432,16 @@
                             table.page(0).draw(false); // Reset to first page and redraw the table
                         });
                     });
+
+                    function handleAction(action, uuid, usershow, useredit) {
+                        if (action === 'show') {
+                            window.location.href = usershow;
+                        } else if (action === 'edit') {
+                            window.location.href = useredit;
+                        } else if (action === 'unsigned') {
+                            openTransferModal(uuid);
+                        }
+                    }
                 </script>
 
 
