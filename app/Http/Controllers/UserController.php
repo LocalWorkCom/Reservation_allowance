@@ -468,6 +468,9 @@ class UserController extends Controller
         }
         if ($user && $user->last_login == null && $user->password == null) {
             return redirect()->route('passwordManager',['number'=>$number])->with('error', 'يرجى أنشأ كلمه السر الخاصه بك')->withInput();
+        }else{
+            return redirect()->route('enterpassword',['number'=>$number]);
+
         }
         // Check if the user has the correct flag
         if ($user->flag !== 'user') {
