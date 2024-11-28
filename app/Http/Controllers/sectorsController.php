@@ -301,7 +301,8 @@ class sectorsController extends Controller
             $user->flag = 'user';
             $user->rule_id = 4;
             $user->email = $request->email;
-            $user->password = Hash::make('123456');
+            $user->password = null;
+            $user->last_login = null;
             $user->save();
 
             if ($user->email && isValidEmail($user->email)) {
@@ -498,7 +499,8 @@ class sectorsController extends Controller
                     $newManager->flag = 'user';
                     $newManager->rule_id = 4;
                     $newManager->email = $request->email;
-                    $newManager->password = Hash::make('123456');
+                    $newManager->password = null;
+                    $newManager->last_login = null;
                     $newManager->save();
                     if ($newManager->email && isValidEmail($newManager->email)) {
                         Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $newManager->Civil_number, 123456, $newManager->email);
@@ -518,7 +520,8 @@ class sectorsController extends Controller
                 $Manager->sector = $sector->id;
                 $Manager->flag = 'user';
                 $Manager->rule_id = 4;
-                $Manager->password = Hash::make('123456');
+                $Manager->password = null;
+                $Manager->last_login = null;
                 $Manager->eamil = $request->email;
                 $Manager->save();
                 if ($Manager->email && isValidEmail($Manager->email)) {

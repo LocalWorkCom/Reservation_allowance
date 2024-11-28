@@ -78,13 +78,13 @@ $(document).ready(function () {
             {
                 data: 'department_name',
                 render: function (data, type, row) {
-                    return `<a href="{{ url('/statistics_subdepartments') }}/${row.uuid}?month={{ request()->query('month') }}&year={{ request()->query('year') }}" style="color: blue !important;">${data}</a>`;
+                    return `<a href="{{ url('/statistics_subdepartments') }}/${row.uuid}?month={{ request()->query('month') }}&year={{ request()->query('year') }}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
                 },
             },
             {
                 data: 'sub_departments_count',
                 render: function (data, type, row) {
-                    return `<a href="{{ url('/statistics_subdepartments') }}/${row.uuid}?month={{ request()->query('month') }}&year={{ request()->query('year') }}" style="color: blue !important;">${data}</a>`;
+                    return `<a href="{{ url('/statistics_subdepartments') }}/${row.uuid}?month={{ request()->query('month') }}&year={{ request()->query('year') }}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
                 }
             },
             { data: 'reservation_allowance_budget', name: 'reservation_allowance_budget' },
@@ -92,7 +92,7 @@ $(document).ready(function () {
                 render: function (data, type, row) {
                     const month = '{{ request()->query("month") }}';
                     const year = '{{ request()->query("year") }}';
-                    return `<a href="/department-employees/${row.uuid}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                    return `<a href="/department-employees/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
                 },
              },
             { data: 'remaining_amount', name: 'remaining_amount' },
@@ -100,7 +100,7 @@ $(document).ready(function () {
                 render: function(data, type, row) {
                 const month = '{{ request()->query("month") }}';
                 const year = '{{ request()->query("year") }}';
-                return `<a href="/all-department-employees/${row.uuid}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                return `<a href="/all-department-employees/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
             }
              },
             {
@@ -108,14 +108,14 @@ $(document).ready(function () {
                 render: function (data, type, row) {
                     const month = '{{ request()->query("month") }}';
                     const year = '{{ request()->query("year") }}';
-                    return `<a href="/department-employees/${row.uuid}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                    return `<a href="/department-employees/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
                 },
             },
             { data: 'did_not_receive_allowance_count', name: 'did_not_receive_allowance_count',
                 render: function(data, type, row) {
                 const month = '{{ request()->query("month") }}';
                 const year = '{{ request()->query("year") }}';
-                return `<a href="/department-not-received/${row.uuid}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                return `<a href="/department-not-received/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
             }
              },
         ],
