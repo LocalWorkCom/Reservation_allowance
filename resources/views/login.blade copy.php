@@ -46,17 +46,18 @@
                     @if(session('success'))
                         <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
-                    
-                    <label for="password" class="login-label">كلمة المرور</label> <br>
+                    <label for="username" class="login-label">اسم المستخدم</label> <br>
+                    <input type="text" name="number" id="username" class="login-input"> <br>
+                    <!-- <label for="password" class="login-label">كلمة المرور</label> <br>
                     <div class="password-container">
                         <input type="password" name="password" id="password" class="login-input">
                         <label class="toggle-password" onclick="togglePasswordVisibility()">
                             <i id="toggleIcon" class="fa fa-eye"></i>
                         </label>
-                    </div>
-                    <a href="{{ route('forget_password') }}" class="forget-pass-a" style="text-decoration:underline !important;">هل نسيت كلمة المرور؟</a>
+                    </div> -->
+                    <!-- <a href="{{ route('forget_password') }}" class="forget-pass-a" style="text-decoration:underline !important;">هل نسيت كلمة المرور؟</a> -->
                     <div class="btns">
-                        <button class="btn1" type="submit">تسجيل دخول</button>
+                        <button class="btn1" type="submit"> التالي</button>
                     </div>
                 </form>
             </div>

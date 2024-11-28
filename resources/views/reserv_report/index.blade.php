@@ -120,7 +120,7 @@
     data: 'sector_name',
     name: 'sector_name',
     render: function(data, type, row) {
-        return `<a href="/reservation_report/sector/${row.uuid}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#2f6289 !important;">${data}</a>`;
+        return `<a href="/reservation_report/sector/${row.uuid}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
     }
 
 
@@ -129,25 +129,21 @@
        { data: 'main_departments_count',
         name: 'main_departments_count',
         render: function(data, type, row) {
-            return `<a href="/reservation_report/sector/${row.uuid}/departments?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#2f6289 !important;
-    ">${data}</a>`;
+            return `<a href="/reservation_report/sector/${row.uuid}/departments?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
         }},
             { data: 'sub_departments_count', name: 'sub_departments_count', searchable: true ,render: function(data, type, row) {
-            return `<a href="/reservation_report/sector/${row.uuid}/departments?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#2f6289 !important;
-    ">${data}</a>`;
+            return `<a href="/reservation_report/sector/${row.uuid}/departments?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
         }},
             { 
     data: 'employee_count', 
     name: 'employee_count',
     render: function(data, type, row) {
-        return `<a href="/reservation_report/sector/${row.uuid}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#2f6289 !important;
-    ">${data}</a>`;
+        return `<a href="/reservation_report/sector/${row.uuid}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
     }
 },
             { data: 'total_amount', name: 'total_amount', searchable: true,
                 render: function(data, type, row) {
-        return `<a href="/reservation_report/sector/${row.uuid}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#2f6289 !important;
-    ">${data}</a>`;
+        return `<a href="/reservation_report/sector/${row.uuid}/details?start_date=${$('#start-date').val()}&end_date=${$('#end-date').val()}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
     }
             }
         ],  order: [

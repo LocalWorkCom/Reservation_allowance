@@ -139,7 +139,7 @@
                                     .val();
                                 const year = $('#year-select')
                                     .val();
-                                return `<a href="/sector-employees/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important;">${data}</a>`;
+                                return `<a href="/sector-employees/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
                             }
                         },
                         {
@@ -150,7 +150,7 @@
                                     .val();
                                 const year = $('#year-select')
                                     .val();
-                                return `<a href="/statistics_department/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important;">${data}</a>`;
+                                return `<a href="/statistics_department/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
                             }
                         },
                         {
@@ -161,7 +161,7 @@
                                     .val();
                                 const year = $('#year-select')
                                     .val();
-                                return `<a href="/statistics_department/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important;">${data}</a>`;
+                                return `<a href="/statistics_department/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
                             }
                         },
                         {
@@ -176,7 +176,7 @@
                                     .val();
                                 const year = $('#year-select')
                                     .val();
-                                return `<a href="/sector-employees/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important;">${data}</a>`;
+                                return `<a href="/sector-employees/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
                             }
                         },
                         {
@@ -191,7 +191,7 @@
                                     .val();
                                 const year = $('#year-select')
                                     .val();
-                                return `<a href="/sector-users/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important;">${data}</a>`;
+                                return `<a href="/sector-users/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
                             }
                         },
                         {
@@ -202,7 +202,7 @@
                                     .val();
                                 const year = $('#year-select')
                                     .val();
-                                return `<a href="/sector-employees/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important;">${data}</a>`;
+                                return `<a href="/sector-employees/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
                             }
                         },
                         {
@@ -213,7 +213,7 @@
                                     .val();
                                 const year = $('#year-select')
                                     .val();
-                                return `<a href="/sector-employees/${row.uuid}/not-reserved?month=${month}&year=${year}" style="color:#2f6289 !important;">${data}</a>`;
+                                return `<a href="/sector-employees/${row.uuid}/not-reserved?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
                             }
                         }
                     ],
