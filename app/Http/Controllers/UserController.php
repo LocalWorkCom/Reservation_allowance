@@ -469,7 +469,7 @@ class UserController extends Controller
         if ($user && $user->last_login == null && $user->password == null) {
             return redirect()->route('passwordManager',['number'=>$number])->with('error', 'يرجى أنشأ كلمه السر الخاصه بك')->withInput();
         }else{
-            return redirect()->route('enterpassword',['number'=>$number]);
+            return redirect()->route('normalLogin',['number'=>$number]);
 
         }
         // Check if the user has the correct flag
@@ -530,6 +530,10 @@ class UserController extends Controller
         return back()->with('error', 'كلمة المرور لا تتطابق مع سجلاتنا')->withInput();
     }
 
+    public function normalLogin(Request $request){
+        return view('setPasswordManager');//
+
+    }
     public function setpasswordManager(Request $request){
         return view('setPasswordManager');
 
