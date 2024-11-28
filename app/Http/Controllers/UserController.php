@@ -459,12 +459,16 @@ class UserController extends Controller
         $number = $request->number;
         $password = $request->password;
 
+
         // Check if the user exists
         $user = User::where('military_number', $number)->orwhere('Civil_number', $number)->orwhere('file_number', $number)->first();
+
         if (!$user) {
             return back()->with('error', 'الرقم العسكري / الرقم المدنى لا يتطابق مع سجلاتنا')->withInput();
         }
-
+        if ($user && $user->last_login == null && $user->password == null) {
+            return redirect()->route('passwordManager',['number'=>$number])->with('error', 'يرجى أنشأ كلمه السر الخاصه بك')->withInput();
+        }
         // Check if the user has the correct flag
         if ($user->flag !== 'user') {
             return back()->with('error', 'لا يسمح لك بدخول الهيئة')->withInput();
@@ -523,6 +527,10 @@ class UserController extends Controller
         return back()->with('error', 'كلمة المرور لا تتطابق مع سجلاتنا')->withInput();
     }
 
+    public function setpasswordManager(Request $request){
+        return view('setPasswordManager');
+
+    }
     public function resend_code(Request $request)
     {
         $user = User::where('email', $request->number)->first();
@@ -673,7 +681,7 @@ class UserController extends Controller
                 ->with('number', $request->number);
         }
 
-        $user = User::where('email', $request->number)->first();
+        $user = User::where('email', $request->number)->orwhere('file_number', $request->number)->first();
 
         if (!$user) {
             return back()->with('error', 'الرقم العسكري المقدم لا يتطابق مع سجلاتنا');
