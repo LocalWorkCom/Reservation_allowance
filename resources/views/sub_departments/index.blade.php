@@ -190,18 +190,18 @@
                 targets: -1,
                 render: function(data, type, row) {
                     console.log(row);
-                    var departmentEdit =
+                    var sub_departmentEdit =
                         '{{ route('sub_departments.edit', ':uuid') }}';
-                    departmentEdit =
-                        departmentEdit.replace(
+                    sub_departmentEdit =
+                        sub_departmentEdit.replace(
                             ':uuid', row.uuid);
                     var subdepartment =
                         '{{ route('sub_departments.create', ':uuid') }}';
                     subdepartment = subdepartment
                         .replace(':uuid', row.uuid);
-                    var departmentShow =
+                    var sub_departmentShow =
                         '{{ route('departments.show', ':uuid') }}';
-                    departmentShow = departmentShow
+                    sub_departmentShow = sub_departmentShow
                         .replace(':uuid', row.uuid);
                     // var addReservation = '{{ route('departments.show', ':id') }}';
                     /*    var addReservation =
@@ -214,8 +214,8 @@
                     return `
 <select class="form-select form-select-sm btn-action" onchange="handleAction(this.value, '${row.uuid}')" aria-label="Actions" style="width: auto;">
     <option value="" class="text-center" style=" color: gray; " selected disabled>الخيارات</option>
-    <option value="show" class="text-center" data-url="${departmentShow}" style=" color: #274373; "> عرض</option>
-    <option value="edit" class="text-center" data-url="${departmentEdit}" style=" color:#eb9526;">تعديل</option>
+    <option value="show" class="text-center" data-url="${sub_departmentShow}" style=" color: #274373; "> عرض</option>
+    <option value="edit" class="text-center" data-url="${sub_departmentEdit}" style=" color:#eb9526;">تعديل</option>
     <option value="create"  class="${subdepartment}  text-center" style=" color:#008000
 ;">اضافة ادارة فرعية</option>
 </select>
@@ -309,7 +309,7 @@
                 break;
             case "edit":
                 // Redirect to the "edit" page
-                var editUrl = '{{ route('departments.edit', ':uuid') }}'.replace(':uuid', uuid);
+                var editUrl = '{{ route('sub_departments.edit', ':uuid') }}'.replace(':uuid', uuid);
                 window.location.href = editUrl;
                 break;
             case "create":

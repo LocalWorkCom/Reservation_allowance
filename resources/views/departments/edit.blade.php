@@ -75,13 +75,8 @@
                             {{ session('success') }}
                         </div>
                     @endif
-                    <form action="{{ route('departments.update', $department) }}" method="POST"
-                        enctype="multipart/form-data">
-                        <!-- <div class="container col-10 mt-5 mb-3 pb-5"
-                                                                        style="border:0.5px solid #C7C7CC;">
-                                                                        <form
-                                                                            action="{{ route('departments.update', $department->id) }}"
-                                                                            method="POST" enctype="multipart/form-data"> -->
+                    <form class="edit-grade-form" id="Qta3-form" action="{{ route('departments.update', $department) }}"
+                        method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -123,17 +118,19 @@
                                 <label for="mangered">رقم ملف المدير</label>
                                 <input type="text" name="mangered" id="mangered" class="form-control"
                                     autocomplete="one-time-code"
-                                    value="{{ old('mangered', $department->manager ? $fileNumber : null) }}">
+                                    value="{{ old('mangered', $department->manager ? $fileNumber : '') }}">
 
                                 @error('mangered')
-                                    <div class="alert alert-danger">{{ $message }}
-                                    </div>
+                                    <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             </div>
+
                             <div class="form-group col-md-12 mx-md-2" id="email_field" style="display: none;"
                                 @error('email') style="display: block;" @enderror>
                                 <label class="pb-3" for="email">الأيميل</label>
-                                <input type="email" name="email" id="email" class="form-control" required>
+                                <input type="email" name="email" id="email"
+                                    value="{{ old('mangered', $department->manger ? $email : null) }}" class="form-control"
+                                    required>
                                 @error('email')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
@@ -294,6 +291,7 @@
             if (managerId) {
                 var departmentId = $('#department_id').val();
                 var sectorId = $('#sector').val();
+                var is_EditPages = true;
 
                 $.ajax({
                     url: '/get-manager-details/' + managerId + '?skipDepartmentCheck=' + skipDepartmentCheck +
@@ -301,7 +299,9 @@
                     type: 'GET',
                     data: {
                         department_id: departmentId,
-                        sector_id: sectorId
+                        sector_id: sectorId,
+                        isEditPages: is_EditPages,
+                        skipDepartmentCheck: skipDepartmentCheck
                     }, // Send sector_id to the backend
                     success: function(data) {
                         $('#manager_details').find('span').eq(0).text(
@@ -315,11 +315,11 @@
                         $('#manager_details').find('span').eq(4).text(
                             data.email);
                         $('#manager_details').show();
+                        $('#email_field').show();
 
 
                         // Show password and rule fields for employees
                         if (data.email) {
-                            $('#email_field').show();
 
                             if (data.email === 'لا يوجد بريد الكتروني') {
                                 $('#email').val('');
@@ -392,12 +392,12 @@
         $('#mangered').on('blur', function() {
             var managerId = $(this).val();
             $('#email').val('');
-            fetchManagerDetails(managerId, true);
+            fetchManagerDetails(managerId);
         });
 
         var selectedManagerId = $('#mangered').val();
         if (selectedManagerId) {
-            fetchManagerDetails(selectedManagerId, true);
+            fetchManagerDetails(selectedManagerId);
         }
     </script>
     <script>

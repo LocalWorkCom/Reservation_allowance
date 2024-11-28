@@ -984,6 +984,8 @@ class UserController extends Controller
         }
         UpdateUserHistory($newUser->id);
         addUserHistory($newUser->id,  $id_department,  $request->sector);
+        UpdateUserGradeHistory($newUser->id);
+        addUserGradeHistory($newUser->id, $newUser->grade_id);
         // $id = $request->type;
         return redirect()->route('user.employees', $request->flag);
     }
@@ -1153,55 +1155,55 @@ class UserController extends Controller
         $old_flag = $user->flag;
 
         //if flag user and user sector manager , changed rule to dep manager
-        $is_sectormanager = Sector::where('manager', $user->id)->exists();
-        if ($request->flag == 'user' && $is_sectormanager && $request->rule_id == 3) {
-            return redirect()->back()->withErrors(['rule_id' => 'لا يمكن تعديل هذا المستخدم ,لأنه مدير قطاع'])->withInput();
-        }
-        if ($request->sector != $old_sector || $old_flag != $request->flag) {
-            $checksectormanger = Sector::where('manager', $user->id)->first();
-            if ($checksectormanger) {
-                $checksectormanger->manager = null;
-                $checksectormanger->save();
-            }
-            if ($request->rule_id == 4) {
-                $newsectormanger = Sector::find($request->sector);
-                $newsectormanger->manager = $user->id;
-                $newsectormanger->save();
-                if ($user->email && isValidEmail($user->email)) {
+        // $is_sectormanager = Sector::where('manager', $user->id)->exists();
+        // if ($request->flag == 'user' && $is_sectormanager && $request->rule_id == 3) {
+        //     return redirect()->back()->withErrors(['rule_id' => 'لا يمكن تعديل هذا المستخدم ,لأنه مدير قطاع'])->withInput();
+        // }
+        // if ($request->sector != $old_sector || $old_flag != $request->flag) {
+        //     $checksectormanger = Sector::where('manager', $user->id)->first();
+        //     if ($checksectormanger) {
+        //         $checksectormanger->manager = null;
+        //         $checksectormanger->save();
+        //     }
+        //     if ($request->rule_id == 4) {
+        //         $newsectormanger = Sector::find($request->sector);
+        //         $newsectormanger->manager = $user->id;
+        //         $newsectormanger->save();
+        //         if ($user->email && isValidEmail($user->email)) {
 
-                    Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $user->Civil_number, 123456, $user->email);
-                }
-            }
-        }
+        //             Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $user->Civil_number, 123456, $user->email);
+        //         }
+        //     }
+        // }
 
-        if ($id_department != $old_department || $old_flag != $request->flag) {
+        // if ($id_department != $old_department || $old_flag != $request->flag) {
 
-            $checkdepmanger = departements::where('manger', $user->id)->first();
-            if ($checkdepmanger) {
-                $checkdepmanger->manger = null;
-                $checkdepmanger->save();
-            }
-            if ($request->rule_id == 3) {
-                // dd($request->department_id, $id_department);
-                $newdepmanger = departements::find($id_department);
-                if ($newdepmanger) {
-                    $old_user = User::find($newdepmanger->manger);
-                    if ($old_user) {
+        //     $checkdepmanger = departements::where('manger', $user->id)->first();
+        //     if ($checkdepmanger) {
+        //         $checkdepmanger->manger = null;
+        //         $checkdepmanger->save();
+        //     }
+        //     if ($request->rule_id == 3) {
+        //         // dd($request->department_id, $id_department);
+        //         $newdepmanger = departements::find($id_department);
+        //         if ($newdepmanger) {
+        //             $old_user = User::find($newdepmanger->manger);
+        //             if ($old_user) {
 
-                        $old_user->flag = 'employee';
-                        $old_user->password = null;
-                        $old_user->rule_id = null;
-                        $old_user->save();
-                    }
-                }
-                $newdepmanger->manger = $user->id;
-                $newdepmanger->save();
-                if ($user->email && isValidEmail($user->email)) {
+        //                 $old_user->flag = 'employee';
+        //                 $old_user->password = null;
+        //                 $old_user->rule_id = null;
+        //                 $old_user->save();
+        //             }
+        //         }
+        //         $newdepmanger->manger = $user->id;
+        //         $newdepmanger->save();
+        //         if ($user->email && isValidEmail($user->email)) {
 
-                    Sendmail('مدير أداره', ' تم أضافتك كمدير أداره' . $request->name, $user->Civil_number, 123456, $user->email);
-                }
-            }
-        }
+        //             Sendmail('مدير أداره', ' تم أضافتك كمدير أداره' . $request->name, $user->Civil_number, 123456, $user->email);
+        //         }
+        //     }
+        // }
 
         // Update user attributes
         $user->name = $request->name;
@@ -1270,6 +1272,8 @@ class UserController extends Controller
         // }
         UpdateUserHistory($user->id);
         addUserHistory($user->id,  $id_department,  $request->sector);
+        UpdateUserGradeHistory($user->id);
+        addUserGradeHistory($user->id, $user->grade_id);
         session()->flash('success', 'تم الحفظ بنجاح.');
         return redirect()->route('user.employees', $request->flag);
     }

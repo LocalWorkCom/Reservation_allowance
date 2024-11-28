@@ -776,7 +776,8 @@ class DepartmentController extends Controller
 
         // Retrieve the old manager before updating
         $oldManager = $department->manger; //file_number
-        $manager = $request->mangered ? User::where('file_number', operator: $request->mangered)->value('id') : null;
+        $manager = $request->mangered ? User::where('file_number', $request->mangered)->value('id') : null;
+
         // Handle reservation allowance type
         $part = $request->input('part');
         $reservation_allowance_type = null;
@@ -864,7 +865,10 @@ class DepartmentController extends Controller
                 //}
             }
         }
-
+        if ($request->mangered === null) {
+            $department->manger = null;
+            $department->save();
+        }
 
         /*
         if ($oldManager !== $manager) {
@@ -941,7 +945,7 @@ class DepartmentController extends Controller
 
 
         // Handle employee updates
-        $currentEmployees = User::where('department_id', $department->id)
+        $currentEmployees = User::where('department_id', $department->id)->whereNot('file_number', $request->mangered)
             ->pluck('file_number')->toArray();
 
 
