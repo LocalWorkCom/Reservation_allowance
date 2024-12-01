@@ -33,18 +33,21 @@
             <!-- DataTable -->
             <div class="bg-white p-4">
             <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
-            <thead>
-                        <tr>
-                    <th>#</th>
-                    
-                    <th>الرتبة</th>
-                    <th>الاسم</th>
-                    <th>رقم الملف</th>
-                    <th>الأيام</th>
-                    <th>المبلغ</th>
-                </tr>
-            </thead>
-        </table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>الرتبة</th>
+            <th>الاسم</th>
+            <th>رقم الملف</th>
+            <th>ايام كاملة</th>
+            <th>ايام جزئية</th>
+            <th>اجمالي الايام</th>
+            <th>بدل الحجز (كلي)</th>
+            <th>بدل الحجز (جزئي)</th>
+            <th>اجمالي بدل الحجز</th>
+        </tr>
+    </thead>
+</table>
         </div>
         </div>
     </div>
@@ -89,25 +92,63 @@
                         return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
                     }
              },
-            { 
-                    data: 'allowance', 
-                    name: 'allowance',
-                    render: function (data, type, row) {
+            // { 
+            //         data: 'allowance', 
+            //         name: 'allowance',
+                //     render: function (data, type, row) {
+                //         const month = '{{ $month }}';
+                //         const year = '{{ $year }}';
+                //         return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                //     }
+                // },
+                
+            // { 
+            //         data: 'allowance', 
+            //         name: 'allowance',
+            //         render: function (data, type, row) {
+            //             const month = '{{ $month }}';
+            //             const year = '{{ $year }}';
+            //             return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+            //         }
+            //     },
+
+            { data: 'full_days', name: 'full_days'  ,
+                      render: function (data, type, row) {
                         const month = '{{ $month }}';
                         const year = '{{ $year }}';
                         return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
                     }
                 },
-                
-            { 
-                    data: 'allowance', 
-                    name: 'allowance',
-                    render: function (data, type, row) {
+        { data: 'partial_days', name: 'partial_days',
+                      render: function (data, type, row) {
                         const month = '{{ $month }}';
                         const year = '{{ $year }}';
-                        return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
-                    }
-                },
+                        return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                    } },
+        { data: 'total_days', name: 'total_days',
+                      render: function (data, type, row) {
+                        const month = '{{ $month }}';
+                        const year = '{{ $year }}';
+                        return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                    } },
+        { data: 'full_allowance', name: 'full_allowance' ,
+                      render: function (data, type, row) {
+                        const month = '{{ $month }}';
+                        const year = '{{ $year }}';
+                        return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                    }},
+        { data: 'partial_allowance', name: 'partial_allowance' ,
+                      render: function (data, type, row) {
+                        const month = '{{ $month }}';
+                        const year = '{{ $year }}';
+                        return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                    }},
+        { data: 'total_allowance', name: 'total_allowance' ,
+                      render: function (data, type, row) {
+                        const month = '{{ $month }}';
+                        const year = '{{ $year }}';
+                        return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                    }},
             ],
             order: [[1, 'asc']],
             "oLanguage": {

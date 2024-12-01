@@ -292,64 +292,90 @@ class ReservationReportController extends Controller
     
 
     public function getSectorDetailsData(Request $request, $sectorId)
-    {
-        $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
-        $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
-    
-        $sector = Sector::where('uuid', $sectorId)->first();
-        if (!$sector) {
-            return response()->json(['error' => 'Sector not found'], 404);
-        }
-    
-        $employees = User::whereIn('id', function ($query) use ($sector, $startDate, $endDate) {
-                $query->select('user_id')
-                    ->from('reservation_allowances')
-                    ->where('sector_id', $sector->id)
-                    ->whereBetween('date', [$startDate, $endDate]);
-            })
-            ->with(['grade', 'department'])
-            ->get();
-    
-        return DataTables::of($employees)
-            ->addIndexColumn()
-            ->addColumn('file_number', fn($user) => $user->file_number)
-            ->addColumn('name', fn($user) => $user->name)
-            ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
-            ->addColumn('department', fn($user) => $user->department->name ?? 'N/A')
-            ->addColumn('days', function ($user) use ($sector, $startDate, $endDate) {
-                $fullDays = ReservationAllowance::where('user_id', $user->id)
-                    ->where('sector_id', $sector->id)
-                    ->whereBetween('date', [$startDate, $endDate])
-                    ->where('type', 1)
-                    ->count();
-    
-                $partialDays = ReservationAllowance::where('user_id', $user->id)
-                    ->where('sector_id', $sector->id)
-                    ->whereBetween('date', [$startDate, $endDate])
-                    ->where('type', 2)
-                    ->count();
-    
-                $totalDays = $fullDays + $partialDays;
-                return "كلي: $fullDays | جزئي: $partialDays | مجموع: $totalDays";
-            })
-            ->addColumn('allowance', function ($user) use ($sector, $startDate, $endDate) {
-                $fullAllowance = ReservationAllowance::where('user_id', $user->id)
-                    ->where('sector_id', $sector->id)
-                    ->whereBetween('date', [$startDate, $endDate])
-                    ->where('type', 1)
-                    ->sum('amount');
-    
-                $partialAllowance = ReservationAllowance::where('user_id', $user->id)
-                    ->where('sector_id', $sector->id)
-                    ->whereBetween('date', [$startDate, $endDate])
-                    ->where('type', 2)
-                    ->sum('amount');
-    
-                $totalAllowance = $fullAllowance + $partialAllowance;
-                return "كلي: " . number_format($fullAllowance, 2) . " د.ك | جزئي: " . number_format($partialAllowance, 2) . " د.ك | مجموع: " . number_format($totalAllowance, 2) . " د.ك";
-            })
-            ->make(true);
+{
+    $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
+    $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
+
+    $sector = Sector::where('uuid', $sectorId)->first();
+    if (!$sector) {
+        return response()->json(['error' => 'Sector not found'], 404);
     }
+
+    $employees = User::whereIn('id', function ($query) use ($sector, $startDate, $endDate) {
+            $query->select('user_id')
+                ->from('reservation_allowances')
+                ->where('sector_id', $sector->id)
+                ->whereBetween('date', [$startDate, $endDate]);
+        })
+        ->with(['grade', 'department'])
+        ->get();
+
+    return DataTables::of($employees)
+        ->addIndexColumn()
+        ->addColumn('file_number', fn($user) => $user->file_number)
+        ->addColumn('name', fn($user) => $user->name)
+        ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
+        ->addColumn('department', fn($user) => $user->department->name ?? 'N/A')
+        ->addColumn('full_days', function ($user) use ($sector, $startDate, $endDate) {
+            return ReservationAllowance::where('user_id', $user->id)
+                ->where('sector_id', $sector->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 1)
+                ->count();
+        })
+        ->addColumn('partial_days', function ($user) use ($sector, $startDate, $endDate) {
+            return ReservationAllowance::where('user_id', $user->id)
+                ->where('sector_id', $sector->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 2)
+                ->count();
+        })
+        ->addColumn('total_days', function ($user) use ($sector, $startDate, $endDate) {
+            $fullDays = ReservationAllowance::where('user_id', $user->id)
+                ->where('sector_id', $sector->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 1)
+                ->count();
+            $partialDays = ReservationAllowance::where('user_id', $user->id)
+                ->where('sector_id', $sector->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 2)
+                ->count();
+
+            return $fullDays + $partialDays;
+        })
+        ->addColumn('full_allowance', function ($user) use ($sector, $startDate, $endDate) {
+            return ReservationAllowance::where('user_id', $user->id)
+                ->where('sector_id', $sector->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 1)
+                ->sum('amount');
+        })
+        ->addColumn('partial_allowance', function ($user) use ($sector, $startDate, $endDate) {
+            return ReservationAllowance::where('user_id', $user->id)
+                ->where('sector_id', $sector->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 2)
+                ->sum('amount');
+        })
+        ->addColumn('total_allowance', function ($user) use ($sector, $startDate, $endDate) {
+            $fullAllowance = ReservationAllowance::where('user_id', $user->id)
+                ->where('sector_id', $sector->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 1)
+                ->sum('amount');
+
+            $partialAllowance = ReservationAllowance::where('user_id', $user->id)
+                ->where('sector_id', $sector->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 2)
+                ->sum('amount');
+
+            return $fullAllowance + $partialAllowance;
+        })
+        ->make(true);
+}
+
     
 
 
@@ -493,15 +519,92 @@ public function showSubDepartments(Request $request, $departmentUuid)
                 ->whereBetween('date', [$startDate, $endDate])
                 ->count();
 
-            $totalAmount = ReservationAllowance::where('departement_id', $subDepartment->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->sum('amount');
+            // $totalAmount = ReservationAllowance::where('departement_id', $subDepartment->id)
+            //     ->whereBetween('date', [$startDate, $endDate])
+            //     ->sum('amount');
+            $fullDays = ReservationAllowance::where('departement_id', $subDepartment->id)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->where('type', 1)
+            ->count();
+
+        $partialDays = ReservationAllowance::where('departement_id', $subDepartment->id)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->where('type', 2)
+            ->count();
+
+        $fullAllowance = ReservationAllowance::where('departement_id', $subDepartment->id)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->where('type', 1)
+            ->sum('amount');
+
+        $partialAllowance = ReservationAllowance::where('departement_id', $subDepartment->id)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->where('type', 2)
+            ->sum('amount');
+
+        $totalDays = $fullDays + $partialDays;
+        $totalAllowance = $fullAllowance + $partialAllowance;
 
             return [
                 'uuid' => $subDepartment->uuid, 
                 'sub_department_name' => $subDepartment->name,
                 'employee_count' => $employeeCount,
-                'reservation_amount' => number_format($totalAmount, 2) . ' د.ك'
+                'full_days' => $fullDays,
+                'partial_days' => $partialDays,
+                'total_days' => $totalDays,
+                'full_allowance' => number_format($fullAllowance, 2) . ' د.ك',
+                'partial_allowance' => number_format($partialAllowance, 2) . ' د.ك',
+                'total_allowance' => number_format($totalAllowance, 2) . ' د.ك',
+            ];
+        });
+
+    return view('reserv_report.sub_departments_details', compact('mainDepartment', 'subDepartments', 'startDate', 'endDate'));
+}
+public function showSubDepartments2(Request $request, $departmentUuid)
+{
+    $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
+    $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
+
+    $mainDepartment = departements::where('uuid', $departmentUuid)->first(); 
+    if (!$mainDepartment) {
+        return abort(404, 'Main department not found');
+    }
+
+    $subDepartments = departements::where('parent_id', $mainDepartment->id)
+        ->get()
+        ->map(function ($subDepartment) use ($startDate, $endDate) {
+            $fullDays = ReservationAllowance::where('departement_id', $subDepartment->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 1)
+                ->count();
+
+            $partialDays = ReservationAllowance::where('departement_id', $subDepartment->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 2)
+                ->count();
+
+            $fullAllowance = ReservationAllowance::where('departement_id', $subDepartment->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 1)
+                ->sum('amount');
+
+            $partialAllowance = ReservationAllowance::where('departement_id', $subDepartment->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 2)
+                ->sum('amount');
+
+            $totalDays = $fullDays + $partialDays;
+            $totalAllowance = $fullAllowance + $partialAllowance;
+
+            return [
+                'uuid' => $subDepartment->uuid, 
+                'sub_department_name' => $subDepartment->name,
+                'full_days' => $fullDays,
+                'partial_days' => $partialDays,
+                'total_days' => $totalDays,
+                'full_allowance' => number_format($fullAllowance, 2) . ' د.ك',
+                'partial_allowance' => number_format($partialAllowance, 2) . ' د.ك',
+                'total_allowance' => number_format($totalAllowance, 2) . ' د.ك',
             ];
         });
 
@@ -573,7 +676,6 @@ public function getMainDepartmentEmployeesData(Request $request, $departmentId)
     $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
     $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
 
-    // Fetch the department using UUID
     $department = departements::where('uuid', $departmentId)->first();
     if (!$department) {
         return response()->json(['error' => 'Department not found'], 404);
@@ -582,7 +684,7 @@ public function getMainDepartmentEmployeesData(Request $request, $departmentId)
     $employees = User::whereIn('id', function ($query) use ($department, $startDate, $endDate) {
             $query->select('user_id')
                 ->from('reservation_allowances')
-                ->where('departement_id', $department->id) 
+                ->where('departement_id', $department->id)
                 ->whereBetween('date', [$startDate, $endDate]);
         })
         ->with(['grade', 'department'])
@@ -592,41 +694,66 @@ public function getMainDepartmentEmployeesData(Request $request, $departmentId)
         ->addColumn('file_number', fn($user) => $user->file_number)
         ->addColumn('name', fn($user) => $user->name)
         ->addColumn('grade', fn($user) => optional($user->grade)->name ?? 'N/A')
-        ->addColumn('days', function ($user) use ($department, $startDate, $endDate) {
-            $fullDays = ReservationAllowance::where('user_id', $user->id)
-                        ->where('departement_id', $department->id)
-                        ->whereBetween('date', [$startDate, $endDate])
-                        ->where('type', 1)
-                        ->count();
-
-            $partialDays = ReservationAllowance::where('user_id', $user->id)
-                           ->where('departement_id', $department->id)
-                           ->whereBetween('date', [$startDate, $endDate])
-                           ->where('type', 2)
-                           ->count();
-
-            $totalDays = $fullDays + $partialDays;
-            return "كلي: $fullDays | جزئي: $partialDays | مجموع: $totalDays";
+        ->addColumn('full_days', function ($user) use ($department, $startDate, $endDate) {
+            return ReservationAllowance::where('user_id', $user->id)
+                ->where('departement_id', $department->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 1)
+                ->count();
         })
-        ->addColumn('allowance', function ($user) use ($department, $startDate, $endDate) {
+        ->addColumn('partial_days', function ($user) use ($department, $startDate, $endDate) {
+            return ReservationAllowance::where('user_id', $user->id)
+                ->where('departement_id', $department->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 2)
+                ->count();
+        })
+        ->addColumn('total_days', function ($user) use ($department, $startDate, $endDate) {
+            $fullDays = ReservationAllowance::where('user_id', $user->id)
+                ->where('departement_id', $department->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 1)
+                ->count();
+            $partialDays = ReservationAllowance::where('user_id', $user->id)
+                ->where('departement_id', $department->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 2)
+                ->count();
+            return $fullDays + $partialDays;
+        })
+        ->addColumn('full_allowance', function ($user) use ($department, $startDate, $endDate) {
+            return ReservationAllowance::where('user_id', $user->id)
+                ->where('departement_id', $department->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 1)
+                ->sum('amount');
+        })
+        ->addColumn('partial_allowance', function ($user) use ($department, $startDate, $endDate) {
+            return ReservationAllowance::where('user_id', $user->id)
+                ->where('departement_id', $department->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 2)
+                ->sum('amount');
+        })
+        ->addColumn('total_allowance', function ($user) use ($department, $startDate, $endDate) {
             $fullAllowance = ReservationAllowance::where('user_id', $user->id)
-                             ->where('departement_id', $department->id)
-                             ->whereBetween('date', [$startDate, $endDate])
-                             ->where('type', 1)
-                             ->sum('amount');
+                ->where('departement_id', $department->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 1)
+                ->sum('amount');
 
             $partialAllowance = ReservationAllowance::where('user_id', $user->id)
-                                ->where('departement_id', $department->id)
-                                ->whereBetween('date', [$startDate, $endDate])
-                                ->where('type', 2)
-                                ->sum('amount');
+                ->where('departement_id', $department->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 2)
+                ->sum('amount');
 
-            $totalAllowance = $fullAllowance + $partialAllowance;
-            return "كلي: " . number_format($fullAllowance, 2) . " د.ك | جزئي: " . number_format($partialAllowance, 2) . " د.ك | مجموع: " . number_format($totalAllowance, 2) . " د.ك";
+            return $fullAllowance + $partialAllowance;
         })
         ->addIndexColumn()
         ->make(true);
 }
+
 
 
 
