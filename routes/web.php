@@ -292,7 +292,6 @@ Route::middleware(['auth'])->group(function () {
     //reserv statics
  Route::group(['middleware' => ['check.permission:statistic ReservationAllowance']], function () {
     //reservation statics for departments per sector
-
     Route::get('/statistics_department/{sector_id}', [ReservationStaticsController::class, 'static'])->name('Reserv_statistic_department.index');
     Route::get('/statistics_department/getAll/{sector_id}', [ReservationStaticsController::class, 'getAll'])->name('Reserv_statistic.getAll');
     Route::get('/all-department-employees/{departmentId}', [ReservationStaticsController::class, 'departmentEmployeesPage'])->name('all.department.employees.page');
@@ -348,7 +347,6 @@ Route::group(['middleware' => ['check.permission:search ReservationAllowance']],
 
     //reserv reports
 Route::group(['middleware' => ['check.permission:report ReservationAllowance']], function () {
-
     Route::get('reservation_report', [ReservationReportController::class, 'index'])->name('reserv_report.index');
     Route::get('reservation_report/getReportData', [ReservationReportController::class, 'getReportData'])->name('reservation_report.getReportData');
     Route::get('reservation_report/print', [ReservationReportController::class, 'printReport'])->name('reservation_report.print');

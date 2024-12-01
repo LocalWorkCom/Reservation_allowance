@@ -44,7 +44,12 @@
                             <th>الترتيب</th>
                             <th>اسم الإدارة الفرعية</th>
                             <th>عدد الموظفين</th>
-                            <th>مبلغ الحجز</th> 
+                            <th>أيام كاملة</th>
+                            <th>أيام جزئية</th>
+                            <th>إجمالي الأيام</th>
+                            <th>بدل الحجز (كلي)</th>
+                            <th>بدل الحجز (جزئي)</th>
+                            <th>إجمالي بدل الحجز</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -59,13 +64,39 @@
                                 </td>
                              
 
-                                <td>
-                                <a href="{{ route('reservation_report.sub_department_employees', ['subDepartmentId' => $subDepartment['uuid']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8  !important;">    
-                                {{ $subDepartment['reservation_amount'] }}
+                            <td>
+                                <a href="{{ route('reservation_report.sub_department_employees', ['subDepartmentId' => $subDepartment['uuid']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8  !important;">
+                                {{ $subDepartment['full_days'] }}
                                 </a>
-                            
-                            </td> 
-                                
+                            </td>
+                            <td>
+                                <a href="{{ route('reservation_report.sub_department_employees', ['subDepartmentId' => $subDepartment['uuid']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8  !important;">
+                                {{ $subDepartment['partial_days'] }}
+                                </a>
+                            </td>
+
+                            <td>
+                                <a href="{{ route('reservation_report.sub_department_employees', ['subDepartmentId' => $subDepartment['uuid']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8  !important;">
+                                {{ $subDepartment['total_days'] }}
+                                </a>
+                            </td>
+
+                            <td>
+                                <a href="{{ route('reservation_report.sub_department_employees', ['subDepartmentId' => $subDepartment['uuid']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8  !important;">
+                                {{ $subDepartment['full_allowance'] }}
+                                </a>
+                            </td>
+                             <td>
+                                <a href="{{ route('reservation_report.sub_department_employees', ['subDepartmentId' => $subDepartment['uuid']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8  !important;">
+                                {{ $subDepartment['partial_allowance'] }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ route('reservation_report.sub_department_employees', ['subDepartmentId' => $subDepartment['uuid']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8  !important;">
+                                {{ $subDepartment['total_allowance'] }}
+                                </a>
+                            </td>
+
                             </tr>
                         @endforeach
                     </tbody>
