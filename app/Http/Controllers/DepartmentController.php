@@ -399,7 +399,8 @@ class DepartmentController extends Controller
             'budget_type.required' => 'يجب اختيار نوع الميزانيه',
             'email.unique' => 'عفوا هذا الايميل مأخوذ مسبقا',
             'email.invalid_format' => 'البريد الإلكتروني للمدير غير صالح.',
-            'manager_is_sector_manager' => 'لا يمكن تعيين مدير قطاع كمدير لهذه الإدارة.'
+            'manager_exists' => 'رقم الملف الخاص بالمدير غير موجود.',
+            'manager_is_sector_manager' => 'لا يمكن تعيين مدير قطاع كمدير لهذه الإدارة.',
         ];
 
         $validator = Validator::make($request->all(), [
@@ -422,6 +423,9 @@ class DepartmentController extends Controller
                 function ($attribute, $value, $fail) {
                     // Check if the file_number belongs to a sector manager
                     $manager = User::where('file_number', $value)->first();
+                    if (!$manager) {
+                        $fail('رقم الملف الخاص بالمدير غير موجود.');
+                    }
                     if ($manager) {
                         $sectorManager = Sector::where('manager', $manager->id)->first();
                         if ($sectorManager) {
@@ -564,6 +568,7 @@ class DepartmentController extends Controller
             'budget_type.required' => 'يجب اختيار نوع الميزانيه',
             'email.unique' => 'عفوا هذا الايميل مأخوذ مسبقا',
             'email.invalid_format' => 'البريد الإلكتروني للمدير غير صالح.',
+            'manager_exists' => 'رقم الملف الخاص بالمدير غير موجود.',
             'manager_is_sector_manager' => 'لا يمكن تعيين مدير قطاع كمدير لهذه الإدارة.'
         ];
 
@@ -587,6 +592,9 @@ class DepartmentController extends Controller
                 function ($attribute, $value, $fail) {
                     // Check if the file_number belongs to a sector manager
                     $manager = User::where('file_number', $value)->first();
+                    if (!$manager) {
+                        $fail('رقم الملف الخاص بالمدير غير موجود.');
+                    }
                     if ($manager) {
                         $sectorManager = Sector::where('manager', $manager->id)->first();
                         if ($sectorManager) {
@@ -762,6 +770,7 @@ class DepartmentController extends Controller
             'budget_type.required' => 'يجب اختيار نوع الميزانيه',
             'email.unique' => 'عفوا هذا الايميل مأخوذ مسبقا',
             'email.invalid_format' => 'البريد الإلكتروني للمدير غير صالح.',
+            'manager_exists' => 'رقم الملف الخاص بالمدير غير موجود.',
             'manager_is_sector_manager' => 'لا يمكن تعيين مدير قطاع كمدير لهذه الإدارة.'
         ];
 
@@ -785,6 +794,9 @@ class DepartmentController extends Controller
                 function ($attribute, $value, $fail) {
                     // Check if the file_number belongs to a sector manager
                     $manager = User::where('file_number', $value)->first();
+                    if (!$manager) {
+                        $fail('رقم الملف الخاص بالمدير غير موجود.');
+                    }
                     if ($manager) {
                         $sectorManager = Sector::where('manager', $manager->id)->first();
                         if ($sectorManager) {
@@ -988,6 +1000,7 @@ class DepartmentController extends Controller
             'email.required' => 'الايميل مطلوب',
             'budget_type.required' => 'يجب اختيار نوع الميزانيه',
             'email.unique' => 'عفوا هذا الايميل مأخوذ مسبقا',
+            'manager_exists' => 'رقم الملف الخاص بالمدير غير موجود.',
             'manager_is_sector_manager' => 'لا يمكن تعيين مدير قطاع كمدير لهذه الإدارة.'
         ];
 
@@ -1011,6 +1024,9 @@ class DepartmentController extends Controller
                 function ($attribute, $value, $fail) {
                     // Check if the file_number belongs to a sector manager
                     $manager = User::where('file_number', $value)->first();
+                    if (!$manager) {
+                        $fail('رقم الملف الخاص بالمدير غير موجود.');
+                    }
                     if ($manager) {
                         $sectorManager = Sector::where('manager', $manager->id)->first();
                         if ($sectorManager) {
