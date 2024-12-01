@@ -76,7 +76,7 @@
                                 <!-- Violation type radio buttons -->
                                 @foreach ($violationTypeName as $key => $violation)
                                     {{-- {{ dd($violationTypeName) }} --}}
-
+                                    
                                     <div class="radio-btns" style="margin-left: 1.5rem; margin-right: 1.5rem;">
                                         <input type="radio" class="form-check-input" id="police_{{ $key }}"
                                             name="type_military" value="{{ $violation->id }}"
