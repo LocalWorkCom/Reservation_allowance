@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\departements;
 use App\Models\ReservationAllowance;
 use App\Models\User;
+use App\Models\grade;
+use App\Models\UserGrade;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
 
@@ -142,34 +144,46 @@ class SubDepartmentStatsController extends Controller
     }
     
     public function getSubDepartmentEmployees(Request $request, $subDepartmentUuid)
-    {
-        $month = $request->input('month');
-        $year = $request->input('year');
-    
-        $subDepartment = departements::where('uuid', $subDepartmentUuid)->first();
-        if (!$subDepartment) {
-            return response()->json(['error' => 'Sub-department not found'], 404);
-        }
-    
-        $users = DB::table('user_departments')
-            ->where('user_departments.department_id', $subDepartment->id) 
-            ->whereYear('user_departments.created_at', $year) 
-            ->whereMonth('user_departments.created_at', $month) 
-            ->join('users', 'user_departments.user_id', '=', 'users.id') 
-            ->distinct('users.id') 
-            ->select('users.*') 
-            ->get();
-    
-        return DataTables::of($users)
-            ->addColumn('file_number', fn($user) => $user->file_number)
-            ->addColumn('name', fn($user) => $user->name)
-            ->addColumn('grade', function ($user) {
-                $grade = DB::table('grades')->where('id', $user->grade_id)->value('name');
-                return $grade ?? 'N/A';
-            })
-            ->addIndexColumn()
-            ->make(true);
+{
+    $month = $request->input('month');
+    $year = $request->input('year');
+
+    $subDepartment = departements::where('uuid', $subDepartmentUuid)->first();
+    if (!$subDepartment) {
+        return response()->json(['error' => 'Sub-department not found'], 404);
     }
+
+    $users = DB::table('user_departments')
+        ->where('user_departments.department_id', $subDepartment->id)
+        ->whereYear('user_departments.created_at', $year)
+        ->whereMonth('user_departments.created_at', $month)
+        ->join('users', 'user_departments.user_id', '=', 'users.id')
+        ->distinct('users.id')
+        ->select('users.*')
+        ->get();
+
+    $users->transform(function ($user) use ($month, $year) {
+        $latestUserGrade = UserGrade::where('user_id', $user->id)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        $user->grade_name = $latestUserGrade && $latestUserGrade->grade
+            ? $latestUserGrade->grade->name
+            : 'N/A';
+
+        return $user;
+    });
+
+    return DataTables::of($users)
+        ->addColumn('file_number', fn($user) => $user->file_number)
+        ->addColumn('name', fn($user) => $user->name)
+        ->addColumn('grade', fn($user) => $user->grade_name) 
+        ->addIndexColumn()
+        ->make(true);
+}
+
     
     
     public function notReceivedEmployeesPage(Request $request, $subDepartmentUuid)
@@ -197,31 +211,43 @@ class SubDepartmentStatsController extends Controller
         }
     
         $employees = DB::table('user_departments')
-            ->where('user_departments.department_id', $subDepartment->id) 
-            ->whereYear('user_departments.created_at', $year) 
-            ->whereMonth('user_departments.created_at', $month) 
+            ->where('user_departments.department_id', $subDepartment->id)
+            ->whereYear('user_departments.created_at', $year)
+            ->whereMonth('user_departments.created_at', $month)
             ->join('users', 'user_departments.user_id', '=', 'users.id')
-            ->distinct('users.id') 
+            ->distinct('users.id')
             ->select('users.*');
     
         $users = $employees->whereNotIn('users.id', function ($query) use ($subDepartment, $month, $year) {
             $query->select('user_id')
                 ->from('reservation_allowances')
                 ->where('reservation_allowances.departement_id', $subDepartment->id)
-                ->whereYear('reservation_allowances.date', $year) 
-                ->whereMonth('reservation_allowances.date', $month); 
+                ->whereYear('reservation_allowances.date', $year)
+                ->whereMonth('reservation_allowances.date', $month);
         })->get();
+    
+        $users->transform(function ($user) use ($month, $year) {
+            $latestUserGrade = UserGrade::where('user_id', $user->id)
+                ->whereYear('created_at', $year)
+                ->whereMonth('created_at', $month)
+                ->orderBy('created_at', 'desc')
+                ->first();
+    
+            $user->grade_name = $latestUserGrade && $latestUserGrade->grade
+                ? $latestUserGrade->grade->name
+                : 'N/A';
+    
+            return $user;
+        });
     
         return DataTables::of($users)
             ->addColumn('file_number', fn($user) => $user->file_number)
             ->addColumn('name', fn($user) => $user->name)
-            ->addColumn('grade', function ($user) {
-                $grade = DB::table('grades')->where('id', $user->grade_id)->value('name');
-                return $grade ?? 'N/A';
-            })
+            ->addColumn('grade', fn($user) => $user->grade_name) 
             ->addIndexColumn()
             ->make(true);
     }
+    
     
     
 }

@@ -560,58 +560,6 @@ public function showSubDepartments(Request $request, $departmentUuid)
 
     return view('reserv_report.sub_departments_details', compact('mainDepartment', 'subDepartments', 'startDate', 'endDate'));
 }
-public function showSubDepartments2(Request $request, $departmentUuid)
-{
-    $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
-    $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
-
-    $mainDepartment = departements::where('uuid', $departmentUuid)->first(); 
-    if (!$mainDepartment) {
-        return abort(404, 'Main department not found');
-    }
-
-    $subDepartments = departements::where('parent_id', $mainDepartment->id)
-        ->get()
-        ->map(function ($subDepartment) use ($startDate, $endDate) {
-            $fullDays = ReservationAllowance::where('departement_id', $subDepartment->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->where('type', 1)
-                ->count();
-
-            $partialDays = ReservationAllowance::where('departement_id', $subDepartment->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->where('type', 2)
-                ->count();
-
-            $fullAllowance = ReservationAllowance::where('departement_id', $subDepartment->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->where('type', 1)
-                ->sum('amount');
-
-            $partialAllowance = ReservationAllowance::where('departement_id', $subDepartment->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->where('type', 2)
-                ->sum('amount');
-
-            $totalDays = $fullDays + $partialDays;
-            $totalAllowance = $fullAllowance + $partialAllowance;
-
-            return [
-                'uuid' => $subDepartment->uuid, 
-                'sub_department_name' => $subDepartment->name,
-                'full_days' => $fullDays,
-                'partial_days' => $partialDays,
-                'total_days' => $totalDays,
-                'full_allowance' => number_format($fullAllowance, 2) . ' د.ك',
-                'partial_allowance' => number_format($partialAllowance, 2) . ' د.ك',
-                'total_allowance' => number_format($totalAllowance, 2) . ' د.ك',
-            ];
-        });
-
-    return view('reserv_report.sub_departments_details', compact('mainDepartment', 'subDepartments', 'startDate', 'endDate'));
-}
-
-
 
 public function printSubDepartmentsDetails(Request $request, $departmentUuid)
 {
