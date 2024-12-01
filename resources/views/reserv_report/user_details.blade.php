@@ -16,12 +16,16 @@
 <div class="row" style="direction: rtl">
     <div class="container welcome col-11">
         <div class="d-flex justify-content-between">
-            <div class="mt-4 bg-white" style="direction: rtl">
-                <p>تفاصيل بدل حجز للموظف {{ $user->name }} الفترة من: {{ $startDate->format('Y-m-d') }} إلى: {{ $endDate->format('Y-m-d') }}</p>
-            </div>
-        </div>
-        <br><br>
-        <button id="print-report" class="btn btn-secondary mx-2">طباعة</button>
+           
+                <h4>تفاصيل بدل حجز للموظف {{ $user->name }} الفترة من: {{ $startDate->format('Y-m-d') }} إلى: {{ $endDate->format('Y-m-d') }}</h4>
+                <button id="print-report" class="btn-blue mx-2">طباعة</button>
+                </div>
+   </div>
+  </div>
+  
+    <div class="container col-11 mt-3 py-5  " >
+  
+   
         <table id="users-table" class="display table table-bordered table-hover dataTable">
             <thead>
                 <tr>
