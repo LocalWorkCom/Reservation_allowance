@@ -468,10 +468,12 @@ class UserController extends Controller
         }
 
 
+
         // Check if the user has the correct flag
-        if ($user->flag !== 'user') {
+        if ($user->flag != 'user') {
             return back()->with('error', 'لا يسمح لك بدخول الهيئة')->withInput();
         }
+
         // $credentials = $request->only('number', 'password');
         $credentials = [
             'password' => $password
@@ -484,10 +486,13 @@ class UserController extends Controller
         } else {
             $credentials['civil_number'] = $number;
         }
+
         $twoHoursAgo = now()->subHours(6);
-        if ($user && $user->last_login == null && $user->password == null) {
+        if ($user && $user->last_login == null) {
+
             return redirect()->route('passwordManager', ['number' => $number])->with('error', 'يرجى أنشأ كلمه السر الخاصه بك')->withInput();
         } else if ($user && $user->last_login != null && $user->password != null && $password) {
+
             if (Auth::attempt($credentials)) {
 
                 Auth::login($user); // Log the user in
@@ -497,8 +502,10 @@ class UserController extends Controller
                 return redirect()->route('home');
             }
         } else {
+
             return redirect()->route('normalLogin', ['number' => $number]);
         }
+
 
 
         return back()->with('error', 'كلمة المرور لا تتطابق مع سجلاتنا')->withInput();
@@ -611,12 +618,12 @@ class UserController extends Controller
         if ($validatedData->fails()) {
             return back()->withErrors($validatedData)->withInput();
         }
-
-        $user = User::where('file_number', $request->number)->first();
+        $user = User::where('military_number', $request->number)->orwhere('Civil_number', $request->number)->orwhere('file_number', $request->number)->first();
 
         if (!$user) {
             return back()->with('error', 'الرقم الملف لا يتطابق مع سجلاتنا');
-        } elseif ($user->flag !== 'user') {
+        } elseif ($user->flag != 'user') {
+
             return back()->with('error', 'لا يسمح لك بدخول الهيئة');
         } else {
             // Generate a verification code
