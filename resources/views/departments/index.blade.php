@@ -264,11 +264,11 @@
     }
 
     function showUsers(departmentId) {
-        window.location.href = '/employees/employee/department/' + departmentId;
+        window.location.href = '/employees/all/department/' + departmentId;
     }
 
     function showSubUsers(parentDepartmentId) {
-        window.location.href = '/employees/employee/parent/' + parentDepartmentId;
+        window.location.href = '/employees/all/parent/' + parentDepartmentId;
     }
 
     function handleAction(action, uuid) {

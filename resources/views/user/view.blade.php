@@ -77,8 +77,10 @@
                 @elseif (Auth::user()->rule_id == 2)
                     @if ($flag == 'employee')
                         <p>موظفين الوزارة</p>
-                    @else
+                    @elseif ($flag == 'user')
                         <p>المستخدمين والصلاحيات</p>
+                    @else
+                        <p>كل الموظفين</p>
                     @endif
                 @endif
 
