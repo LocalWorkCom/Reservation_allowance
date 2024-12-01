@@ -193,17 +193,12 @@
                 </select> -->
                 <?php /*@if(Cache::get(auth()->user()->id."_employee_new_add") != null)*/?>
                 @if(Cache::get(auth()->user()->id) != null)
-                <div class="col-lg-6" style="text-align: right">
+                <div class="col-lg-12" style="text-align: right">
                         <input type="hidden" name="date" id="date" value="{{$date}}">
                         <input type="hidden" name="sector_id" id="sector_id" value="{{$sectorId}}">
                         <input type="hidden" name="departement_id" id="departement_id" value="{{$departementId}}">
                     <button class="btn btn-success py-2 px-3 mx-2" onclick="confirm_reservation()">اعتماد الكشف</button>
                 </div>
-
-                <div class="col-lg-6" style="text-align: right">
-                    <button class="btn btn-success py-2 px-3 mx-2" onclick="printPDF1()">طباعة</button>
-                </div>
-
                 @endif
             </div>
         </div>
@@ -326,22 +321,6 @@ function confirm_reservation() {
         }
     });
 }
-
-function printPDF() {
-    var reservation_date = document.getElementById('date').value;
-    var reservation_sector_id = document.getElementById('sector_id').value;
-    var reservation_departement_id = document.getElementById('departement_id').value;
-    var map_url = "{{ route('reservation_allowances.print', ['date', 'sector', 'departement']) }}";
-    map_url = map_url.replace('date', reservation_date);
-    map_url = map_url.replace('sector',reservation_sector_id);
-    map_url = map_url.replace('departement',reservation_departement_id);
-    window.location.href = map_url;
-    if (fileNumber) {
-        window.open('{{ route('reservation_fetch.print') }}?file_number=' + fileNumber, '_blank');
-    } else {
-        alert('Please enter a valid File Number');
-    }
- }
 </script>
 
 <script>
