@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use App\Models\grade;
 use App\Models\Sector;
+use App\Models\UserGrade;
 use TCPDF;
 use Illuminate\Support\Facades\Log;
 
@@ -36,99 +37,112 @@ class SectorEmployeesDetailsController extends Controller
     }
     
     public function getData($sectorUuid, Request $request)
-{
-    $sector = Sector::where('uuid', $sectorUuid)->first();
-    if (!$sector) {
-        return response()->json(['error' => 'Sector not found'], 404);
+    {
+        $sector = Sector::where('uuid', $sectorUuid)->first();
+        if (!$sector) {
+            return response()->json(['error' => 'Sector not found'], 404);
+        }
+    
+        $month = $request->input('month');
+        $year = $request->input('year');
+    
+        $employees = User::whereIn('id', function ($query) use ($sector, $month, $year) {
+                $query->select('user_id')
+                      ->from('reservation_allowances')
+                      ->where('sector_id', $sector->id)
+                      ->whereYear('date', $year)
+                      ->whereMonth('date', $month);
+            })
+            ->with(['department'])
+            ->get();
+    
+        return DataTables::of($employees)
+            ->addColumn('file_number', fn($user) => $user->file_number)
+            ->addColumn('name', fn($user) => $user->name)
+            ->addColumn('grade', function ($user) use ($month, $year) {
+                $lastGrade = UserGrade::where('user_id', $user->id)
+                    ->whereYear('created_at', $year)
+                    ->whereMonth('created_at', $month)
+                    ->orderBy('created_at', 'desc') 
+                    ->with('grade') 
+                    ->first();
+    
+                return $lastGrade && $lastGrade->grade ? $lastGrade->grade->name : 'N/A';
+            })
+            ->addColumn('department', fn($user) => $user->department->name ?? 'N/A')
+            ->addColumn('full_days', function ($user) use ($sector, $month, $year) {
+                return ReservationAllowance::where('user_id', $user->id)
+                    ->where('sector_id', $sector->id)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->where('type', 1)
+                    ->count();
+            })
+            ->addColumn('partial_days', function ($user) use ($sector, $month, $year) {
+                return ReservationAllowance::where('user_id', $user->id)
+                    ->where('sector_id', $sector->id)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->where('type', 2)
+                    ->count();
+            })
+            ->addColumn('total_days', function ($user) use ($sector, $month, $year) {
+                $fullDays = ReservationAllowance::where('user_id', $user->id)
+                    ->where('sector_id', $sector->id)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->where('type', 1)
+                    ->count();
+    
+                $partialDays = ReservationAllowance::where('user_id', $user->id)
+                    ->where('sector_id', $sector->id)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->where('type', 2)
+                    ->count();
+    
+                return $fullDays + $partialDays;
+            })
+            ->addColumn('full_allowance', function ($user) use ($sector, $month, $year) {
+                return ReservationAllowance::where('user_id', $user->id)
+                    ->where('sector_id', $sector->id)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->where('type', 1)
+                    ->sum('amount');
+            })
+            ->addColumn('partial_allowance', function ($user) use ($sector, $month, $year) {
+                return ReservationAllowance::where('user_id', $user->id)
+                    ->where('sector_id', $sector->id)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->where('type', 2)
+                    ->sum('amount');
+            })
+            ->addColumn('total_allowance', function ($user) use ($sector, $month, $year) {
+                $fullAllowance = ReservationAllowance::where('user_id', $user->id)
+                    ->where('sector_id', $sector->id)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->where('type', 1)
+                    ->sum('amount');
+    
+                $partialAllowance = ReservationAllowance::where('user_id', $user->id)
+                    ->where('sector_id', $sector->id)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->where('type', 2)
+                    ->sum('amount');
+    
+                return $fullAllowance + $partialAllowance;
+            })
+            ->addIndexColumn()
+            ->make(true);
     }
-
-    $month = $request->input('month');
-    $year = $request->input('year');
-
-    $employees = User::whereIn('id', function ($query) use ($sector, $month, $year) {
-            $query->select('user_id')
-                  ->from('reservation_allowances')
-                  ->where('sector_id', $sector->id)
-                  ->whereYear('date', $year)
-                  ->whereMonth('date', $month);
-        })
-        ->with(['grade', 'department'])
-        ->get();
-
-    return DataTables::of($employees)
-        ->addColumn('file_number', fn($user) => $user->file_number)
-        ->addColumn('name', fn($user) => $user->name)
-        ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
-        ->addColumn('department', fn($user) => $user->department->name ?? 'N/A')
-        ->addColumn('full_days', function ($user) use ($sector, $month, $year) {
-            return ReservationAllowance::where('user_id', $user->id)
-                ->where('sector_id', $sector->id)
-                ->whereYear('date', $year)
-                ->whereMonth('date', $month)
-                ->where('type', 1)
-                ->count();
-        })
-        ->addColumn('partial_days', function ($user) use ($sector, $month, $year) {
-            return ReservationAllowance::where('user_id', $user->id)
-                ->where('sector_id', $sector->id)
-                ->whereYear('date', $year)
-                ->whereMonth('date', $month)
-                ->where('type', 2)
-                ->count();
-        })
-        ->addColumn('total_days', function ($user) use ($sector, $month, $year) {
-            $fullDays = ReservationAllowance::where('user_id', $user->id)
-                ->where('sector_id', $sector->id)
-                ->whereYear('date', $year)
-                ->whereMonth('date', $month)
-                ->where('type', 1)
-                ->count();
-
-            $partialDays = ReservationAllowance::where('user_id', $user->id)
-                ->where('sector_id', $sector->id)
-                ->whereYear('date', $year)
-                ->whereMonth('date', $month)
-                ->where('type', 2)
-                ->count();
-
-            return $fullDays + $partialDays;
-        })
-        ->addColumn('full_allowance', function ($user) use ($sector, $month, $year) {
-            return ReservationAllowance::where('user_id', $user->id)
-                ->where('sector_id', $sector->id)
-                ->whereYear('date', $year)
-                ->whereMonth('date', $month)
-                ->where('type', 1)
-                ->sum('amount');
-        })
-        ->addColumn('partial_allowance', function ($user) use ($sector, $month, $year) {
-            return ReservationAllowance::where('user_id', $user->id)
-                ->where('sector_id', $sector->id)
-                ->whereYear('date', $year)
-                ->whereMonth('date', $month)
-                ->where('type', 2)
-                ->sum('amount');
-        })
-        ->addColumn('total_allowance', function ($user) use ($sector, $month, $year) {
-            $fullAllowance = ReservationAllowance::where('user_id', $user->id)
-                ->where('sector_id', $sector->id)
-                ->whereYear('date', $year)
-                ->whereMonth('date', $month)
-                ->where('type', 1)
-                ->sum('amount');
-
-            $partialAllowance = ReservationAllowance::where('user_id', $user->id)
-                ->where('sector_id', $sector->id)
-                ->whereYear('date', $year)
-                ->whereMonth('date', $month)
-                ->where('type', 2)
-                ->sum('amount');
-
-            return $fullAllowance + $partialAllowance;
-        })
-        ->addIndexColumn()
-        ->make(true);
-}
+    
+    
+    
+    
 
 
     public function notReservedUsers(Request $request, $sectorUuid)
@@ -159,7 +173,6 @@ class SectorEmployeesDetailsController extends Controller
         $month = $request->input('month');
         $year = $request->input('year');
     
-        // Get user IDs that were in the sector during the specified time
         $userIdsInSector = DB::table('user_departments')
             ->where('sector_id', $sector->id)
             ->whereYear('created_at', $year)
@@ -167,7 +180,6 @@ class SectorEmployeesDetailsController extends Controller
             ->distinct('user_id')
             ->pluck('user_id');
     
-        // Fetch users who were in the sector but did not receive allowance
         $users = User::whereIn('id', $userIdsInSector)
             ->whereNotIn('id', function ($query) use ($sector, $month, $year) {
                 $query->select('user_id')
@@ -176,17 +188,28 @@ class SectorEmployeesDetailsController extends Controller
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month);
             })
-            ->with(['grade', 'department'])
+            ->with(['department'])
             ->get();
     
         return DataTables::of($users)
             ->addColumn('file_number', fn($user) => $user->file_number)
             ->addColumn('name', fn($user) => $user->name)
             ->addColumn('department', fn($user) => $user->department->name ?? 'N/A')
-            ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
+            ->addColumn('grade', function ($user) use ($month, $year) {
+                $latestUserGrade = UserGrade::where('user_id', $user->id)
+                    ->whereYear('created_at', $year)
+                    ->whereMonth('created_at', $month)
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+    
+                return $latestUserGrade && $latestUserGrade->grade
+                    ? $latestUserGrade->grade->name
+                    : 'N/A';
+            })
             ->addIndexColumn()
             ->make(true);
     }
+    
     
     public function sectorUsersPage(Request $request, $sectorUuid)
     {
@@ -233,7 +256,7 @@ class SectorEmployeesDetailsController extends Controller
             ->pluck('user_id');
     
         $users = User::whereIn('id', $userIdsInSector)
-            ->with(['grade', 'department'])
+            ->with(['department'])
             ->get();
     
         // Return data to DataTables
@@ -241,7 +264,17 @@ class SectorEmployeesDetailsController extends Controller
             ->addColumn('file_number', fn($user) => $user->file_number)
             ->addColumn('name', fn($user) => $user->name)
             ->addColumn('department', fn($user) => $user->department->name ?? 'N/A')
-            ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
+            ->addColumn('grade', function ($user) use ($month, $year) {
+                $latestUserGrade = UserGrade::where('user_id', $user->id)
+                    ->whereYear('created_at', $year)
+                    ->whereMonth('created_at', $month)
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+    
+                return $latestUserGrade && $latestUserGrade->grade
+                    ? $latestUserGrade->grade->name
+                    : 'N/A';
+            })
             ->addIndexColumn()
             ->make(true);
     }

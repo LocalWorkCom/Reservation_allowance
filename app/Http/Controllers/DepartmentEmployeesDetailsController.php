@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Sector;
 use App\Models\departements;
 use App\Models\grade;
+use App\Models\UserGrade;
 use App\Models\ReservationAllowance;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Auth;
@@ -47,13 +48,23 @@ class DepartmentEmployeesDetailsController extends Controller
                       ->whereYear('date', $year)
                       ->whereMonth('date', $month);
             })
-            ->with(['grade'])
+            ->with(['department'])
             ->get();
     
         return DataTables::of($employees)
             ->addColumn('file_number', fn($user) => $user->file_number)
             ->addColumn('name', fn($user) => $user->name)
-            ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
+            ->addColumn('grade', function ($user) use ($month, $year) {
+                $latestUserGrade = UserGrade::where('user_id', $user->id)
+                    ->whereYear('created_at', $year)
+                    ->whereMonth('created_at', $month)
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+    
+                return $latestUserGrade && $latestUserGrade->grade
+                    ? $latestUserGrade->grade->name
+                    : 'N/A';
+            })
             ->addColumn('full_days', function ($user) use ($department, $month, $year) {
                 return ReservationAllowance::where('user_id', $user->id)
                     ->where('departement_id', $department->id)

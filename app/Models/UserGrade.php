@@ -16,5 +16,10 @@ class UserGrade extends Model
         'updated_by',
     ];
 
+    public function grade()
+{
+    return $this->belongsTo(Grade::class, 'grade_id');
+}
+
 
 }
