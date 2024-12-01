@@ -386,9 +386,7 @@
                                 cancelButtonText: 'إلغاء',
                                 confirmButtonColor: '#3085d6'
                             }).then((result) => {
-                                if (result.isConfirmed) {
-
-                                } else {
+                                if (result.isConfirmed) {} else {
                                     // Handle cancel action: clear the manager input field
                                     $('#mangered').val(''); // Clear the input field
                                     $('#manager_details').hide(); // Hide the manager details
@@ -518,6 +516,26 @@
             // toggleEmailRequired();
             // mangeredInput.addEventListener('input', toggleEmailField);
 
+        });
+
+        $(document).ready(function() {
+            var selectedBudgetType =
+                {{ (float) $department->reservation_allowance_amount }};
+
+            if (selectedBudgetType == 0.0) {
+                $('#free').prop('checked', true);
+                $('#budgetField').hide();
+            } else {
+                $('#notFree').prop('checked', true);
+                $('#budgetField').show();
+            }
+            $('#notFree').change(function() {
+                $('#budgetField').show();
+            });
+
+            $('#free').change(function() {
+                $('#budgetField').hide();
+            });
         });
     </script>
 @endsection

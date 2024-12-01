@@ -144,33 +144,46 @@ class DepartmentController extends Controller
     }
     public function getManagerDetails($id)
     {
-        // Fetch manager data from the database
-        $isEditPage = request()->get('isEditPage', false); // Check if the request is from the edit page
+        $isEditPage = request()->get('isEditPage', false);
 
         $user = User::where('file_number', $id)->first();
         if (!$user) {
             return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 404);
         }
 
-        // Check if the user is a sector manager
         $isSectorManager = Sector::where('manager', $user->id)->exists();
         $manager = User::where('file_number', $id)->first();
 
-        // Handle if no manager is found
-        // if (!$manager) {
-        //     return response()->json(['error' => 'عفوا هذا المستخدم غير موجود'], 405);
-        // }
-        // Prevent sector managers from being transferred or added
         if ($isSectorManager) {
             return response()->json(['error' => 'لا يمكن تعيين مدير قطاع كمدير أو موظف.'], 403);
+        }
+
+        // Check if we are editing a department (and the user already exists as a manager)
+        $departmentId = request()->get('department_id');
+        $currentDepartment = Departements::find($departmentId);
+
+        if ($currentDepartment) {
+            // Check if the entered manager file number is the same as the existing manager's file number
+            if ($user->id == $currentDepartment->manger) {
+                return response()->json([
+                    'rank' => $user->grade_id ? $user->grade->name : 'لا يوجد رتبه',
+                    'job_title' => $user->job_title ?? 'لا يوجد مسمى وظيفى',
+                    'name' => $user->name,
+                    'phone' => $user->phone ?? 'لا يوجد رقم هاتف',
+                    'email' => $user->email ?? 'لا يوجد بريد الكتروني',
+                    'isEmployee' => $user->flag == 'employee' ? true : false,
+                    'transfer' => false  // No transfer needed if it's the same manager
+                ], 200);
+            }
         }
 
         if (!$isEditPage) {
             // Check if the user is already assigned to a department
             if ($user->department_id) {
                 $currentDepartment = Departements::find($user->department_id);
-                $currentSector = $currentDepartment ? $currentDepartment->department_id : null;
+                $currentSector = $currentDepartment ? $currentDepartment->sector_id : null;
                 $isDepartmentCheck = request()->has('skipDepartmentCheck') && request()->get('skipDepartmentCheck') === 'true';
+
                 // If the user is in a department in the same sector
                 if ($currentSector == request()->get('sector_id') && $isDepartmentCheck) {
                     return response()->json([
@@ -187,8 +200,7 @@ class DepartmentController extends Controller
                 }
 
                 // If the user is in a department in a different sector
-                if ($currentSector !== request()->get('sector_id')  && $isDepartmentCheck) {
-
+                if ($currentSector !== request()->get('sector_id') && $isDepartmentCheck) {
                     return response()->json([
                         'warning' => 'هذا المستخدم موجود بالفعل في قطاع آخر. هل تريد نقله إلى هذا القطاع وهذه الإدارة؟',
                         'transfer' => true,
@@ -204,14 +216,10 @@ class DepartmentController extends Controller
             }
         }
 
-
         // If the user is not in any department or sector, return their details
         $joiningDate = $user->joining_date ? Carbon::parse($user->joining_date) : Carbon::parse($user->created_at);
         $today = Carbon::now();
         $yearsOfService = $joiningDate->diffInYears($today);
-
-        // Check if the user is an employee (flag 'employee' means employee)
-        $isEmployee = $user->flag == 'employee';
 
         return response()->json([
             'rank' => $user->grade_id ? $user->grade->name : 'لا يوجد رتبه',
@@ -219,10 +227,11 @@ class DepartmentController extends Controller
             'name' => $user->name,
             'phone' => $user->phone,
             'email' => $user->email ?? null,
-            'isEmployee' => $isEmployee,
-            'transfer' => false  // No transfer needed if they're not in any department or sector
+            'isEmployee' => $user->flag == 'employee' ? true : false,
+            'transfer' => false
         ], 200);
     }
+
 
 
 
@@ -436,7 +445,6 @@ class DepartmentController extends Controller
             ]
         ], $messages);
         $validator->after(function ($validator) use ($request) {
-            // Convert the file_numbers to an array
             $file_numbers = array_filter(explode(',', str_replace(array("\r", "\r\n", "\n"), ',', $request->file_number)));
 
             // Check if any of the file numbers do not exist in the database
@@ -446,6 +454,21 @@ class DepartmentController extends Controller
             if (!empty($nonExistingFileNumbers)) {
                 $validator->errors()->add('file_number', 'أرقام الملفات التالية غير موجودة في النظام: ' . implode(', ', $nonExistingFileNumbers));
             }
+
+            // Check if any of the file numbers belong to a manager of a department or sector
+            $invalidFileNumbers = [];
+            foreach ($file_numbers as $file_number) {
+                $manager = User::where('file_number', $file_number)->first();
+                if ($manager) {
+                    if (departements::where('manger', $manager->id)->exists() || Sector::where('manager', $manager->id)->exists()) {
+                        $invalidFileNumbers[] = $file_number;
+                    }
+                }
+            }
+
+            if (!empty($invalidFileNumbers)) {
+                $validator->errors()->add('file_number_invalid', 'أرقام الملفات التالية لا يمكن إضافتها لأنها تخص مدراء أقسام أو قطاعات: ' . implode(', ', $invalidFileNumbers));
+            }
         });
 
         if ($validator->fails()) {
@@ -454,7 +477,7 @@ class DepartmentController extends Controller
 
         // Process file Numbers for employees
         $file_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->file_number);
-        $file_numbers = array_filter(explode(',', $file_numbers)); // Ensure it's an array of valid numbers
+        $file_numbers = array_filter(explode(',', $file_numbers));
 
         // Handle reservation allowance type
         $part = $request->input('part');
@@ -569,7 +592,7 @@ class DepartmentController extends Controller
             'email.unique' => 'عفوا هذا الايميل مأخوذ مسبقا',
             'email.invalid_format' => 'البريد الإلكتروني للمدير غير صالح.',
             'manager_exists' => 'رقم الملف الخاص بالمدير غير موجود.',
-            'manager_is_sector_manager' => 'لا يمكن تعيين مدير قطاع كمدير لهذه الإدارة.'
+            'manager_is_sector_manager' => 'لا يمكن تعيين مدير قطاع كمدير لهذه الإدارة.',
         ];
 
         $validator = Validator::make($request->all(), [
@@ -614,6 +637,21 @@ class DepartmentController extends Controller
 
             if (!empty($nonExistingFileNumbers)) {
                 $validator->errors()->add('file_number', 'أرقام الملفات التالية غير موجودة في النظام: ' . implode(', ', $nonExistingFileNumbers));
+            }
+
+            // Check if any of the file numbers belong to a manager of a department or sector
+            $invalidFileNumbers = [];
+            foreach ($file_numbers as $file_number) {
+                $manager = User::where('file_number', $file_number)->first();
+                if ($manager) {
+                    if (departements::where('manger', $manager->id)->exists() || Sector::where('manager', $manager->id)->exists()) {
+                        $invalidFileNumbers[] = $file_number;
+                    }
+                }
+            }
+
+            if (!empty($invalidFileNumbers)) {
+                $validator->errors()->add('file_number_invalid', 'أرقام الملفات التالية لا يمكن إضافتها لأنها تخص مدراء أقسام أو قطاعات: ' . implode(', ', $invalidFileNumbers));
             }
         });
         if ($validator->fails()) {
@@ -771,7 +809,7 @@ class DepartmentController extends Controller
             'email.unique' => 'عفوا هذا الايميل مأخوذ مسبقا',
             'email.invalid_format' => 'البريد الإلكتروني للمدير غير صالح.',
             'manager_exists' => 'رقم الملف الخاص بالمدير غير موجود.',
-            'manager_is_sector_manager' => 'لا يمكن تعيين مدير قطاع كمدير لهذه الإدارة.'
+            'manager_is_sector_manager' => 'لا يمكن تعيين مدير قطاع كمدير لهذه الإدارة.',
         ];
 
         $validator = Validator::make($request->all(), [
@@ -806,6 +844,34 @@ class DepartmentController extends Controller
                 }
             ]
         ], $messages);
+
+        $validator->after(function ($validator) use ($request) {
+            // Convert the file_numbers to an array
+            $file_numbers = array_filter(explode(',', str_replace(array("\r", "\r\n", "\n"), ',', $request->file_number)));
+
+            // Check if any of the file numbers do not exist in the database
+            $existingEmployees = User::whereIn('file_number', $file_numbers)->pluck('file_number')->toArray();
+            $nonExistingFileNumbers = array_diff($file_numbers, $existingEmployees);
+
+            if (!empty($nonExistingFileNumbers)) {
+                $validator->errors()->add('file_number', 'أرقام الملفات التالية غير موجودة في النظام: ' . implode(', ', $nonExistingFileNumbers));
+            }
+
+            // Check if any of the file numbers belong to a manager of a department or sector
+            $invalidFileNumbers = [];
+            foreach ($file_numbers as $file_number) {
+                $manager = User::where('file_number', $file_number)->first();
+                if ($manager) {
+                    if (departements::where('manger', $manager->id)->exists() || Sector::where('manager', $manager->id)->exists()) {
+                        $invalidFileNumbers[] = $file_number;
+                    }
+                }
+            }
+
+            if (!empty($invalidFileNumbers)) {
+                $validator->errors()->add('file_number_invalid', 'أرقام الملفات التالية لا يمكن إضافتها لأنها تخص مدراء أقسام أو قطاعات: ' . implode(', ', $invalidFileNumbers));
+            }
+        });
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
@@ -963,6 +1029,7 @@ class DepartmentController extends Controller
             ])->withInput();
         }
 
+
         if (!empty($employeesToRemove)) { //file_number
             User::whereIn('file_number', $employeesToRemove)
                 ->update(['sector' => null, 'department_id' => null]);
@@ -1001,7 +1068,7 @@ class DepartmentController extends Controller
             'budget_type.required' => 'يجب اختيار نوع الميزانيه',
             'email.unique' => 'عفوا هذا الايميل مأخوذ مسبقا',
             'manager_exists' => 'رقم الملف الخاص بالمدير غير موجود.',
-            'manager_is_sector_manager' => 'لا يمكن تعيين مدير قطاع كمدير لهذه الإدارة.'
+            'manager_is_sector_manager' => 'لا يمكن تعيين مدير قطاع كمدير لهذه الإدارة.',
         ];
 
         $validator = Validator::make($request->all(), [
@@ -1036,6 +1103,34 @@ class DepartmentController extends Controller
                 }
             ]
         ], $messages);
+
+        $validator->after(function ($validator) use ($request) {
+            // Convert the file_numbers to an array
+            $file_numbers = array_filter(explode(',', str_replace(array("\r", "\r\n", "\n"), ',', $request->file_number)));
+
+            // Check if any of the file numbers do not exist in the database
+            $existingEmployees = User::whereIn('file_number', $file_numbers)->pluck('file_number')->toArray();
+            $nonExistingFileNumbers = array_diff($file_numbers, $existingEmployees);
+
+            if (!empty($nonExistingFileNumbers)) {
+                $validator->errors()->add('file_number', 'أرقام الملفات التالية غير موجودة في النظام: ' . implode(', ', $nonExistingFileNumbers));
+            }
+
+            // Check if any of the file numbers belong to a manager of a department or sector
+            $invalidFileNumbers = [];
+            foreach ($file_numbers as $file_number) {
+                $manager = User::where('file_number', $file_number)->first();
+                if ($manager) {
+                    if (departements::where('manger', $manager->id)->exists() || Sector::where('manager', $manager->id)->exists()) {
+                        $invalidFileNumbers[] = $file_number;
+                    }
+                }
+            }
+
+            if (!empty($invalidFileNumbers)) {
+                $validator->errors()->add('file_number_invalid', 'أرقام الملفات التالية لا يمكن إضافتها لأنها تخص مدراء أقسام أو قطاعات: ' . implode(', ', $invalidFileNumbers));
+            }
+        });
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();

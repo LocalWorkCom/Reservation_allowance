@@ -530,5 +530,25 @@
             // mangeredInput.addEventListener('input', toggleEmailField);
 
         });
+
+        $(document).ready(function() {
+            var selectedBudgetType =
+                {{ (float) $department->reservation_allowance_amount }};
+
+            if (selectedBudgetType == 0.0) {
+                $('#free').prop('checked', true);
+                $('#budgetField').hide();
+            } else {
+                $('#notFree').prop('checked', true);
+                $('#budgetField').show();
+            }
+            $('#notFree').change(function() {
+                $('#budgetField').show();
+            });
+
+            $('#free').change(function() {
+                $('#budgetField').hide();
+            });
+        });
     </script>
 @endsection
