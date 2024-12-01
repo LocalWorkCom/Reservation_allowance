@@ -662,7 +662,7 @@ class ReservationAllowanceController extends Controller
 
     public function getAllWithMonth(Request $request)
     {
-        $user = auth()->user();
+        $user_gest = auth()->user();
         $to_day = Carbon::now()->format('Y-m-d');
         $data = [];
 
@@ -714,63 +714,182 @@ class ReservationAllowanceController extends Controller
         }
 
 
-        $data = ReservationAllowance::Query()->with('users', 'users.grade', 'departements')->whereMonth('date', $month)->whereYear('date', $year);
+        // $data = ReservationAllowance::Query()->with('users', 'users.grade', 'departements')->whereMonth('date', $month)->whereYear('date', $year);
+        // if($sector_id != 0){
+        //     $data = $data->where('sector_id', $sector_id);
+        // }else{
+        //     if($user->rule_id != 2){
+        //         $data = $data->where('sector_id', $user->sector);
+        //     }
+        // }
+
+        // if($departement_id != 0){
+        //     $data = $data->where('departement_id', $departement_id);
+        // }else{
+        //     if($user->rule_id == 3){
+        //         $data = $data->where('departement_id', $user->department_id);
+        //     }
+        // }
+        // $data = $data->get();
+
+
         if($sector_id != 0){
-            $data = $data->where('sector_id', $sector_id);
+            $sectorId = $sector_id;
         }else{
-            if($user->rule_id != 2){
-                $data = $data->where('sector_id', $user->sector);
+            if($user_gest->rule_id != 2){
+                $sectorId = $user->sector;
             }
         }
 
         if($departement_id != 0){
-            $data = $data->where('departement_id', $departement_id);
+            $departementId = $departement_id;
         }else{
-            if($user->rule_id == 3){
-                $data = $data->where('departement_id', $user->department_id);
+            if($user_gest->rule_id == 3){
+                $departementId = $user->department_id;
             }
         }
-        $data = $data->get();
+
+        $data = User::whereIn('id', function ($query) use ($user_gest, $sectorId, $departementId, $month, $year) {
+            $query->select('user_id')
+                  ->from('reservation_allowances');
+                  if($sectorId != 0){
+                    $query->where('sector_id', $sectorId);
+                  }else{
+                        if($user_gest->rule_id != 2){
+                            $query->where('sector_id', $sectorId);
+                        }
+                  }
+                  if($departementId != 0){
+                    $query->where('departement_id', $departementId);
+                  }else{
+                        if($user_gest->rule_id == 3){
+                            $query->where('departement_id', $departementId);
+                        }
+                  }
+            $query->whereYear('date', $year)
+                  ->whereMonth('date', $month);
+        })
+        ->with(['grade', 'department'])
+        ->get();
+        
+        //return $data;
+        //dd($employees);
+
+        
 
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
                 return '<button class="btn  btn-sm" style="background-color: #259240;"><i class="fa fa-edit"></i></button>';
             })
             ->addColumn('employee_name', function ($row) {
-                return $row->users->name;  // Display the count of iotelegrams
+                return $row->name;  // Display the count of iotelegrams
             })
             ->addColumn('employee_grade', function ($row) {
                   // Display the count of iotelegrams
-                if($row->users->grade_id != null){return $row->users->grade->name;}else{return "لا يوجد رتبة";}
+                if($row->grade_id != null){return $row->grade->name;}else{return "لا يوجد رتبة";}
 
             })
             ->addColumn('employee_file_num', function ($row) {
-                if($row->users->file_number == null){return "لا يوجد رقم ملف";}else{return $row->users->file_number;}
+                if($row->file_number == null){return "لا يوجد رقم ملف";}else{return $row->file_number;}
             })
             /*->addColumn('type', function ($row) {
                 return $row->type;
             })*/
-            ->addColumn('employee_allowance_all_btn', function ($row) {
-                if($row->type == '1'){
-                    $btn = '<div class="d-flex" style="justify-content: space-around !important"><div style="display: inline-flex; direction: ltr;"><label for="">  حجز كلى</label><input type="radio" class="form-control" checked disabled></div><span>';
+            // ->addColumn('employee_allowance_all_btn', function ($row) {
+            //     if($row->type == '1'){
+            //         $btn = '<div class="d-flex" style="justify-content: space-around !important"><div style="display: inline-flex; direction: ltr;"><label for="">  حجز كلى</label><input type="radio" class="form-control" checked disabled></div><span>';
+            //     }else{
+            //         $btn = "";
+            //     }
+            //     return $btn;
+            // })
+            // ->addColumn('employee_allowance_part_btn', function ($row) {
+            //     if($row->type == '2'){
+            //         $btn = '<div style="display: inline-flex; direction: ltr;"><label for="">  حجز جزئى</label><input type="radio"class="form-control" checked disabled></div></div>';
+            //     }else{
+            //         $btn = "";
+            //     }
+            //     return $btn;
+            // })
+            // ->addColumn('employee_allowance_amount', function ($row) {
+            //     return $row->amount.' د.ك ';  // Display the count of iotelegrams
+            // })
+            ->addColumn('allowance_all_count_but', function ($user) use ($user_gest ,$sectorId, $departementId, $month, $year) {
+                $allowance_all_count = ReservationAllowance::where('user_id', $user->id)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->where('type', '1');
+                if($sectorId != 0){
+                    $allowance_all_count->where('sector_id', $sectorId);
                 }else{
-                    $btn = "";
+                    if($user_gest->rule_id != 2){
+                        $allowance_all_count->where('sector_id', $sectorId);
+                    }
                 }
-                return $btn;
-            })
-            ->addColumn('employee_allowance_part_btn', function ($row) {
-                if($row->type == '2'){
-                    $btn = '<div style="display: inline-flex; direction: ltr;"><label for="">  حجز جزئى</label><input type="radio"class="form-control" checked disabled></div></div>';
+                if($departementId != 0){
+                    $allowance_all_count->where('departement_id', $departementId);
                 }else{
-                    $btn = "";
+                    if($user_gest->rule_id == 3){
+                        $allowance_all_count->where('departement_id', $departementId);
+                    }
                 }
-                return $btn;
-            })
-            ->addColumn('employee_allowance_amount', function ($row) {
-                return $row->amount.' د.ك ';  // Display the count of iotelegrams
+                $allowance_all_count->get();
+
+                //return "بدل حجز كلى "."( ".$allowance_all_count." )";
+                return $allowance_all_count->count();
             })
 
-            ->rawColumns(['employee_allowance_all_btn', 'employee_allowance_part_btn'])
+            ->addColumn('allowance_part_count_but', function ($user) use ($user_gest ,$sectorId, $departementId, $month, $year) {
+                $allowance_part_count = ReservationAllowance::where('user_id', $user->id)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->where('type', '2');
+                if($sectorId != 0){
+                    $allowance_part_count->where('sector_id', $sectorId);
+                }else{
+                    if($user_gest->rule_id != 2){
+                        $allowance_part_count->where('sector_id', $sectorId);
+                    }
+                }
+                if($departementId != 0){
+                    $allowance_part_count->where('departement_id', $departementId);
+                }else{
+                    if($user_gest->rule_id == 3){
+                        $allowance_part_count->where('departement_id', $departementId);
+                    }
+                }
+                $allowance_part_count->get();
+
+                //return "بدل حجز جزئى "."( ".$allowance_part_count." )";
+                return $allowance_part_count->count();
+            })
+
+            ->addColumn('allowance_sum_but', function ($user) use ($user_gest ,$sectorId, $departementId, $month, $year) {
+                $allowance_sum = ReservationAllowance::where('user_id', $user->id)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month);
+                if($sectorId != 0){
+                    $allowance_sum->where('sector_id', $sectorId);
+                }else{
+                    if($user_gest->rule_id != 2){
+                        $allowance_sum->where('sector_id', $sectorId);
+                    }
+                }
+                if($departementId != 0){
+                    $allowance_sum->where('departement_id', $departementId);
+                }else{
+                    if($user_gest->rule_id == 3){
+                        $allowance_sum->where('departement_id', $departementId);
+                    }
+                }
+                $allowance_sum->get();
+
+                //return "( ".$allowance_sum." ) د.ك";
+                return $allowance_sum->sum("amount");
+            })
+
+
+            ->rawColumns(['allowance_all_count_but', 'allowance_part_count_but', 'allowance_sum_but'])
             //->rawColumns(['action'])
             ->make(true);
     }

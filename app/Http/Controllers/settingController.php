@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Country;
+use App\Models\ViolationTypes;
 
 
 class settingController extends Controller
@@ -265,11 +266,12 @@ class settingController extends Controller
     public function indexgrads()
     {
         $all = grade::count();
+        $violationTypeName = ViolationTypes::whereJsonContains('type_id', 0)->get();
 
         $Officer = grade::where('type', 2)->count();
         $Officer2 = grade::where('type', 1)->count();
-        $person = grade::where('type', 3)->count();
-        return view("grads.index", compact('all', 'Officer', 'Officer2', 'person'));
+        $person = grade::where('type', 3)->count(); 
+        return view("grads.index", compact('all', 'Officer', 'Officer2', 'person','violationTypeName'));
     }
     //create GRAD
 
@@ -278,6 +280,8 @@ class settingController extends Controller
     public function getAllgrads(Request $request)
 {
     $data = grade::orderBy('order', 'ASC');
+    $violationTypeName = ViolationTypes::whereJsonContains('type_id', 0)->get();
+
     $filter = $request->get('filter'); // Retrieve filter
 
     // Apply the filter based on the type
@@ -309,9 +313,11 @@ class settingController extends Controller
         })
         ->addColumn('type', function ($row) {
 
-                if ($row->type == 2) $mode = 'ظابط';
+              /*   if ($row->type == 2) $mode = 'ظابط';
                 elseif ($row->type == 1) $mode = ' فرد';
-                else $mode = 'مهني';
+                else $mode = 'مهني'; */
+                $TypeName = ViolationTypes::whereJsonContains('type_id', 0)->where('id',$row->type)->first();
+                $mode=$TypeName->name;
                 return $mode;
             })
             ->rawColumns(['action'])
