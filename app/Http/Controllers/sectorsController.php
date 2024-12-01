@@ -170,13 +170,13 @@ class sectorsController extends Controller
                 }
             })
             ->addColumn('employees', function ($row) {
-                $emp_num = User::where('sector', $row->id)->where('flag', 'employee')->where('department_id', null)->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373;color: white; padding-inline: 15px" href=' . route('user.employees', ['id' => $row->uuid, 'type' => 'sector', 'status' => 'null', 'flag' => 'employee']) . '> ' . $emp_num . '</a>';
+                $emp_num = User::where('sector', $row->id)->where('department_id', null)->count();
+                $btn = '<a class="btn btn-sm" style="background-color: #274373;color: white; padding-inline: 15px" href=' . route('user.employees', ['id' => $row->uuid, 'type' => 'sector', 'status' => 'null', 'flag' => 'all']) . '> ' . $emp_num . '</a>';
                 return $btn;
             })
             ->addColumn('employeesdep', function ($row) {
-                $emp_num = User::where('sector', $row->id)->where('flag', 'employee')->whereNotNull('department_id')->count();
-                $btn = '<a class="btn btn-sm" style="background-color: #274373;color: white;  padding-inline: 15px" href=' . route('user.employees', ['id' => $row->uuid, 'type' => 'sector', 'status' => 'notnull', 'flag' => 'employee']) . '> ' . $emp_num . '</a>';
+                $emp_num = User::where('sector', $row->id)->whereNotNull('department_id')->count();
+                $btn = '<a class="btn btn-sm" style="background-color: #274373;color: white;  padding-inline: 15px" href=' . route('user.employees', ['id' => $row->uuid, 'type' => 'sector', 'status' => 'notnull', 'flag' => 'all']) . '> ' . $emp_num . '</a>';
 
                 return $btn;
             })
