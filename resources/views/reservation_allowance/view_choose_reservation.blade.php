@@ -84,7 +84,20 @@
                     <div>
                         <p> بدل حجز بالهويات</p>
                     </div>
+<div>
+<?php /*@if(Cache::get(auth()->user()->id."_employee_new_add") != null)*/?>
+                @if(Cache::get(auth()->user()->id) != null)
+                
+                        <input type="hidden" name="date" id="date" value="{{$date}}">
+                        <input type="hidden" name="sector_id" id="sector_id" value="{{$sectorId}}">
+                        <input type="hidden" name="departement_id" id="departement_id" value="{{$departementId}}">
+                    <button class="btn-all py-2 px-3 mx-2" onclick="confirm_reservation()">اعتماد الكشف</button>
+              
+                    <button class="btn-blue py-2 px-3 mx-2" onclick="printPDF()">طباعة</button>
+             
 
+                @endif
+</div>
                     <?php /*<form class="" id="search_employee_allowances">
                         @csrf
                         <div class="row d-flex flex-wrap">
@@ -176,35 +189,18 @@
                 @if($current_departement)
                 <h5 class="text-dark mx-3">الادارة : <span class="text-info">{{$current_departement->name}}</span></h5>
                 @endif
-
-                <!-- <h5 class="text-dark">ملاحظات الملف : <span class="text-info">211</span></h5> -->
-            </div>
-            <div class=" col-5 d-flex mb-4  ">
-                 <h5 class="text-dark mx-3">التاريخ : <span class="text-info">{{$date}}</span></h5>
+  <h5 class="text-dark mx-3">التاريخ : <span class="text-info">{{$date}}</span></h5>
                 <h5 class="text-dark mx-3">القوة : <span class="text-info">{{count($get_employee_for_all_reservations) + count($get_employee_for_part_reservations)}}</span></h5>
                 <h5 class="text-dark mx-3">التكلفة : <span class="text-info">{{$reservation_amount_all + $reservation_amount_part}}</span></h5>
-
                 <!-- <h5 class="text-dark">ملاحظات الملف : <span class="text-info">211</span></h5> -->
             </div>
+           
             <div class="col-5 d-flex align-items-end justify-content-end">
                 <!-- <select class="form-select form-select-lg select2 w-50 mx-3" name="sector_id" id="sector_id" required>
                     <option selected disabled>وكيل الوزارة المساعد لشئون امن المنافذ</option>
                     <option>1</option>
                 </select> -->
-                <?php /*@if(Cache::get(auth()->user()->id."_employee_new_add") != null)*/?>
-                @if(Cache::get(auth()->user()->id) != null)
-                <div class="col-lg-6" style="text-align: right">
-                        <input type="hidden" name="date" id="date" value="{{$date}}">
-                        <input type="hidden" name="sector_id" id="sector_id" value="{{$sectorId}}">
-                        <input type="hidden" name="departement_id" id="departement_id" value="{{$departementId}}">
-                    <button class="btn btn-success py-2 px-3 mx-2" onclick="confirm_reservation()">اعتماد الكشف</button>
-                </div>
-
-                <div class="col-lg-6" style="text-align: right">
-                    <button class="btn btn-success py-2 px-3 mx-2" onclick="printPDF()">طباعة</button>
-                </div>
-
-                @endif
+              
             </div>
         </div>
 
@@ -212,14 +208,18 @@
             <li class="nav-item " role="presentation ">
                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
                     role="tab" aria-controls="home" aria-selected="true">
-                    الموظفين الذين سيتم اضافة حجز كلى ( {{ $get_employee_for_all_reservations ? count($get_employee_for_all_reservations) : 0}} )
+                    <span class="tab-head">الموظفين الذين سيتم اضافة حجز كلى </span>
+                    <span class="text-info">
+                    ( {{ $get_employee_for_all_reservations ? count($get_employee_for_all_reservations) : 0}} )
+                    </span>
                 </button>
             </li>
 
             <li class="nav-item" role="presentation">
                 <button class="nav-link " id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
                     role="tab" aria-controls="profile" aria-selected="false">
-                    الموظفين الذين سيتم اضافة حجز جزئى ( {{ $get_employee_for_part_reservations ? count($get_employee_for_part_reservations) : 0}} )
+                    <span class="tab-head">الموظفين الذين سيتم اضافة حجز جزئى  </span> 
+                    <span class="text-info">( {{ $get_employee_for_part_reservations ? count($get_employee_for_part_reservations) : 0}} )</span>
                 </button>
             </li>
         </ul>
@@ -227,27 +227,26 @@
         <div class="tab-content mt-3" id="myTabContent">
             <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                 @if($get_employee_for_all_reservations)
-                <table class="table table-bordered table-hover">
+                <table class="table table-bordered ">
                     <thead>
                         <tr>
-                            <th style="width:5%">م</th>
-                            <th>الرتبة</th>
-                            <th>الاسم</th>
-                            <th>رقم الملف</th>
-                            <th>التكلفة</th>
-                            <th>الادارة</th>
+                            <th style="width:5%"><h4>م</h4></th>
+                            <th> <H4>الرتبة</H4></th>
+                            <th> <H4>الاسم</H4></th>
+                            <th> <H4>رقم الملف</H4></th>
+                            <th> <H4>التكلفة</H4></th>
+                            <th> <H4>الادارة</H4></th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($get_employee_for_all_reservations as $K_get_employee_for_all_reservation=>$get_employee_for_all_reservation)
                         <tr>
-                            <td>{{$K_get_employee_for_all_reservation+1}}</td>
-                            <td>{{$get_employee_for_all_reservation->grade != null ? $get_employee_for_all_reservation->grade->name : ""}}</td>
-                            <td>{{$get_employee_for_all_reservation->name}}</td>
-                            <td>{{$get_employee_for_all_reservation->file_number}}</td>
-                            <td>{{$get_employee_for_all_reservation->grade_value}}</td>
-                            <td>{{$get_employee_for_all_reservation->department_id != null ? $get_employee_for_all_reservation->department->name : ""}}
-                            </td>
+                            <td class="text-dark fw-bolder"><h5>{{$K_get_employee_for_all_reservation+1}}</h5></td>
+                            <td class="text-dark fw-bolder"><h5>{{$get_employee_for_all_reservation->grade != null ? $get_employee_for_all_reservation->grade->name : ""}}</h5></td>
+                            <td class="text-dark fw-bolder"><h5>{{$get_employee_for_all_reservation->name}}</h5></td>
+                            <td class="text-dark fw-bolder"><h5>{{$get_employee_for_all_reservation->file_number}}</h5></td>
+                            <td class="text-dark fw-bolder"><h5>{{$get_employee_for_all_reservation->grade_value}}</h5></td>
+                            <td class="text-dark fw-bolder"><h5>{{$get_employee_for_all_reservation->department_id != null ? $get_employee_for_all_reservation->department->name : ""}}</h5></td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -259,27 +258,26 @@
 
             <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                 @if($get_employee_for_part_reservations)
-                <table class="table table-bordered table-hover">
+                <table class="table table-bordered ">
                 <thead>
                         <tr>
-                            <th style="width:5%">م</th>
-                            <th>الرتبة</th>
-                            <th>الاسم</th>
-                            <th>رقم الملف</th>
-                            <th>التكلفة</th>
-                            <th>الادارة</th>
+                            <th style="width:5%"><h4>م</h4></th>
+                            <th><h4>الرتبة</h4></th>
+                            <th><h4>الاسم</h4></th>
+                            <th><h4>رقم الملف</h4></th>
+                            <th><h4>التكلفة</h4></th>
+                            <th><h4>الادارة</h4></th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($get_employee_for_part_reservations as $K_get_employee_for_part_reservation=>$get_employee_for_part_reservation)
                         <tr>
-                            <td>{{$K_get_employee_for_part_reservation+1}}</td>
-                            <td>{{$get_employee_for_part_reservation->grade != null ? $get_employee_for_part_reservation->grade->name : ""}}</td>
-                            <td>{{$get_employee_for_part_reservation->name}}</td>
-                            <td>{{$get_employee_for_part_reservation->file_number}}</td>
-                            <td>{{$get_employee_for_part_reservation->grade_value}}</td>
-                            <td>{{$get_employee_for_part_reservation->department_id != null ? $get_employee_for_part_reservation->department->name : ""}}
-                            </td>
+                            <td class="text-dark fw-bolder"><h5>{{$K_get_employee_for_part_reservation+1}}</h5></td>
+                            <td class="text-dark fw-bolder"><h5>{{$get_employee_for_part_reservation->grade != null ? $get_employee_for_part_reservation->grade->name : ""}}</h5></td>
+                            <td class="text-dark fw-bolder"><h5>{{$get_employee_for_part_reservation->name}}</h5></td>
+                            <td class="text-dark fw-bolder"><h5>{{$get_employee_for_part_reservation->file_number}}</h5></td>
+                            <td class="text-dark fw-bolder"><h5>{{$get_employee_for_part_reservation->grade_value}}</h5></td>
+                            <td class="text-dark fw-bolder"> <h5>{{$get_employee_for_part_reservation->department_id != null ? $get_employee_for_part_reservation->department->name : ""}}</h5> </td>
                         </tr>
                         @endforeach
                     </tbody>
