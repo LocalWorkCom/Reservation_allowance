@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cache;
+use TCPDF;
 
 class ReservationAllowanceController extends Controller
 {
@@ -383,7 +384,7 @@ class ReservationAllowanceController extends Controller
                     }
 
                     if($employee->department_id == null && $request->departement_id != 0){
-                        if($employee->department_id != $cdepartment_id){
+                        if($employee->department_id != $department_id){
                             $check_sector = 0;
                         }
                     }
@@ -1394,5 +1395,60 @@ class ReservationAllowanceController extends Controller
         }
         //return redirect()->route('reservation_allowances.index')->with('success', 'تم اضافه بدل حجز بنجاح');
         return redirect()->route('reservation_allowances.index_data',[$sectorId, $departementId, $datey])->with('success', 'تم اضافه بدل حجز بنجاح');
+    }
+
+    public function printReport(Request $request)
+    {
+        $user = $this->fetchUser($request->input('file_number')); 
+        if (!$user || !$this->canAccessEmployeeData(Auth::user(), $user)) {
+            return redirect()->back()->with('error', 'No user found with this File Number');
+        }
+    
+        // Fetch reservations
+        $reservations = ReservationAllowance::where('user_id', $user->id)->with('departements')->get();
+        $totalAmount = $reservations->sum(function ($item) {
+            return (float) $item->amount; // Ensure amount is treated as float
+        });
+        
+        $data = [
+            'reservations' => $reservations,
+            'user' => $user,
+            'sector' => Sector::find($user->sector)->name ?? 'N/A',
+            'department' => departements::find($user->department_id)->name ?? 'N/A',
+            'grade' => grade::find($user->grade_id)->name ?? 'N/A',
+            'totalAmount' => number_format((float) $totalAmount, 2) . ' د ك',
+            'totalFullReservation' => number_format(
+                (float) $reservations->where('type', 1)->sum('amount'), 
+                2
+            ) . ' د ك',
+            'totalPartialReservation' => number_format(
+                (float) $reservations->where('type', 2)->sum('amount'), 
+                2
+            ) . ' د ك',
+        ];
+    
+        // Generate PDF
+        $pdf = $this->generatePDF($data);
+        return $pdf->Output('reservation_report.pdf', 'I');
+    }
+    
+    private function generatePDF($data)
+    {
+        $pdf = new TCPDF();
+        $pdf->SetCreator('Your App');
+        $pdf->SetAuthor('Your App');
+        $pdf->SetTitle('Reservation Report');
+        $pdf->SetSubject('Report');
+        $pdf->SetMargins(10, 10, 10);
+        $pdf->SetHeaderMargin(10);
+        $pdf->SetFooterMargin(10);
+        $pdf->SetAutoPageBreak(TRUE, 10);
+        $pdf->SetFont('dejavusans', '', 12);
+        $pdf->AddPage();
+        $pdf->setRTL(true);
+        $html = view('reservation_fetch.pdf', $data)->render();
+        $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
+
+        return $pdf;
     }
 }
