@@ -220,9 +220,9 @@
                                     <th>الرتبة</th>
                                     <th>الاسم</th>
                                     <th>رقم الملف</th>
-                                    <th>نوع بدل الحجز</th>
-                                    <th>نوع بدل الحجز</th>
-                                    <th>اليومية</th>
+                                    <th>عدد ايام  بدل حجز كلى</th>
+                                    <th>عدد ايام بدل حجز جزئى</th>
+                                    <th>الاجمالى</th>
                                     <!-- <th style="width:150px;">العمليات</th>-->
                                 </tr>
                             </thead>
@@ -304,13 +304,10 @@
             window.get_table_data = function get_table_data(data_url,
             month) {
                 var filter = 'all'; // Default filter
-                var sector_id = document.getElementById('sector_id')
-                    .value;
-                var departement_id = document.getElementById(
-                    'departement_id').value;
+                var sector_id = document.getElementById('sector_id').value;
+                var departement_id = document.getElementById('departement_id').value;
                 var year = document.getElementById('year').value;
-                $.fn.dataTable.ext.classes.sPageButton =
-                    'btn-pagination btn-sm'; // Change Pagination Button Class
+                $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
                 table = $('#users-table').DataTable({
                     processing: true,
                     serverSide: true,
@@ -320,8 +317,7 @@
                             d.filter =
                             filter; // Use the global filter variable
                             d.sector_id = sector_id;
-                            d.departement_id =
-                                departement_id;
+                            d.departement_id = departement_id;
                             d.year = year;
                             d.month = month;
                         }
@@ -345,16 +341,16 @@
                             name: 'employee_file_num'
                         },
                         {
-                            data: 'employee_allowance_all_btn',
-                            name: 'employee_allowance_all_btn'
+                            data: 'allowance_all_count_but',
+                            name: 'allowance_all_count_but'
                         },
                         {
-                            data: 'employee_allowance_part_btn',
-                            name: 'employee_allowance_part_btn'
+                            data: 'allowance_part_count_but',
+                            name: 'allowance_part_count_but'
                         },
                         {
-                            data: 'employee_allowance_amount',
-                            name: 'employee_allowance_amount'
+                            data: 'allowance_sum_but',
+                            name: 'allowance_sum_but'
                         }
                     ],
                     order: [0, 'asc'],
@@ -389,34 +385,25 @@
                         var api = this.api();
                         var pageInfo = api.page.info();
                         if (pageInfo.recordsTotal <= 10) {
-                            $('.dataTables_paginate').css(
-                                'visibility', 'hidden');
+                            $('.dataTables_paginate').css('visibility', 'hidden');
                         } else {
-                            $('.dataTables_paginate').css(
-                                'visibility', 'visible');
+                            $('.dataTables_paginate').css('visibility', 'visible');
                         }
                     },
                     createdRow: function(row, data, dataIndex) {
-                        $('td', row).eq(0).html(dataIndex +
-                            1
-                            ); // Automatic numbering in the first column
+                        $('td', row).eq(0).html(dataIndex + 1 ); // Automatic numbering in the first column
                     }
                 });
                 $('.btn-filter').on('click', function() {
-                    filter = $(this).data(
-                    'filter'); // Get the filter value from the clicked button
+                    filter = $(this).data('filter'); // Get the filter value from the clicked button
                     table.ajax
                 .reload(); // Reload the DataTable with the new filter
                 });
                 // Filter buttons click event
                 $('.btn-filter').click(function() {
-                    filter = $(this).data(
-                    'filter'); // Update filter
-                    $('.btn-filter').removeClass(
-                    'btn-active'); // Remove active class from all
-                    $(this).addClass(
-                    'btn-active'); // Add active class to clicked button
-
+                    filter = $(this).data('filter'); // Update filter
+                    $('.btn-filter').removeClass( 'btn-active'); // Remove active class from all
+                    $(this).addClass('btn-active'); // Add active class to clicked button
                     table.page(0).draw(
                     false); // Reset to first page and redraw the table
                 });
