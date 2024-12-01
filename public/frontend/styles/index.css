@@ -1590,4 +1590,13 @@ color: #2A2726;
 .card-imgg img{
     height: 90px;
 }
-/* تلااتى */
+.tab-head{
+    font-weight: 700;
+    color: #274373;
+}
+.nav-tabs .nav-item .nav-link{
+    background-color: #f5f6fa;
+}
+.nav-tabs .nav-item .nav-link.active{
+    background-color: #e2e2e200;
+}
