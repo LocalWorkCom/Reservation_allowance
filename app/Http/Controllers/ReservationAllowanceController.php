@@ -1397,8 +1397,95 @@ class ReservationAllowanceController extends Controller
         return redirect()->route('reservation_allowances.index_data',[$sectorId, $departementId, $datey])->with('success', 'تم اضافه بدل حجز بنجاح');
     }
 
-    public function printReport(Request $request)
-    {
+    public function printReport($date,$sectorId=0,$departementId=0)
+    {      
+        $current_departement = null;  
+        if($departementId != 0){
+            $current_departement = departements::where('uuid', $departementId)->first();
+            $departement_id = $current_departement->id;
+        }else{
+            $departement_id = 0;
+        }
+        
+        $current_sector = Sector::where('uuid', $sectorId)->first();
+        $sector_id = $current_sector->id;
+
+        $sector = $sector_id;
+        $departement = $departement_id;
+        $get_employee_for_all_reservations = [];
+        $get_employee_for_part_reservations = [];
+
+        $employee_amount = 0;
+        $reservation_amout = 0;
+        $reservation_amount_part = 0;
+        $reservation_amount_all = 0;
+
+        if(Cache::has(auth()->user()->id)){
+
+            $user = auth()->user();
+            $to_day = $date;
+            //$to_day = Carbon::now()->format('Y-m-d');
+            $to_day_name = Carbon::parse($date)->translatedFormat('l');
+            $get_employees = Cache::get(auth()->user()->id);
+            // $sector_id = 0;
+            // $departement_id = 0;
+            
+            foreach($get_employees as $get_employee){
+                $employee = User::where('id', $get_employee['id'])->first();
+
+                if($employee){// check if employee
+                    if($employee->grade_id != null){ // check if employee has grade
+                        if($get_employee['type'] == 1){
+                            $grade_value = $employee->grade->value_all;
+                            $get_employee_for_all_reservations[] = $employee;
+                            $employee['grade_value'] = $grade_value;
+                            $reservation_amount_all += $employee->grade->value_all;
+                        }else{
+                            $grade_value = $employee->grade->value_part;
+                            $reservation_amount_part += $employee->grade->value_part;
+                            $employee['grade_value'] = $grade_value;
+                            $get_employee_for_part_reservations[] = $employee;
+                        }
+                        $employee_amount += $grade_value;
+                    }
+                }
+            }
+
+
+            //check to reservation month
+            $type_departement = 1;
+            $reservation_amout = sector::where('id', $sector_id)->first()->reservation_allowance_amount;
+            if($departement_id != 0){
+                $type_departement = 2;
+                $reservation_amout = departements::where('id', $departement_id)->first()->reservation_allowance_amount;
+            }
+
+            $first_day = date('Y-m-01');
+            $last_day = date('Y-m-t');
+            
+            $get_all_employee_amount = ReservationAllowance::Query();
+            if($departement_id != 0){
+                $get_all_employee_amount = $get_all_employee_amount->where('departement_id', $departement_id);
+            }
+            if($sector_id != 0){
+                $get_all_employee_amount = $get_all_employee_amount->where('sector_id', $sector_id);
+            }
+            $get_all_employee_amount = $get_all_employee_amount->whereBetween('date',[$first_day, $last_day])->sum('amount');
+
+            if($reservation_amout > 0){
+                $reservation_amout = $reservation_amout - $get_all_employee_amount;           
+                if($reservation_amout <= $employee_amount){
+                    return redirect()->back()->with('error','عفوا لقد تجاوزت ملبغ بدل الحجز');
+                }
+            }
+             
+        }
+
+
+
+
+
+
         $user = $this->fetchUser($request->input('file_number')); 
         if (!$user || !$this->canAccessEmployeeData(Auth::user(), $user)) {
             return redirect()->back()->with('error', 'No user found with this File Number');

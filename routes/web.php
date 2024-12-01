@@ -288,6 +288,7 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/reservation_allowances/confirm_reservation_allowances/{date}/{sector_id}/{departement_id}', [ReservationAllowanceController::class, 'confirm_reservation_allowances'])->name('reservation_allowances.confirm_reservation_allowances')->middleware('check.permission:view ReservationAllowance');
     Route::any('/reservation_allowances/create_employee_new', [ReservationAllowanceController::class, 'create_employee_new'])->name('reservation_allowances.create_employee_new')->middleware('check.permission:create ReservationAllowance');
     Route::any('/reservation_allowances/create_employee_all', [ReservationAllowanceController::class, 'create_employee_all'])->name('reservation_allowances.create_employee_all')->middleware('check.permission:create ReservationAllowance');
+    Route::any('/reservation_allowances/print/{date}/{sector_id}/{departement_id}', [ReservationAllowanceController::class, 'printReport'])->name('reservation_allowances.print')->middleware('check.permission:view ReservationAllowance');
 
     //reserv statics
  Route::group(['middleware' => ['check.permission:statistic ReservationAllowance']], function () {

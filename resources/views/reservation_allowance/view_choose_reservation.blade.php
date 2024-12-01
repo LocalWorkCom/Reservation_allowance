@@ -201,7 +201,7 @@
                 </div>
 
                 <div class="col-lg-6" style="text-align: right">
-                    <button class="btn btn-success py-2 px-3 mx-2" onclick="printPDF()">طباعة</button>
+                    <button class="btn btn-success py-2 px-3 mx-2" onclick="printPDF1()">طباعة</button>
                 </div>
 
                 @endif
@@ -328,14 +328,20 @@ function confirm_reservation() {
 }
 
 function printPDF() {
-    alert(11);
-    const fileNumber = $('#file_number').val().trim();
+    var reservation_date = document.getElementById('date').value;
+    var reservation_sector_id = document.getElementById('sector_id').value;
+    var reservation_departement_id = document.getElementById('departement_id').value;
+    var map_url = "{{ route('reservation_allowances.print', ['date', 'sector', 'departement']) }}";
+    map_url = map_url.replace('date', reservation_date);
+    map_url = map_url.replace('sector',reservation_sector_id);
+    map_url = map_url.replace('departement',reservation_departement_id);
+    window.location.href = map_url;
     if (fileNumber) {
         window.open('{{ route('reservation_fetch.print') }}?file_number=' + fileNumber, '_blank');
     } else {
         alert('Please enter a valid File Number');
     }
-}
+ }
 </script>
 
 <script>
