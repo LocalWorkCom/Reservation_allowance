@@ -453,9 +453,11 @@ public function showMainDepartmentDetails(Request $request, $sectorId)
         ->get()
         ->map(function ($department) use ($startDate, $endDate) {
             $subDepartmentsCount = departements::where('parent_id', $department->id)->count();
-            $employeeCount = ReservationAllowance::where('departement_id', $department->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->count();
+           $employeeCount = ReservationAllowance::where('departement_id', $department->id)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->distinct('user_id')
+            ->count('user_id');
+
             
             $totalAmount = ReservationAllowance::where('departement_id', $department->id)
                 ->whereBetween('date', [$startDate, $endDate])
@@ -491,8 +493,9 @@ public function printMainDepartmentDetails(Request $request, $sectorId)
         ->map(function ($department) use ($startDate, $endDate) {
             $subDepartmentsCount = departements::where('parent_id', $department->id)->count();
             $employeeCount = ReservationAllowance::where('departement_id', $department->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->count();
+            ->whereBetween('date', [$startDate, $endDate])
+            ->distinct('user_id')
+            ->count('user_id');
 
             $totalAmount = ReservationAllowance::where('departement_id', $department->id)
                 ->whereBetween('date', [$startDate, $endDate])
@@ -537,9 +540,10 @@ public function showSubDepartments(Request $request, $departmentUuid)
     $subDepartments = departements::where('parent_id', $mainDepartment->id)
         ->get()
         ->map(function ($subDepartment) use ($startDate, $endDate) {
-            $employeeCount = ReservationAllowance::where('departement_id', $subDepartment->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->count();
+            $employeeCount = ReservationAllowance::where('departement_id', $department->id)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->distinct('user_id')
+            ->count('user_id');
 
             // $totalAmount = ReservationAllowance::where('departement_id', $subDepartment->id)
             //     ->whereBetween('date', [$startDate, $endDate])
@@ -596,9 +600,10 @@ public function printSubDepartmentsDetails(Request $request, $departmentUuid)
     $subDepartments = departements::where('parent_id', $mainDepartment->id)
         ->get()
         ->map(function ($subDepartment) use ($startDate, $endDate) {
-            $employeeCount = ReservationAllowance::where('departement_id', $subDepartment->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->count();
+            $employeeCount = ReservationAllowance::where('departement_id', $department->id)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->distinct('user_id')
+            ->count('user_id');
 
             $totalAmount = ReservationAllowance::where('departement_id', $subDepartment->id)
                 ->whereBetween('date', [$startDate, $endDate])
@@ -667,10 +672,10 @@ public function getMainDepartmentEmployeesData(Request $request, $departmentId)
             $latestGrade = UserGrade::where('user_id', $user->id)
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->orderBy('created_at', 'desc')
-                ->with('grade') // Eager load the related grade
+                ->with('grade') 
                 ->first();
 
-            return $latestGrade?->grade?->name ?? 'N/A'; // Return the grade name or 'N/A'
+            return $latestGrade?->grade?->name ?? 'N/A'; 
         })
         ->addColumn('full_days', function ($user) use ($department, $startDate, $endDate) {
             return ReservationAllowance::where('user_id', $user->id)

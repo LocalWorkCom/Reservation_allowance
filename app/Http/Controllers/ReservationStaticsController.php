@@ -123,7 +123,7 @@ public function getAll(Request $request, $sectorUuid)
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
                     ->distinct('user_id')
-                    ->count('user_id'); // Correct count for users with allowances
+                    ->count('user_id'); 
             })
             
             ->addColumn('did_not_receive_allowance_count', function ($row) use ($month, $year) {
@@ -132,7 +132,7 @@ public function getAll(Request $request, $sectorUuid)
                     ->whereYear('created_at', $year)
                     ->whereMonth('created_at', $month)
                     ->distinct('user_id')
-                    ->count('user_id'); // Ensure count, not collection
+                    ->count('user_id'); 
             
                 $receivedAllowanceCount = ReservationAllowance::where('departement_id', $row->id)
                     ->whereYear('date', $year)

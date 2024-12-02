@@ -48,9 +48,9 @@
         </tr>
         <tr>
          
-            <th>أيام كاملة</th>
-            <th>أيام جزئية</th>
-            <th>إجمالي الأيام</th>
+            <th>كلي </th>
+            <th>جزئي </th>
+            <th>إجمالي </th>
             <th>بدل الحجز (كلي)</th>
             <th>بدل الحجز (جزئي)</th>
             <th>إجمالي بدل الحجز</th>
@@ -122,36 +122,40 @@
             //     },
 
             { data: 'full_days', name: 'full_days'  ,
-                      render: function (data, type, row) {
-                        const month = '{{ $month }}';
-                        const year = '{{ $year }}';
-                        return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
-                    }
+                    //   render: function (data, type, row) {
+                    //     const month = '{{ $month }}';
+                    //     const year = '{{ $year }}';
+                    //     return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                    // }
                 },
         { data: 'partial_days', name: 'partial_days',
-                      render: function (data, type, row) {
-                        const month = '{{ $month }}';
-                        const year = '{{ $year }}';
-                        return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
-                    } },
+                    //   render: function (data, type, row) {
+                    //     const month = '{{ $month }}';
+                    //     const year = '{{ $year }}';
+                    //     return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                    // } 
+                },
         { data: 'total_days', name: 'total_days',
                       render: function (data, type, row) {
                         const month = '{{ $month }}';
                         const year = '{{ $year }}';
                         return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
-                    } },
+                    } 
+                },
         { data: 'full_allowance', name: 'full_allowance' ,
-                      render: function (data, type, row) {
-                        const month = '{{ $month }}';
-                        const year = '{{ $year }}';
-                        return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
-                    }},
+                    //   render: function (data, type, row) {
+                    //     const month = '{{ $month }}';
+                    //     const year = '{{ $year }}';
+                    //     return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                    // }
+                },
         { data: 'partial_allowance', name: 'partial_allowance' ,
-                      render: function (data, type, row) {
-                        const month = '{{ $month }}';
-                        const year = '{{ $year }}';
-                        return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
-                    }},
+                    //   render: function (data, type, row) {
+                    //     const month = '{{ $month }}';
+                    //     const year = '{{ $year }}';
+                    //     return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                    // }
+                },
         { data: 'total_allowance', name: 'total_allowance' ,
                       render: function (data, type, row) {
                         const month = '{{ $month }}';
