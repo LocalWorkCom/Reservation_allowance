@@ -15,7 +15,8 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('home') }}">الرئيسيه</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('departments.index', $sectors->uuid) }}">الادارات</a>
+                    <li class="breadcrumb-item"><a href="{{ route('departments.index', $sectors->uuid) }}"> قطاع
+                            {{ $sectors->name }}</a>
                     </li>
 
                     @foreach ($breadcrumbs as $breadcrumb)
@@ -87,7 +88,7 @@
                             class="display table table-responsive-sm table-bordered table-hover dataTable">
                             <thead>
                                 <tr>
-                                    <th>رقم التعريف</th>
+                                    <th>م</th>
                                     <th>الاسم</th>
                                     <th>المدير</th>
                                     <th>بيانات الدخول</th>

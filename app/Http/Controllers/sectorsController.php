@@ -197,6 +197,7 @@ class sectorsController extends Controller
         // Custom error messages for validation
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
+            'name.unique' => 'عفوا هذا الاسم مأخوذ مسبقا',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
             'email.required' => 'الايميل مطلوب.',
@@ -206,7 +207,10 @@ class sectorsController extends Controller
         ];
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
+            'name' => [
+                'required',
+                'unique:sectors,name'
+            ],
             'budget_type' => 'required',
             'budget' => 'nullable|numeric',
             'part' => 'required',
@@ -379,6 +383,7 @@ class sectorsController extends Controller
         $sector = Sector::find($request->id);
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
+            'name.unique' => 'عفوا هذا الاسم مأخوذ مسبقا',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
             'email.required' => 'الايميل مطلوب.',
@@ -388,7 +393,10 @@ class sectorsController extends Controller
         ];
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
+            'name' => [
+                'required',
+                Rule::unique('sectors', 'name')->ignore($sector->id)
+            ],
             'budget_type' => 'required',
             'budget' => 'nullable|numeric',
             'part' => 'required',
