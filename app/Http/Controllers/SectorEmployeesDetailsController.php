@@ -246,19 +246,19 @@ class SectorEmployeesDetailsController extends Controller
         if (!$sector) {
             return response()->json(['error' => 'Sector not found'], 404);
         }
-    
-        // Fetch users who were in the sector during the selected month and year
         $userIdsInSector = DB::table('user_departments')
-            ->where('sector_id', $sector->id)
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->orderBy('created_at', 'desc')
-            ->distinct('user_id')
-            ->pluck('user_id');
-    
+        ->where('sector_id', $sector->id)
+        ->whereYear('created_at', $year)
+        ->whereMonth('created_at', $month)
+        ->where('flag', 1) 
+        ->select('user_id', DB::raw('MAX(created_at) as latest_created_at')) 
+        ->groupBy('user_id') 
+        ->pluck('user_id');
+
+        
         $users = User::whereIn('id', $userIdsInSector)
-            ->with(['department'])
-            ->get();
+        ->with(['department'])
+        ->get();
     
         // Return data to DataTables
         return DataTables::of($users)
