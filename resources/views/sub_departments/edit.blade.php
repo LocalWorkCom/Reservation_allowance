@@ -172,7 +172,7 @@
                                 <label for="file_number" class="col-12"> أرقام
                                     الملفات</label>
                                 <textarea class="form-control" name="file_number" id="file_number" style="height: 100px">
-                                    @foreach ($department->employees as $employee)
+                                    @foreach ($employees as $employee)
 {{ $employee->file_number }},
 @endforeach
                                 </textarea>
