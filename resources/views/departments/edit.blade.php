@@ -229,7 +229,7 @@
 
                         </div>
                         <div class="form-group col-md-12 mx-md-2">
-                            <button class="btn-blue " type="submit"> اضافة </button>
+                            <button class="btn-blue " type="submit" id="submit-btn" disabled> اضافة </button>
                         </div>
 
 
@@ -279,6 +279,8 @@
             dir: "rtl"
         });
         $(document).ready(function() {
+            $('#submit-btn').prop('disabled', false);
+
             var selectedManagerId = $('#mangered').val();
             // $('#mangered').on('input', function() {
             //     var managerId = $(this).val();
@@ -296,6 +298,7 @@
             if (selectedManagerId) {
                 $('#email_field').show();
                 fetchManagerDetails(selectedManagerId, false);
+                $('#submit-btn').prop('disabled', true);
 
                 var existingEmail = @json(old('mangered', $department->manager ? $email : null));
                 var existingBudget = @json(old('budget', $department->reservation_allowance_amount ? $department->reservation_allowance_amount : ''));
@@ -332,6 +335,7 @@
                 var departmentId = $('#department_id').val();
                 var sectorId = $('#sector').val();
                 var is_EditPages = true;
+                $('#submit-btn').prop('disabled', true);
 
                 $.ajax({
                     url: '/get-manager-details/' + managerId + '?skipDepartmentCheck=' + skipDepartmentCheck +
@@ -386,11 +390,14 @@
                                 cancelButtonText: 'إلغاء',
                                 confirmButtonColor: '#3085d6'
                             }).then((result) => {
-                                if (result.isConfirmed) {} else {
+                                if (result.isConfirmed) {
+                                    $('#submit-btn').prop('disabled', false);
+                                } else {
                                     // Handle cancel action: clear the manager input field
                                     $('#mangered').val(''); // Clear the input field
                                     $('#manager_details').hide(); // Hide the manager details
                                     $('#email_field').hide();
+                                    $('#submit-btn').prop('disabled', false);
                                 }
                             });
                         }
@@ -437,6 +444,9 @@
             var managerId = $('#mangered').val();
             if (!managerId) {
                 $('#mangered').val(null);
+            }
+            if ($('#submit-btn').prop('disabled')) {
+                e.preventDefault();
             }
         });
 
