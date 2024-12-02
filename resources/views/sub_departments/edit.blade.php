@@ -328,6 +328,7 @@
             } else {
                 $('#manager_details').hide();
                 $('#email_field').hide();
+                $('#submit-btn').prop('disabled', false);
             }
         });
 
@@ -435,6 +436,7 @@
                 $('#manager_details').hide();
                 $('#email_field').hide();
                 $('#email').val('');
+                $('#submit-btn').prop('disabled', false);
             }
         }
 
