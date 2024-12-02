@@ -252,6 +252,7 @@ class SectorEmployeesDetailsController extends Controller
             ->where('sector_id', $sector->id)
             ->whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
+            ->orderBy('created_at', 'desc')
             ->distinct('user_id')
             ->pluck('user_id');
     
