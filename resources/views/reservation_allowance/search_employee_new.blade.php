@@ -177,16 +177,16 @@
                             <thead>
                                 <tr>
                                     <th rowspan="2" style="width:5%">
-                                        <h4>م</h4>
+                                        <h5>م</h5>
                                     </th>
                                     <th rowspan="2">
-                                        <h4>الرتبة</h4>
+                                        <h5>الرتبة</h5>
                                     </th>                                    
                                     <th rowspan="2">
-                                        <h4>الاسم</h4>
+                                        <h5>الاسم</h5>
                                     </th>
                                     <th rowspan="2">
-                                        <h4>رقم الملف</h4>
+                                        <h5>رقم الملف</h5>
                                     </th>
 
                                     <th colspan="3">بدل الحجز</th>
@@ -257,10 +257,10 @@
                                 @foreach ($employees as $k_employee => $employee)
                                     @php($x++)
                                     <tr>
-                                        <th style="text-align: center;"><h4> {{ $x }}</h4></th>
-                                        <th style="text-align: center;"><h4>{{ $employee->grade_id != null ? $employee->grade->name : 'لا يوجد رتبة' }}</h4> </th>
-                                        <th style="text-align: center;"><h4> {{ $employee->name }}</h4></th>
-                                        <th style="text-align: center;"><h4>{{ $employee->file_number != null ? $employee->file_number : 'لا يوجد رقم ملف' }}</h4> </th>
+                                        <th style="text-align: center;"><h5> {{ $x }}</h5></th>
+                                        <th style="text-align: center;"><h5>{{ $employee->grade_id != null ? $employee->grade->name : 'لا يوجد رتبة' }}</h5> </th>
+                                        <th style="text-align: center;"><h5> {{ $employee->name }}</h5></th>
+                                        <th style="text-align: center;"><h5>{{ $employee->file_number != null ? $employee->file_number : 'لا يوجد رقم ملف' }}</h5> </th>
                                         
                                         @if ($reservation_allowance_type == 1 || $reservation_allowance_type == 3)
                                         <th>

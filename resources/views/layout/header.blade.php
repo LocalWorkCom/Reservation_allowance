@@ -75,7 +75,7 @@
                     <div id="dropdownMenu5" class="dropdown-menu5">
                         <ul>
                             <div class="row col-12">
-                                <div class="col-6">
+                                <div class="col-md-6 col-sm-12 ">
                                     <li
                                         class="{{ request()->routeIs('reservation_allowances.create') ? 'active' : '' }}">
                                         <img src="{{ asset('frontend/images/police.svg') }}" alt="logo">
@@ -96,7 +96,7 @@
 
 
                                 </div>
-                                <div class="col-6">
+                                <div class="col-md-6 col-sm-12 ">
                                     @if (auth()->check() && in_array(auth()->user()->rule_id, [2, 3, 4]))
                                     <li class="{{ request()->routeIs('reservation_fetch.index') ? 'active' : '' }}">
                                         <img src="{{ asset('frontend/images/police.svg') }}" alt="logo">

@@ -99,21 +99,19 @@
 
 
 <div class="container  col-11 mt-3 p-0  pt-5 pb-4" dir="rtl">
-        <div class=" d-flex flex-wrap justify-content-between">
-            <div class=" col-12 d-flex mb-4  ">
+        
+            <div class=" col-12 d-flex flex-wrap mb-4  ">
                 @if($current_sector)
-                <h5 class="text-dark mx-3">القطاع : <span class="text-info">{{$current_sector->name}}</span></h5>
+                <h5 class="text-dark mx-md-3">القطاع : <span class="text-info">{{$current_sector->name}}</span></h5>
                 @endif
                 @if($current_departement)
-                <h5 class="text-dark mx-3">الادارة : <span class="text-info">{{$current_departement->name}}</span></h5>
+                <h5 class="text-darkmx-md-3">الادارة : <span class="text-info">{{$current_departement->name}}</span></h5>
                 @endif
-                <h5 class="text-dark mx-3">التاريخ : <span class="text-info">{{$to_day}}</span></h5>
-                <h5 class="text-dark mx-3">القوة : <span class="text-info">{{count($employee_new_add)}}</span></h5>
-                <h5 class="text-dark mx-3">التكلفة : <span class="text-info">{{$total_grade_value}}</span></h5>
+                <h5 class="text-dark mx-md-3">التاريخ : <span class="text-info">{{$to_day}}</span></h5>
+                <h5 class="text-dark mx-md-3">القوة : <span class="text-info">{{count($employee_new_add)}}</span></h5>
+                <h5 class="text-dark mx-md-3">التكلفة : <span class="text-info">{{$total_grade_value}}</span></h5>
                 <!-- <h5 class="text-dark">ملاحظات الملف : <span class="text-info">211</span></h5> -->
-            </div>
-        
-            <div class="col-5 d-flex align-items-end justify-content-end">
+       
                 <!-- <select class="form-select form-select-lg select2 w-50 mx-3" name="sector_id" id="sector_id" required>
                     <option selected disabled>وكيل الوزارة المساعد لشئون امن المنافذ</option>
                     <option>1</option>
@@ -132,7 +130,7 @@
                 </div>
                 @endif
             </div>
-        </div>
+ 
 
         <ul class="nav nav-tabs " id="myTab" role="tablist">
             <li class="nav-item " role="presentation ">

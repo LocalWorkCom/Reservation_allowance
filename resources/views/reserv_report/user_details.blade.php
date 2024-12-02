@@ -17,15 +17,18 @@
     <div class="container welcome col-11">
         <div class="d-flex justify-content-between">
            
-                <h4>تفاصيل بدل حجز للموظف {{ $user->name }} الفترة من: {{ $startDate->format('Y-m-d') }} إلى: {{ $endDate->format('Y-m-d') }}</h4>
-                <button id="print-report" class="btn-blue mx-2">طباعة</button>
+                <h4>تفاصيل بدل حجز للموظف <span class="text-info">{{ $user->name }}</span>  </h4>
                 </div>
    </div>
   </div>
   
-    <div class="container col-11 mt-3 py-5  " >
+    <div class="container col-11 mt-3 py-4  " >
   
-   
+    <div class="d-flex flex-wrap justify-content-between mb-3"dir="rtl">
+<h4>من : <span class="text-info">{{ $startDate->format('Y-m-d') }}</span> إلى : <span class="text-info">{{ $endDate->format('Y-m-d') }}</span></h4>
+<button id="print-report" class="btn-blue ">طباعة</button>
+
+</div>
         <table id="users-table" class="display table table-bordered table-hover dataTable">
             <thead>
                 <tr>

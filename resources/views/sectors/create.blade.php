@@ -168,8 +168,7 @@
                 <div class="container col-11">
                     <div class="form-row d-flex justify-content-end mt-2 ">
                         <button type="submit" class="btn-blue">
-                            <img src="{{ asset('frontend/images/white-add.svg') }}" alt="img" height="20px"
-                                width="20px">
+                           
                             اضافة
                         </button>
                     </div>
