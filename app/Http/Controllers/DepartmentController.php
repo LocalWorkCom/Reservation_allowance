@@ -403,6 +403,7 @@ class DepartmentController extends Controller
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
+            'budget.min' => 'مبلغ بدل الحجز لا يمكن أن يكون سالباً.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
             'email.required' => 'الايميل مطلوب',
             'budget_type.required' => 'يجب اختيار نوع الميزانيه',
@@ -414,7 +415,7 @@ class DepartmentController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'budget' => 'nullable|numeric',
+            'budget' => 'nullable|numeric|min:0',
             'budget_type' => 'required',
             'part' => 'required',
             'email' => [
@@ -586,6 +587,7 @@ class DepartmentController extends Controller
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
+            'budget.min' => 'مبلغ بدل الحجز لا يمكن أن يكون سالباً.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
             'email.required' => 'الايميل مطلوب',
             'budget_type.required' => 'يجب اختيار نوع الميزانيه',
@@ -597,7 +599,7 @@ class DepartmentController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'budget' => 'nullable|numeric',
+            'budget' => 'nullable|numeric|min:0',
             'budget_type' => 'required',
             'part' => 'required',
             'email' => [
@@ -803,6 +805,7 @@ class DepartmentController extends Controller
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
+            'budget.min' => 'مبلغ بدل الحجز لا يمكن أن يكون سالباً.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
             'email.required' => 'الايميل مطلوب',
             'budget_type.required' => 'يجب اختيار نوع الميزانيه',
@@ -814,7 +817,7 @@ class DepartmentController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'budget' => 'nullable|numeric',
+            'budget' => 'nullable|numeric|min:0',
             'budget_type' => 'required',
             'part' => 'required',
             'email' => [
@@ -1063,6 +1066,7 @@ class DepartmentController extends Controller
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
+            'budget.min' => 'مبلغ بدل الحجز لا يمكن أن يكون سالباً.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
             'email.required' => 'الايميل مطلوب',
             'budget_type.required' => 'يجب اختيار نوع الميزانيه',
@@ -1073,7 +1077,7 @@ class DepartmentController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'budget' => 'nullable|numeric',
+            'budget' => 'nullable|numeric|min:0',
             'budget_type' => 'required',
             'part' => 'required',
             'email' => [
@@ -1258,11 +1262,16 @@ class DepartmentController extends Controller
 
 
         // Handle employee updates in the sub-department
+        $currentEmployees = User::where('department_id', $department->id)->whereNot('file_number', $request->mangered)
+            ->pluck('file_number')->toArray();
+
+
         $file_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->file_number);
         $file_numbers = array_filter(explode(',', $file_numbers));
 
-        $currentEmployees = User::where('department_id', $department->id)->whereNot('file_number', $request->mangered)
-            ->pluck('file_number')->toArray();
+        if ($request->mangered) {
+            $file_numbers = array_diff($file_numbers, [$request->mangered]);
+        }
 
         $employeesToRemove = array_diff($currentEmployees, $file_numbers);
         $employeesToAdd = array_diff($file_numbers, $currentEmployees);
@@ -1281,20 +1290,20 @@ class DepartmentController extends Controller
             ])->withInput();
         }
 
-        // Remove employees that are no longer in this sub-department
-        if (!empty($employeesToRemove)) {
-            //  User::whereIn('Civil_number', $employeesToRemove)->update(['department_id' => null, 'sector' => null]);
+
+        if (!empty($employeesToRemove)) { //file_number
             User::whereIn('file_number', $employeesToRemove)
-                ->update(['department_id' => null, 'sector' => null]);
+                ->update(['sector' => null, 'department_id' => null]);
         }
 
-        // Add new employees to the sub-department
+        // Add new employees to the department
         foreach ($employeesToAdd as $file_number) {
             //  $employee = User::where('Civil_number', $Civil_number)->first();
+
             $employee = User::where('file_number', $file_number)->first();
-            if ($employee) {
+            if ($employee && $employee->grade_id != null) {
+                $employee->sector = $request->sector;
                 $employee->department_id = $department->id;
-                $employee->sector = $department->sector_id;
                 $employee->save();
                 UpdateUserHistory($employee->id);
                 addUserHistory($employee->id, $department->id,  $request->sector);
