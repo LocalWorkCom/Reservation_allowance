@@ -25,11 +25,18 @@
 </div>
 <table id="users-table" class="display table table-bordered table-hover dataTable">
     <thead>
+    <tr>
+            <!-- <th colspan="5"></th> -->
+            <th rowspan="2">الترتيب</th>
+            <th rowspan="2">الرتبة</th>
+            <th rowspan="2">الاسم</th>
+            <th rowspan="2">رقم الملف</th>
+            <th colspan="3"> ايام الحجز </th>
+            <th colspan="3"> المبلغ </th>
+           
+        </tr>
         <tr>
-            <th>الترتيب</th>
-            <th>الرتبة</th>
-            <th>اسم الموظف</th>
-            <th>رقم الملف</th>
+         
             <th>أيام كاملة</th>
             <th>أيام جزئية</th>
             <th>إجمالي الأيام</th>

@@ -387,7 +387,6 @@ class ReservationReportController extends Controller
     
     
 
-
     public function printSectorDetails(Request $request, $sectorId)
     {
         $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
@@ -404,7 +403,7 @@ class ReservationReportController extends Controller
             ->get()
             ->map(function ($reservation) use ($startDate, $endDate) {
                 $latestGrade = UserGrade::where('user_id', $reservation->user_id)
-                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->where('created_at', '<=', $endDate)
                     ->orderBy('created_at', 'desc')
                     ->with('grade')
                     ->first();
@@ -414,7 +413,7 @@ class ReservationReportController extends Controller
                     'date' => \Carbon\Carbon::parse($reservation->date)->format('Y-m-d'),
                     'name' => $reservation->user->name ?? 'N/A',
                     'file_number' => $reservation->user->file_number ?? 'N/A',
-                    'grade' => $latestGrade?->grade?->name ?? 'N/A', // Fetch latest grade
+                    'grade' => $latestGrade?->grade?->name ?? 'N/A',
                     'department' => $reservation->user->department->name ?? 'N/A',
                     'type' => $reservation->type == 1 ? 'حجز كلي' : 'حجز جزئي',
                     'reservation_amount' => number_format($reservation->amount, 2),
@@ -422,7 +421,6 @@ class ReservationReportController extends Controller
             })
             ->sortBy('grade');
     
-        // Prepare the PDF
         $pdf = new TCPDF();
         $pdf->SetCreator('Your App');
         $pdf->SetTitle("تفاصيل بدل حجز لموظفي قطاع {$sector->name}");
@@ -430,14 +428,12 @@ class ReservationReportController extends Controller
         $pdf->setRTL(true);
         $pdf->SetFont('dejavusans', '', 12);
     
-        // Render HTML content with Blade view
         $html = view('reserv_report.sector_details_pdf', compact('reservations', 'sector', 'startDate', 'endDate'))->render();
         $pdf->writeHTML($html, true, false, true, false, '');
     
         return $pdf->Output("sector_details_report_{$sector->name}.pdf", 'I');
     }
     
-
     
 
 
@@ -506,7 +502,7 @@ public function printMainDepartmentDetails(Request $request, $sectorId)
                 'department_name' => $department->name,
                 'sub_departments_count' => $subDepartmentsCount,
                 'employee_count' => $employeeCount,
-                'reservation_amount' => number_format($totalAmount, 2) . ' د.ك',
+                'reservation_amount' => number_format($totalAmount, 2) ,
             ];
         });
 

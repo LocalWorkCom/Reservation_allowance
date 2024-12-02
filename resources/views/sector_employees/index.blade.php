@@ -35,7 +35,7 @@
     <div class="container welcome col-11">
         <div class="d-flex justify-content-between">
             <p>   موظفين قطاع <span class="text-info"> {{ $sectorName }}</span></p>
-            <button id="print-report" class="btn-blue">طباعة</button>
+            <!-- <button id="print-report" class="btn-blue">طباعة</button> -->
 
         </div>
     </div>

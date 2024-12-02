@@ -41,14 +41,14 @@
                 <table id="users-table" class="display table table-bordered table-hover dataTable">
                     <thead>
                         <tr>
-                            <th>الترتيب</th>
+                            <th >الترتيب</th>
                             <th>اسم الإدارة الفرعية</th>
                             <th>عدد الموظفين</th>
-                            <th>أيام كاملة</th>
+                            <!-- <th>أيام كاملة</th>
                             <th>أيام جزئية</th>
                             <th>إجمالي الأيام</th>
                             <th>بدل الحجز (كلي)</th>
-                            <th>بدل الحجز (جزئي)</th>
+                            <th>بدل الحجز (جزئي)</th> -->
                             <th>إجمالي بدل الحجز</th>
                         </tr>
                     </thead>
@@ -64,7 +64,7 @@
                                 </td>
                              
 
-                            <td>
+                            <!-- <td>
                                 <a href="{{ route('reservation_report.sub_department_employees', ['subDepartmentId' => $subDepartment['uuid']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8  !important;">
                                 {{ $subDepartment['full_days'] }}
                                 </a>
@@ -90,7 +90,7 @@
                                 <a href="{{ route('reservation_report.sub_department_employees', ['subDepartmentId' => $subDepartment['uuid']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8  !important;">
                                 {{ $subDepartment['partial_allowance'] }}
                                 </a>
-                            </td>
+                            </td> -->
                             <td>
                                 <a href="{{ route('reservation_report.sub_department_employees', ['subDepartmentId' => $subDepartment['uuid']]) }}?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="color:#17a2b8  !important;">
                                 {{ $subDepartment['total_allowance'] }}

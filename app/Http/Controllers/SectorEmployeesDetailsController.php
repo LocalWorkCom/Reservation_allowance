@@ -281,81 +281,91 @@ class SectorEmployeesDetailsController extends Controller
     
     
 
-
-public function printReport($sectorUuid, Request $request)
-{
-    $sector = Sector::where('uuid', $sectorUuid)->first();
-    if (!$sector) {
-        return abort(404, 'Sector not found');
+    public function printReport($sectorUuid, Request $request)
+    {
+        $sector = Sector::where('uuid', $sectorUuid)->first();
+        if (!$sector) {
+            return abort(404, 'Sector not found');
+        }
+    
+        $month = $request->input('month');
+        $year = $request->input('year');
+    
+        // Fetch employees who have reservations in the specified sector, month, and year
+        $employees = User::whereIn('id', function ($query) use ($sector, $month, $year) {
+                $query->select('user_id')
+                      ->from('reservation_allowances')
+                      ->where('sector_id', $sector->id)
+                      ->whereYear('date', $year)
+                      ->whereMonth('date', $month);
+            })
+            ->with('department')
+            ->get();
+    
+        $userReservations = $employees->map(function ($user) use ($sector, $month, $year) {
+            // Calculate full and partial days
+            $fullDays = ReservationAllowance::where('user_id', $user->id)
+                        ->where('sector_id', $sector->id)
+                        ->whereYear('date', $year)
+                        ->whereMonth('date', $month)
+                        ->where('type', 1)
+                        ->count();
+    
+            $partialDays = ReservationAllowance::where('user_id', $user->id)
+                           ->where('sector_id', $sector->id)
+                           ->whereYear('date', $year)
+                           ->whereMonth('date', $month)
+                           ->where('type', 2)
+                           ->count();
+    
+            $latestGrade = UserGrade::where('user_id', $user->id)
+                ->whereYear('created_at', '<=', $year)
+                ->whereMonth('created_at', '<=', $month)
+                ->orderBy('created_at', 'desc')
+                ->with('grade')
+                ->first();
+    
+            return [
+                'file_number' => $user->file_number,
+                'user' => $user,
+                'department' => $user->department->name ?? 'N/A',
+                'grade' => $latestGrade?->grade?->name ?? 'N/A', 
+                'fullDays' => $fullDays,
+                'partialDays' => $partialDays,
+                'totalDays' => $fullDays + $partialDays,
+                'fullAllowance' => ReservationAllowance::where('user_id', $user->id)
+                                 ->where('sector_id', $sector->id)
+                                 ->whereYear('date', $year)
+                                 ->whereMonth('date', $month)
+                                 ->where('type', 1)
+                                 ->sum('amount'),
+                'partialAllowance' => ReservationAllowance::where('user_id', $user->id)
+                                    ->where('sector_id', $sector->id)
+                                    ->whereYear('date', $year)
+                                    ->whereMonth('date', $month)
+                                    ->where('type', 2)
+                                    ->sum('amount'),
+            ];
+        });
+    
+        // Prepare the PDF
+        $pdf = new TCPDF();
+        $pdf->SetCreator('Your App');
+        $pdf->SetTitle("تفاصيل الموظفين للقطاع: {$sector->name}");
+        $pdf->AddPage();
+        $pdf->setRTL(true);
+        $pdf->SetFont('dejavusans', '', 12);
+    
+        // Render HTML content for the PDF
+        $html = view('sector_employees.sector_employees_report', compact(
+            'sector', 'userReservations', 'month', 'year'
+        ))->render();
+    
+        $pdf->writeHTML($html, true, false, true, false, '');
+    
+        return $pdf->Output("sector_employees_{$sector->name}.pdf", 'I');
     }
-
-    $month = $request->input('month');
-    $year = $request->input('year');
-
-    $employees = User::whereIn('id', function ($query) use ($sector, $month, $year) {
-            $query->select('user_id')
-                  ->from('reservation_allowances')
-                  ->where('sector_id', $sector->id)
-                  ->whereYear('date', $year)
-                  ->whereMonth('date', $month);
-        })
-        ->with(['grade', 'department'])
-        ->get();
-
-    $userReservations = $employees->map(function ($user) use ($sector, $month, $year) {
-        $fullDays = ReservationAllowance::where('user_id', $user->id)
-                    ->where('sector_id', $sector->id)
-                    ->whereYear('date', $year)
-                    ->whereMonth('date', $month)
-                    ->where('type', 1)
-                    ->count();
-
-        $partialDays = ReservationAllowance::where('user_id', $user->id)
-                       ->where('sector_id', $sector->id)
-                       ->whereYear('date', $year)
-                       ->whereMonth('date', $month)
-                       ->where('type', 2)
-                       ->count();
-
-        return [
-            'file_number' => $user->file_number,
-            'user' => $user,
-            'department' => $user->department->name ?? 'N/A',
-            'grade' => $user->grade->name ?? 'N/A',
-            'fullDays' => $fullDays,
-            'partialDays' => $partialDays,
-            'totalDays' => $fullDays + $partialDays,
-            'fullAllowance' => ReservationAllowance::where('user_id', $user->id)
-                             ->where('sector_id', $sector->id)
-                             ->whereYear('date', $year)
-                             ->whereMonth('date', $month)
-                             ->where('type', 1)
-                             ->sum('amount'),
-            'partialAllowance' => ReservationAllowance::where('user_id', $user->id)
-                                ->where('sector_id', $sector->id)
-                                ->whereYear('date', $year)
-                                ->whereMonth('date', $month)
-                                ->where('type', 2)
-                                ->sum('amount'),
-        ];
-    });
-
-    $pdf = new TCPDF();
-    $pdf->SetCreator('Your App');
-    $pdf->SetTitle("تفاصيل الموظفين للقطاع: {$sector->name}");
-    $pdf->AddPage();
-    $pdf->setRTL(true);
-    $pdf->SetFont('dejavusans', '', 12);
-
-    $html = view('sector_employees.sector_employees_report', compact(
-        'sector', 'userReservations', 'month', 'year'
-    ))->render();
-
-    $pdf->writeHTML($html, true, false, true, false, '');
-
-    return $pdf->Output("sector_employees_{$sector->name}.pdf", 'I');
-}
-
+    
 public function allowanceDetailsPage(Request $request, $employeeUuid)
 {
     $month = $request->input('month');
