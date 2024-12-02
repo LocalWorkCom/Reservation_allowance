@@ -174,16 +174,16 @@
                             <table class="display table table-responsive-sm  table-bordered table-hover dataTable">
                                 <thead>
                                     <tr>
-                                        <th>الترتيب</th>
-                                        <th>الاسم</th>
-                                        <th>رقم الملف</th>
+                                        <th> <h4>الترتيب</h4></th>
+                                        <th> <h4>الاسم</h4></th>
+                                        <th> <h4>رقم الملف</h4></th>
                                     </tr>
                                 </thead>
                                         @foreach($employee_new_add as $K_employee_newadd=>$employee_newadd)
                                         <tr>
-                                            <td>{{$K_employee_newadd+1}}</td>
-                                            <td>{{$employee_newadd->name}}</td>
-                                            <td>{{$employee_newadd->file_number}}</td>
+                                            <td> <h5>{{$K_employee_newadd+1}}</h5></td>
+                                            <td> <h5>{{$employee_newadd->name}}</h5></td>
+                                            <td> <h5>{{$employee_newadd->file_number}}</h5></td>
                                         </tr>
                                         @endforeach
                             </table>
@@ -196,16 +196,16 @@
                             <table class="display table table-responsive-sm  table-bordered table-hover dataTable">
                                 <thead>
                                     <tr>
-                                        <th>الترتيب</th>
-                                        <th>الاسم</th>
-                                        <th>رقم الملف</th>
+                                        <th> <h4>الترتيب</h4></th>
+                                        <th> <h4>الاسم</h4></th>
+                                        <th> <h4>رقم الملف</h4></th>
                                     </tr>
                                 </thead>
                                         @foreach($employee_not_dept as $K_employee_notdept=>$employee_notdept)
                                         <tr>
-                                            <td>{{$K_employee_notdept+1}}</td>
-                                            <td>{{$employee_notdept->name}}</td>
-                                            <td>{{$employee_notdept->file_number}}</td>
+                                            <td> <H5>{{$K_employee_notdept+1}}</H5></td>
+                                            <td> <H5>{{$employee_notdept->name}}</H5></td>
+                                            <td> <H5>{{$employee_notdept->file_number}}</H5></td>
                                         </tr>
                                         @endforeach
                             </table>
@@ -218,14 +218,14 @@
                             <table class="display table table-responsive-sm  table-bordered table-hover dataTable">
                                 <thead>
                                     <tr>
-                                        <th>الترتيب</th>
-                                        <th>رقم الملف</th>
+                                        <th><h4>الترتيب</h4></th>
+                                        <th><h4>رقم الملف</h4></th>
                                     </tr>
                                 </thead>
                                     @foreach($employee_not_found as $K_employee_notfound=>$employee_notfound)
                                     <tr>
-                                    <td>{{$K_employee_notfound+1}}</td>
-                                    <td>{{$employee_notfound['Civil_number']}}</td>
+                                    <td> <h5>{{$K_employee_notfound+1}}</h5></td>
+                                    <td> <h5>{{$employee_notfound['Civil_number']}}</h5></td>
                                     </tr>
                                     @endforeach
                             </table>
