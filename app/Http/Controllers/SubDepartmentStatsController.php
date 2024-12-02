@@ -49,6 +49,7 @@ class SubDepartmentStatsController extends Controller
                     ->where('department_id', $row->id)
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
+                    ->orderBy('date', 'desc') 
                     ->sum('amount');
 
                 // Check if the amount is null or zero
@@ -77,6 +78,7 @@ class SubDepartmentStatsController extends Controller
                         ->where('department_id', $row->id)
                         ->whereYear('date', $year)
                         ->whereMonth('date', $month)
+                        ->orderBy('date', 'desc') 
                         ->value('amount');
 
                     return $historicalAmount
