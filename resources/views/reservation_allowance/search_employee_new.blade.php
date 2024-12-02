@@ -327,7 +327,7 @@
                     @if ($reservation_allowance_type != 4)
                         @if ($employees)
                         <div>
-                            <a class="btn-blue px-2"
+                            <a class="btn-blue p-2"
                                 href="{{ route('reservation_allowances.view_choose_reservation', [$today, $sectorId, $departementId]) }}">
 
                                 اضف بدل حجز</a>
