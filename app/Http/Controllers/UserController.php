@@ -839,13 +839,13 @@ class UserController extends Controller
         $violationTypeName = $request->input('violation_type');
 
         // Fetch grades based on the selected violation type
-        if ($violationTypeName == 2) {
+        /* if ($violationTypeName == 2) {
 
             $grades = Grade::where('type', 2)->get();
         } else {
             $grades = Grade::where('type', '<>', 2)->get();
-        }
-
+        } */
+        $grades = Grade::where('type', $violationTypeName)->get();
         // Return the grades as a JSON response
         return response()->json($grades);
     }
