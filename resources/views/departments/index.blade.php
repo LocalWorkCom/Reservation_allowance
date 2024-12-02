@@ -17,11 +17,14 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item "><a href="{{ route('home') }}">الرئيسيه</a></li>
-                <li class="breadcrumb-item"><a
+                {{-- <li class="breadcrumb-item"><a
                         href="{{ route('sectors.index', ['uuid' => $sectors->uuid]) }}">القطاعات</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page"> <a href="">
-                        الادارات الرئيسية</a></li>
+                </li> --}}
+                {{-- <li class="breadcrumb-item active" aria-current="page"> <a href="">
+                        الادارات الرئيسية</a></li> --}}
+                <li class="breadcrumb-item active" aria-current="page"><a href="">
+                        قطاع {{ $sectors->name }}
+                    </a></li>
             </ol>
         </nav>
     </div>
@@ -69,7 +72,7 @@
                             class="display table table-responsive-sm table-bordered table-hover dataTable">
                             <thead>
                                 <tr>
-                                    <th>رقم التعريف</th>
+                                    <th>م</th>
                                     <th>الاسم</th>
                                     <th>مدير الادارة</th>
                                     <th>بيانات الدخول</th>
