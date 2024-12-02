@@ -85,88 +85,20 @@
                         <p> بدل حجز بالهويات</p>
                     </div>
 
-                    <?php /*<form class="" id="search_employee_allowances">
-                        @csrf
-                        <div class="row d-flex flex-wrap">
-                            <!-- 1 for sector , 2 for department -->
-                            <input name="department_type" id="department_type" type="hidden"
-                                value="{{ Auth::user()->department_id == null ? 1 : 2 }}">
-
-                                <div class="form-group  mx-2">
-                                {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                                <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
-                                <!-- <select class="custom-select custom-select-lg select2" name="sector_id" id="sector_id"
-                                    required>
-                                    <option value="0" selected>اختار القطاع</option>
-                                    @foreach ($sectors as $sector)
-                                    <option value="{{ $sector->id }}" {{$sector->id == $sector_id ? "selected" : ""}}>
-                                        {{ $sector->name }}</option>
-                                    @endforeach
-                                </select> -->
-                                <input class="form-control" type="text" name="sector_id" id="sector_id"
-                                value="{{$current_sector ? $current_sector->name : ''}}" readonly>
-                                </div>
-
-                                <div class="form-group  mx-2">
-                                {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                                <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
-                                <!-- <select class="custom-select custom-select-lg" name="departement_id"
-                                    id="departement_id" style="    color: #7c7b7b !important;">
-                                    <option value="0">اختار الادارة</option>
-                                    @if($get_departements)
-                                    @foreach($get_departements as $departement)
-                                    <option value="{{ $departement->id }}"
-                                        {{$departement->id == $department_id ? "selected" : ""}}>
-                                        {{ $departement->name }}</option>
-                                    @if(count($departement->children))
-                                    @include('reservation_allowance.manageChildren', [
-                                    'children' => $departement->children,
-                                    'parent_id' => $department_id,
-                                    ])
-                                    @endif
-                                    @endforeach
-                                    @endif
-
-                                </select> -->
-                                <input class="form-control" type="text" name="departement_id" id="departement_id"
-                                    value="{{$current_departement ? $current_departement->name : ''}}" readonly>
-                            </div>
-
-                            <div class="form-group  mx-2">
-                                <input class="form-control" type="date" name="date" id="date" max="{{$to_day}}"
-                                    value="{{$to_day}}" readonly>
-                            </div>
-
-                            <!-- <div class="">
-                                        <button class="btn-all py-2 px-2" type="submit" style="color:green;">
-                                            <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                            عرض موظفين بدل حجز </button>
-                                </div>-->
-                        </div>
-                    </form>*/?>
-                    <!--  <div class="d-flex justify-content-between mt-2">
-                                <div class=" mx-2">
-                                    {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                                    <a class="btn-all py-2 px-2 " href="{{ route('reservation_allowances.create') }}"
-                                        style="color: #0D992C;">
-                                        <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                        اضافة بدل حجز جديد
-                                    </a>
-                                    {{-- @endif --}}
-                                </div> -->
-
-                </div>
-                <!-- show_reservation_allowances_info -->
-                <!-- <div id="show_reservation_allowances_info" class="col-12"></div> -->
-                <!-- end of show_reservation_allowances_info -->
+                  
             </div>
         </div>
     </div>
-</div>
-</div>
+</div> 
+          
 
-<div class="row " dir="rtl">
-    <div class="container col-11 p-4">
+       
+
+   
+
+
+
+<div class="container  col-11 mt-3 p-0  pt-5 pb-4" dir="rtl">
         <div class=" d-flex flex-wrap justify-content-between">
             <div class=" col-12 d-flex mb-4  ">
                 @if($current_sector)
@@ -310,10 +242,12 @@
             </div>
         </div>
 
+        </div>
+            </div>
 
-    </div>
+        </div>
 
-</div>
+
 
 <script>
 $(".select2").select2({
