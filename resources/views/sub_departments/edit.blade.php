@@ -292,23 +292,15 @@
             $('#submit-btn').prop('disabled', false);
 
             var selectedManagerId = $('#mangered').val();
-            // $('#mangered').on('input', function() {
-            //     var managerId = $(this).val();
-            //     if (!managerId) {
-            //         $('#email_field').hide(); // Hide email field if no manager is selected
-            //         $('#email').val(''); // Clear the email input
-            //     } else {
-            //         $('#email_field').show(); // Show email field when manager is selected
-            //         fetchManagerDetails(managerId); // Fetch manager details
-            //     }
-            // });
+            $('#mangered').on('input', function() {
+                $('#submit-btn').prop('disabled', true);
+            });
 
             // When the form is submitted, check if the manager is removed
 
             if (selectedManagerId) {
                 $('#email_field').show();
                 fetchManagerDetails(selectedManagerId, false);
-                $('#submit-btn').prop('disabled', true);
 
                 var existingEmail = @json(old('mangered', $department->manager ? $email : null));
                 var existingBudget = @json(old('budget', $department->reservation_allowance_amount ? $department->reservation_allowance_amount : ''));
@@ -345,7 +337,6 @@
                 var departmentId = $('#department_id').val();
                 var sectorId = $('#sector').val();
                 var is_EditPages = true;
-                $('#submit-btn').prop('disabled', true);
 
                 $.ajax({
                     url: '/get-manager-details/' + managerId + '?skipDepartmentCheck=' + skipDepartmentCheck +
@@ -410,6 +401,8 @@
                                     $('#submit-btn').prop('disabled', false);
                                 }
                             });
+                        } else {
+                            $('#submit-btn').prop('disabled', false);
                         }
                     },
                     error: function(xhr, status, error) {
@@ -424,12 +417,16 @@
                                 confirmButtonText: 'إلغاء',
                                 confirmButtonColor: '#3085d6'
                             }).then((result) => {
-                                // User clicked "إلغاء", clear the input field
-                                $('#mangered').val('');
-                                $('#manager_details').hide();
-                                $('#email_field').hide();
-                                $('#email').val('');
+                                if (result.isConfirmed) {
+                                    $('#submit-btn').prop('disabled', false);
+                                    $('#mangered').val('');
+                                    $('#manager_details').hide();
+                                    $('#email_field').hide();
+                                    $('#email').val('');
+                                }
                             });
+                        } else {
+                            $('#submit-btn').prop('disabled', false);
                         }
                     }
                 });
