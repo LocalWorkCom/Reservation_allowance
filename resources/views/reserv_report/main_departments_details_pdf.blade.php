@@ -49,7 +49,7 @@
                     <td>{{ $department['department_name'] }}</td>
                     <td>{{ $department['sub_departments_count'] }}</td>
                     <td>{{ $department['employee_count'] }}</td>
-                    <td>{{ $department['reservation_amount'] }}</td> 
+                    <td>{{ $department['reservation_amount'] }} </td> 
                 </tr>
             @endforeach
         </tbody>
