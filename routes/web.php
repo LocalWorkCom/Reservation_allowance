@@ -6,15 +6,12 @@ use App\Http\Controllers\RuleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\pointsController;
-
 use App\Http\Controllers\PostmanController;
 use App\Http\Controllers\regionsController;
 use App\Http\Controllers\sectorsController;
 use App\Http\Controllers\settingController;
 use App\Http\Controllers\outgoingController;
-
 use App\Http\Controllers\SettingsController;
-
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\governmentController;
 use App\Http\Controllers\PermissionController;
@@ -22,7 +19,6 @@ use App\Http\Controllers\dashboard\IoTelegramController;
 use App\Http\Controllers\qualificationController;
 use App\Http\Controllers\statisticController;
 use App\Http\Controllers\ReservationStaticsController;
-use App\Http\Controllers\ReservationStaticsCreditController;
 use App\Http\Controllers\ReserveFetchController;
 use App\Http\Controllers\ReserveSectorController;
 use App\Http\Controllers\SubDepartmentStatsController;

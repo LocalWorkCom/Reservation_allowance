@@ -34,17 +34,26 @@
             <div class="bg-white p-4">
             <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
     <thead>
+        
+    <tr>
+            <!-- <th colspan="5"></th> -->
+            <th rowspan="2">الترتيب</th>
+            <th rowspan="2">الرتبة</th>
+            <th rowspan="2">الاسم</th>
+            <th rowspan="2">رقم الملف</th>
+          
+            <th colspan="3"> ايام الحجز </th>
+            <th colspan="3"> المبلغ </th>
+           
+        </tr>
         <tr>
-            <th>#</th>
-            <th>الرتبة</th>
-            <th>الاسم</th>
-            <th>رقم الملف</th>
-            <th>ايام كاملة</th>
-            <th>ايام جزئية</th>
-            <th>اجمالي الايام</th>
+         
+            <th>أيام كاملة</th>
+            <th>أيام جزئية</th>
+            <th>إجمالي الأيام</th>
             <th>بدل الحجز (كلي)</th>
             <th>بدل الحجز (جزئي)</th>
-            <th>اجمالي بدل الحجز</th>
+            <th>إجمالي بدل الحجز</th>
         </tr>
     </thead>
 </table>

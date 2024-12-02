@@ -137,81 +137,89 @@ class DepartmentEmployeesDetailsController extends Controller
     
 
     public function printReport($departmentUuid, Request $request)
-    {
-        $month = $request->input('month');
-        $year = $request->input('year');
+{
+    $month = $request->input('month');
+    $year = $request->input('year');
 
-        $department = departements::where('uuid', $departmentUuid)->first();
-        if (!$department) {
-            return abort(404, 'Department not found');
-        }
-
-        $employees = User::whereIn('id', function ($query) use ($department, $month, $year) {
-                $query->select('user_id')
-                      ->from('reservation_allowances')
-                      ->where('departement_id', $department->id)
-                      ->whereYear('date', $year)
-                      ->whereMonth('date', $month);
-            })
-            ->with(['grade'])
-            ->get();
-
-        $userReservations = $employees->map(function ($user) use ($department, $month, $year) {
-            $fullDays = ReservationAllowance::where('user_id', $user->id)
-                        ->where('departement_id', $department->id)
-                        ->whereYear('date', $year)
-                        ->whereMonth('date', $month)
-                        ->where('type', 1)
-                        ->count();
-
-            $partialDays = ReservationAllowance::where('user_id', $user->id)
-                           ->where('departement_id', $department->id)
-                           ->whereYear('date', $year)
-                           ->whereMonth('date', $month)
-                           ->where('type', 2)
-                           ->count();
-
-            $fullAllowance = ReservationAllowance::where('user_id', $user->id)
-                             ->where('departement_id', $department->id)
-                             ->whereYear('date', $year)
-                             ->whereMonth('date', $month)
-                             ->where('type', 1)
-                             ->sum('amount');
-
-            $partialAllowance = ReservationAllowance::where('user_id', $user->id)
-                                ->where('departement_id', $department->id)
-                                ->whereYear('date', $year)
-                                ->whereMonth('date', $month)
-                                ->where('type', 2)
-                                ->sum('amount');
-
-            return [
-                'file_number' => $user->file_number,
-                'name' => $user->name,
-                'grade' => $user->grade->name ?? 'N/A',
-                'fullDays' => $fullDays,
-                'partialDays' => $partialDays,
-                'totalAllowance' => $fullAllowance + $partialAllowance,
-            ];
-        });
-
-        $pdf = new TCPDF();
-        $pdf->SetCreator('Your App');
-        $pdf->SetTitle("تفاصيل الموظفين للإدارة: {$department->name}");
-        $pdf->AddPage();
-        $pdf->setRTL(true);
-        $pdf->SetFont('dejavusans', '', 12);
-
-        $html = view('department_employees.report', compact(
-            'department',
-            'userReservations',
-            'month',
-            'year'
-        ))->render();
-
-        $pdf->writeHTML($html, true, false, true, false, '');
-        return $pdf->Output("department_employees_{$department->name}.pdf", 'I');
+    $department = departements::where('uuid', $departmentUuid)->first();
+    if (!$department) {
+        return abort(404, 'Department not found');
     }
+
+    $employees = User::whereIn('id', function ($query) use ($department, $month, $year) {
+            $query->select('user_id')
+                  ->from('reservation_allowances')
+                  ->where('departement_id', $department->id)
+                  ->whereYear('date', $year)
+                  ->whereMonth('date', $month);
+        })
+        ->get();
+
+    $userReservations = $employees->map(function ($user) use ($department, $month, $year) {
+        // Fetch the latest grade for the user during the selected month and year
+        $latestGrade = UserGrade::where('user_id', $user->id)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->orderBy('created_at', 'desc')
+            ->with('grade')
+            ->first();
+
+        $fullDays = ReservationAllowance::where('user_id', $user->id)
+                    ->where('departement_id', $department->id)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->where('type', 1)
+                    ->count();
+
+        $partialDays = ReservationAllowance::where('user_id', $user->id)
+                       ->where('departement_id', $department->id)
+                       ->whereYear('date', $year)
+                       ->whereMonth('date', $month)
+                       ->where('type', 2)
+                       ->count();
+
+        $fullAllowance = ReservationAllowance::where('user_id', $user->id)
+                         ->where('departement_id', $department->id)
+                         ->whereYear('date', $year)
+                         ->whereMonth('date', $month)
+                         ->where('type', 1)
+                         ->sum('amount');
+
+        $partialAllowance = ReservationAllowance::where('user_id', $user->id)
+                            ->where('departement_id', $department->id)
+                            ->whereYear('date', $year)
+                            ->whereMonth('date', $month)
+                            ->where('type', 2)
+                            ->sum('amount');
+
+        return [
+            'file_number' => $user->file_number,
+            'name' => $user->name,
+            'grade' => $latestGrade?->grade?->name ?? 'N/A',
+            'fullDays' => $fullDays,
+            'partialDays' => $partialDays,
+            'totalAllowance' => $fullAllowance + $partialAllowance,
+        ];
+    });
+
+    $pdf = new TCPDF();
+    $pdf->SetCreator('Your App');
+    $pdf->SetTitle("تفاصيل الموظفين للإدارة: {$department->name}");
+    $pdf->AddPage();
+    $pdf->setRTL(true);
+    $pdf->SetFont('dejavusans', '', 12);
+
+    $html = view('department_employees.report', compact(
+        'department',
+        'userReservations',
+        'month',
+        'year'
+    ))->render();
+
+    $pdf->writeHTML($html, true, false, true, false, '');
+    return $pdf->Output("department_employees_{$department->name}.pdf", 'I');
+}
+
 
     public function allowanceDetailsPage(Request $request, $employeeUuid)
     {
