@@ -83,115 +83,220 @@ class UserController extends Controller
 
 
         $gradeall = Grade::pluck('id')->toArray();
+        $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
+        $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
+        $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
+
         if ($type == "department") {
-            $all = User::where('department_id', $search_id)->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
+            // For the 'all' query
+            $all = User::where('department_id', $search_id)
+                ->when($flag !== 'all', function ($query) use ($flag) {
+                    return $query->where('flag', $flag);
+                })
+                ->whereIn('grade_id', $gradeall)
+                ->count();
 
-            $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
-            $person = User::where('department_id', $search_id)->where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
+            // For 'person' query
 
-            $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
-            $Officer = User::where('department_id', $search_id)->where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
+            $person = User::where('department_id', $search_id)
+                ->when($flag !== 'all', function ($query) use ($flag) {
+                    return $query->where('flag', $flag);
+                })
+                ->whereIn('grade_id', $gradeperson)
+                ->count();
 
-            $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
-            $Officer2 = User::where('department_id', $search_id)->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
+            // For 'Officer' query
+
+            $Officer = User::where('department_id', $search_id)
+                ->when($flag !== 'all', function ($query) use ($flag) {
+                    return $query->where('flag', $flag);
+                })
+                ->whereIn('grade_id', $gradeOfficer)
+                ->count();
+
+            // For 'Officer2' query
+
+            $Officer2 = User::where('department_id', $search_id)
+                ->when($flag !== 'all', function ($query) use ($flag) {
+                    return $query->where('flag', $flag);
+                })
+                ->whereIn('grade_id', $graseOfficer2)
+                ->count();
         } elseif ($type == "sector") {
             if ($status == 'null') {
-                $all = User::where('sector', $search_id)->whereNull('department_id')->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
-                $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
-                $person = User::where('sector', $search_id)->whereNull('department_id')->where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
-                $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
-                $Officer = User::where('sector', $search_id)->whereNull('department_id')->where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
-                $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
-                $Officer2 = User::where('sector', $search_id)->whereNull('department_id')->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
+                // For the 'all' query
+                $all = User::where('sector', $search_id)
+                    ->when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })
+                    ->whereNull('department_id')
+                    ->whereIn('grade_id', $gradeall)
+                    ->count();
+
+                // For 'person' query
+
+                $person = User::where('sector', $search_id)
+                    ->when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })
+                    ->whereNull('department_id')
+                    ->whereIn('grade_id', $gradeperson)
+                    ->count();
+
+                // For 'Officer' query
+
+                $Officer = User::where('sector', $search_id)
+                    ->when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })
+                    ->whereNull('department_id')
+                    ->whereIn('grade_id', $gradeOfficer)
+                    ->count();
+
+                // For 'Officer2' query
+
+                $Officer2 = User::where('sector', $search_id)
+                    ->when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })
+                    ->whereNull('department_id')
+                    ->whereIn('grade_id', $graseOfficer2)
+                    ->count();
             } elseif ($status == 'notnull') {
-                $all = User::where('sector', $search_id)->whereNotNull('department_id')->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
-                $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
-                $person = User::where('sector', $search_id)->whereNotNull('department_id')->where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
-                $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
-                $Officer = User::where('sector', $search_id)->whereNotNull('department_id')->where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
-                $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
-                $Officer2 = User::where('sector', $search_id)->whereNotNull('department_id')->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
+
+                $all = User::where('sector', $search_id)
+                    ->when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })
+                    ->whereNotNull('department_id')
+                    ->whereIn('grade_id', $gradeall)
+                    ->count();
+
+                // For 'person' query
+
+                $person = User::where('sector', $search_id)
+                    ->when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })
+                    ->whereNotNull('department_id')
+                    ->whereIn('grade_id', $gradeperson)
+                    ->count();
+
+                // For 'Officer' query
+
+                $Officer = User::where('sector', $search_id)
+                    ->when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })
+                    ->whereNotNull('department_id')
+                    ->whereIn('grade_id', $gradeOfficer)
+                    ->count();
+
+                // For 'Officer2' query
+
+                $Officer2 = User::where('sector', $search_id)
+                    ->when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })
+                    ->whereNotNull('department_id')
+                    ->whereIn('grade_id', $graseOfficer2)
+                    ->count();
             }
-
-            // $all = User::where('sector', $search_id)->where($cond_dep)->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
-            // $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
-            // $person = User::where('sector', $search_id)->where($cond_dep)->where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
-            // $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
-            // $Officer = User::where('sector', $search_id)->where($cond_dep)->where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
-            // $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
-            // $Officer2 = User::where('sector', $search_id)->where($cond_dep)->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
-
         } elseif ($type == "parent") {
             $subdepartment_ids = Departements::where('parent_id', $search_id)->pluck('id');
-            $all = User::whereIn('department_id', $subdepartment_ids)->where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
+            $all = User::whereIn('department_id', $subdepartment_ids)->when($flag !== 'all', function ($query) use ($flag) {
+                return $query->where('flag', $flag);
+            })->whereIn('grade_id', $gradeall)->count();
 
-            $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
-            $person = User::whereIn('department_id', $subdepartment_ids)->where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
+            $person = User::whereIn('department_id', $subdepartment_ids)->when($flag !== 'all', function ($query) use ($flag) {
+                return $query->where('flag', $flag);
+            })->whereIn('grade_id', $gradeperson)->count();
 
 
-            $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
-            $Officer = User::whereIn('department_id', $subdepartment_ids)->where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
+            $Officer = User::whereIn('department_id', $subdepartment_ids)->when($flag !== 'all', function ($query) use ($flag) {
+                return $query->where('flag', $flag);
+            })->whereIn('grade_id', $gradeOfficer)->count();
 
-            $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
-            $Officer2 = User::whereIn('department_id', $subdepartment_ids)->where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
-
-            // $all = User::where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
-
-            // // dd($all);
-            // $gradeperson = Grade::where('type', 3)->pluck('id')->toArray();
-            // $person = User::where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
-
-            // $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
-            // $Officer = User::where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
-
-            // $graseOfficer2 = Grade::where('type', 1)->pluck('id')->toArray();
-            // $Officer2 = User::where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
-
+            $Officer2 = User::whereIn('department_id', $subdepartment_ids)->when($flag !== 'all', function ($query) use ($flag) {
+                return $query->where('flag', $flag);
+            })->whereIn('grade_id', $graseOfficer2)->count();
         } else {
             if (Auth::user()->rule->id == 4) {
-                $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
-                $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
-                $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
 
                 if (auth()->user()->sector && !auth()->user()->department_id) {
 
-                    $all = User::where('flag', $flag)->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeall)->count();
-                    $person = User::where('flag', $flag)->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeperson)->count();
-                    $Officer = User::where('flag', $flag)->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeOfficer)->count();
-                    $Officer2 = User::where('flag', $flag)->where('sector', auth()->user()->sector)->whereIn('grade_id', $graseOfficer2)->count();
+                    $all = User::when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeall)->count();
+                    $person = User::when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeperson)->count();
+                    $Officer = User::when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeOfficer)->count();
+                    $Officer2 = User::when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })->where('sector', auth()->user()->sector)->whereIn('grade_id', $graseOfficer2)->count();
                 } else if (auth()->user()->sector && auth()->user()->department_id) {
 
-                    $all = User::where('flag', $flag)->where('sector', auth()->user()->sector)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeall)->count();
-                    $person = User::where('flag', $flag)->where('sector', auth()->user()->sector)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeperson)->count();
-                    $Officer = User::where('flag', $flag)->where('sector', auth()->user()->sector)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeOfficer)->count();
-                    $Officer2 = User::where('flag', $flag)->where('sector', auth()->user()->sector)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $graseOfficer2)->count();
+                    $all = User::when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })->where('sector', auth()->user()->sector)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeall)->count();
+                    $person = User::when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })->where('sector', auth()->user()->sector)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeperson)->count();
+                    $Officer = User::when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })->where('sector', auth()->user()->sector)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeOfficer)->count();
+                    $Officer2 = User::when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })->where('sector', auth()->user()->sector)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $graseOfficer2)->count();
                 }
             } elseif (Auth::user()->rule->id == 3) {
-                $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
-                $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
-                $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
+
                 if (auth()->user()->sector && !auth()->user()->department_id) {
-                    $all = User::where('flag', $flag)->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeall)->count();
-                    $person = User::where('flag', $flag)->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeperson)->count();
-                    $Officer2 = User::where('flag', $flag)->where('sector', auth()->user()->sector)->whereIn('grade_id', $graseOfficer2)->count();
-                    $Officer = User::where('flag', $flag)->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeOfficer)->count();
+                    $all = User::when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeall)->count();
+                    $person = User::when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeperson)->count();
+                    $Officer2 = User::when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })->where('sector', auth()->user()->sector)->whereIn('grade_id', $graseOfficer2)->count();
+                    $Officer = User::when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeOfficer)->count();
                 } else if (auth()->user()->sector && auth()->user()->department_id) {
 
-                    $all = User::where('flag', $flag)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeall)->count();
-                    $person = User::where('flag', $flag)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeperson)->count();
-                    $Officer2 = User::where('flag', $flag)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $graseOfficer2)->count();
-                    $Officer = User::where('flag', $flag)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeOfficer)->count();
+                    $all = User::when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeall)->count();
+                    $person = User::when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeperson)->count();
+                    $Officer2 = User::when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $graseOfficer2)->count();
+                    $Officer = User::when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeOfficer)->count();
                 }
             } elseif (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
-                $all = User::where('flag', $flag)->whereIn('grade_id', $gradeall)->count();
-                $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
-                $person = User::where('flag', $flag)->whereIn('grade_id', $gradeperson)->count();
+                $all = User::when($flag !== 'all', function ($query) use ($flag) {
+                    return $query->where('flag', $flag);
+                })->whereIn('grade_id', $gradeall)->count();
+                $person = User::when($flag !== 'all', function ($query) use ($flag) {
+                    return $query->where('flag', $flag);
+                })->whereIn('grade_id', $gradeperson)->count();
 
-                $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
-                $Officer = User::where('flag', $flag)->whereIn('grade_id', $gradeOfficer)->count();
+                $Officer = User::when($flag !== 'all', function ($query) use ($flag) {
+                    return $query->where('flag', $flag);
+                })->whereIn('grade_id', $gradeOfficer)->count();
 
-                $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
-                $Officer2 = User::where('flag', $flag)->whereIn('grade_id', $graseOfficer2)->count();
+                $Officer2 = User::when($flag !== 'all', function ($query) use ($flag) {
+                    return $query->where('flag', $flag);
+                })->whereIn('grade_id', $graseOfficer2)->count();
             }
         }
 
@@ -277,24 +382,34 @@ class UserController extends Controller
 
 
         if (Auth::user()->rule->name == "localworkadmin") {
-            $data = User::where('flag', $flag); // Start as a query
+            $data = User::when($flag !== 'all', function ($query) use ($flag) {
+                return $query->where('flag', $flag);
+            }); // Start as a query
         } elseif (Auth::user()->rule->name == "superadmin") {
-            $data = User::where('flag', $flag); // Start as a query for superadmins too
+            $data = User::when($flag !== 'all', function ($query) use ($flag) {
+                return $query->where('flag', $flag);
+            }); // Start as a query for superadmins too
         } else {
             // dd($parentDepartment);
             if (!$parentDepartment) {
                 $sector = Auth::user()->sector;
-                $data = User::where('flag', $flag)->where('sector', $sector);
+                $data = User::when($flag !== 'all', function ($query) use ($flag) {
+                    return $query->where('flag', $flag);
+                })->where('sector', $sector);
             } else {
 
                 // if (is_null($parentDepartment->parent_id)) {
                 // $subdepart = Departements::where('parent_id', $parentDepartment->id)->pluck('id')->toArray();
                 if (auth()->user()->sector && auth()->user()->department_id) {
 
-                    $data = User::where('flag', $flag)
+                    $data = User::when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })
                         ->Where('department_id', Auth()->user()->department_id)->where('sector', auth()->user()->sector);
                 } else if (auth()->user()->sector && !auth()->user()->department_id) {
-                    $data = User::where('flag', $flag)
+                    $data = User::when($flag !== 'all', function ($query) use ($flag) {
+                        return $query->where('flag', $flag);
+                    })
                         ->where('sector', auth()->user()->sector);
                 }
                 // } else {
@@ -468,10 +583,12 @@ class UserController extends Controller
         }
 
 
+
         // Check if the user has the correct flag
-        if ($user->flag !== 'user') {
+        if ($user->flag != 'user') {
             return back()->with('error', 'لا يسمح لك بدخول الهيئة')->withInput();
         }
+
         // $credentials = $request->only('number', 'password');
         $credentials = [
             'password' => $password
@@ -484,10 +601,13 @@ class UserController extends Controller
         } else {
             $credentials['civil_number'] = $number;
         }
+
         $twoHoursAgo = now()->subHours(6);
-        if ($user && $user->last_login == null && $user->password == null) {
+        if ($user && $user->last_login == null) {
+
             return redirect()->route('passwordManager', ['number' => $number])->with('error', 'يرجى أنشأ كلمه السر الخاصه بك')->withInput();
         } else if ($user && $user->last_login != null && $user->password != null && $password) {
+
             if (Auth::attempt($credentials)) {
 
                 Auth::login($user); // Log the user in
@@ -497,8 +617,10 @@ class UserController extends Controller
                 return redirect()->route('home');
             }
         } else {
+
             return redirect()->route('normalLogin', ['number' => $number]);
         }
+
 
 
         return back()->with('error', 'كلمة المرور لا تتطابق مع سجلاتنا')->withInput();
@@ -611,12 +733,12 @@ class UserController extends Controller
         if ($validatedData->fails()) {
             return back()->withErrors($validatedData)->withInput();
         }
-
-        $user = User::where('file_number', $request->number)->first();
+        $user = User::where('military_number', $request->number)->orwhere('Civil_number', $request->number)->orwhere('file_number', $request->number)->first();
 
         if (!$user) {
             return back()->with('error', 'الرقم الملف لا يتطابق مع سجلاتنا');
-        } elseif ($user->flag !== 'user') {
+        } elseif ($user->flag != 'user') {
+
             return back()->with('error', 'لا يسمح لك بدخول الهيئة');
         } else {
             // Generate a verification code
@@ -808,12 +930,12 @@ class UserController extends Controller
         $user->flag  = 'employee';
         $user->save();
         // $id = 1;
-        $department = departements::where('manger', $request->id_employee)->first();
+        $department = departements::where('manger', $user->id)->first();
         if ($department) {
             $department->manger = null;
             $department->save();
         }
-        $sector = sector::where('manager', $request->id_employee)->first();
+        $sector = sector::where('manager', $user->id)->first();
         if ($sector) {
             $sector->manager = null;
             $sector->save();

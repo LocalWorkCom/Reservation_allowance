@@ -151,29 +151,33 @@ ul {
     top: 100%;
     left: -41px;
     background-color: white;
-    border: 1px solid #ccc;
+    /* border: 1px solid #ccc; */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     z-index: 1000;
     overflow-y: auto;
     padding-inline: 2px;
     font-size: 23px;
-    height: 200px;
-    width: 235px !important;
+    height: auto;
+    padding-block: 10px;
+    width: 370px !important;
+    border-radius: 20px;
 }
 .dropdown-menu5 {
     display: none;
     position: absolute;
     top: 100%;
-    left: -55px;
+    left: -190px;
     background-color: white;
-    border: 1px solid #ccc;
+    /* border: 1px solid #ccc; */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     z-index: 1000;
     overflow-y: auto;
     padding-inline: 2px;
     font-size: 23px;
-    height: 200px;
-    width: 270px !important;
+    height: auto;
+    padding-block: 10px;
+    width: 500px !important;
+    border-radius: 20px;
 }
 
 .nav-item.active .dropdown-menu5 {
@@ -1436,7 +1440,7 @@ input::placeholder {
     display: none;
     position: absolute;
     background-color: white;
-    border: 1px solid #ccc;
+    /* border: 1px solid #ccc; */
     z-index: 1000;
 }
 
@@ -1586,4 +1590,13 @@ color: #2A2726;
 .card-imgg img{
     height: 90px;
 }
-/* تلااتى */
+.tab-head{
+    font-weight: 700;
+    color: #274373;
+}
+.nav-tabs .nav-item .nav-link{
+    background-color: #f5f6fa;
+}
+.nav-tabs .nav-item .nav-link.active{
+    background-color: #e2e2e200;
+}

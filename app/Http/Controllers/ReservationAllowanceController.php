@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cache;
+use TCPDF;
 
 class ReservationAllowanceController extends Controller
 {
@@ -383,7 +384,7 @@ class ReservationAllowanceController extends Controller
                     }
 
                     if($employee->department_id == null && $request->departement_id != 0){
-                        if($employee->department_id != $cdepartment_id){
+                        if($employee->department_id != $department_id){
                             $check_sector = 0;
                         }
                     }
@@ -662,7 +663,7 @@ class ReservationAllowanceController extends Controller
 
     public function getAllWithMonth(Request $request)
     {
-        $user = auth()->user();
+        $user_gest = auth()->user();
         $to_day = Carbon::now()->format('Y-m-d');
         $data = [];
 
@@ -714,63 +715,182 @@ class ReservationAllowanceController extends Controller
         }
 
 
-        $data = ReservationAllowance::Query()->with('users', 'users.grade', 'departements')->whereMonth('date', $month)->whereYear('date', $year);
+        // $data = ReservationAllowance::Query()->with('users', 'users.grade', 'departements')->whereMonth('date', $month)->whereYear('date', $year);
+        // if($sector_id != 0){
+        //     $data = $data->where('sector_id', $sector_id);
+        // }else{
+        //     if($user->rule_id != 2){
+        //         $data = $data->where('sector_id', $user->sector);
+        //     }
+        // }
+
+        // if($departement_id != 0){
+        //     $data = $data->where('departement_id', $departement_id);
+        // }else{
+        //     if($user->rule_id == 3){
+        //         $data = $data->where('departement_id', $user->department_id);
+        //     }
+        // }
+        // $data = $data->get();
+
+
         if($sector_id != 0){
-            $data = $data->where('sector_id', $sector_id);
+            $sectorId = $sector_id;
         }else{
-            if($user->rule_id != 2){
-                $data = $data->where('sector_id', $user->sector);
+            if($user_gest->rule_id != 2){
+                $sectorId = $user->sector;
             }
         }
 
         if($departement_id != 0){
-            $data = $data->where('departement_id', $departement_id);
+            $departementId = $departement_id;
         }else{
-            if($user->rule_id == 3){
-                $data = $data->where('departement_id', $user->department_id);
+            if($user_gest->rule_id == 3){
+                $departementId = $user->department_id;
             }
         }
-        $data = $data->get();
+
+        $data = User::whereIn('id', function ($query) use ($user_gest, $sectorId, $departementId, $month, $year) {
+            $query->select('user_id')
+                  ->from('reservation_allowances');
+                  if($sectorId != 0){
+                    $query->where('sector_id', $sectorId);
+                  }else{
+                        if($user_gest->rule_id != 2){
+                            $query->where('sector_id', $sectorId);
+                        }
+                  }
+                  if($departementId != 0){
+                    $query->where('departement_id', $departementId);
+                  }else{
+                        if($user_gest->rule_id == 3){
+                            $query->where('departement_id', $departementId);
+                        }
+                  }
+            $query->whereYear('date', $year)
+                  ->whereMonth('date', $month);
+        })
+        ->with(['grade', 'department'])
+        ->get();
+        
+        //return $data;
+        //dd($employees);
+
+        
 
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
                 return '<button class="btn  btn-sm" style="background-color: #259240;"><i class="fa fa-edit"></i></button>';
             })
             ->addColumn('employee_name', function ($row) {
-                return $row->users->name;  // Display the count of iotelegrams
+                return $row->name;  // Display the count of iotelegrams
             })
             ->addColumn('employee_grade', function ($row) {
                   // Display the count of iotelegrams
-                if($row->users->grade_id != null){return $row->users->grade->name;}else{return "لا يوجد رتبة";}
+                if($row->grade_id != null){return $row->grade->name;}else{return "لا يوجد رتبة";}
 
             })
             ->addColumn('employee_file_num', function ($row) {
-                if($row->users->file_number == null){return "لا يوجد رقم ملف";}else{return $row->users->file_number;}
+                if($row->file_number == null){return "لا يوجد رقم ملف";}else{return $row->file_number;}
             })
             /*->addColumn('type', function ($row) {
                 return $row->type;
             })*/
-            ->addColumn('employee_allowance_all_btn', function ($row) {
-                if($row->type == '1'){
-                    $btn = '<div class="d-flex" style="justify-content: space-around !important"><div style="display: inline-flex; direction: ltr;"><label for="">  حجز كلى</label><input type="radio" class="form-control" checked disabled></div><span>';
+            // ->addColumn('employee_allowance_all_btn', function ($row) {
+            //     if($row->type == '1'){
+            //         $btn = '<div class="d-flex" style="justify-content: space-around !important"><div style="display: inline-flex; direction: ltr;"><label for="">  حجز كلى</label><input type="radio" class="form-control" checked disabled></div><span>';
+            //     }else{
+            //         $btn = "";
+            //     }
+            //     return $btn;
+            // })
+            // ->addColumn('employee_allowance_part_btn', function ($row) {
+            //     if($row->type == '2'){
+            //         $btn = '<div style="display: inline-flex; direction: ltr;"><label for="">  حجز جزئى</label><input type="radio"class="form-control" checked disabled></div></div>';
+            //     }else{
+            //         $btn = "";
+            //     }
+            //     return $btn;
+            // })
+            // ->addColumn('employee_allowance_amount', function ($row) {
+            //     return $row->amount.' د.ك ';  // Display the count of iotelegrams
+            // })
+            ->addColumn('allowance_all_count_but', function ($user) use ($user_gest ,$sectorId, $departementId, $month, $year) {
+                $allowance_all_count = ReservationAllowance::where('user_id', $user->id)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->where('type', '1');
+                if($sectorId != 0){
+                    $allowance_all_count->where('sector_id', $sectorId);
                 }else{
-                    $btn = "";
+                    if($user_gest->rule_id != 2){
+                        $allowance_all_count->where('sector_id', $sectorId);
+                    }
                 }
-                return $btn;
-            })
-            ->addColumn('employee_allowance_part_btn', function ($row) {
-                if($row->type == '2'){
-                    $btn = '<div style="display: inline-flex; direction: ltr;"><label for="">  حجز جزئى</label><input type="radio"class="form-control" checked disabled></div></div>';
+                if($departementId != 0){
+                    $allowance_all_count->where('departement_id', $departementId);
                 }else{
-                    $btn = "";
+                    if($user_gest->rule_id == 3){
+                        $allowance_all_count->where('departement_id', $departementId);
+                    }
                 }
-                return $btn;
-            })
-            ->addColumn('employee_allowance_amount', function ($row) {
-                return $row->amount.' د.ك ';  // Display the count of iotelegrams
+                $allowance_all_count->get();
+
+                //return "بدل حجز كلى "."( ".$allowance_all_count." )";
+                return $allowance_all_count->count();
             })
 
-            ->rawColumns(['employee_allowance_all_btn', 'employee_allowance_part_btn'])
+            ->addColumn('allowance_part_count_but', function ($user) use ($user_gest ,$sectorId, $departementId, $month, $year) {
+                $allowance_part_count = ReservationAllowance::where('user_id', $user->id)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->where('type', '2');
+                if($sectorId != 0){
+                    $allowance_part_count->where('sector_id', $sectorId);
+                }else{
+                    if($user_gest->rule_id != 2){
+                        $allowance_part_count->where('sector_id', $sectorId);
+                    }
+                }
+                if($departementId != 0){
+                    $allowance_part_count->where('departement_id', $departementId);
+                }else{
+                    if($user_gest->rule_id == 3){
+                        $allowance_part_count->where('departement_id', $departementId);
+                    }
+                }
+                $allowance_part_count->get();
+
+                //return "بدل حجز جزئى "."( ".$allowance_part_count." )";
+                return $allowance_part_count->count();
+            })
+
+            ->addColumn('allowance_sum_but', function ($user) use ($user_gest ,$sectorId, $departementId, $month, $year) {
+                $allowance_sum = ReservationAllowance::where('user_id', $user->id)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month);
+                if($sectorId != 0){
+                    $allowance_sum->where('sector_id', $sectorId);
+                }else{
+                    if($user_gest->rule_id != 2){
+                        $allowance_sum->where('sector_id', $sectorId);
+                    }
+                }
+                if($departementId != 0){
+                    $allowance_sum->where('departement_id', $departementId);
+                }else{
+                    if($user_gest->rule_id == 3){
+                        $allowance_sum->where('departement_id', $departementId);
+                    }
+                }
+                $allowance_sum->get();
+
+                //return "( ".$allowance_sum." ) د.ك";
+                return $allowance_sum->sum("amount");
+            })
+
+
+            ->rawColumns(['allowance_all_count_but', 'allowance_part_count_but', 'allowance_sum_but'])
             //->rawColumns(['action'])
             ->make(true);
     }
@@ -1275,5 +1395,147 @@ class ReservationAllowanceController extends Controller
         }
         //return redirect()->route('reservation_allowances.index')->with('success', 'تم اضافه بدل حجز بنجاح');
         return redirect()->route('reservation_allowances.index_data',[$sectorId, $departementId, $datey])->with('success', 'تم اضافه بدل حجز بنجاح');
+    }
+
+    public function printReport($date,$sectorId=0,$departementId=0)
+    {      
+        $current_departement = null;  
+        if($departementId != 0){
+            $current_departement = departements::where('uuid', $departementId)->first();
+            $departement_id = $current_departement->id;
+        }else{
+            $departement_id = 0;
+        }
+        
+        $current_sector = Sector::where('uuid', $sectorId)->first();
+        $sector_id = $current_sector->id;
+
+        $sector = $sector_id;
+        $departement = $departement_id;
+        $get_employee_for_all_reservations = [];
+        $get_employee_for_part_reservations = [];
+
+        $employee_amount = 0;
+        $reservation_amout = 0;
+        $reservation_amount_part = 0;
+        $reservation_amount_all = 0;
+
+        if(Cache::has(auth()->user()->id)){
+
+            $user = auth()->user();
+            $to_day = $date;
+            //$to_day = Carbon::now()->format('Y-m-d');
+            $to_day_name = Carbon::parse($date)->translatedFormat('l');
+            $get_employees = Cache::get(auth()->user()->id);
+            // $sector_id = 0;
+            // $departement_id = 0;
+            
+            foreach($get_employees as $get_employee){
+                $employee = User::where('id', $get_employee['id'])->first();
+
+                if($employee){// check if employee
+                    if($employee->grade_id != null){ // check if employee has grade
+                        if($get_employee['type'] == 1){
+                            $grade_value = $employee->grade->value_all;
+                            $get_employee_for_all_reservations[] = $employee;
+                            $employee['grade_value'] = $grade_value;
+                            $reservation_amount_all += $employee->grade->value_all;
+                        }else{
+                            $grade_value = $employee->grade->value_part;
+                            $reservation_amount_part += $employee->grade->value_part;
+                            $employee['grade_value'] = $grade_value;
+                            $get_employee_for_part_reservations[] = $employee;
+                        }
+                        $employee_amount += $grade_value;
+                    }
+                }
+            }
+
+
+            //check to reservation month
+            $type_departement = 1;
+            $reservation_amout = sector::where('id', $sector_id)->first()->reservation_allowance_amount;
+            if($departement_id != 0){
+                $type_departement = 2;
+                $reservation_amout = departements::where('id', $departement_id)->first()->reservation_allowance_amount;
+            }
+
+            $first_day = date('Y-m-01');
+            $last_day = date('Y-m-t');
+            
+            $get_all_employee_amount = ReservationAllowance::Query();
+            if($departement_id != 0){
+                $get_all_employee_amount = $get_all_employee_amount->where('departement_id', $departement_id);
+            }
+            if($sector_id != 0){
+                $get_all_employee_amount = $get_all_employee_amount->where('sector_id', $sector_id);
+            }
+            $get_all_employee_amount = $get_all_employee_amount->whereBetween('date',[$first_day, $last_day])->sum('amount');
+
+            if($reservation_amout > 0){
+                $reservation_amout = $reservation_amout - $get_all_employee_amount;           
+                if($reservation_amout <= $employee_amount){
+                    return redirect()->back()->with('error','عفوا لقد تجاوزت ملبغ بدل الحجز');
+                }
+            }
+             
+        }
+
+
+
+
+
+
+        $user = $this->fetchUser($request->input('file_number')); 
+        if (!$user || !$this->canAccessEmployeeData(Auth::user(), $user)) {
+            return redirect()->back()->with('error', 'No user found with this File Number');
+        }
+    
+        // Fetch reservations
+        $reservations = ReservationAllowance::where('user_id', $user->id)->with('departements')->get();
+        $totalAmount = $reservations->sum(function ($item) {
+            return (float) $item->amount; // Ensure amount is treated as float
+        });
+        
+        $data = [
+            'reservations' => $reservations,
+            'user' => $user,
+            'sector' => Sector::find($user->sector)->name ?? 'N/A',
+            'department' => departements::find($user->department_id)->name ?? 'N/A',
+            'grade' => grade::find($user->grade_id)->name ?? 'N/A',
+            'totalAmount' => number_format((float) $totalAmount, 2) . ' د ك',
+            'totalFullReservation' => number_format(
+                (float) $reservations->where('type', 1)->sum('amount'), 
+                2
+            ) . ' د ك',
+            'totalPartialReservation' => number_format(
+                (float) $reservations->where('type', 2)->sum('amount'), 
+                2
+            ) . ' د ك',
+        ];
+    
+        // Generate PDF
+        $pdf = $this->generatePDF($data);
+        return $pdf->Output('reservation_report.pdf', 'I');
+    }
+    
+    private function generatePDF($data)
+    {
+        $pdf = new TCPDF();
+        $pdf->SetCreator('Your App');
+        $pdf->SetAuthor('Your App');
+        $pdf->SetTitle('Reservation Report');
+        $pdf->SetSubject('Report');
+        $pdf->SetMargins(10, 10, 10);
+        $pdf->SetHeaderMargin(10);
+        $pdf->SetFooterMargin(10);
+        $pdf->SetAutoPageBreak(TRUE, 10);
+        $pdf->SetFont('dejavusans', '', 12);
+        $pdf->AddPage();
+        $pdf->setRTL(true);
+        $html = view('reservation_fetch.pdf', $data)->render();
+        $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
+
+        return $pdf;
     }
 }

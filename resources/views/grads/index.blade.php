@@ -111,9 +111,12 @@
                                 <select name="typeadd" id="typeadd" aria-placeholder="اختر نوع الرتبه"
                                     class="form-control" required>
                                     <option value="" selected disabled>اختر نوع الرتبه</option>
-                                    <option value="2">ظابط</option>
+                                    @foreach ($violationTypeName as $key => $violation)
+                                    <option value="{{ $violation->id }}">{{ $violation->name }}</option>
+                                    @endforeach
+                                <!--     <option value="2">ظابط</option>
                                     <option value="1">فرد </option>
-                                    <option value="3"> مهني</option>
+                                    <option value="3"> مهني</option> -->
                                 </select>
                                 <span class="text-danger span-error" id="typeadd-error" dir="rtl"></span>
 
@@ -186,13 +189,16 @@
                             <div class="form-group">
                                 <label for="typeedit">الفئة</label>
                                 <select name="typeedit" id="typeedit" class="form-control">
-                                    <option value="" selected disabled>اختر نوع الرتبه</option>
-                                    <option value="2" {{ session('old_typeedit') == '2' ? 'selected' : '' }}>ظابط
+                                    <option value="" selected disabled>اختر نوع الرتبه </option>
+                                    @foreach ($violationTypeName as $key => $violation)
+                                    <option value="{{ $violation->id }}" {{ session('old_typeedit') == $violation->id ? 'selected' : '' }}>{{ $violation->name }}</option>
+                                    @endforeach
+                                    <!-- <option value="2" {{ session('old_typeedit') == '2' ? 'selected' : '' }}>ظابط
                                     </option>
                                     <option value="1" {{ session('old_typeedit') == '1' ? 'selected' : '' }}> فرد
                                     </option>
                                     <option value="3" {{ session('old_typeedit') == '3' ? 'selected' : '' }}> مهني
-                                    </option>
+                                    </option> -->
                                 </select>
                                 <span class="text-danger span-error" id="typeedit-error" dir="rtl"></span>
                             </div>

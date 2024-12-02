@@ -288,11 +288,11 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/reservation_allowances/confirm_reservation_allowances/{date}/{sector_id}/{departement_id}', [ReservationAllowanceController::class, 'confirm_reservation_allowances'])->name('reservation_allowances.confirm_reservation_allowances')->middleware('check.permission:view ReservationAllowance');
     Route::any('/reservation_allowances/create_employee_new', [ReservationAllowanceController::class, 'create_employee_new'])->name('reservation_allowances.create_employee_new')->middleware('check.permission:create ReservationAllowance');
     Route::any('/reservation_allowances/create_employee_all', [ReservationAllowanceController::class, 'create_employee_all'])->name('reservation_allowances.create_employee_all')->middleware('check.permission:create ReservationAllowance');
+    Route::any('/reservation_allowances/print/{date}/{sector_id}/{departement_id}', [ReservationAllowanceController::class, 'printReport'])->name('reservation_allowances.print')->middleware('check.permission:view ReservationAllowance');
 
     //reserv statics
  Route::group(['middleware' => ['check.permission:statistic ReservationAllowance']], function () {
     //reservation statics for departments per sector
-
     Route::get('/statistics_department/{sector_id}', [ReservationStaticsController::class, 'static'])->name('Reserv_statistic_department.index');
     Route::get('/statistics_department/getAll/{sector_id}', [ReservationStaticsController::class, 'getAll'])->name('Reserv_statistic.getAll');
     Route::get('/all-department-employees/{departmentId}', [ReservationStaticsController::class, 'departmentEmployeesPage'])->name('all.department.employees.page');
@@ -348,7 +348,6 @@ Route::group(['middleware' => ['check.permission:search ReservationAllowance']],
 
     //reserv reports
 Route::group(['middleware' => ['check.permission:report ReservationAllowance']], function () {
-
     Route::get('reservation_report', [ReservationReportController::class, 'index'])->name('reserv_report.index');
     Route::get('reservation_report/getReportData', [ReservationReportController::class, 'getReportData'])->name('reservation_report.getReportData');
     Route::get('reservation_report/print', [ReservationReportController::class, 'printReport'])->name('reservation_report.print');
