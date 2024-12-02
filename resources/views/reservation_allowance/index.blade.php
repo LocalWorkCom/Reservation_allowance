@@ -215,17 +215,22 @@
                         <table id="users-table"
                             class="display table table-responsive-sm  table-bordered table-hover dataTable" dir="rtl">
                             <thead>
-                                <tr>
-                                    <th style="width:5%">م</th>
-                                    <th>الرتبة</th>
-                                    <th>الاسم</th>
-                                    <th>رقم الملف</th>
-                                    <th>عدد ايام  بدل حجز كلى</th>
-                                    <th>عدد ايام بدل حجز جزئى</th>
-                                    <th>الاجمالى</th>
-                                    <!-- <th style="width:150px;">العمليات</th>-->
-                                </tr>
-                            </thead>
+        <!-- First Row: Group Headers -->
+        <tr>
+            <th rowspan="2" style="width:5%">م</th>
+            <th rowspan="2">الرتبة</th>
+            <th rowspan="2">الاسم</th>
+            <th rowspan="2">رقم الملف</th>
+            <th colspan="2">عدد ايام بدل حجز</th>
+            <th rowspan="2">الاجمالى</th>
+        </tr>
+
+        <!-- Second Row: Sub-Headers -->
+        <tr>
+            <th>كلى</th>
+            <th>جزئى</th>
+        </tr>
+    </thead>
                         </table>
                     </div>
                 </div>

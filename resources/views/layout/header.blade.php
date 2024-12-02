@@ -224,14 +224,13 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Close dropdowns on page load
-    document.getElementById('dropdownMenu').style.display = 'none';
-    document.getElementById('dropdownMenu2').style.display = 'none';
+   
     document.getElementById('dropdownMenu4').style.display = 'none';
     document.getElementById('dropdownMenu5').style.display = 'none';
     // Optional: Close dropdowns if they are open on page load
     function closeDropdowns() {
         let dropdowns = document.querySelectorAll(
-            '.dropdown-menu, .dropdown-menu2, .dropdown-menu4, .dropdown-menu5');
+            ' .dropdown-menu4, .dropdown-menu5');
         dropdowns.forEach(function(dropdown) {
             dropdown.style.display = 'none';
         });
@@ -239,23 +238,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Attach closeDropdowns function to window events
     window.addEventListener('load', closeDropdowns);
 });
-</script>
-<script>
-function toggleDropdown() {
-    var dropdown = document.getElementById('dropdownMenu');
-    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
-}
 
-function toggleDropdown2() {
-    var dropdown = document.getElementById('dropdownMenu2');
-    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
-}
 
-function toggleDropdown3(event) {
-    var dropdown = document.getElementById('dropdownMenu3');
-    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
-    event.stopPropagation(); // Prevent closing other dropdowns
-}
+
+
 
 function toggleDropdown4(event) {
     var dropdown = document.getElementById('dropdownMenu4');
@@ -272,7 +258,7 @@ function toggleDropdown5(event) {
 // Close dropdowns if clicked outside
 document.addEventListener('click', function(event) {
     let dropdowns = document.querySelectorAll(
-        '.dropdown-menu, .dropdown-menu2, .dropdown-menu4, .dropdown-menu5');
+        '.dropdown-menu4, .dropdown-menu5');
     dropdowns.forEach(function(dropdown) {
         if (!dropdown.contains(event.target) && !event.target.closest('.btn')) {
             dropdown.style.display = 'none';
