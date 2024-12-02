@@ -502,9 +502,12 @@ class DepartmentController extends Controller
         $departements->reservation_allowance_type = $reservation_allowance_type;
         $departements->created_by = Auth::user()->id;
         $departements->save();
+
+        if ($manager) {
+            addUserHistory($manager->id, $departements->id,  $request->sector);
+        }
         saveHistory($departements->reservation_allowance_amount, $departements->sector_id, $departements->id);
-        UpdateUserHistory($manager->id);
-        addUserHistory($manager->id, $departements->id,  $request->sector);
+        // UpdateUserHistory($manager->id);
 
         if ($request->mangered) {
             $new_user = User::where('file_number', $request->mangered)->first();
@@ -721,8 +724,10 @@ class DepartmentController extends Controller
             }
         }
 
-        UpdateUserHistory($request->mangered);
-        addUserHistory($request->mangered, $departements->id,  $request->sector);
+        if ($manager) {
+            addUserHistory($manager->id, $departements->id,  $request->sector);
+        }
+
         saveHistory($departements->reservation_allowance_amount, $departements->sector_id, $departements->id);
 
         // Handle employee assignment
