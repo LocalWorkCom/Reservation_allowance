@@ -233,7 +233,7 @@
 
                         <div class="container col-10 mt-5 mb-3 ">
                             <div class="form-row col-10 " dir="ltr">
-                                <button class="btn-blue " type="submit">
+                                <button class="btn-blue " type="submit" id="submit-btn" disabled>
                                     اضافة </button>
                             </div>
                         </div>
@@ -249,7 +249,6 @@
         </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     @if ($errors->any())
         <script>
             $(document).ready(function() {
@@ -290,17 +289,12 @@
             dir: "rtl"
         });
         $(document).ready(function() {
+            $('#submit-btn').prop('disabled', false);
+
             var selectedManagerId = $('#mangered').val();
-            // $('#mangered').on('input', function() {
-            //     var managerId = $(this).val();
-            //     if (!managerId) {
-            //         $('#email_field').hide(); // Hide email field if no manager is selected
-            //         $('#email').val(''); // Clear the email input
-            //     } else {
-            //         $('#email_field').show(); // Show email field when manager is selected
-            //         fetchManagerDetails(managerId); // Fetch manager details
-            //     }
-            // });
+            $('#mangered').on('input', function() {
+                $('#submit-btn').prop('disabled', true);
+            });
 
             // When the form is submitted, check if the manager is removed
 
@@ -398,14 +392,17 @@
                                 confirmButtonColor: '#3085d6'
                             }).then((result) => {
                                 if (result.isConfirmed) {
-
+                                    $('#submit-btn').prop('disabled', false);
                                 } else {
                                     // Handle cancel action: clear the manager input field
                                     $('#mangered').val(''); // Clear the input field
                                     $('#manager_details').hide(); // Hide the manager details
                                     $('#email_field').hide();
+                                    $('#submit-btn').prop('disabled', false);
                                 }
                             });
+                        } else {
+                            $('#submit-btn').prop('disabled', false);
                         }
                     },
                     error: function(xhr, status, error) {
@@ -420,12 +417,16 @@
                                 confirmButtonText: 'إلغاء',
                                 confirmButtonColor: '#3085d6'
                             }).then((result) => {
-                                // User clicked "إلغاء", clear the input field
-                                $('#mangered').val('');
-                                $('#manager_details').hide();
-                                $('#email_field').hide();
-                                $('#email').val('');
+                                if (result.isConfirmed) {
+                                    $('#submit-btn').prop('disabled', false);
+                                    $('#mangered').val('');
+                                    $('#manager_details').hide();
+                                    $('#email_field').hide();
+                                    $('#email').val('');
+                                }
                             });
+                        } else {
+                            $('#submit-btn').prop('disabled', false);
                         }
                     }
                 });
@@ -450,6 +451,9 @@
             var managerId = $('#mangered').val();
             if (!managerId) {
                 $('#mangered').val(null);
+            }
+            if ($('#submit-btn').prop('disabled')) {
+                e.preventDefault();
             }
         });
 
