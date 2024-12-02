@@ -39,11 +39,10 @@
                         $uuid = Request::segment(2);
                     @endphp
                     @if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2 || Auth::user()->rule->id == 4)
-                        <button type="button" class="wide-btn "
+                        <button type="button" class="btn-all "
                             onclick="window.location.href='{{ route('department.create', $uuid) }}'"
-                            style="    color: #0D992C;">
+                           >
                             اضافة جديد
-                            <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
                         </button>
                     @endif
                     @if (Auth::user()->hasPermission('create Postman'))

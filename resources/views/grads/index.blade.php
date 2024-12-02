@@ -22,7 +22,6 @@
             </div>
         </div>
 
-        <br>
         <div class="row">
             <div class="container  col-11 mt-3 pb-4 p-0 ">
                 <div class="row d-flex justify-content-between " dir="rtl">
@@ -39,7 +38,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="container  col-11 mt-3 p-0  pt-5 pb-4">
+                <div class="container  col-12 mt-3 p-0   pb-4">
                     <div class="col-lg-12">
                         <div class="bg-white ">
                             @if (session()->has('message'))
