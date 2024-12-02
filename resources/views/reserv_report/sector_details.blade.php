@@ -41,9 +41,7 @@
             <th rowspan="2">الاسم</th>
             <th rowspan="2">رقم الملف</th>
             <th rowspan="2">الإدارة</th>
-
             <th colspan="3"> ايام الحجز </th>
-           
             <th colspan="3"> المبلغ </th>
            
         </tr>
