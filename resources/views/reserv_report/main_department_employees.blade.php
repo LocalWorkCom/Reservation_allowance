@@ -37,9 +37,9 @@
         </tr>
         <tr>
          
-            <th>أيام كاملة</th>
-            <th>أيام جزئية</th>
-            <th>إجمالي الأيام</th>
+        <th>كلي </th>
+            <th>جزئي </th>
+            <th>إجمالي </th>
             <th>بدل الحجز (كلي)</th>
             <th>بدل الحجز (جزئي)</th>
             <th>إجمالي بدل الحجز</th>
@@ -102,18 +102,18 @@ $(document).ready(function() {
 
 
             { data: 'full_days', name: 'full_days',
-                render: function(data, type, row) {
-                    const startDate = '{{ $startDate->format('Y-m-d') }}';
-                    const endDate = '{{ $endDate->format('Y-m-d') }}';
-                    return `<a href="/reservation_report/user/${row.uuid}/details?start_date=${startDate}&end_date=${endDate}" style="color:#17a2b8 !important;">${data}</a>`;
-                }
+                // render: function(data, type, row) {
+                //     const startDate = '{{ $startDate->format('Y-m-d') }}';
+                //     const endDate = '{{ $endDate->format('Y-m-d') }}';
+                //     return `<a href="/reservation_report/user/${row.uuid}/details?start_date=${startDate}&end_date=${endDate}" style="color:#17a2b8 !important;">${data}</a>`;
+                // }
              },
         { data: 'partial_days', name: 'partial_days',
-            render: function(data, type, row) {
-                    const startDate = '{{ $startDate->format('Y-m-d') }}';
-                    const endDate = '{{ $endDate->format('Y-m-d') }}';
-                    return `<a href="/reservation_report/user/${row.uuid}/details?start_date=${startDate}&end_date=${endDate}" style="color:#17a2b8 !important;">${data}</a>`;
-                }
+            // render: function(data, type, row) {
+            //         const startDate = '{{ $startDate->format('Y-m-d') }}';
+            //         const endDate = '{{ $endDate->format('Y-m-d') }}';
+            //         return `<a href="/reservation_report/user/${row.uuid}/details?start_date=${startDate}&end_date=${endDate}" style="color:#17a2b8 !important;">${data}</a>`;
+            //     }
          },
         { data: 'total_days', name: 'total_days',
             render: function(data, type, row) {
@@ -123,17 +123,18 @@ $(document).ready(function() {
                 }
          },
         { data: 'full_allowance', name: 'full_allowance',
-             render: function(data, type, row) {
-                    const startDate = '{{ $startDate->format('Y-m-d') }}';
-                    const endDate = '{{ $endDate->format('Y-m-d') }}';
-                    return `<a href="/reservation_report/user/${row.uuid}/details?start_date=${startDate}&end_date=${endDate}" style="color:#17a2b8 !important;">${data}</a>`;
-                } },
+            //  render: function(data, type, row) {
+            //         const startDate = '{{ $startDate->format('Y-m-d') }}';
+            //         const endDate = '{{ $endDate->format('Y-m-d') }}';
+            //         return `<a href="/reservation_report/user/${row.uuid}/details?start_date=${startDate}&end_date=${endDate}" style="color:#17a2b8 !important;">${data}</a>`;
+            //     }
+            },
         { data: 'partial_allowance', name: 'partial_allowance',
-            render: function(data, type, row) {
-                    const startDate = '{{ $startDate->format('Y-m-d') }}';
-                    const endDate = '{{ $endDate->format('Y-m-d') }}';
-                    return `<a href="/reservation_report/user/${row.uuid}/details?start_date=${startDate}&end_date=${endDate}" style="color:#17a2b8 !important;">${data}</a>`;
-                }
+            // render: function(data, type, row) {
+            //         const startDate = '{{ $startDate->format('Y-m-d') }}';
+            //         const endDate = '{{ $endDate->format('Y-m-d') }}';
+            //         return `<a href="/reservation_report/user/${row.uuid}/details?start_date=${startDate}&end_date=${endDate}" style="color:#17a2b8 !important;">${data}</a>`;
+            //     }
          },
         { data: 'total_allowance', name: 'total_allowance',
             render: function(data, type, row) {
