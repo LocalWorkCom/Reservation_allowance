@@ -747,29 +747,43 @@ public function printMainDepartmentEmployees(Request $request, $departmentId)
         return abort(404, 'Department not found');
     }
 
+    // Fetch and prepare data for the PDF
     $employees = ReservationAllowance::where('departement_id', $department->id)
         ->whereBetween('date', [$startDate, $endDate])
-        ->with('user')
+        ->with('user.department')
         ->get()
-        ->map(function ($entry) use ($startDate, $endDate) {
-            $latestGrade = UserGrade::where('user_id', $entry->user_id)
+        ->groupBy('user_id')
+        ->map(function ($reservations, $userId) use ($department, $startDate, $endDate) {
+            $user = $reservations->first()->user;
+
+            $latestGrade = UserGrade::where('user_id', $userId)
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->orderBy('created_at', 'desc')
-                ->with('grade') 
+                ->with('grade')
                 ->first();
 
-            return [
-                'day' => \Carbon\Carbon::parse($entry->date)->translatedFormat('l'),
-                'date' => \Carbon\Carbon::parse($entry->date)->format('Y-m-d'),
-                'name' => $entry->user->name,
-                'file_number' => $entry->user->file_number,
-                'grade' => $latestGrade?->grade?->name ?? 'N/A', 
-                'type' => $entry->type == 1 ? 'حجز كلي' : 'حجز جزئي',
-                'reservation_amount' => number_format($entry->amount, 2),
-            ];
-        });
+            $fullDays = $reservations->where('type', 1)->count();
+            $partialDays = $reservations->where('type', 2)->count();
 
-    // Set up the PDF
+            $fullAllowance = $reservations->where('type', 1)->sum('amount');
+            $partialAllowance = $reservations->where('type', 2)->sum('amount');
+
+            return [
+                'day' => \Carbon\Carbon::parse($reservations->first()->date)->translatedFormat('l'),
+                'date' => \Carbon\Carbon::parse($reservations->first()->date)->format('Y-m-d'),
+                'name' => $user->name ?? 'N/A',
+                'file_number' => $user->file_number ?? 'N/A',
+                'grade' => $latestGrade?->grade?->name ?? 'N/A',
+                'full_days' => $fullDays,
+                'partial_days' => $partialDays,
+                'total_days' => $fullDays + $partialDays,
+                'full_allowance' => number_format($fullAllowance, 2),
+                'partial_allowance' => number_format($partialAllowance, 2),
+                'total_allowance' => number_format($fullAllowance + $partialAllowance, 2),
+            ];
+        })->values();
+
+    // Generate PDF
     $pdf = new TCPDF();
     $pdf->SetCreator('Your App');
     $pdf->SetTitle("تفاصيل الموظفين المحجوزين في الإدارة الرئيسية: {$department->name}");
@@ -777,7 +791,7 @@ public function printMainDepartmentEmployees(Request $request, $departmentId)
     $pdf->setRTL(true);
     $pdf->SetFont('dejavusans', '', 12);
 
-    // Render HTML content with Blade view
+    // Pass data to Blade for rendering
     $html = view('reserv_report.main_department_employees_pdf', compact(
         'department', 'employees', 'startDate', 'endDate'
     ))->render();
@@ -786,6 +800,7 @@ public function printMainDepartmentEmployees(Request $request, $departmentId)
 
     return $pdf->Output("main_department_employees_report_{$department->name}.pdf", 'I');
 }
+
 
 
 
