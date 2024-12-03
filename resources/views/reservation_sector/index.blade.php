@@ -51,7 +51,7 @@
                                     <option selected disabled>
                                         السنة
                                     </option>
-                                    @for ($y = 2020; $y <= date('Y'); $y++)
+                                    @for ($y = 2024; $y <= date('Y'); $y++)
                                         <option value="{{ $y }}"
                                             {{ $y == now()->year ?: '' }}>
                                             {{ $y }}</option>

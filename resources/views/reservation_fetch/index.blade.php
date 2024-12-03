@@ -174,11 +174,12 @@
                         <th>الترتيب</th>
                         <th>اليوم</th>
                         <th>التاريخ</th>
+                        <th>رتبه</th>
                         <th>الاسم</th>
                         <th>قطاع</th>
                         <th>الادارة</th>
                         <!-- <th>نوع</th>   -->
-                        <th>رتبه</th>
+                       
                         <th>نوع الحجز</th>
                         <th>القيمة</th>
                     </tr>
@@ -246,6 +247,10 @@
                             name: 'date'
                         },
                         {
+                            data: 'grade',
+                            name: 'grade'
+                        },
+                        {
                             data: 'name',
                             name: 'name'
                         },
@@ -257,10 +262,7 @@
                             data: 'department',
                             name: 'department'
                         },
-                        {
-                            data: 'grade',
-                            name: 'grade'
-                        },
+                        
                         // { data: 'grade_type', name: 'grade_type' },
                         {
                             data: 'type',
