@@ -81,7 +81,8 @@ class UserController extends Controller
             $search_id = Departements::where('uuid', $id)->first()->id;
         }
 
-
+        $subDep = departements::where('parent_id', auth()->user()->department_id)->pluck('id');
+        $my_dep = Auth()->user()->department_id;
         $gradeall = Grade::pluck('id')->toArray();
         $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
         $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
@@ -241,16 +242,34 @@ class UserController extends Controller
 
                     $all = User::when($flag !== 'all', function ($query) use ($flag) {
                         return $query->where('flag', $flag);
-                    })->where('sector', auth()->user()->sector)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeall)->count();
+                    })->where('sector', auth()->user()->sector)
+                        ->where(function ($q) use ($my_dep, $subDep) {
+                            $q->where('department_id', $my_dep)
+                                ->orWhereIn('department_id', $subDep);
+                        })
+                        ->whereIn('grade_id', $gradeall)
+                        ->count();
                     $person = User::when($flag !== 'all', function ($query) use ($flag) {
                         return $query->where('flag', $flag);
-                    })->where('sector', auth()->user()->sector)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeperson)->count();
+                    })->where('sector', auth()->user()->sector)
+                        ->where(function ($q) use ($my_dep, $subDep) {
+                            $q->where('department_id', $my_dep)
+                                ->orWhereIn('department_id', $subDep);
+                        })->whereIn('grade_id', $gradeperson)
+                        ->count();
                     $Officer = User::when($flag !== 'all', function ($query) use ($flag) {
                         return $query->where('flag', $flag);
-                    })->where('sector', auth()->user()->sector)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeOfficer)->count();
+                    })->where('sector', auth()->user()->sector)
+                        ->where(function ($q) use ($my_dep, $subDep) {
+                            $q->where('department_id', $my_dep)
+                                ->orWhereIn('department_id', $subDep);
+                        })->whereIn('grade_id', $gradeOfficer)->count();
                     $Officer2 = User::when($flag !== 'all', function ($query) use ($flag) {
                         return $query->where('flag', $flag);
-                    })->where('sector', auth()->user()->sector)->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $graseOfficer2)->count();
+                    })->where('sector', auth()->user()->sector)->where(function ($q) use ($my_dep, $subDep) {
+                        $q->where('department_id', $my_dep)
+                            ->orWhereIn('department_id', $subDep);
+                    })->whereIn('grade_id', $graseOfficer2)->count();
                 }
             } elseif (Auth::user()->rule->id == 3) {
 
@@ -271,16 +290,30 @@ class UserController extends Controller
 
                     $all = User::when($flag !== 'all', function ($query) use ($flag) {
                         return $query->where('flag', $flag);
-                    })->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeall)->count();
+                    })
+                        ->where(function ($q) use ($my_dep, $subDep) {
+                            $q->where('department_id', $my_dep)
+                                ->orWhereIn('department_id', $subDep);
+                        })
+                        ->whereIn('grade_id', $gradeall)->count();
                     $person = User::when($flag !== 'all', function ($query) use ($flag) {
                         return $query->where('flag', $flag);
-                    })->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeperson)->count();
+                    })->where(function ($q) use ($my_dep, $subDep) {
+                        $q->where('department_id', $my_dep)
+                            ->orWhereIn('department_id', $subDep);
+                    })->whereIn('grade_id', $gradeperson)->count();
                     $Officer2 = User::when($flag !== 'all', function ($query) use ($flag) {
                         return $query->where('flag', $flag);
-                    })->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $graseOfficer2)->count();
+                    })->where(function ($q) use ($my_dep, $subDep) {
+                        $q->where('department_id', $my_dep)
+                            ->orWhereIn('department_id', $subDep);
+                    })->whereIn('grade_id', $graseOfficer2)->count();
                     $Officer = User::when($flag !== 'all', function ($query) use ($flag) {
                         return $query->where('flag', $flag);
-                    })->where('department_id', auth()->user()->department_id)->whereIn('grade_id', $gradeOfficer)->count();
+                    })->where(function ($q) use ($my_dep, $subDep) {
+                        $q->where('department_id', $my_dep)
+                            ->orWhereIn('department_id', $subDep);
+                    })->whereIn('grade_id', $gradeOfficer)->count();
                 }
             } elseif (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
                 $all = User::when($flag !== 'all', function ($query) use ($flag) {
@@ -397,15 +430,23 @@ class UserController extends Controller
                     return $query->where('flag', $flag);
                 })->where('sector', $sector);
             } else {
-
+                $subDep = departements::where('parent_id', auth()->user()->department_id)->pluck('id');
+                $my_dep = Auth()->user()->department_id;
                 // if (is_null($parentDepartment->parent_id)) {
                 // $subdepart = Departements::where('parent_id', $parentDepartment->id)->pluck('id')->toArray();
                 if (auth()->user()->sector && auth()->user()->department_id) {
 
+
+
+
                     $data = User::when($flag !== 'all', function ($query) use ($flag) {
                         return $query->where('flag', $flag);
                     })
-                        ->Where('department_id', Auth()->user()->department_id)->where('sector', auth()->user()->sector);
+                        ->where(function ($q) use ($my_dep, $subDep) {
+                            $q->where('department_id', $my_dep)
+                                ->orWhereIn('department_id', $subDep);
+                        })
+                        ->where('sector', auth()->user()->sector);
                 } else if (auth()->user()->sector && !auth()->user()->department_id) {
                     $data = User::when($flag !== 'all', function ($query) use ($flag) {
                         return $query->where('flag', $flag);
@@ -643,7 +684,7 @@ class UserController extends Controller
 
         if ($user && $user->last_login == null && $user->flag == 'user') {
             return 1;
-        }else if ($user->flag != 'user') {
+        } else if ($user->flag != 'user') {
             return -1;
         }
 
@@ -1458,7 +1499,7 @@ class UserController extends Controller
 
         try {
             // If no errors, proceed to import the data
-            Excel::import(new ImportUser, $request->file('file'));
+            Excel::import(new UsersImportTemplate, $request->file('file'));
 
             return redirect()->back()->with('success', 'Users imported successfully!');
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {

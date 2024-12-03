@@ -92,6 +92,9 @@
                         @if ($flag == 'employee')
                             <a href="{{ route('download-template') }}" class="btn-all text-info p-2">تحميل
                                 القالب</a>
+                            <a href="{{ route('export-users') }}" class="btn-all text-info p-2"
+                                style="border-radius: 5px;">تصدير القالب</a>
+
                             @if (Auth::user()->hasPermission('create User'))
                                 <button type="button" class="btn-all mx-2"
                                     onclick="window.location.href='{{ route('user.create') }}'">
@@ -193,14 +196,14 @@
                             الكل ({{ $all }})
                         </button>
                         <button class="btn-all px-3 mx-2 btn-filter" data-filter="Officer" style="color: #274373;">
-                             الضباط ({{ $Officer }})
+                            الضباط ({{ $Officer }})
                         </button>
                         <button class="btn-all px-3 mx-2 btn-filter" data-filter="Officer2" style="color: #274373;">
-                             المهنيين ({{ $Officer2 }})
+                            المهنيين ({{ $Officer2 }})
                         </button>
 
                         <button class="btn-all px-3 mx-2 btn-filter" data-filter="person" style="color: #274373;">
-                             الأفراد ({{ $person }})
+                            الأفراد ({{ $person }})
                         </button>
                     </div>
                 </div>
