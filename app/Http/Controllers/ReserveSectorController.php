@@ -113,7 +113,10 @@ class ReserveSectorController extends Controller
                         ->where('sector_id', $row->id)
                         ->whereYear('created_at', $year)
                         ->whereMonth('created_at', $month)
-                        ->distinct('user_id')
+                        ->where('flag', '1') 
+                        ->select('user_id', DB::raw('MAX(created_at) as latest_created_at')) 
+                        ->groupBy('user_id') 
+                        ->pluck('user_id')
                         ->count('user_id');
                 })
                 ->addColumn('received_allowance_count', function ($row) use ($month, $year) {
