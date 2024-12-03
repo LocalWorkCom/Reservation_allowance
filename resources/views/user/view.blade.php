@@ -211,7 +211,7 @@
                             <th>الرتبه</th>
                             <th>الاسم</th>
                             <th>رقم الملف</th>
-                            <th>الرقم المدني</th>
+                            {{-- <th>الرقم المدني</th> --}}
                             <th>الهاتف</th>
                             <th>الادارة</th>
                             <th>القطاع</th>
@@ -326,10 +326,10 @@
                                     data: 'file_number',
                                     name: 'file_number'
                                 },
-                                {
-                                    data: 'Civil_number',
-                                    name: 'Civil_number'
-                                },
+                                // {
+                                //     data: 'Civil_number',
+                                //     name: 'Civil_number'
+                                // },
                                 {
                                     data: 'phone',
                                     name: 'phone'

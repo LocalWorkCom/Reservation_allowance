@@ -579,14 +579,18 @@ class UserController extends Controller
         $user = User::where('military_number', $number)->orwhere('Civil_number', $number)->orwhere('file_number', $number)->first();
 
         if (!$user) {
-            return back()->with('error', 'الرقم العسكري / الرقم المدنى لا يتطابق مع سجلاتنا')->withInput();
+            return response()->json(['success' => false, 'message' => 'Invalid username or password']);
+
+            // return back()->with('error', 'الرقم العسكري / الرقم المدنى لا يتطابق مع سجلاتنا')->withInput();
         }
 
 
 
         // Check if the user has the correct flag
         if ($user->flag != 'user') {
-            return back()->with('error', 'لا يسمح لك بدخول الهيئة')->withInput();
+            return response()->json(['success' => false, 'message' => 'لا يسمح لك بدخول الهيئة']);
+
+            // return back()->with('error', 'لا يسمح لك بدخول الهيئة')->withInput();
         }
 
         // $credentials = $request->only('number', 'password');
@@ -603,29 +607,48 @@ class UserController extends Controller
         }
 
         $twoHoursAgo = now()->subHours(6);
-        if ($user && $user->last_login == null) {
+        // if ($user && $user->last_login == null) {
+        //     return response()->json(['success' => false, 'message' => 'Invalid username or password']);
 
-            return redirect()->route('passwordManager', ['number' => $number])->with('error', 'يرجى أنشأ كلمه السر الخاصه بك')->withInput();
-        } else if ($user && $user->last_login != null && $user->password != null && $password) {
+        //     // return redirect()->route('passwordManager', ['number' => $number])->with('error', 'يرجى أنشأ كلمه السر الخاصه بك')->withInput();
+        // } else if ($user && $user->last_login != null && $user->password != null && $password) {
 
-            if (Auth::attempt($credentials)) {
+        if (Auth::attempt($credentials)) {
 
-                Auth::login($user); // Log the user in
-                $update = User::find($user->id);
-                $update->last_login = now();
-                $update->save();
-                return redirect()->route('home');
-            }
-        } else {
+            Auth::login($user); // Log the user in
+            $update = User::find($user->id);
+            $update->last_login = now();
+            $update->save();
+            return response()->json(['success' => true, 'message' => 'Login successful']);
 
-            return redirect()->route('normalLogin', ['number' => $number]);
+            // return redirect()->route('home');
         }
+        // } else {
+        //     return response()->json(['success' => false, 'message' => 'Invalid username or password']);
+
+
+        //     // return redirect()->route('normalLogin', ['number' => $number]);
+        // }
 
 
 
         return back()->with('error', 'كلمة المرور لا تتطابق مع سجلاتنا')->withInput();
     }
 
+    function CheckFirstLogin(Request $request)
+    {
+        $number = $request->number;
+
+        $user = User::where('military_number', $number)->orwhere('Civil_number', $number)->orwhere('file_number', $number)->first();
+
+        if ($user && $user->last_login == null && $user->flag == 'user') {
+            return 1;
+        }else if ($user->flag != 'user') {
+            return -1;
+        }
+
+        return 0;
+    }
     public function normalLogin($number)
     {
 
