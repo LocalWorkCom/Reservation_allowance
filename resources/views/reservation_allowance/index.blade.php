@@ -119,7 +119,7 @@
                         <select id="year" name="year"
                             class="custom-select custom-select-lg "
                             style="color:gray !important;">
-                            @for ($y = 2020; $y <= date('Y'); $y++)
+                            @for ($y = 2024; $y <= date('Y'); $y++)
                                 <option value="{{ $y }}"
                                     {{ $y == now()->year ? 'selected' : '' }}>
                                     {{ $y }}</option>

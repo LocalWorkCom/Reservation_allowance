@@ -23,7 +23,7 @@
     <div class="row">
     <div class="container welcome col-11">
     <div class="d-flex justify-content-between">
-        <p>تفاصيل الموظفين للإدارة: {{ $departmentName }}</p>
+        <p>تفاصيل الموظفين للإدارة : <span class="text-info">{{ $departmentName }}</span></p>
         </div>
         </div>
     </div>
