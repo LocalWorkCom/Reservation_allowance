@@ -29,7 +29,7 @@
 <body>
 <img src="{{ asset('img/logo.png') }}" alt="Logo" width="50px"> 
 
-    <h3>تفاصيل الإدارات الفرعية للإدارة الرئيسية: {{ $mainDepartment->name }}</h3>
+    <h3>تفاصيل الإدارات الفرعية للإدارة الرئيسية : <span class="text-info">{{ $mainDepartment->name }}</span></h3>
     <p>الفترة من: {{ $startDate->format('Y-m-d') }} إلى: {{ $endDate->format('Y-m-d') }}</p>
 
     <table>
