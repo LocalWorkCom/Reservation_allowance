@@ -160,7 +160,7 @@
             <li class="nav-item" role="presentation">
                 <button class="nav-link " id="existing-tab" data-bs-toggle="tab" data-bs-target="#existing" type="button"
                     role="tab" aria-controls="existing" aria-selected="false">
-                    <span class="tab-head">موظفين لديهم بدل حجز اليوم </span><span class="text-info">( {{ $employee_not_found ? count($employee_not_found) : 0}} )</span>
+                    <span class="tab-head">موظفين لديهم بدل حجز اليوم </span><span class="text-info">( 0 )</span>
                 </button>
             </li>
 
@@ -226,8 +226,8 @@
                             <td class="text-dark fw-bolder">{{$employee_notdept->grade != null ? $employee_notdept->grade->name : ""}}</td>
                             <td class="text-dark fw-bolder">{{$employee_notdept->name}}</td>
                             <td class="text-dark fw-bolder">{{$employee_notdept->file_number}}</td>
-                            <td class="text-dark fw-bolder">{{$employee_notdept->department_id != null ? $employee_notdept->department->name : ""}}
-                            </td>
+                            <td class="text-dark fw-bolder">{{$employee_notdept->department_id != null ? $employee_notdept->department->name : ""}}</td>
+                            <td class="text-dark fw-bolder"><a href="#">اضف بدل حجز</a></td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -239,7 +239,7 @@
 
             <div class="tab-pane fade" id="existing" role="tabpanel" aria-labelledby="existing-tab">
                 @if($employee_not_dept)
-                <table class="table table-bordered ">
+                <?php /*<table class="table table-bordered ">
                     <thead>
                         <tr >
                             <th style="width:5%">م</th>
@@ -261,7 +261,7 @@
                         </tr>
                         @endforeach
                     </tbody>
-                </table>
+                </table>*/?>
                 @else
                 <h3 class="text-center text-info"> لا يوجد بيانات</h3>
                 @endif

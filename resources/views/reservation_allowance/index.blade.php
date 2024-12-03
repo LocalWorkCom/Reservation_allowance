@@ -98,7 +98,7 @@
                         <!-- <label for="Civil_number" class="w-75"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار الادارة</label> -->
                         <select class="custom-select custom-select-lg select2"
                             name="departement_id" id="departement_id">
-                            <option value="0" selected>اختار الادارة</option>
+                            <option value="0" selected data-name="">اختار الادارة</option>
                         </select>
                     </div>
 
@@ -107,9 +107,9 @@
                         <!-- <label for="Civil_number" class="d-flex "> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>اختار </label> -->
                         <select class="custom-select custom-select-lg select2"
                             name="sector_id" id="sector_id" required>
-                            <option value="0" selected>اختار القطاع</option>
+                            <option value="0" selected data-name="">اختار القطاع</option>
                             @foreach ($sectors as $sector)
-                                <option value="{{ $sector->uuid }}">
+                                <option value="{{ $sector->uuid }}" data-name="{{ $sector->name }}">
                                     {{ $sector->name }}</option>
                             @endforeach
                         </select>
@@ -153,6 +153,11 @@
     <br>
     <div class="row">
         <div class="container col-11 p-4">
+            <div class="d-flex flex-wrap" dir="rtl" style="background-color:transparent;">
+                <h4 id="current_sector"></h4>
+                <h4 id="current_department"></h4>
+            </div>
+
             <div class="d-flex flex-wrap" dir="rtl">
                 <button class="btn-all px-3 mx-2 mb-3 btn-filter"
                     onclick="search_employee_allowances_with_month(1)">يناير
@@ -215,23 +220,28 @@
                         <table id="users-table"
                             class="display table table-responsive-sm  table-bordered table-hover dataTable" dir="rtl">
                             <thead>
-        <!-- First Row: Group Headers -->
-        <tr>
-            <th rowspan="2" style="width:5%">م</th>
-            <th rowspan="2">الرتبة</th>
-            <th rowspan="2">الاسم</th>
-            <th rowspan="2">رقم الملف</th>
-            <th colspan="2">عدد ايام بدل حجز</th>
-            <th rowspan="2">الاجمالى</th>
-        </tr>
+                                <!-- First Row: Group Headers -->
+                                <tr>
+                                    <th rowspan="2" style="width:5%">م</th>
+                                    <th rowspan="2">الرتبة</th>
+                                    <th rowspan="2">الاسم</th>
+                                    <th rowspan="2">رقم الملف</th>
+                                    <th colspan="2">عدد ايام بدل حجز</th>
+                                    <th rowspan="2">الاجمالى</th>
+                                </tr>
 
-        <!-- Second Row: Sub-Headers -->
-        <tr>
-            <th>كلى</th>
-            <th>جزئى</th>
-        </tr>
-    </thead>
+                                <!-- Second Row: Sub-Headers -->
+                                <tr>
+                                    <th>كلى</th>
+                                    <th>جزئى</th>
+                                </tr>
+                            </thead>
                         </table>
+
+                        <p style=" font-weight: bold; font-size: 20px;color: #274373;margin-top: 10px;" class="mx-2">
+                            المجموع الكلي: <span id="total-amount">0.00</span>
+                        </p>
+
                     </div>
                 </div>
             </div>
@@ -248,18 +258,24 @@
             // alert('select');
             // var managerId = $(this).val();
             var sectorid = $(this).val();
-            var department_type = document.getElementById('department_type')
-                .value;
-            var map_url =
-                "{{ route('reservation_allowances.get_departement', ['id', 'type']) }}";
+            var department_type = document.getElementById('department_type').value;
+            var current_sector = document.getElementById('current_sector');
+            var current_sector_data = $(this).find(':selected').data('name');
+            current_sector.innerHTML = current_sector_data;
+            var map_url = "{{ route('reservation_allowances.get_departement', ['id', 'type']) }}";
             map_url = map_url.replace('id', sectorid);
             map_url = map_url.replace('type', department_type);
             $.get(map_url, function(data) {
                 $("#departement_id").html(data);
                 // initDept()
                 $('#departement_id').val(0).trigger('change');
-
             });
+        });
+
+        $(document).on("change", "#departement_id", function() {
+            var current_department = document.getElementById('current_department');
+            var current_department_data = $(this).find(':selected').data('name');
+            current_department.innerHTML = current_department_data;
         });
 
         function initDept() {
@@ -325,6 +341,13 @@
                             d.departement_id = departement_id;
                             d.year = year;
                             d.month = month;
+                        },
+                        dataSrc: function(json) {
+                            if (json.totalAmount) {
+                                $('#total-amount').text(json
+                                    .totalAmount);
+                            }
+                            return json.data || [];
                         }
                     },
                     columns: [{

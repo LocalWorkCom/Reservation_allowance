@@ -677,16 +677,6 @@ class ReservationAllowanceController extends Controller
         }else{
             $month = Carbon::now()->format('m');
         }
-        // if($request->has('sector_id')){
-        //     $sector_id = $request->input('sector_id');
-        // }else{
-        //     $sector_id = 0;
-        // }
-        // if($request->has('departement_id')){
-        //     $departement_id = $request->input('departement_id');
-        // }else{
-        //     $departement_id = 0;
-        // }
 
         //check sector
         if($request->has('sector_id')){
@@ -713,26 +703,6 @@ class ReservationAllowanceController extends Controller
         }else{
             $departement_id = 0;
         }
-
-
-        // $data = ReservationAllowance::Query()->with('users', 'users.grade', 'departements')->whereMonth('date', $month)->whereYear('date', $year);
-        // if($sector_id != 0){
-        //     $data = $data->where('sector_id', $sector_id);
-        // }else{
-        //     if($user->rule_id != 2){
-        //         $data = $data->where('sector_id', $user->sector);
-        //     }
-        // }
-
-        // if($departement_id != 0){
-        //     $data = $data->where('departement_id', $departement_id);
-        // }else{
-        //     if($user->rule_id == 3){
-        //         $data = $data->where('departement_id', $user->department_id);
-        //     }
-        // }
-        // $data = $data->get();
-
 
         if($sector_id != 0){
             $sectorId = $sector_id;
@@ -770,13 +740,12 @@ class ReservationAllowanceController extends Controller
             $query->whereYear('date', $year)
                   ->whereMonth('date', $month);
         })
-        ->with(['grade', 'department'])
+        ->with(['department'])
+        ->with(['grade' => function ($q) {
+            $q->orderBy('type', 'desc');
+            //$q->orderBy('type', 'asc');
+        }])
         ->get();
-        
-        //return $data;
-        //dd($employees);
-
-        
 
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
@@ -793,28 +762,6 @@ class ReservationAllowanceController extends Controller
             ->addColumn('employee_file_num', function ($row) {
                 if($row->file_number == null){return "لا يوجد رقم ملف";}else{return $row->file_number;}
             })
-            /*->addColumn('type', function ($row) {
-                return $row->type;
-            })*/
-            // ->addColumn('employee_allowance_all_btn', function ($row) {
-            //     if($row->type == '1'){
-            //         $btn = '<div class="d-flex" style="justify-content: space-around !important"><div style="display: inline-flex; direction: ltr;"><label for="">  حجز كلى</label><input type="radio" class="form-control" checked disabled></div><span>';
-            //     }else{
-            //         $btn = "";
-            //     }
-            //     return $btn;
-            // })
-            // ->addColumn('employee_allowance_part_btn', function ($row) {
-            //     if($row->type == '2'){
-            //         $btn = '<div style="display: inline-flex; direction: ltr;"><label for="">  حجز جزئى</label><input type="radio"class="form-control" checked disabled></div></div>';
-            //     }else{
-            //         $btn = "";
-            //     }
-            //     return $btn;
-            // })
-            // ->addColumn('employee_allowance_amount', function ($row) {
-            //     return $row->amount.' د.ك ';  // Display the count of iotelegrams
-            // })
             ->addColumn('allowance_all_count_but', function ($user) use ($user_gest ,$sectorId, $departementId, $month, $year) {
                 $allowance_all_count = ReservationAllowance::where('user_id', $user->id)
                     ->whereYear('date', $year)
