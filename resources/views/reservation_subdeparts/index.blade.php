@@ -22,17 +22,18 @@
 <div class="row">
     <div class="container welcome col-11">
         <div class="d-flex justify-content-between ">
-            <p>الإدارات الفرعية للإدارة: {{ $departmentName }}</p>
-            <div>
-                <h3><strong>الشهر:</strong> {{ $month }}</h3>
-                <h3><strong>السنة:</strong> {{ $year }}</h3>
-            </div>
+            <p>الإدارات الفرعية للإدارة: <span class="text-info"> {{ $departmentName }}</span></p>
+           
         </div>
     </div>
 </div>
 
 <div class="row">
     <div class="container col-11 mt-3 p-0 pt-5 pb-4b">
+    <div class="d-flex justify-content-end px-3" >
+                <h4 class="px-2">الشهر: <span class="text-info">{{ $month }}</span></h4>
+                <h4 class="px-2">السنة: <span class="text-info">{{ $year }}</span></h4>
+            </div>
         <div class="bg-white p-4">
         <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
             <thead>
