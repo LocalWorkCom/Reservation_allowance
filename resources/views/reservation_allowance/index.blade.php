@@ -154,51 +154,51 @@
     <div class="row">
         <div class="container col-11 p-4">
             <div class="d-flex flex-wrap" dir="rtl">
-                <button class="btn-all px-3 mx-2 mb-3"
+                <button class="btn-all px-3 mx-2 mb-3 btn-filter"
                     onclick="search_employee_allowances_with_month(1)">يناير
                 </button>
 
-                <button class="btn-all px-3 mx-2 mb-3"
+                <button class="btn-all px-3 mx-2 mb-3 btn-filter"
                     onclick="search_employee_allowances_with_month(2)">فبراير
                 </button>
 
-                <button class="btn-all px-3 mx-2 mb-3"
+                <button class="btn-all px-3 mx-2 mb-3 btn-filter"
                     onclick="search_employee_allowances_with_month(3)">مارس
                 </button>
 
-                <button class="btn-all px-3 mx-2 mb-3"
+                <button class="btn-all px-3 mx-2 mb-3 btn-filter"
                     onclick="search_employee_allowances_with_month(4)">ابريل
                 </button>
 
-                <button class="btn-all px-3 mx-2 mb-3"
+                <button class="btn-all px-3 mx-2 mb-3 btn-filter"
                     onclick="search_employee_allowances_with_month(5)">مايو
                 </button>
 
-                <button class="btn-all px-3 mx-2 mb-3"
+                <button class="btn-all px-3 mx-2 mb-3 btn-filter"
                     onclick="search_employee_allowances_with_month(6)">يونيو
                 </button>
 
-                <button class="btn-all px-3 mx-2 mb-3"
+                <button class="btn-all px-3 mx-2 mb-3 btn-filter"
                     onclick="search_employee_allowances_with_month(7)">يوليو
                 </button>
 
-                <button class="btn-all px-3 mx-2 mb-3"
+                <button class="btn-all px-3 mx-2 mb-3 btn-filter"
                     onclick="search_employee_allowances_with_month(8)">اغسطس
                 </button>
 
-                <button class="btn-all px-3 mx-2 mb-3"
+                <button class="btn-all px-3 mx-2 mb-3 btn-filter"
                     onclick="search_employee_allowances_with_month(9)">سبتمبر
                 </button>
 
-                <button class="btn-all px-3 mx-2 mb-3"
+                <button class="btn-all px-3 mx-2 mb-3 btn-filter"
                     onclick="search_employee_allowances_with_month(10)">اكتوبر
                 </button>
 
-                <button class="btn-all px-3 mx-2 mb-3"
+                <button class="btn-all px-3 mx-2 mb-3 btn-filter"
                     onclick="search_employee_allowances_with_month(11)">نوفمبر
                 </button>
 
-                <button class="btn-all px-3 mx-2 mb-3"
+                <button class="btn-all px-3 mx-2 mb-3 btn-filter"
                     onclick="search_employee_allowances_with_month(12)">ديسمبر
                 </button>
             </div>

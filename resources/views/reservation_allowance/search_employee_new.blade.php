@@ -128,12 +128,13 @@
                         </select>
                     </div>
 
-
+                    @if(Auth::user()->rule_id == 2)
                     <div class="d-flex mx-2">
                         <input class="btn-all" type="date" name="date"
                             id="date" max="{{ $today }}"
                             value="{{ $today }}" required>
                     </div>
+                    @endif
 
                 </div>
         </div>

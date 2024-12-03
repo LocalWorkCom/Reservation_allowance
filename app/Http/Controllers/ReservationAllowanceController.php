@@ -738,7 +738,7 @@ class ReservationAllowanceController extends Controller
             $sectorId = $sector_id;
         }else{
             if($user_gest->rule_id != 2){
-                $sectorId = $user->sector;
+                $sectorId = $user_gest->sector;
             }
         }
 
@@ -746,7 +746,7 @@ class ReservationAllowanceController extends Controller
             $departementId = $departement_id;
         }else{
             if($user_gest->rule_id == 3){
-                $departementId = $user->department_id;
+                $departementId = $user_gest->department_id;
             }
         }
 

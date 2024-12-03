@@ -54,9 +54,14 @@
 القطاعات
 @endsection
 @section('content')
-<div class="row">
-    <div class="container welcome col-11" style="height: auto !important">
-
+<div class="row" dir="rtl">
+    <div class="container col-11" style="background-color:transparent;">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ route('reservation_allowances.search_employee_new') }}">بدل حجز اختيارى</a></li>
+            </ol>
+        </nav>
+        
         @if (session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
@@ -77,6 +82,11 @@
         </div>
         @endif
 
+    </div>
+</div>
+    
+<div class="row">
+    <div class="container welcome col-11" style="height: auto !important">
 
         <div class="d-flex justify-content-between">
             <div class="col-12">

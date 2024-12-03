@@ -4,11 +4,13 @@
     <input type="hidden" name="sector_id" value="{{ $sector_id }}">
     <input type="hidden" name="departement_id" value="{{ $department_id }}">
 
+    @if(Auth::user()->rule_id == 2)
     <div class="form-group col-md-2 mx-2">
         <label for="date"> <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i>
             اختار التاريخ</label>
         <input class="form-control" type="date" name="date" id="date" max="{{$today}}" value="{{$today}}" required>
     </div>
+    @endif
 
     <div class="form-group col-md-12 mx-2">
         <label for="Civil_number"> <i class="fa-solid fa-asterisk"
