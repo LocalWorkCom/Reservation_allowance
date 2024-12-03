@@ -122,7 +122,7 @@
 
                             if (response.success) {
                                 window.location.href =
-                                    '/home'; // Redirect on success (example)
+                                    '/'; // Redirect on success (example)
                             } else {
 
 
