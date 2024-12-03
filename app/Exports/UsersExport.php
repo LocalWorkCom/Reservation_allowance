@@ -3,7 +3,7 @@
 namespace App\Exports;
 
 use App\Models\User;
-use App\Models\Departements; // Ensure to import your Departements model
+use App\Models\departements; // Ensure to import your Departements model
 use App\Models\Rule;
 use App\Models\Sector;
 use App\Models\ViolationTypes;
@@ -26,7 +26,7 @@ class UsersExport implements FromCollection, WithHeadings, WithEvents
     public function __construct()
     {
         // Get the allowed departments and rules from the database
-        $this->allowedDepartments = Departements::pluck('name')->toArray(); // Assuming 'name' is the field you want
+        $this->allowedDepartments = departements::pluck('name')->toArray(); // Assuming 'name' is the field you want
         $this->allowedSectors = Sector::pluck('name')->toArray(); // Assuming 'name' is the field you want
         // $this->allowedRules = Rule::whereNotIn('id', [1, 2])->pluck('name')->toArray(); // Assuming 'name' is the field you want
         // $this->allowedFlag = ['موظف', 'مستخدم'];
