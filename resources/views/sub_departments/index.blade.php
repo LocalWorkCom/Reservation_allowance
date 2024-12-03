@@ -53,21 +53,21 @@
     <div class="row">
         <div class="container welcome col-11">
             <div class="d-flex justify-content-between">
-                <p> الأدارات الفرعيه - {{ $parentDepartment->name }} </p>
+                <p> الأدارات الفرعيه - <span class="text-info">{{ $parentDepartment->name }}</span> </p>
                 <div class="form-group">
                     @if (Auth::user()->rule->id == 3 || Auth::user()->department_id == $parentDepartment->id)
-                        <button type="button" class="wide-btn "
+                        <button type="button" class="btn-all "
                             onclick="window.location.href='{{ route('sub_departments.create', $parentDepartment->uuid) }}'"
                             style="    color: #0D992C;">
                             اضافة جديد
-                            <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+
                         </button>
                     @endif
                     @if (Auth::user()->hasPermission('create Postman'))
-                        <!--   <button type="button" class="wide-btn mx-md-3 mx-1"
+                        <!--   <button type="button" class="btn-all mx-md-3 mx-1"
                         onclick="window.location.href='{{ route('postmans.create') }}'">
                         اضافة مندوب
-                       <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
+                       
                     </button> -->
                     @endif
                 </div>
