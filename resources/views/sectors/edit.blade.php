@@ -368,6 +368,31 @@
         });
     </script>
     <script>
+        document.getElementById('notFree').addEventListener('change', function() {
+            const budgetField = document.getElementById('budgetField');
+            if (this.checked) {
+                budgetField.style.display = 'block'; // Show the budget field for "ميزانيه محدده"
+            }
+        });
+
+        document.getElementById('free').addEventListener('change', function() {
+            const budgetField = document.getElementById('budgetField');
+            if (this.checked) {
+                budgetField.style.display = 'none'; // Hide the budget field for "ميزانيه غير محدده"
+            }
+        });
+
+        // Ensure the correct field is displayed on page load based on the selected radio button
+        window.addEventListener('load', function() {
+            const notFree = document.getElementById('notFree');
+            const free = document.getElementById('free');
+            const budgetField = document.getElementById('budgetField');
+            if (notFree.checked) {
+                budgetField.style.display = 'block';
+            } else if (free.checked) {
+                budgetField.style.display = 'none';
+            }
+        });
         document.addEventListener("DOMContentLoaded", function() {
             const noBookingCheckbox = document.getElementById('noBooking');
             const fullBookingCheckbox = document.getElementById('fullBooking');
