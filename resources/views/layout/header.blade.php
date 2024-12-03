@@ -231,50 +231,23 @@
 </div>
 </div>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Close dropdowns on page load
+document.addEventListener('click', function (event) {
+    const clickedDropdown = event.target.closest('.dropdown-menu, .dropdown-menu4, .dropdown-menu5');
 
-        document.getElementById('dropdownMenu4').style.display = 'none';
-        document.getElementById('dropdownMenu5').style.display = 'none';
-        // Optional: Close dropdowns if they are open on page load
-        function closeDropdowns() {
-            let dropdowns = document.querySelectorAll(
-                ' .dropdown-menu4, .dropdown-menu5');
-            dropdowns.forEach(function(dropdown) {
-                dropdown.style.display = 'none';
-            });
+    // Close all dropdowns if a click occurs anywhere outside or on another dropdown
+    document.querySelectorAll('.dropdown-menu, .dropdown-menu4, .dropdown-menu5').forEach(menu => {
+        if (menu !== clickedDropdown) {
+            menu.classList.remove('show'); // Hide the dropdowns
         }
-        // Attach closeDropdowns function to window events
-        window.addEventListener('load', closeDropdowns);
     });
 
-
-
-
-
-    function toggleDropdown4(event) {
-        var dropdown = document.getElementById('dropdownMenu4');
-        dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
-        event.stopPropagation(); // Prevent closing other dropdowns
+    // If clicked inside a dropdown, toggle its open/close state
+    if (clickedDropdown) {
+        clickedDropdown.classList.toggle('show');
     }
-
-    function toggleDropdown5(event) {
-        var dropdown = document.getElementById('dropdownMenu5');
-        dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
-        event.stopPropagation(); // Prevent closing other dropdowns
-    }
-
-    // Close dropdowns if clicked outside
-    document.addEventListener('click', function(event) {
-        let dropdowns = document.querySelectorAll(
-            '.dropdown-menu4, .dropdown-menu5');
-        dropdowns.forEach(function(dropdown) {
-            if (!dropdown.contains(event.target) && !event.target.closest('.btn')) {
-                dropdown.style.display = 'none';
-            }
-        });
-    });
+});
 </script>
+
 <script>
     $(document).ready(function() {
         $('#search-btn').on('click', function() {

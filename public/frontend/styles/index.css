@@ -1600,9 +1600,10 @@ color: #2A2726;
 .nav-tabs .nav-item .nav-link.active{
     background-color: #e2e2e200;
 }
-.dropdown-menu4, .dropdown-menu5 {
-    display: none; /* Initially hidden */
+
+.dropdown-menu, .dropdown-menu4, .dropdown-menu5 {
+    display: none; /* Hide by default */
 }
-.dropdown-menu4.open, .dropdown-menu5.open {
-    display: block; /* Show when open */
+.dropdown-menu.show, .dropdown-menu4.show, .dropdown-menu5.show {
+    display: block; /* Show when .show is added */
 }
