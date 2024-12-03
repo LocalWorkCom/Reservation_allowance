@@ -250,7 +250,7 @@ class SectorEmployeesDetailsController extends Controller
         ->where('sector_id', $sector->id)
         ->whereYear('created_at', $year)
         ->whereMonth('created_at', $month)
-        ->where('flag', 1) 
+        ->where('flag', '1') 
         ->select('user_id', DB::raw('MAX(created_at) as latest_created_at')) 
         ->groupBy('user_id') 
         ->pluck('user_id');

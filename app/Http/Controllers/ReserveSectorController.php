@@ -64,9 +64,10 @@ class ReserveSectorController extends Controller
                 ->addColumn('reservation_allowance_budget', function ($row) use ($month, $year) {
                     $amount = DB::table('history_allawonces')
                     ->where('sector_id', $row->id)
+                    //where department null
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
-                    ->orderBy('date', 'desc') 
+                    ->orderBy('created_at', 'desc') 
                     ->value('amount'); 
                 
                 if (is_null($amount) || $amount == 0) {
