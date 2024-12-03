@@ -10,6 +10,8 @@
             اختار التاريخ</label>
         <input class="form-control" type="date" name="date" id="date" max="{{$today}}" value="{{$today}}" required>
     </div>
+    @else
+    <input class="form-control" type="hidden" name="date" id="date" value="{{$today}}" required>
     @endif
 
     <div class="form-group col-md-12 mx-2">

@@ -323,7 +323,7 @@ class DepartmentController extends Controller
             })
 
             ->addColumn('num_managers', function ($row) {
-                return User::where('department_id', $row->id)->where('flag', 'employee')
+                return User::where('department_id', $row->id)
                     ->count();
             })
             ->addColumn('num_subdepartment_managers', function ($row) {

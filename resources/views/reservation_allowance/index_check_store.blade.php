@@ -54,9 +54,15 @@
 القطاعات
 @endsection
 @section('content')
-<div class="row">
-    <div class="container welcome col-11" style="height: auto !important">
 
+<div class="row" dir="rtl">
+    <div class="container col-11" style="background-color:transparent;">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ route('reservation_allowances.create.all') }}">بدل حجز بالهويات</a></li>
+            </ol>
+        </nav>
+        
         @if (session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
@@ -77,7 +83,11 @@
         </div>
         @endif
 
+    </div>
+</div>
 
+<div class="row">
+    <div class="container welcome col-11" style="height: auto !important">
         <div class="d-flex justify-content-between">
             <div class="col-12">
                 <div class=" d-flex flex-wrap justify-content-between " style="height: 40px;direction: rtl">
@@ -109,7 +119,7 @@
                 @endif
                 <h5 class="text-dark mx-md-3">التاريخ : <span class="text-info">{{$to_day}}</span></h5>
                 <h5 class="text-dark mx-md-3">القوة : <span class="text-info">{{count($employee_new_add)}}</span></h5>
-                <h5 class="text-dark mx-md-3">التكلفة : <span class="text-info">{{$total_grade_value}}</span></h5>
+                <!-- <h5 class="text-dark mx-md-3">التكلفة : <span class="text-info">{{$total_grade_value}}</span></h5> -->
                 <!-- <h5 class="text-dark">ملاحظات الملف : <span class="text-info">211</span></h5> -->
        
                 <!-- <select class="form-select form-select-lg select2 w-50 mx-3" name="sector_id" id="sector_id" required>
@@ -148,11 +158,19 @@
             </li>
 
             <li class="nav-item" role="presentation">
+                <button class="nav-link " id="existing-tab" data-bs-toggle="tab" data-bs-target="#existing" type="button"
+                    role="tab" aria-controls="existing" aria-selected="false">
+                    <span class="tab-head">موظفين لديهم بدل حجز اليوم </span><span class="text-info">( {{ $employee_not_found ? count($employee_not_found) : 0}} )</span>
+                </button>
+            </li>
+
+            <li class="nav-item" role="presentation">
                 <button class="nav-link " id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
                     role="tab" aria-controls="contact" aria-selected="false">
                     <span class="tab-head">موظفين ارقام الملفات خطأ </span><span class="text-info">( {{ $employee_not_found ? count($employee_not_found) : 0}} )</span>
                 </button>
             </li>
+            
         </ul>
 
         <div class="tab-content mt-3" id="myTabContent">
@@ -187,7 +205,39 @@
                 <h3 class="text-center text-info"> لا يوجد بيانات</h3>
                 @endif
             </div>
+
             <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                @if($employee_not_dept)
+                <table class="table table-bordered ">
+                    <thead>
+                        <tr >
+                            <th style="width:5%">م</th>
+                            <th>الرتبة</th>
+                            <th>الاسم</th>
+                            <th>رقم الملف</th>
+                            <th>الادارة</th>
+                            <th>بدل حجز</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($employee_not_dept as $K_employee_notdept=>$employee_notdept)
+                        <tr class="text-dark">
+                            <td class="text-dark fw-bolder">{{$K_employee_notdept+1}}</td>
+                            <td class="text-dark fw-bolder">{{$employee_notdept->grade != null ? $employee_notdept->grade->name : ""}}</td>
+                            <td class="text-dark fw-bolder">{{$employee_notdept->name}}</td>
+                            <td class="text-dark fw-bolder">{{$employee_notdept->file_number}}</td>
+                            <td class="text-dark fw-bolder">{{$employee_notdept->department_id != null ? $employee_notdept->department->name : ""}}
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                @else
+                <h3 class="text-center text-info"> لا يوجد بيانات</h3>
+                @endif
+            </div>
+
+            <div class="tab-pane fade" id="existing" role="tabpanel" aria-labelledby="existing-tab">
                 @if($employee_not_dept)
                 <table class="table table-bordered ">
                     <thead>
@@ -216,6 +266,7 @@
                 <h3 class="text-center text-info"> لا يوجد بيانات</h3>
                 @endif
             </div>
+
             <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
                 @if($employee_not_found)
                 <table class="table table-bordered ">

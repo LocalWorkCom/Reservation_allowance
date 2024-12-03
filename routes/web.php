@@ -83,7 +83,7 @@ Route::middleware(['auth'])->group(function () {
         return redirect()->back();
     })->name('modal.clearSession');
 
-    Route::get('/home', [HomeController::class, 'index'])->name('home');
+    Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/user-departments/{flag}', [UserController::class, 'index'])->name('user.departments')->middleware('check.permission:view User');
     Route::get('api/users', [UserController::class, 'getUsers'])->name('api.users')->middleware('check.permission:view User');
     Route::get('/users_create', [UserController::class, 'create'])->name('user.create')->middleware('check.permission:create User');

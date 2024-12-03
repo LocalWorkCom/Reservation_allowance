@@ -134,8 +134,9 @@
                             id="date" max="{{ $today }}"
                             value="{{ $today }}" required>
                     </div>
+                    @else
+                    <input class="form-control" type="hidden" name="date" id="date" value="{{$today}}" required>
                     @endif
-
                 </div>
         </div>
         </form>

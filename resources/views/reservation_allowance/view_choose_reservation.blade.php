@@ -192,7 +192,7 @@
             <div class=" col-5 d-flex mb-4  ">
                  <h5 class="text-dark mx-3">التاريخ : <span class="text-info">{{$date}}</span></h5>
                 <h5 class="text-dark mx-3">القوة : <span class="text-info">{{count($get_employee_for_all_reservations) + count($get_employee_for_part_reservations)}}</span></h5>
-                <h5 class="text-dark mx-3">التكلفة : <span class="text-info">{{$reservation_amount_all + $reservation_amount_part}}</span></h5>
+                <!-- <h5 class="text-dark mx-3">التكلفة : <span class="text-info">{{$reservation_amount_all + $reservation_amount_part}}</span></h5> -->
 
                 <!-- <h5 class="text-dark">ملاحظات الملف : <span class="text-info">211</span></h5> -->
             </div>

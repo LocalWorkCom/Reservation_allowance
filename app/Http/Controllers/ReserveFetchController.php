@@ -88,14 +88,16 @@ class ReserveFetchController extends Controller
             ->addColumn('name', fn($row) => optional($row->user)->name ?? 'N/A')
             ->addColumn('department', fn($row) => optional($row->departements)->name ?? 'N/A')
             ->addColumn('sector', fn($row) => optional($row->sector)->name ?? 'N/A')
-            ->addColumn('grade', function ($row) {
-                $latestGrade = UserGrade::where('user_id', $row->user_id)
-                    ->where('created_at', '<=', $row->date)
+            
+            ->addColumn('grade', function ($row)  {
+                $latestUserGrade = UserGrade::where('user_id', $row->user_id)
                     ->orderBy('created_at', 'desc')
                     ->with('grade')
                     ->first();
-    
-                return $latestGrade?->grade?->name ?? 'N/A';
+                 
+                return $latestUserGrade && $latestUserGrade->grade
+                    ? $latestUserGrade->grade->name
+                    : 'N/A';
             })
             ->addColumn('type', fn($row) => $row->type == 1 ? 'حجز كلي' : 'حجز جزئي')
             ->addColumn('amount', fn($row) => number_format($row->amount, 2) . ' د ك')
