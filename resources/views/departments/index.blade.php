@@ -17,11 +17,14 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item "><a href="{{ route('home') }}">الرئيسيه</a></li>
-                <li class="breadcrumb-item"><a
+                {{-- <li class="breadcrumb-item"><a
                         href="{{ route('sectors.index', ['uuid' => $sectors->uuid]) }}">القطاعات</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page"> <a href="">
-                        الادارات الرئيسية</a></li>
+                </li> --}}
+                {{-- <li class="breadcrumb-item active" aria-current="page"> <a href="">
+                        الادارات الرئيسية</a></li> --}}
+                <li class="breadcrumb-item active" aria-current="page"><a href="">
+                        قطاع {{ $sectors->name }}
+                    </a></li>
             </ol>
         </nav>
     </div>
@@ -36,11 +39,10 @@
                         $uuid = Request::segment(2);
                     @endphp
                     @if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2 || Auth::user()->rule->id == 4)
-                        <button type="button" class="wide-btn "
+                        <button type="button" class="btn-all "
                             onclick="window.location.href='{{ route('department.create', $uuid) }}'"
-                            style="    color: #0D992C;">
+                           >
                             اضافة جديد
-                            <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
                         </button>
                     @endif
                     @if (Auth::user()->hasPermission('create Postman'))
@@ -69,7 +71,7 @@
                             class="display table table-responsive-sm table-bordered table-hover dataTable">
                             <thead>
                                 <tr>
-                                    <th>رقم التعريف</th>
+                                    <th>م</th>
                                     <th>الاسم</th>
                                     <th>مدير الادارة</th>
                                     <th>بيانات الدخول</th>

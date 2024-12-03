@@ -40,7 +40,7 @@
                             class="display table table-responsive-sm  table-bordered table-hover dataTable">
                             <thead>
                                 <tr>
-                                    <th>رقم التعريف</th>
+                                    <th>م</th>
                                     <th>الصلاحية</th>
                                     <th>القسم</th>
                                     <th style="width:150px;">العمليات</th>

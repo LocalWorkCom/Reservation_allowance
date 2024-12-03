@@ -169,7 +169,7 @@
 <div class="row " dir="rtl">
     <div class="container col-11 p-4">
         <div class=" d-flex flex-wrap justify-content-between">
-            <div class=" col-12 d-flex mb-4  ">
+            <div class=" col-12 d-flex  flex-wrap mb-4  ">
                 @if($current_sector)
                 <h5 class="text-dark mx-3">القطاع : <span class="text-info">{{$current_sector->name}}</span></h5>
                 @endif

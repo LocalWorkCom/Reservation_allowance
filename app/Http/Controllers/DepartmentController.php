@@ -23,7 +23,7 @@ class DepartmentController extends Controller
         addUuidToTable('departements');
 
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
-            $departments = departements::all();
+            $departments = departements::with('sectors')->get();
             $sectors = Sector::where('uuid', $uuid)->first();
         } elseif (Auth::user()->rule->id == 4) {
             $departments = departements::where('sector_id', auth()->user()->sector)->get();
@@ -402,6 +402,7 @@ class DepartmentController extends Controller
     {
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
+            'name.unique' => 'عفوا هذا الاسم مأخوذ مسبقا',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز لا يمكن أن يكون سالباً.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
@@ -414,7 +415,10 @@ class DepartmentController extends Controller
         ];
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
+            'name' => [
+                'required',
+                'unique:departements,name'
+            ],
             'budget' => 'nullable|numeric|min:0',
             'budget_type' => 'required',
             'part' => 'required',
@@ -502,9 +506,12 @@ class DepartmentController extends Controller
         $departements->reservation_allowance_type = $reservation_allowance_type;
         $departements->created_by = Auth::user()->id;
         $departements->save();
+
+        if ($manager) {
+            addUserHistory($manager->id, $departements->id,  $request->sector);
+        }
         saveHistory($departements->reservation_allowance_amount, $departements->sector_id, $departements->id);
-        UpdateUserHistory($manager->id);
-        addUserHistory($manager->id, $departements->id,  $request->sector);
+        // UpdateUserHistory($manager->id);
 
         if ($request->mangered) {
             $new_user = User::where('file_number', $request->mangered)->first();
@@ -586,6 +593,7 @@ class DepartmentController extends Controller
     {
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
+            'name.unique' => 'عفوا هذا الاسم مأخوذ مسبقا',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز لا يمكن أن يكون سالباً.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
@@ -598,7 +606,10 @@ class DepartmentController extends Controller
         ];
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
+            'name' => [
+                'required',
+                'unique:departements,name'
+            ],
             'budget' => 'nullable|numeric|min:0',
             'budget_type' => 'required',
             'part' => 'required',
@@ -721,8 +732,10 @@ class DepartmentController extends Controller
             }
         }
 
-        UpdateUserHistory($request->mangered);
-        addUserHistory($request->mangered, $departements->id,  $request->sector);
+        if ($manager) {
+            addUserHistory($manager->id, $departements->id,  $request->sector);
+        }
+
         saveHistory($departements->reservation_allowance_amount, $departements->sector_id, $departements->id);
 
         // Handle employee assignment
@@ -804,6 +817,7 @@ class DepartmentController extends Controller
         $department = departements::findOrFail($department->id);
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
+            'name.unique' => 'عفوا هذا الاسم مأخوذ مسبقا',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز لا يمكن أن يكون سالباً.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
@@ -816,7 +830,10 @@ class DepartmentController extends Controller
         ];
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
+            'name' => [
+                'required',
+                Rule::unique('departements', 'name')->ignore($department->id)
+            ],
             'budget' => 'nullable|numeric|min:0',
             'budget_type' => 'required',
             'part' => 'required',
@@ -1065,6 +1082,7 @@ class DepartmentController extends Controller
         // Validation rules and error messages
         $messages = [
             'name.required' => 'اسم الحقل مطلوب.',
+            'name.unique' => 'عفوا هذا الاسم مأخوذ مسبقا',
             'budget.numeric' => 'مبلغ بدل الحجز يجب أن يكون رقمًا.',
             'budget.min' => 'مبلغ بدل الحجز لا يمكن أن يكون سالباً.',
             'part.required' => 'نوع بدل الحجز مطلوب.',
@@ -1076,7 +1094,10 @@ class DepartmentController extends Controller
         ];
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
+            'name' => [
+                'required',
+                Rule::unique('departements', 'name')->ignore($department->id)
+            ],
             'budget' => 'nullable|numeric|min:0',
             'budget_type' => 'required',
             'part' => 'required',
