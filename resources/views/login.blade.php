@@ -6,25 +6,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>شئون القوة - تسجيل الدخول </title>
-    <link rel="stylesheet" href="{{ asset('frontend/styles/bootstrap.min.css') }}" />
-    <link rel="stylesheet" href="{{ asset('frontend/styles/login-styles.css') }}" />
-    <link rel="stylesheet" href="{{ asset('frontend/styles/login-responsive.css') }}" />
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap"
+    <link rel="stylesheet"
+        href="{{ asset('frontend/styles/bootstrap.min.css') }}" />
+    <link rel="stylesheet"
+        href="{{ asset('frontend/styles/login-styles.css') }}" />
+    <link rel="stylesheet"
+        href="{{ asset('frontend/styles/login-responsive.css') }}" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('frontend/images/favicon/apple-touch-icon.png') }}">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="apple-touch-icon" sizes="180x180"
+        href="{{ asset('frontend/images/favicon/apple-touch-icon.png') }}">
     <link rel="icon" type="image/png" sizes="32x32"
         href="{{ asset('frontend/images/favicon/favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16"
         href="{{ asset('frontend/images/favicon/favicon-16x16.png') }}">
-    <link rel="manifest" href="{{ asset('frontend/images/favicon/site.webmanifest') }}">
+    <link rel="manifest"
+        href="{{ asset('frontend/images/favicon/site.webmanifest') }}">
 </head>
 
 <body>
     <div class="container pt-5 pb-5">
         <div class="row col-12 pt-5">
             <div class="col-md-4 col-sm-2">
-                <img src="{{ asset('frontend/images/logo.svg') }}" alt="logo" class="logo">
+                <img src="{{ asset('frontend/images/logo.svg') }}"
+                    alt="logo" class="logo">
             </div>
             <div class="col-md-8 col-sm-12 col-12">
                 <h5 class="login-h5">وزارة الداخلــــــــــــــــــية</h5>
@@ -48,36 +56,46 @@
                     </div>
                 @endif
                 @if (session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
+                    <div class="alert alert-success">{{ session('success') }}
+                    </div>
                 @endif
-                <label for="username" class="login-label">اسم المستخدم</label> <br>
-                <input type="text" name="number" id="username" class="login-input"> <br>
+                <label for="username" class="login-label">اسم المستخدم</label>
+                <br>
+                <input type="text" name="number" id="username"
+                    class="login-input"> <br>
 
                 <div style="display: none;" id="password_div">
 
-                    <label for="password" class="login-label">كلمة المرور</label> <br>
+                    <label for="password" class="login-label">كلمة
+                        المرور</label> <br>
                     <div class="password-container">
-                        <input type="password" name="password" id="password" class="login-input" value="">
-                        <label class="toggle-password" onclick="togglePasswordVisibility()">
+                        <input type="password" name="password" id="password"
+                            class="login-input" value="">
+                        <label class="toggle-password"
+                            onclick="togglePasswordVisibility()">
                             <i id="toggleIcon" class="fa fa-eye"></i>
                         </label>
                     </div>
                 </div>
 
                 <div class="btns">
-                    <button class="btn1" type="submit" id="button_submit"> التالي</button>
+                    <button class="btn1" type="submit" id="button_submit">
+                        التالي</button>
                 </div>
                 {{-- </form> --}}
             </div>
             <div class="col-7 col-md-6">
-                <img src="{{ asset('frontend/images/login.svg') }}" alt="background" class="background">
+                <img src="{{ asset('frontend/images/login.svg') }}"
+                    alt="background" class="background">
             </div>
         </div>
     </div>
     <script src="{{ asset('frontend/js/jquary.js') }}"></script>
 
     <!-- Include JS files -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js">
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script src="{{ asset('frontend/js/bootstrap.min.js') }}"></script>
@@ -97,7 +115,8 @@
         }
         $(document).ready(function() {
             $('#button_submit').click(function(e) {
-                e.preventDefault(); // Prevents the form from submitting normally
+                e
+                    .preventDefault(); // Prevents the form from submitting normally
 
                 // Get the username and password values from the input fields
                 var username = $('#username').val();
@@ -122,7 +141,7 @@
 
                             if (response.success) {
                                 window.location.href =
-                                    '/'; // Redirect on success (example)
+                                    "{{ route('home') }}"; // Redirect on success (example)
                             } else {
 
 
@@ -139,9 +158,11 @@
                             }
 
                         },
-                        error: function(xhr, status, error) {
+                        error: function(xhr, status,
+                            error) {
                             // Handle any errors here
-                            console.error('AJAX Error:', status, error);
+                            console.error('AJAX Error:',
+                                status, error);
                         }
                     });
 
@@ -158,9 +179,11 @@
 
                             // Check if the response is true (username exists)
                             if (response == 1) {
-                                window.location.href = '/set-password/' + username;
+                                window.location.href =
+                                    '/set-password/' +
+                                    username;
 
-                          
+
                             } else {
                                 if (response == -1) {
                                     Swal.fire({
@@ -172,23 +195,26 @@
 
                                     });
                                     $('#password_div')
-                                    .hide(); // Hide password field if username is invalid
+                                        .hide(); // Hide password field if username is invalid
                                 } else {
-                                    console.log(response);
+                                    console.log(
+                                        response);
 
                                     $('#password_div')
                                         .show(); // Show password field if username is valid
-                                  
+
                                 }
-                              
+
 
 
 
                             }
                         },
-                        error: function(xhr, status, error) {
+                        error: function(xhr, status,
+                            error) {
                             // Handle any errors here
-                            console.error('AJAX Error:', status, error);
+                            console.error('AJAX Error:',
+                                status, error);
                         }
                     });
                 }
