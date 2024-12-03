@@ -76,6 +76,9 @@
                         <input type="text" id="name" name="name" class="form-control"
                             value="{{ old('name', $data->name) }}" placeholder="قطاع واحد" required
                             autocomplete="one-time-code" />
+                        @error('name')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
                         <span class="text-danger span-error" id="name-error"></span>
                     </div>
                 </div>
@@ -206,7 +209,7 @@
                         $('#email').val(@json(old('email')));
                     }
 
-                
+
                 } else {
                     $('#manager_details').hide();
                     $('#email_field').hide();
@@ -238,7 +241,7 @@
                     $('#email').val(existingEmail);
                 }
 
-     
+
             } else {
                 $('#manager_details').hide();
                 $('#email_field').hide();

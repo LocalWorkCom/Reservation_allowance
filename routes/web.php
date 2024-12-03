@@ -6,15 +6,12 @@ use App\Http\Controllers\RuleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\pointsController;
-
 use App\Http\Controllers\PostmanController;
 use App\Http\Controllers\regionsController;
 use App\Http\Controllers\sectorsController;
 use App\Http\Controllers\settingController;
 use App\Http\Controllers\outgoingController;
-
 use App\Http\Controllers\SettingsController;
-
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\governmentController;
 use App\Http\Controllers\PermissionController;
@@ -22,7 +19,6 @@ use App\Http\Controllers\dashboard\IoTelegramController;
 use App\Http\Controllers\qualificationController;
 use App\Http\Controllers\statisticController;
 use App\Http\Controllers\ReservationStaticsController;
-use App\Http\Controllers\ReservationStaticsCreditController;
 use App\Http\Controllers\ReserveFetchController;
 use App\Http\Controllers\ReserveSectorController;
 use App\Http\Controllers\SubDepartmentStatsController;
@@ -61,14 +57,14 @@ use App\Http\Controllers\ReservationAllowanceController;
 
 Route::get('/login', function () {
     return view('login');
-});
-Route::post('/login', [UserController::class, 'login'])->name('login');
+})->name('login');
+Route::get('/login-submit', [UserController::class, 'login'])->name('login.submit');
 Route::any('/logout', [UserController::class, 'logout'])->name('logout');
 Route::any('/verfication_code', [UserController::class, 'verfication_code'])->name('verfication_code');
-Route::any('/set-password/{number}', [UserController::class, 'setpasswordManager'])->name('passwordManager');
+Route::get('/set-password/{number}', [UserController::class, 'setpasswordManager'])->name('passwordManager');
 
+Route::get('/check_login', [UserController::class, 'CheckFirstLogin'])->name('check.login');
 
-Route::any('/set-password2/{number}', [UserController::class, 'normalLogin'])->name('normalLogin');
 
 Route::post('/resend_code', [UserController::class, 'resend_code'])->name('resend_code');
 
@@ -82,12 +78,12 @@ Route::any('/reset_password', [UserController::class, 'reset_password'])->name('
 
 //  Auth verfication_code
 Route::middleware(['auth'])->group(function () {
-    Route::get('/clear-modal-session', function() {
+    Route::get('/clear-modal-session', function () {
         session()->forget('modal_type');  // Clear the session variable
         return redirect()->back();
     })->name('modal.clearSession');
 
-    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/user-departments/{flag}', [UserController::class, 'index'])->name('user.departments')->middleware('check.permission:view User');
     Route::get('api/users', [UserController::class, 'getUsers'])->name('api.users')->middleware('check.permission:view User');
     Route::get('/users_create', [UserController::class, 'create'])->name('user.create')->middleware('check.permission:create User');
@@ -101,6 +97,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/edit/{user}', [UserController::class, 'edit'])->name('user.edit')->middleware('check.permission:edit User');
     Route::get('/show/{user}', [UserController::class, 'show'])->name('user.show')->middleware('check.permission:view User');
     Route::post('/update/{user}', [UserController::class, 'update'])->name('user.update')->middleware('check.permission:edit User');
+
     Route::any('/unsigned', [UserController::class, 'unsigned'])->name('user.unsigned');
     Route::any('/get-deprt-sector', [UserController::class, 'GetDepartmentsBySector'])->name('user.department.sector');
     // permission
@@ -291,42 +288,41 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/reservation_allowances/print/{date}/{sector_id}/{departement_id}', [ReservationAllowanceController::class, 'printReport'])->name('reservation_allowances.print')->middleware('check.permission:view ReservationAllowance');
 
     //reserv statics
- Route::group(['middleware' => ['check.permission:statistic ReservationAllowance']], function () {
-    //reservation statics for departments per sector
-    Route::get('/statistics_department/{sector_id}', [ReservationStaticsController::class, 'static'])->name('Reserv_statistic_department.index');
-    Route::get('/statistics_department/getAll/{sector_id}', [ReservationStaticsController::class, 'getAll'])->name('Reserv_statistic.getAll');
-    Route::get('/all-department-employees/{departmentId}', [ReservationStaticsController::class, 'departmentEmployeesPage'])->name('all.department.employees.page');
-    Route::get('/all-department-employees-data/{departmentId}', [ReservationStaticsController::class, 'getDepartmentEmployees'])->name('all.department.employees.data');
-    Route::get('/department-not-received/{departmentId}', [ReservationStaticsController::class, 'notReceivedEmployeesPage'])->name('department.not_received.page');
-    Route::get('/department-not-received-data/{departmentId}', [ReservationStaticsController::class, 'getNotReceivedEmployees'])->name('department.not_received.data');
-    //reservation statics for supdepartmenst per department
-    Route::get('/statistics_subdepartments/{department_id}', [SubDepartmentStatsController::class, 'index'])->name('statistics_subdepartments.index');
-    Route::get('/statistics_subdepartments/getAll/{department_id}', [SubDepartmentStatsController::class, 'getAll'])->name('statistics_subdepartments.getAll');
-    Route::get('/subdepartment-employees/{subDepartmentId}', [SubDepartmentStatsController::class, 'subDepartmentEmployeesPage'])->name('subdepartment.employees.page');
-    Route::get('/subdepartment-employees-data/{subDepartmentId}', [SubDepartmentStatsController::class, 'getSubDepartmentEmployees'])->name('subdepartment.employees.data');
-    Route::get('/subdepartment-not-received/{subDepartmentId}', [SubDepartmentStatsController::class, 'notReceivedEmployeesPage'])->name('subdepartment.not_received.page');
-    Route::get('/subdepartment-not-received-data/{subDepartmentId}', [SubDepartmentStatsController::class, 'getNotReceivedEmployees'])->name('subdepartment.not_received.data');
-    //reservation statics per persons in selected sector
-    Route::get('/sector-employees/{sectorId}', [SectorEmployeesDetailsController::class, 'index'])->name('sectorEmployees.index');
-    Route::get('/sector-employees/data/{sectorId}', [SectorEmployeesDetailsController::class, 'getData'])->name('sectorEmployees.getData');
-    Route::get('/sector/{sectorId}/printReport', [SectorEmployeesDetailsController::class, 'printReport'])->name('sectorEmployees.printReport');
-    Route::get('/sector-employees/{sectorId}/not-reserved', [SectorEmployeesDetailsController::class, 'notReservedUsers'])->name('sector_employees.not_reserved');
-    Route::get('/sector-employees/{sectorId}/not-reserved-data', [SectorEmployeesDetailsController::class, 'getNotReservedData'])->name('sector_employees.not_reserved_data');
-    Route::get('/sector-users/{sectorId}', [SectorEmployeesDetailsController::class, 'sectorUsersPage'])->name('sector.users.page');
-    Route::get('/sector-users-data/{sectorId}', [SectorEmployeesDetailsController::class, 'getSectorUsers'])->name('sector.users.data');
-    Route::get('/employee-allowance-details/{employeeId}', [SectorEmployeesDetailsController::class, 'allowanceDetailsPage'])->name('employee.allowance.details.page');
-    Route::get('/employee-allowance-details-data/{employeeId}', [SectorEmployeesDetailsController::class, 'getAllowanceDetails'])->name('employee.allowance.details.data');
-    //reservation statics per persons in selected department
-    Route::get('/department-employees/{department_id}', [DepartmentEmployeesDetailsController::class, 'index'])->name('department.employees');
-    Route::get('/department-employees/data/{department_id}', [DepartmentEmployeesDetailsController::class, 'getData'])->name('department.employees.getData');
-    Route::get('/employee-allowance-details/{employeeId}', [DepartmentEmployeesDetailsController::class, 'allowanceDetailsPage'])->name('employee.allowance.details.page');
-    Route::get('/employee-allowance-details-data/{employeeId}', [DepartmentEmployeesDetailsController::class, 'getAllowanceDetails'])->name('employee.allowance.details.data');
-       //reservation statics for sectors
-    Route::get('/statistics_sector', [ReserveSectorController::class, 'static'])->name('Reserv_statistic_sector.index');
-    Route::get('/statistics_sector/search', [ReserveSectorController::class, 'getFilteredData'])->name('Reserv_statistic_sector.search');
-    Route::any('/statistics_sector/getAll', [ReserveSectorController::class, 'getAll'])->name('Reserv_statistic_sector.getAll');
-
-});
+    Route::group(['middleware' => ['check.permission:statistic ReservationAllowance']], function () {
+        //reservation statics for departments per sector
+        Route::get('/statistics_department/{sector_id}', [ReservationStaticsController::class, 'static'])->name('Reserv_statistic_department.index');
+        Route::get('/statistics_department/getAll/{sector_id}', [ReservationStaticsController::class, 'getAll'])->name('Reserv_statistic.getAll');
+        Route::get('/all-department-employees/{departmentId}', [ReservationStaticsController::class, 'departmentEmployeesPage'])->name('all.department.employees.page');
+        Route::get('/all-department-employees-data/{departmentId}', [ReservationStaticsController::class, 'getDepartmentEmployees'])->name('all.department.employees.data');
+        Route::get('/department-not-received/{departmentId}', [ReservationStaticsController::class, 'notReceivedEmployeesPage'])->name('department.not_received.page');
+        Route::get('/department-not-received-data/{departmentId}', [ReservationStaticsController::class, 'getNotReceivedEmployees'])->name('department.not_received.data');
+        //reservation statics for supdepartmenst per department
+        Route::get('/statistics_subdepartments/{department_id}', [SubDepartmentStatsController::class, 'index'])->name('statistics_subdepartments.index');
+        Route::get('/statistics_subdepartments/getAll/{department_id}', [SubDepartmentStatsController::class, 'getAll'])->name('statistics_subdepartments.getAll');
+        Route::get('/subdepartment-employees/{subDepartmentId}', [SubDepartmentStatsController::class, 'subDepartmentEmployeesPage'])->name('subdepartment.employees.page');
+        Route::get('/subdepartment-employees-data/{subDepartmentId}', [SubDepartmentStatsController::class, 'getSubDepartmentEmployees'])->name('subdepartment.employees.data');
+        Route::get('/subdepartment-not-received/{subDepartmentId}', [SubDepartmentStatsController::class, 'notReceivedEmployeesPage'])->name('subdepartment.not_received.page');
+        Route::get('/subdepartment-not-received-data/{subDepartmentId}', [SubDepartmentStatsController::class, 'getNotReceivedEmployees'])->name('subdepartment.not_received.data');
+        //reservation statics per persons in selected sector
+        Route::get('/sector-employees/{sectorId}', [SectorEmployeesDetailsController::class, 'index'])->name('sectorEmployees.index');
+        Route::get('/sector-employees/data/{sectorId}', [SectorEmployeesDetailsController::class, 'getData'])->name('sectorEmployees.getData');
+        Route::get('/sector/{sectorId}/printReport', [SectorEmployeesDetailsController::class, 'printReport'])->name('sectorEmployees.printReport');
+        Route::get('/sector-employees/{sectorId}/not-reserved', [SectorEmployeesDetailsController::class, 'notReservedUsers'])->name('sector_employees.not_reserved');
+        Route::get('/sector-employees/{sectorId}/not-reserved-data', [SectorEmployeesDetailsController::class, 'getNotReservedData'])->name('sector_employees.not_reserved_data');
+        Route::get('/sector-users/{sectorId}', [SectorEmployeesDetailsController::class, 'sectorUsersPage'])->name('sector.users.page');
+        Route::get('/sector-users-data/{sectorId}', [SectorEmployeesDetailsController::class, 'getSectorUsers'])->name('sector.users.data');
+        Route::get('/employee-allowance-details/{employeeId}', [SectorEmployeesDetailsController::class, 'allowanceDetailsPage'])->name('employee.allowance.details.page');
+        Route::get('/employee-allowance-details-data/{employeeId}', [SectorEmployeesDetailsController::class, 'getAllowanceDetails'])->name('employee.allowance.details.data');
+        //reservation statics per persons in selected department
+        Route::get('/department-employees/{department_id}', [DepartmentEmployeesDetailsController::class, 'index'])->name('department.employees');
+        Route::get('/department-employees/data/{department_id}', [DepartmentEmployeesDetailsController::class, 'getData'])->name('department.employees.getData');
+        Route::get('/employee-allowance-details/{employeeId}', [DepartmentEmployeesDetailsController::class, 'allowanceDetailsPage'])->name('employee.allowance.details.page');
+        Route::get('/employee-allowance-details-data/{employeeId}', [DepartmentEmployeesDetailsController::class, 'getAllowanceDetails'])->name('employee.allowance.details.data');
+        //reservation statics for sectors
+        Route::get('/statistics_sector', [ReserveSectorController::class, 'static'])->name('Reserv_statistic_sector.index');
+        Route::get('/statistics_sector/search', [ReserveSectorController::class, 'getFilteredData'])->name('Reserv_statistic_sector.search');
+        Route::any('/statistics_sector/getAll', [ReserveSectorController::class, 'getAll'])->name('Reserv_statistic_sector.getAll');
+    });
     Route::get('/get-manager-details/{id}', [DepartmentController::class, 'getManagerDetails']);
     Route::get('/get-manager-sector-details/{id}/{sector}', [sectorsController::class, 'getManagerSectorDetails']);
     Route::get('/get-allowance-sector', [SectorsController::class, 'getAllowance']);
@@ -334,41 +330,40 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/employee_search/getAll', [UserController::class, 'getAll'])->name('employee_search.getAll');
 
     //reserv fetch
-Route::group(['middleware' => ['check.permission:search ReservationAllowance']], function () {
-    Route::get('/reservation_fetch', [ReserveFetchController::class, 'static'])->name('reservation_fetch.index');
-    Route::get('/reservation_fetch/search', [ReserveFetchController::class, 'getFilteredData'])->name('reservation_fetch.search');
-    Route::any('/reservation_fetch/getAll', [ReserveFetchController::class, 'getAll'])->name('reservation_fetch.getAll');
-    Route::get('/reservation_fetch/print', [ReserveFetchController::class, 'printReport'])->name('reservation_fetch.print');
-    Route::any('/reservations/last-month', [ReserveFetchController::class, 'getLastMonth'])->name('reservation_fetch.getLastMonth');
-    Route::any('/reservations/last-three-months', [ReserveFetchController::class, 'getLastThreeMonths'])->name('reservation_fetch.getLastThreeMonths');
-    Route::any('/reservations/last-six-months', [ReserveFetchController::class, 'getLastSixMonths'])->name('reservation_fetch.getLastSixMonths');
-    Route::any('/reservations/last-year', [ReserveFetchController::class, 'getLastYear'])->name('reservation_fetch.getLastYear');
-    Route::any('/reservations/other-dates', [ReserveFetchController::class, 'getCustomDateRange'])->name('reservation_fetch.getCustomDateRange');
-});
+    Route::group(['middleware' => ['check.permission:search ReservationAllowance']], function () {
+        Route::get('/reservation_fetch', [ReserveFetchController::class, 'static'])->name('reservation_fetch.index');
+        Route::get('/reservation_fetch/search', [ReserveFetchController::class, 'getFilteredData'])->name('reservation_fetch.search');
+        Route::any('/reservation_fetch/getAll', [ReserveFetchController::class, 'getAll'])->name('reservation_fetch.getAll');
+        Route::get('/reservation_fetch/print', [ReserveFetchController::class, 'printReport'])->name('reservation_fetch.print');
+        Route::any('/reservations/last-month', [ReserveFetchController::class, 'getLastMonth'])->name('reservation_fetch.getLastMonth');
+        Route::any('/reservations/last-three-months', [ReserveFetchController::class, 'getLastThreeMonths'])->name('reservation_fetch.getLastThreeMonths');
+        Route::any('/reservations/last-six-months', [ReserveFetchController::class, 'getLastSixMonths'])->name('reservation_fetch.getLastSixMonths');
+        Route::any('/reservations/last-year', [ReserveFetchController::class, 'getLastYear'])->name('reservation_fetch.getLastYear');
+        Route::any('/reservations/other-dates', [ReserveFetchController::class, 'getCustomDateRange'])->name('reservation_fetch.getCustomDateRange');
+    });
 
     //reserv reports
-Route::group(['middleware' => ['check.permission:report ReservationAllowance']], function () {
-    Route::get('reservation_report', [ReservationReportController::class, 'index'])->name('reserv_report.index');
-    Route::get('reservation_report/getReportData', [ReservationReportController::class, 'getReportData'])->name('reservation_report.getReportData');
-    Route::get('reservation_report/print', [ReservationReportController::class, 'printReport'])->name('reservation_report.print');
-    Route::get('reservation_report/sector/{sectorId}/details', [ReservationReportController::class, 'showSectorDetails'])->name('reservation_report.sector_details');
-    Route::get('reservation_report/sector/{sectorId}/details_data', [ReservationReportController::class, 'getSectorDetailsData'])->name('reservation_report.sector_details_data');
-    Route::get('reservation_report/sector/{sectorId}/print', [ReservationReportController::class, 'printSectorDetails'])->name('reservation_report.sector_details_print');
-    Route::get('reservation_report/sector/{sectorId}/departments', [ReservationReportController::class, 'showMainDepartmentDetails'])->name('reservation_report.sector_main_departments');
-    Route::get('reservation_report/sector/{sectorId}/departments/print', [ReservationReportController::class, 'printMainDepartmentDetails'])->name('reservation_report.sector_main_departments_print');
-    Route::get('reservation_report/main_department/{departmentId}/sub_departments', [ReservationReportController::class, 'showSubDepartments'])->name('reservation_report.main_department_sub_departments');
-    Route::get('reservation_report/main_department/{departmentId}/sub_departments/print', [ReservationReportController::class, 'printSubDepartmentsDetails'])->name('reservation_report.main_department_sub_departments_print');
-    Route::get('reservation_report/main_department/{departmentId}/employees', [ReservationReportController::class, 'showMainDepartmentEmployees'])->name('reservation_report.main_department_employees');
-    Route::get('reservation_report/main_department/{departmentId}/employees_data', [ReservationReportController::class, 'getMainDepartmentEmployeesData'])->name('reservation_report.main_department_employees_data');
-    Route::get('reservation_report/user/{userId}/details', [ReservationReportController::class, 'showUserDetails'])->name('reservation_report.user_details');
-    Route::get('reservation_report/main_department/{departmentId}/employees/print', [ReservationReportController::class, 'printMainDepartmentEmployees'])->name('reservation_report.main_department_employees_print');
-    Route::get('reservation_report/sub_department/{subDepartmentId}/employees', [ReservationReportController::class, 'showSubDepartmentEmployees'])->name('reservation_report.sub_department_employees');
-    Route::get('reservation_report/sub_department/{subDepartmentId}/employees/print', [ReservationReportController::class, 'printSubDepartmentEmployees'])->name('reservation_report.sub_department_employees_print');
-    Route::get('/reservation_report/user/{userId}/details', [ReservationReportController::class, 'showUserDetails'])->name('reservation_report.user_details');
-    Route::get('/reservation_report/user/{userId}/details_data', [ReservationReportController::class, 'getUserDetailsData'])->name('reservation_report.user_details_data');
-    Route::get('reservation_report/user/{userUuid}/details/print', [ReservationReportController::class, 'printUserDetails'])->name('reservation_report.user_details_print');
-
-});
+    Route::group(['middleware' => ['check.permission:report ReservationAllowance']], function () {
+        Route::get('reservation_report', [ReservationReportController::class, 'index'])->name('reserv_report.index');
+        Route::get('reservation_report/getReportData', [ReservationReportController::class, 'getReportData'])->name('reservation_report.getReportData');
+        Route::get('reservation_report/print', [ReservationReportController::class, 'printReport'])->name('reservation_report.print');
+        Route::get('reservation_report/sector/{sectorId}/details', [ReservationReportController::class, 'showSectorDetails'])->name('reservation_report.sector_details');
+        Route::get('reservation_report/sector/{sectorId}/details_data', [ReservationReportController::class, 'getSectorDetailsData'])->name('reservation_report.sector_details_data');
+        Route::get('reservation_report/sector/{sectorId}/print', [ReservationReportController::class, 'printSectorDetails'])->name('reservation_report.sector_details_print');
+        Route::get('reservation_report/sector/{sectorId}/departments', [ReservationReportController::class, 'showMainDepartmentDetails'])->name('reservation_report.sector_main_departments');
+        Route::get('reservation_report/sector/{sectorId}/departments/print', [ReservationReportController::class, 'printMainDepartmentDetails'])->name('reservation_report.sector_main_departments_print');
+        Route::get('reservation_report/main_department/{departmentId}/sub_departments', [ReservationReportController::class, 'showSubDepartments'])->name('reservation_report.main_department_sub_departments');
+        Route::get('reservation_report/main_department/{departmentId}/sub_departments/print', [ReservationReportController::class, 'printSubDepartmentsDetails'])->name('reservation_report.main_department_sub_departments_print');
+        Route::get('reservation_report/main_department/{departmentId}/employees', [ReservationReportController::class, 'showMainDepartmentEmployees'])->name('reservation_report.main_department_employees');
+        Route::get('reservation_report/main_department/{departmentId}/employees_data', [ReservationReportController::class, 'getMainDepartmentEmployeesData'])->name('reservation_report.main_department_employees_data');
+        Route::get('reservation_report/user/{userId}/details', [ReservationReportController::class, 'showUserDetails'])->name('reservation_report.user_details');
+        Route::get('reservation_report/main_department/{departmentId}/employees/print', [ReservationReportController::class, 'printMainDepartmentEmployees'])->name('reservation_report.main_department_employees_print');
+        Route::get('reservation_report/sub_department/{subDepartmentId}/employees', [ReservationReportController::class, 'showSubDepartmentEmployees'])->name('reservation_report.sub_department_employees');
+        Route::get('reservation_report/sub_department/{subDepartmentId}/employees/print', [ReservationReportController::class, 'printSubDepartmentEmployees'])->name('reservation_report.sub_department_employees_print');
+        Route::get('/reservation_report/user/{userId}/details', [ReservationReportController::class, 'showUserDetails'])->name('reservation_report.user_details');
+        Route::get('/reservation_report/user/{userId}/details_data', [ReservationReportController::class, 'getUserDetailsData'])->name('reservation_report.user_details_data');
+        Route::get('reservation_report/user/{userUuid}/details/print', [ReservationReportController::class, 'printUserDetails'])->name('reservation_report.user_details_print');
+    });
 
 
 
@@ -376,7 +371,5 @@ Route::group(['middleware' => ['check.permission:report ReservationAllowance']],
     Route::post('/import', [UserController::class, 'import'])->name('import');
     Route::get('/export-users', [UserController::class, 'exportUsers'])->name('export-users');
     Route::get('print-users', [UserController::class, 'printUsers'])->name('print-users');
-    Route::get('download-template', [UserController::class, 'downloadTemplate'])->name('download-template');
+    Route::get('download-template', [UserController::class, 'downloadTemplate'])->name('download-template')->middleware('check.permission:download User');
 });
-
-

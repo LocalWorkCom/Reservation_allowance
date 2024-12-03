@@ -173,21 +173,21 @@
                 <div>
                     <div class="mt-4 bg-white">
                         <table id="users-table"
-                            class="display table table-responsive-sm  table-bordered table-hover dataTable"
+                            class="display table table-responsive-sm  table-bordered  dataTable"
                             style="direction:rtl">
                             <thead>
                                 <tr>
                                     <th rowspan="2" style="width:5%">
-                                        <p>م</p>
+                                        <h5>م</h5>
                                     </th>
                                     <th rowspan="2">
-                                        <p>الرتبة</p>
+                                        <h5>الرتبة</h5>
                                     </th>                                    
                                     <th rowspan="2">
-                                        <p>الاسم</p>
+                                        <h5>الاسم</h5>
                                     </th>
                                     <th rowspan="2">
-                                        <p>رقم الملف</p>
+                                        <h5>رقم الملف</h5>
                                     </th>
 
                                     <th colspan="3">بدل الحجز</th>
@@ -258,10 +258,10 @@
                                 @foreach ($employees as $k_employee => $employee)
                                     @php($x++)
                                     <tr>
-                                        <th style="text-align: center;">{{ $x }}</th>
-                                        <th style="text-align: center;">{{ $employee->grade_id != null ? $employee->grade->name : 'لا يوجد رتبة' }}
-                                        <th style="text-align: center;">{{ $employee->name }}</th>
-                                        <th style="text-align: center;">{{ $employee->file_number != null ? $employee->file_number : 'لا يوجد رقم ملف' }}</th>
+                                        <th style="text-align: center;"><h5> {{ $x }}</h5></th>
+                                        <th style="text-align: center;"><h5>{{ $employee->grade_id != null ? $employee->grade->name : 'لا يوجد رتبة' }}</h5> </th>
+                                        <th style="text-align: center;"><h5> {{ $employee->name }}</h5></th>
+                                        <th style="text-align: center;"><h5>{{ $employee->file_number != null ? $employee->file_number : 'لا يوجد رقم ملف' }}</h5> </th>
                                         
                                         @if ($reservation_allowance_type == 1 || $reservation_allowance_type == 3)
                                         <th>
@@ -328,7 +328,7 @@
                     @if ($reservation_allowance_type != 4)
                         @if ($employees)
                         <div>
-                            <a class="btn-blue px-2"
+                            <a class="btn-blue p-2"
                                 href="{{ route('reservation_allowances.view_choose_reservation', [$today, $sectorId, $departementId]) }}">
 
                                 اضف بدل حجز</a>

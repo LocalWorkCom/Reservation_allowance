@@ -26,38 +26,42 @@
     </style>
 </head>
 <body>
-    <!-- Logo and Title -->
     <img src="{{ asset('img/logo.png') }}" alt="Logo" width="50px">
     <h3>تفاصيل الموظفين المحجوزين في الإدارة الرئيسية: {{ $department->name }}</h3>
     <p><strong>الفترة من:</strong> {{ $startDate->format('Y-m-d') }} <strong>إلى:</strong> {{ $endDate->format('Y-m-d') }}</p>
 
-    <!-- Data Table -->
     <table>
         <thead>
             <tr>
-                <th>الترتيب</th>
-                <th>اليوم</th>
-                <th>التاريخ</th>
-                <th>الرتبة</th>
-                <th>اسم الموظف</th>
-                <th>رقم الملف</th>
-               
-                <th>نوع الحجز</th>
-                <th>المبلغ</th>
+                <th rowspan="2">الترتيب</th>
+                <th rowspan="2">الرتبة</th>
+                <th rowspan="2">الاسم</th>
+                <th rowspan="2">رقم الملف</th>
+                <th colspan="3">أيام الحجز</th>
+                <th colspan="3">المبلغ</th>
+            </tr>
+            <tr>
+            <th>كلي </th>
+            <th>جزئي </th>
+            <th>إجمالي </th>
+            <th>بدل الحجز (كلي)</th>
+            <th>بدل الحجز (جزئي)</th>
+            <th>إجمالي بدل الحجز</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($employees as $index => $employee)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $employee['day'] }}</td>
-                    <td>{{ $employee['date'] }}</td>
                     <td>{{ $employee['grade'] }}</td>
                     <td>{{ $employee['name'] }}</td>
                     <td>{{ $employee['file_number'] }}</td>
-                   
-                    <td>{{ $employee['type'] }}</td>
-                    <td>{{ $employee['reservation_amount'] }} د.ك</td>
+                    <td>{{ $employee['full_days'] }}</td>
+                    <td>{{ $employee['partial_days'] }}</td>
+                    <td>{{ $employee['total_days'] }}</td>
+                    <td>{{ $employee['full_allowance'] }} د.ك</td>
+                    <td>{{ $employee['partial_allowance'] }} د.ك</td>
+                    <td>{{ $employee['total_allowance'] }} د.ك</td>
                 </tr>
             @endforeach
         </tbody>

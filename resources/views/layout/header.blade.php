@@ -3,31 +3,32 @@
         <div class="second-section d-flex ">
             <div class="dropdown">
                 @php
-                $user = auth()->user();
+                    $userGrade = auth()->user()->grade->name;
+                    $user = auth()->user();
                 @endphp
 
                 @if (!empty($user))
-                <button class="btn btn-2 mt-3" onclick="toggleDropdown()">
-                    <i class="fa-solid fa-angle-down mx-2"></i>
-                    {{ $user->name }}
-                    <i class="fa-solid fa-user mx-2"></i>
-                </button>
-                <div id="dropdownMenu" class="dropdown-menu ">
-                    <a class="text-danger" href="{{ route('logout') }}">
-                        <h5> خروج تسجيل <i class="fa-solid fa-right-from-bracket"></i></h5>
-                    </a>
-                </div>
+                    <button class="btn btn-2 mt-3" onclick="toggleDropdown()">
+                        <i class="fa-solid fa-angle-down mx-2"></i>
+                        {{ $userGrade }} / {{ $user->name }}
+                        <i class="fa-solid fa-user mx-2"></i>
+                    </button>
+                    <div id="dropdownMenu" class="dropdown-menu ">
+                        <a class="text-danger" href="{{ route('logout') }}">
+                            <h5> خروج تسجيل <i class="fa-solid fa-right-from-bracket"></i></h5>
+                        </a>
+                    </div>
                 @else
-                <button class="btn btn-2 mt-3">
-                    <a href="{{ route('login') }}" style="color: #ffffff; text-decoration:none;">سجل الدخول <i
-                            class="fa-solid fa-user mx-2"></i></a>
-                </button>
+                    <button class="btn btn-2 mt-3">
+                        <a href="{{ route('login') }}" style="color: #ffffff; text-decoration:none;">سجل الدخول <i
+                                class="fa-solid fa-user mx-2"></i></a>
+                    </button>
                 @endif
             </div>
 
         </div>
         <div class="first-section d-flex justify-content-between ">
-            <h2 style="color: #FFFFFF">{{ showUserDepartment() }} -</h2>
+            <h2 style="color: #FFFFFF"> {{ showUserSector() }} - {{ showUserDepartment() }}</h2>
             <h2> شئون القوة</h2>
             <img class="mt-2" src="{{ asset('frontend/images/logo.svg') }}" alt="">
         </div>
@@ -49,17 +50,18 @@
                     onclick="toggleDropdown3(event)">
 
                     @if (Auth::user()->rule_id == 2)
-                    <a href="{{ route('user.employees', ['employee']) }}">
+                        <a href="{{ route('user.employees', ['employee']) }}">
 
-                        <h5 class="btn3"> <img src="{{ asset('frontend/images/division.png') }}" alt="logo">موظفين
-                            الوزارة</h5>
-                    </a>
+                            <h5 class="btn3"> <img src="{{ asset('frontend/images/division.png') }}"
+                                    alt="logo">موظفين
+                                الوزارة</h5>
+                        </a>
                     @endif
                     @if (Auth::user()->rule_id != 2)
-                    <a href="{{ route('user.employees', ['employee']) }}">
-                        <!-- <img src="{{ asset('frontend/images/employees.svg') }}" alt="logo"> -->
-                        <h5 class="btn3">موظفين القوة</h5>
-                    </a>
+                        <a href="{{ route('user.employees', ['employee']) }}">
+                            <!-- <img src="{{ asset('frontend/images/employees.svg') }}" alt="logo"> -->
+                            <h5 class="btn3">موظفين القوة</h5>
+                        </a>
                     @endif
 
 
@@ -69,13 +71,15 @@
                     onclick="toggleDropdown5(event)">
                     <a href="#">
 
-                        <h5 class="btn5"> <img src="{{ asset('frontend/images/reservation.png') }}" alt="logo">بدل حجز
-                            <i class="fa-solid fa-angle-down"></i></h5>
+                        <h5 class="btn5"> <img src="{{ asset('frontend/images/reservation.png') }}"
+                                alt="logo">بدل حجز
+                            <i class="fa-solid fa-angle-down"></i>
+                        </h5>
                     </a>
                     <div id="dropdownMenu5" class="dropdown-menu5">
                         <ul>
                             <div class="row col-12">
-                                <div class="col-6">
+                                <div class="col-md-6 col-sm-12 ">
                                     <li
                                         class="{{ request()->routeIs('reservation_allowances.create') ? 'active' : '' }}">
                                         <img src="{{ asset('frontend/images/police.svg') }}" alt="logo">
@@ -96,27 +100,30 @@
 
 
                                 </div>
-                                <div class="col-6">
+                                <div class="col-md-6 col-sm-12 ">
                                     @if (auth()->check() && in_array(auth()->user()->rule_id, [2, 3, 4]))
-                                    <li class="{{ request()->routeIs('reservation_fetch.index') ? 'active' : '' }}">
-                                        <img src="{{ asset('frontend/images/police.svg') }}" alt="logo">
-                                        <a href="{{ route('reservation_fetch.index') }}">بحث بدل حجز</a>
-                                    </li>
+                                        <li
+                                            class="{{ request()->routeIs('reservation_fetch.index') ? 'active' : '' }}">
+                                            <img src="{{ asset('frontend/images/police.svg') }}" alt="logo">
+                                            <a href="{{ route('reservation_fetch.index') }}">بحث بدل حجز</a>
+                                        </li>
                                     @endif
 
 
                                     @if (auth()->check() && in_array(auth()->user()->rule_id, [2, 4]))
-                                    <li class="{{ request()->routeIs('reservation_fetch.index') ? 'active' : '' }}">
-                                        <img src="{{ asset('frontend/images/police.svg') }}" alt="logo">
-                                        <a href="{{ route('Reserv_statistic_sector.index') }}">احصائيات بدل حجز</a>
-                                    </li>
+                                        <li
+                                            class="{{ request()->routeIs('reservation_fetch.index') ? 'active' : '' }}">
+                                            <img src="{{ asset('frontend/images/police.svg') }}" alt="logo">
+                                            <a href="{{ route('Reserv_statistic_sector.index') }}">احصائيات بدل حجز</a>
+                                        </li>
                                     @endif
 
                                     @if (auth()->check() && in_array(auth()->user()->rule_id, [2, 4]))
-                                    <li class="{{ request()->routeIs('reservation_report.index') ? 'active' : '' }}">
-                                        <img src="{{ asset('frontend/images/police.svg') }}" alt="logo">
-                                        <a href="{{ route('reserv_report.index') }}">تقارير بدل حجز</a>
-                                    </li>
+                                        <li
+                                            class="{{ request()->routeIs('reservation_report.index') ? 'active' : '' }}">
+                                            <img src="{{ asset('frontend/images/police.svg') }}" alt="logo">
+                                            <a href="{{ route('reserv_report.index') }}">تقارير بدل حجز</a>
+                                        </li>
                                     @endif
                                 </div>
                             </div>
@@ -125,95 +132,97 @@
                 </li>
 
                 @if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2 || Auth::user()->rule->id == 4)
-                <li
-                    class="nav-item {{ request()->routeIs('sectors.index') ? 'active' : '' }} @isset($search) @if ($search == 'dept') active @endif @endisset">
-                    <a href="{{ route('sectors.index') }}">
+                    <li
+                        class="nav-item {{ request()->routeIs('sectors.index') ? 'active' : '' }} @isset($search) @if ($search == 'dept') active @endif @endisset">
+                        <a href="{{ route('sectors.index') }}">
 
-                        <h5> <img src="{{ asset('frontend/images/statistics.png') }}" alt="logo">القطاعات</h5>
-                    </a>
-                </li>
-                <li
-                    class="nav-item {{ request()->routeIs('user.departments') ? 'active' : '' }} @isset($search) @if ($search == 'emps') active @endif @endisset">
-                    <a href="{{ route('user.departments', 'user') }}">
-                        <h5> <img src="{{ asset('frontend/images/group.png') }}" alt="logo"> المستخدمين
-                            والصلاحيات</h5>
-                    </a>
-                </li>
+                            <h5> <img src="{{ asset('frontend/images/statistics.png') }}" alt="logo">القطاعات</h5>
+                        </a>
+                    </li>
+                    <li
+                        class="nav-item {{ request()->routeIs('user.departments') ? 'active' : '' }} @isset($search) @if ($search == 'emps') active @endif @endisset">
+                        <a href="{{ route('user.departments', 'user') }}">
+                            <h5> <img src="{{ asset('frontend/images/group.png') }}" alt="logo"> المستخدمين
+                                والصلاحيات</h5>
+                        </a>
+                    </li>
                 @else
-                <li
-                    class="nav-item {{ request()->routeIs('departments.index') ? 'active' : '' }} @isset($search) @if ($search == 'dept') active @endif @endisset">
-                    <a href="{{ route('departments.index', Auth::user()->department->uuid) }}">
-                        <!-- <img src="{{ asset('frontend/images/managements.svg') }}" alt="logo"> -->
-                        <h5>الأدارات</h5>
-                    </a>
-                </li>
+                    <li
+                        class="nav-item {{ request()->routeIs('departments.index') ? 'active' : '' }} @isset($search) @if ($search == 'dept') active @endif @endisset">
+                        <a href="{{ route('departments.index', Auth::user()->department->uuid) }}">
+                            <!-- <img src="{{ asset('frontend/images/managements.svg') }}" alt="logo"> -->
+                            <h5>الأدارات</h5>
+                        </a>
+                    </li>
                 @endif
 
                 @if (Auth::user()->hasPermission('view job') ||
-                Auth::user()->hasPermission('view grade') ||
-                Auth::user()->hasPermission('view Government') ||
-                Auth::user()->hasPermission('view Rule') ||
-                Auth::user()->hasPermission('view Permission'))
-                <li class="nav-item {{ request()->routeIs('grads.index') || request()->routeIs('job.index') || request()->routeIs('qualifications.index') || request()->routeIs('government.all') || request()->routeIs('regions.index') || request()->routeIs('points.index') || request()->routeIs('violations.index') || request()->routeIs('rule.index') || request()->routeIs('permission.index') || request()->routeIs('working_time.index') || request()->routeIs('working_trees.list') || request()->routeIs('absence.index') ? 'active' : '' }}"
-                    onclick="toggleDropdown4(event)">
-                    <a href="#">
-                        <h5 class="btn4"> <img src="{{ asset('frontend/images/settings.png') }}" alt="logo">الإعدادات <i
-                                class="fa-solid fa-angle-down"></i></h5>
-                    </a>
-                    <div id="dropdownMenu4" class="dropdown-menu4">
+                        Auth::user()->hasPermission('view grade') ||
+                        Auth::user()->hasPermission('view Government') ||
+                        Auth::user()->hasPermission('view Rule') ||
+                        Auth::user()->hasPermission('view Permission'))
+                    <li class="nav-item {{ request()->routeIs('grads.index') || request()->routeIs('job.index') || request()->routeIs('qualifications.index') || request()->routeIs('government.all') || request()->routeIs('regions.index') || request()->routeIs('points.index') || request()->routeIs('violations.index') || request()->routeIs('rule.index') || request()->routeIs('permission.index') || request()->routeIs('working_time.index') || request()->routeIs('working_trees.list') || request()->routeIs('absence.index') ? 'active' : '' }}"
+                        onclick="toggleDropdown4(event)">
+                        <a href="#">
+                            <h5 class="btn4"> <img src="{{ asset('frontend/images/settings.png') }}"
+                                    alt="logo">الإعدادات <i class="fa-solid fa-angle-down"></i></h5>
+                        </a>
+                        <div id="dropdownMenu4" class="dropdown-menu4">
 
-                        <ul>
-                            <div class="row col-12">
-                                <div class="col-6">
+                            <ul>
+                                <div class="row col-12">
+                                    <div class="col-6">
 
-                                    @if (Auth::user()->hasPermission('view Setting'))
-                                    <li class="{{ request()->routeIs('settings.index') ? 'active' : '' }}">
-                                        <img src="{{ asset('frontend/images/police.svg') }}" alt="logo">
-                                        <a href="{{ route('settings.index') }}">الاعدادات</a>
-                                    </li>
-                                    @endif
-                                    @if (Auth::user()->hasPermission('view grade'))
-                                    <li class="{{ request()->routeIs('grads.index') ? 'active' : '' }}">
-                                        <img src="{{ asset('frontend/images/police.svg') }}" alt="logo">
-                                        <a href="{{ route('grads.index') }}">الرتب العسكرية</a>
-                                    </li>
-                                    @endif
-                                    @if (Auth::user()->hasPermission('view job'))
-                                    <li class="{{ request()->routeIs('job.index') ? 'active' : '' }}">
-                                        <img src="{{ asset('frontend/images/jobs.svg') }}" alt="logo">
-                                        <a href="{{ route('job.index') }}">المسمى الوظيفى
-                                        </a>
-                                    </li>
-                                    @endif
+                                        @if (Auth::user()->hasPermission('view Setting'))
+                                            <li class="{{ request()->routeIs('settings.index') ? 'active' : '' }}">
+                                                <img src="{{ asset('frontend/images/police.svg') }}" alt="logo">
+                                                <a href="{{ route('settings.index') }}">الاعدادات</a>
+                                            </li>
+                                        @endif
+                                        @if (Auth::user()->hasPermission('view grade'))
+                                            <li class="{{ request()->routeIs('grads.index') ? 'active' : '' }}">
+                                                <img src="{{ asset('frontend/images/police.svg') }}" alt="logo">
+                                                <a href="{{ route('grads.index') }}">الرتب العسكرية</a>
+                                            </li>
+                                        @endif
+                                        @if (Auth::user()->hasPermission('view job'))
+                                            <li class="{{ request()->routeIs('job.index') ? 'active' : '' }}">
+                                                <img src="{{ asset('frontend/images/jobs.svg') }}" alt="logo">
+                                                <a href="{{ route('job.index') }}">المسمى الوظيفى
+                                                </a>
+                                            </li>
+                                        @endif
 
 
-                                </div>
-                                <div class="col-6">
-                                    @if (Auth::user()->hasPermission('view Government'))
-                                    <li class="{{ request()->routeIs('government.all') ? 'active' : '' }}">
-                                        <img src="{{ asset('frontend/images/governorates.svg') }}" alt="logo">
-                                        <a href="{{ route('government.all') }}">المحافظات</a>
-                                    </li>
-                                    @endif
-                                    <li class="{{ request()->routeIs('nationality.index') ? 'active' : '' }}">
-                                        <img src="{{ asset('frontend/images/holidays.svg') }}" alt="logo">
-                                        <a href="{{ route('nationality.index') }}">الدول والجنسيات</a>
-                                    </li>
+                                    </div>
+                                    <div class="col-6">
+                                        @if (Auth::user()->hasPermission('view Government'))
+                                            <li class="{{ request()->routeIs('government.all') ? 'active' : '' }}">
+                                                <img src="{{ asset('frontend/images/governorates.svg') }}"
+                                                    alt="logo">
+                                                <a href="{{ route('government.all') }}">المحافظات</a>
+                                            </li>
+                                        @endif
+                                        <li class="{{ request()->routeIs('nationality.index') ? 'active' : '' }}">
+                                            <img src="{{ asset('frontend/images/holidays.svg') }}" alt="logo">
+                                            <a href="{{ route('nationality.index') }}">الدول والجنسيات</a>
+                                        </li>
 
-                                    @if (Auth::user()->hasPermission('view Rule'))
-                                    <li class="{{ request()->routeIs('rule.index') ? 'active' : '' }}">
-                                        <img src="{{ asset('frontend/images/task.svg') }}" alt="logo">
-                                        <a href="{{ route('rule.index') }}">المهام</a>
-                                    </li>
-                                    @endif
-                                    @if (Auth::user()->hasPermission('view Permission'))
-                                    <li class="{{ request()->routeIs('permission.index') ? 'active' : '' }}">
-                                        <img src="{{ asset('frontend/images/permission.svg') }}" alt="logo">
-                                        <a href="{{ route('permission.index') }}">الصلاحيات</a>
-                                    </li>
-                                    @endif
-                        </ul>
-                    </div>
+                                        @if (Auth::user()->hasPermission('view Rule'))
+                                            <li class="{{ request()->routeIs('rule.index') ? 'active' : '' }}">
+                                                <img src="{{ asset('frontend/images/task.svg') }}" alt="logo">
+                                                <a href="{{ route('rule.index') }}">المهام</a>
+                                            </li>
+                                        @endif
+                                        @if (Auth::user()->hasPermission('view Permission'))
+                                            <li class="{{ request()->routeIs('permission.index') ? 'active' : '' }}">
+                                                <img src="{{ asset('frontend/images/permission.svg') }}"
+                                                    alt="logo">
+                                                <a href="{{ route('permission.index') }}">الصلاحيات</a>
+                                            </li>
+                                        @endif
+                            </ul>
+                        </div>
         </div>
         </li>
         @endif
@@ -222,78 +231,64 @@
 </div>
 </div>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Close dropdowns on page load
-    document.getElementById('dropdownMenu').style.display = 'none';
-    document.getElementById('dropdownMenu2').style.display = 'none';
-    document.getElementById('dropdownMenu4').style.display = 'none';
-    document.getElementById('dropdownMenu5').style.display = 'none';
-    // Optional: Close dropdowns if they are open on page load
-    function closeDropdowns() {
-        let dropdowns = document.querySelectorAll(
-            '.dropdown-menu, .dropdown-menu2, .dropdown-menu4, .dropdown-menu5');
-        dropdowns.forEach(function(dropdown) {
-            dropdown.style.display = 'none';
-        });
+    document.addEventListener('DOMContentLoaded', function() {
+        // Close dropdowns on page load
+
+        document.getElementById('dropdownMenu4').style.display = 'none';
+        document.getElementById('dropdownMenu5').style.display = 'none';
+        // Optional: Close dropdowns if they are open on page load
+        function closeDropdowns() {
+            let dropdowns = document.querySelectorAll(
+                ' .dropdown-menu4, .dropdown-menu5');
+            dropdowns.forEach(function(dropdown) {
+                dropdown.style.display = 'none';
+            });
+        }
+        // Attach closeDropdowns function to window events
+        window.addEventListener('load', closeDropdowns);
+    });
+
+
+
+
+
+    function toggleDropdown4(event) {
+        var dropdown = document.getElementById('dropdownMenu4');
+        dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+        event.stopPropagation(); // Prevent closing other dropdowns
     }
-    // Attach closeDropdowns function to window events
-    window.addEventListener('load', closeDropdowns);
-});
+
+    function toggleDropdown5(event) {
+        var dropdown = document.getElementById('dropdownMenu5');
+        dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+        event.stopPropagation(); // Prevent closing other dropdowns
+    }
+
+    // Close dropdowns if clicked outside
+    document.addEventListener('click', function(event) {
+        let dropdowns = document.querySelectorAll(
+            '.dropdown-menu4, .dropdown-menu5');
+        dropdowns.forEach(function(dropdown) {
+            if (!dropdown.contains(event.target) && !event.target.closest('.btn')) {
+                dropdown.style.display = 'none';
+            }
+        });
+    });
 </script>
 <script>
-function toggleDropdown() {
-    var dropdown = document.getElementById('dropdownMenu');
-    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
-}
-
-function toggleDropdown2() {
-    var dropdown = document.getElementById('dropdownMenu2');
-    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
-}
-
-function toggleDropdown3(event) {
-    var dropdown = document.getElementById('dropdownMenu3');
-    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
-    event.stopPropagation(); // Prevent closing other dropdowns
-}
-
-function toggleDropdown4(event) {
-    var dropdown = document.getElementById('dropdownMenu4');
-    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
-    event.stopPropagation(); // Prevent closing other dropdowns
-}
-
-function toggleDropdown5(event) {
-    var dropdown = document.getElementById('dropdownMenu5');
-    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
-    event.stopPropagation(); // Prevent closing other dropdowns
-}
-
-// Close dropdowns if clicked outside
-document.addEventListener('click', function(event) {
-    let dropdowns = document.querySelectorAll(
-        '.dropdown-menu, .dropdown-menu2, .dropdown-menu4, .dropdown-menu5');
-    dropdowns.forEach(function(dropdown) {
-        if (!dropdown.contains(event.target) && !event.target.closest('.btn')) {
-            dropdown.style.display = 'none';
-        }
+    $(document).ready(function() {
+        $('#search-btn').on('click', function() {
+            var query = $('#q').val();
+            var search = $('#search').val();
+            console.log(query);
+            // Perform an AJAX request to search
+            document.location = "{{ url('search') }}/" + search + "/" + query;
+        });
+        // Optional: Trigger search on 'Enter' key press
+        $('#q').on('keypress', function(e) {
+            if (e.which === 13) { // 13 is the Enter key code
+                $('#search-btn').click();
+            }
+        });
     });
-});
-</script>
-<script>
-$(document).ready(function() {
-    $('#search-btn').on('click', function() {
-        var query = $('#q').val();
-        var search = $('#search').val();
-        console.log(query);
-        // Perform an AJAX request to search
-        document.location = "{{ url('search') }}/" + search + "/" + query;
-    });
-    // Optional: Trigger search on 'Enter' key press
-    $('#q').on('keypress', function(e) {
-        if (e.which === 13) { // 13 is the Enter key code
-            $('#search-btn').click();
-        }
-    });
-});
 </script>

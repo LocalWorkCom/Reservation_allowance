@@ -193,14 +193,14 @@
                             الكل ({{ $all }})
                         </button>
                         <button class="btn-all px-3 mx-2 btn-filter" data-filter="Officer" style="color: #274373;">
-                            رتب الضباط ({{ $Officer }})
+                             الضباط ({{ $Officer }})
                         </button>
                         <button class="btn-all px-3 mx-2 btn-filter" data-filter="Officer2" style="color: #274373;">
-                            رتب المهنيين ({{ $Officer2 }})
+                             المهنيين ({{ $Officer2 }})
                         </button>
 
                         <button class="btn-all px-3 mx-2 btn-filter" data-filter="person" style="color: #274373;">
-                            رتب الأفراد ({{ $person }})
+                             الأفراد ({{ $person }})
                         </button>
                     </div>
                 </div>
@@ -211,7 +211,7 @@
                             <th>الرتبه</th>
                             <th>الاسم</th>
                             <th>رقم الملف</th>
-                            <th>الرقم المدني</th>
+                            {{-- <th>الرقم المدني</th> --}}
                             <th>الهاتف</th>
                             <th>الادارة</th>
                             <th>القطاع</th>
@@ -326,10 +326,10 @@
                                     data: 'file_number',
                                     name: 'file_number'
                                 },
-                                {
-                                    data: 'Civil_number',
-                                    name: 'Civil_number'
-                                },
+                                // {
+                                //     data: 'Civil_number',
+                                //     name: 'Civil_number'
+                                // },
                                 {
                                     data: 'phone',
                                     name: 'phone'
@@ -367,8 +367,8 @@
                                     var canEdit = `<?php echo Auth::user()->hasPermission('edit User') ? 'd-block-inline' : 'd-none'; ?>`;
                                     var canShow = `<?php echo Auth::user()->hasPermission('view User') ? 'd-block-inline' : 'd-none'; ?>`;
                                     return `
-    <select class="form-select form-select-sm btn-action" 
-            onchange="handleAction(this.value, '${row.uuid}', '${usershow}', '${useredit}')" 
+    <select class="form-select form-select-sm btn-action"
+            onchange="handleAction(this.value, '${row.uuid}', '${usershow}', '${useredit}')"
             aria-label="Actions" style="width: auto;">
         <option value="" class="text-center" style="color: gray;" selected disabled>الخيارات</option>
         <option value="show" class="text-center ${canShow}" data-url="${usershow}" style="color: #274373;">عرض</option>

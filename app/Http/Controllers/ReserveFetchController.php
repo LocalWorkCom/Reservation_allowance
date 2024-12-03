@@ -7,6 +7,7 @@ use App\Models\ReservationAllowance;
 use App\Models\User;
 use App\Models\departements;
 use App\Models\grade;
+use App\Models\UserGrade;
 use App\Models\Sector;
 use TCPDF;
 use Carbon\Carbon;
@@ -80,20 +81,27 @@ class ReserveFetchController extends Controller
     
 
     private function addCommonColumns($dataTable)
-{
-    return $dataTable
-        ->addColumn('day', fn($row) => Carbon::parse($row->date)->translatedFormat('l'))
-        ->addColumn('date', fn($row) => Carbon::parse($row->date)->format('Y-m-d'))
-        ->addColumn('name', fn($row) => optional($row->user)->name ?? 'N/A')
-        ->addColumn('department', fn($row) => optional($row->departements)->name ?? 'N/A')
-        ->addColumn('sector', fn($row) => optional($row->sector)->name ?? 'N/A')
-        ->addColumn('grade', function ($row) {
-            return grade::find($row->grade_id)?->name ?? 'N/A';
-        })
-        ->addColumn('type', fn($row) => $row->type == 1 ? 'حجز كلي' : 'حجز جزئي')
-        ->addColumn('amount', fn($row) => number_format($row->amount, 2) . ' د ك')
-        ->addIndexColumn();
-}
+    {
+        return $dataTable
+            ->addColumn('day', fn($row) => Carbon::parse($row->date)->translatedFormat('l'))
+            ->addColumn('date', fn($row) => Carbon::parse($row->date)->format('Y-m-d'))
+            ->addColumn('name', fn($row) => optional($row->user)->name ?? 'N/A')
+            ->addColumn('department', fn($row) => optional($row->departements)->name ?? 'N/A')
+            ->addColumn('sector', fn($row) => optional($row->sector)->name ?? 'N/A')
+            ->addColumn('grade', function ($row) {
+                $latestGrade = UserGrade::where('user_id', $row->user_id)
+                    ->where('created_at', '<=', $row->date)
+                    ->orderBy('created_at', 'desc')
+                    ->with('grade')
+                    ->first();
+    
+                return $latestGrade?->grade?->name ?? 'N/A';
+            })
+            ->addColumn('type', fn($row) => $row->type == 1 ? 'حجز كلي' : 'حجز جزئي')
+            ->addColumn('amount', fn($row) => number_format($row->amount, 2) . ' د ك')
+            ->addIndexColumn();
+    }
+    
 
 
     private function fetchReservations($userId, $startDate, $endDate)
@@ -105,7 +113,7 @@ class ReserveFetchController extends Controller
 
     private function handleReservationData($employee, $reservations)
     {
-        $totalAmount = $reservations->sum('amount'); // Calculate directly from $reservations
+        $totalAmount = $reservations->sum('amount'); 
         return $this->addCommonColumns(DataTables::of($reservations))
             ->with([
                 'totalAmount' => number_format($totalAmount, 2) . ' د ك',
@@ -208,39 +216,45 @@ class ReserveFetchController extends Controller
     }
 
     public function printReport(Request $request)
-    {
-        $user = $this->fetchUser($request->input('file_number')); 
-        if (!$user || !$this->canAccessEmployeeData(Auth::user(), $user)) {
-            return redirect()->back()->with('error', 'No user found with this File Number');
-        }
-    
-        // Fetch reservations
-        $reservations = ReservationAllowance::where('user_id', $user->id)->with('departements')->get();
-        $totalAmount = $reservations->sum(function ($item) {
-            return (float) $item->amount; // Ensure amount is treated as float
-        });
-        
-        $data = [
-            'reservations' => $reservations,
-            'user' => $user,
-            'sector' => Sector::find($user->sector)->name ?? 'N/A',
-            'department' => departements::find($user->department_id)->name ?? 'N/A',
-            'grade' => grade::find($user->grade_id)->name ?? 'N/A',
-            'totalAmount' => number_format((float) $totalAmount, 2) . ' د ك',
-            'totalFullReservation' => number_format(
-                (float) $reservations->where('type', 1)->sum('amount'), 
-                2
-            ) . ' د ك',
-            'totalPartialReservation' => number_format(
-                (float) $reservations->where('type', 2)->sum('amount'), 
-                2
-            ) . ' د ك',
-        ];
-    
-        // Generate PDF
-        $pdf = $this->generatePDF($data);
-        return $pdf->Output('reservation_report.pdf', 'I');
+{
+    $user = $this->fetchUser($request->input('file_number'));
+    if (!$user || !$this->canAccessEmployeeData(Auth::user(), $user)) {
+        return redirect()->back()->with('error', 'No user found with this File Number');
     }
+
+    // Fetch reservations with related departments
+    $reservations = ReservationAllowance::where('user_id', $user->id)
+        ->with('departements')
+        ->get();
+
+    // Total calculations
+    $totalAmount = $reservations->sum(fn($item) => (float) $item->amount);
+    $totalFullReservation = $reservations->where('type', 1)->sum(fn($item) => (float) $item->amount);
+    $totalPartialReservation = $reservations->where('type', 2)->sum(fn($item) => (float) $item->amount);
+
+    // Fetch the latest grade based on reservation dates
+    $latestGrade = UserGrade::where('user_id', $user->id)
+        ->where('created_at', '<=', $reservations->max('date')) 
+        ->orderBy('created_at', 'desc')
+        ->with('grade')
+        ->first();
+
+    $data = [
+        'reservations' => $reservations,
+        'user' => $user,
+        'sector' => Sector::find($user->sector)->name ?? 'N/A',
+        'department' => departements::find($user->department_id)->name ?? 'N/A',
+        'grade' => $latestGrade?->grade?->name ?? 'N/A', 
+        'totalAmount' => number_format((float) $totalAmount, 2) . ' د ك',
+        'totalFullReservation' => number_format((float) $totalFullReservation, 2) . ' د ك',
+        'totalPartialReservation' => number_format((float) $totalPartialReservation, 2) . ' د ك',
+    ];
+
+    // Generate PDF
+    $pdf = $this->generatePDF($data);
+    return $pdf->Output('reservation_report.pdf', 'I');
+}
+
     
 
     

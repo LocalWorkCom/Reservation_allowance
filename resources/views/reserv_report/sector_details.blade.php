@@ -41,17 +41,13 @@
             <th rowspan="2">الاسم</th>
             <th rowspan="2">رقم الملف</th>
             <th rowspan="2">الإدارة</th>
-
             <th colspan="3"> ايام الحجز </th>
-           
             <th colspan="3"> المبلغ </th>
-           
         </tr>
         <tr>
-         
-            <th>أيام كاملة</th>
-            <th>أيام جزئية</th>
-            <th>إجمالي الأيام</th>
+        <th>كلي </th>
+            <th>جزئي </th>
+            <th>إجمالي </th>
             <th>بدل الحجز (كلي)</th>
             <th>بدل الحجز (جزئي)</th>
             <th>إجمالي بدل الحجز</th>
@@ -111,15 +107,16 @@
                 // }
 
                 { data: 'full_days', name: 'full_days',
-                    render: function(data, type, row) {
-                        return `<a href="/reservation_report/user/${row.uuid}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="    color: #2f6289 !important;
-    text-decoration: underline !important">${data}</a>`;
-                    } },
+    //                 render: function(data, type, row) {
+    //                     return `<a href="/reservation_report/user/${row.uuid}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="    color: #2f6289 !important;
+    // text-decoration: underline !important">${data}</a>`;
+    //                 } 
+                },
                 { data: 'partial_days', name: 'partial_days',
-                    render: function(data, type, row) {
-                        return `<a href="/reservation_report/user/${row.uuid}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="    color: #2f6289 !important;
-    text-decoration: underline !important">${data}</a>`;
-                    }
+    //                 render: function(data, type, row) {
+    //                     return `<a href="/reservation_report/user/${row.uuid}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="    color: #2f6289 !important;
+    // text-decoration: underline !important">${data}</a>`;
+    //                 }
                  },
                 { data: 'total_days', name: 'total_days',
                     render: function(data, type, row) {
@@ -128,16 +125,16 @@
                     }
                  },
                 { data: 'full_allowance', name: 'full_allowance',
-                    render: function(data, type, row) {
-                        return `<a href="/reservation_report/user/${row.uuid}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="    color: #2f6289 !important;
-    text-decoration: underline !important">${data}</a>`;
-                    }
+    //                 render: function(data, type, row) {
+    //                     return `<a href="/reservation_report/user/${row.uuid}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="    color: #2f6289 !important;
+    // text-decoration: underline !important">${data}</a>`;
+    //                 }
                  },
                 { data: 'partial_allowance', name: 'partial_allowance',
-                    render: function(data, type, row) {
-                        return `<a href="/reservation_report/user/${row.uuid}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="    color: #2f6289 !important;
-    text-decoration: underline !important">${data}</a>`;
-                    }
+    //                 render: function(data, type, row) {
+    //                     return `<a href="/reservation_report/user/${row.uuid}/details?start_date={{ $startDate->format('Y-m-d') }}&end_date={{ $endDate->format('Y-m-d') }}" style="    color: #2f6289 !important;
+    // text-decoration: underline !important">${data}</a>`;
+    //                 }
                  },
                 { data: 'total_allowance', name: 'total_allowance',
                     render: function(data, type, row) {

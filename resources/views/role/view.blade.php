@@ -38,7 +38,7 @@
                             class="display table table-responsive-sm  table-bordered table-hover dataTable">
                             <thead>
                                 <tr>
-                                    <th>رقم التعريف</th>
+                                    <th>م</th>
                                     <th>الاسم</th>
                                     <th>الصلاحيات</th>
                                     <th>القسم</th>

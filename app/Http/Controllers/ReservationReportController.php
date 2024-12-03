@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Models\grade;
 use App\Models\Sector;
+use App\Models\UserGrade;
 use Illuminate\Support\Facades\Log;
 
 class ReservationReportController extends Controller
@@ -292,126 +293,147 @@ class ReservationReportController extends Controller
     
 
     public function getSectorDetailsData(Request $request, $sectorId)
-{
-    $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
-    $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
-
-    $sector = Sector::where('uuid', $sectorId)->first();
-    if (!$sector) {
-        return response()->json(['error' => 'Sector not found'], 404);
-    }
-
-    $employees = User::whereIn('id', function ($query) use ($sector, $startDate, $endDate) {
-            $query->select('user_id')
-                ->from('reservation_allowances')
-                ->where('sector_id', $sector->id)
-                ->whereBetween('date', [$startDate, $endDate]);
-        })
-        ->with(['grade', 'department'])
-        ->get();
-
-    return DataTables::of($employees)
-        ->addIndexColumn()
-        ->addColumn('file_number', fn($user) => $user->file_number)
-        ->addColumn('name', fn($user) => $user->name)
-        ->addColumn('grade', fn($user) => $user->grade->name ?? 'N/A')
-        ->addColumn('department', fn($user) => $user->department->name ?? 'N/A')
-        ->addColumn('full_days', function ($user) use ($sector, $startDate, $endDate) {
-            return ReservationAllowance::where('user_id', $user->id)
-                ->where('sector_id', $sector->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->where('type', 1)
-                ->count();
-        })
-        ->addColumn('partial_days', function ($user) use ($sector, $startDate, $endDate) {
-            return ReservationAllowance::where('user_id', $user->id)
-                ->where('sector_id', $sector->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->where('type', 2)
-                ->count();
-        })
-        ->addColumn('total_days', function ($user) use ($sector, $startDate, $endDate) {
-            $fullDays = ReservationAllowance::where('user_id', $user->id)
-                ->where('sector_id', $sector->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->where('type', 1)
-                ->count();
-            $partialDays = ReservationAllowance::where('user_id', $user->id)
-                ->where('sector_id', $sector->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->where('type', 2)
-                ->count();
-
-            return $fullDays + $partialDays;
-        })
-        ->addColumn('full_allowance', function ($user) use ($sector, $startDate, $endDate) {
-            return ReservationAllowance::where('user_id', $user->id)
-                ->where('sector_id', $sector->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->where('type', 1)
-                ->sum('amount');
-        })
-        ->addColumn('partial_allowance', function ($user) use ($sector, $startDate, $endDate) {
-            return ReservationAllowance::where('user_id', $user->id)
-                ->where('sector_id', $sector->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->where('type', 2)
-                ->sum('amount');
-        })
-        ->addColumn('total_allowance', function ($user) use ($sector, $startDate, $endDate) {
-            $fullAllowance = ReservationAllowance::where('user_id', $user->id)
-                ->where('sector_id', $sector->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->where('type', 1)
-                ->sum('amount');
-
-            $partialAllowance = ReservationAllowance::where('user_id', $user->id)
-                ->where('sector_id', $sector->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->where('type', 2)
-                ->sum('amount');
-
-            return $fullAllowance + $partialAllowance;
-        })
-        ->make(true);
-}
-
+    {
+        $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
+        $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
     
-
-
-    public function printSectorDetails(Request $request, $sectorId)
-{
-    $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
-    $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
-
-    $sector = Sector::where('uuid', $sectorId)->first();
+        $sector = Sector::where('uuid', $sectorId)->first();
         if (!$sector) {
             return response()->json(['error' => 'Sector not found'], 404);
         }
+    
+        $employees = User::whereIn('id', function ($query) use ($sector, $startDate, $endDate) {
+                $query->select('user_id')
+                    ->from('reservation_allowances')
+                    ->where('sector_id', $sector->id)
+                    ->whereBetween('date', [$startDate, $endDate]);
+            })
+            ->with(['department'])
+            ->get();
+    
+        return DataTables::of($employees)
+            ->addIndexColumn()
+            ->addColumn('file_number', fn($user) => $user->file_number)
+            ->addColumn('name', fn($user) => $user->name)
+            ->addColumn('grade', function ($user) use ($startDate, $endDate) {
+                $latestGrade = UserGrade::where('user_id', $user->id)
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->orderBy('created_at', 'desc')
+                    ->with('grade') 
+                    ->first();
+    
+                return $latestGrade?->grade?->name ?? 'N/A'; 
+            })
+            ->addColumn('department', fn($user) => $user->department->name ?? 'N/A')
+            ->addColumn('full_days', function ($user) use ($sector, $startDate, $endDate) {
+                return ReservationAllowance::where('user_id', $user->id)
+                    ->where('sector_id', $sector->id)
+                    ->whereBetween('date', [$startDate, $endDate])
+                    ->where('type', 1)
+                    ->count();
+            })
+            ->addColumn('partial_days', function ($user) use ($sector, $startDate, $endDate) {
+                return ReservationAllowance::where('user_id', $user->id)
+                    ->where('sector_id', $sector->id)
+                    ->whereBetween('date', [$startDate, $endDate])
+                    ->where('type', 2)
+                    ->count();
+            })
+            ->addColumn('total_days', function ($user) use ($sector, $startDate, $endDate) {
+                $fullDays = ReservationAllowance::where('user_id', $user->id)
+                    ->where('sector_id', $sector->id)
+                    ->whereBetween('date', [$startDate, $endDate])
+                    ->where('type', 1)
+                    ->count();
+                $partialDays = ReservationAllowance::where('user_id', $user->id)
+                    ->where('sector_id', $sector->id)
+                    ->whereBetween('date', [$startDate, $endDate])
+                    ->where('type', 2)
+                    ->count();
+    
+                return $fullDays + $partialDays;
+            })
+            ->addColumn('full_allowance', function ($user) use ($sector, $startDate, $endDate) {
+                return ReservationAllowance::where('user_id', $user->id)
+                    ->where('sector_id', $sector->id)
+                    ->whereBetween('date', [$startDate, $endDate])
+                    ->where('type', 1)
+                    ->sum('amount');
+            })
+            ->addColumn('partial_allowance', function ($user) use ($sector, $startDate, $endDate) {
+                return ReservationAllowance::where('user_id', $user->id)
+                    ->where('sector_id', $sector->id)
+                    ->whereBetween('date', [$startDate, $endDate])
+                    ->where('type', 2)
+                    ->sum('amount');
+            })
+            ->addColumn('total_allowance', function ($user) use ($sector, $startDate, $endDate) {
+                $fullAllowance = ReservationAllowance::where('user_id', $user->id)
+                    ->where('sector_id', $sector->id)
+                    ->whereBetween('date', [$startDate, $endDate])
+                    ->where('type', 1)
+                    ->sum('amount');
+    
+                $partialAllowance = ReservationAllowance::where('user_id', $user->id)
+                    ->where('sector_id', $sector->id)
+                    ->whereBetween('date', [$startDate, $endDate])
+                    ->where('type', 2)
+                    ->sum('amount');
+    
+                return $fullAllowance + $partialAllowance;
+            })
+            ->make(true);
+    }
+    
+    
 
-    $reservations = ReservationAllowance::where('sector_id', $sector->id)
-        ->whereBetween('date', [$startDate, $endDate])
-        ->with(['user.grade', 'user.department'])
-        ->get()
-        ->sortBy(function ($reservation) {
-            return optional($reservation->user->grade)->name; 
-        });
-
-    // Prepare the PDF data
-    $pdf = new TCPDF();
-    $pdf->SetCreator('Your App');
-    $pdf->SetTitle("تفاصيل بدل حجز لموظفي قطاع {$sector->name}");
-    $pdf->AddPage();
-    $pdf->setRTL(true);
-    $pdf->SetFont('dejavusans', '', 12);
-
-    // Pass the data to a Blade view and render it as HTML for the PDF
-    $html = view('reserv_report.sector_details_pdf', compact('reservations', 'sector', 'startDate', 'endDate'))->render();
-    $pdf->writeHTML($html, true, false, true, false, '');
-
-    return $pdf->Output("sector_details_report_{$sector->name}.pdf", 'I');
-}
-
+    public function printSectorDetails(Request $request, $sectorId)
+    {
+        $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
+        $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
+    
+        $sector = Sector::where('uuid', $sectorId)->first();
+        if (!$sector) {
+            return response()->json(['error' => 'Sector not found'], 404);
+        }
+    
+        $reservations = ReservationAllowance::where('sector_id', $sector->id)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->with(['user.department'])
+            ->get()
+            ->map(function ($reservation) use ($startDate, $endDate) {
+                $latestGrade = UserGrade::where('user_id', $reservation->user_id)
+                    ->where('created_at', '<=', $endDate)
+                    ->orderBy('created_at', 'desc')
+                    ->with('grade')
+                    ->first();
+    
+                return [
+                    'day' => \Carbon\Carbon::parse($reservation->date)->translatedFormat('l'),
+                    'date' => \Carbon\Carbon::parse($reservation->date)->format('Y-m-d'),
+                    'name' => $reservation->user->name ?? 'N/A',
+                    'file_number' => $reservation->user->file_number ?? 'N/A',
+                    'grade' => $latestGrade?->grade?->name ?? 'N/A',
+                    'department' => $reservation->user->department->name ?? 'N/A',
+                    'type' => $reservation->type == 1 ? 'حجز كلي' : 'حجز جزئي',
+                    'reservation_amount' => number_format($reservation->amount, 2),
+                ];
+            })
+            ->sortBy('grade');
+    
+        $pdf = new TCPDF();
+        $pdf->SetCreator('Your App');
+        $pdf->SetTitle("تفاصيل بدل حجز لموظفي قطاع {$sector->name}");
+        $pdf->AddPage();
+        $pdf->setRTL(true);
+        $pdf->SetFont('dejavusans', '', 12);
+    
+        $html = view('reserv_report.sector_details_pdf', compact('reservations', 'sector', 'startDate', 'endDate'))->render();
+        $pdf->writeHTML($html, true, false, true, false, '');
+    
+        return $pdf->Output("sector_details_report_{$sector->name}.pdf", 'I');
+    }
+    
     
 
 
@@ -431,9 +453,11 @@ public function showMainDepartmentDetails(Request $request, $sectorId)
         ->get()
         ->map(function ($department) use ($startDate, $endDate) {
             $subDepartmentsCount = departements::where('parent_id', $department->id)->count();
-            $employeeCount = ReservationAllowance::where('departement_id', $department->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->count();
+           $employeeCount = ReservationAllowance::where('departement_id', $department->id)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->distinct('user_id')
+            ->count('user_id');
+
             
             $totalAmount = ReservationAllowance::where('departement_id', $department->id)
                 ->whereBetween('date', [$startDate, $endDate])
@@ -469,8 +493,9 @@ public function printMainDepartmentDetails(Request $request, $sectorId)
         ->map(function ($department) use ($startDate, $endDate) {
             $subDepartmentsCount = departements::where('parent_id', $department->id)->count();
             $employeeCount = ReservationAllowance::where('departement_id', $department->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->count();
+            ->whereBetween('date', [$startDate, $endDate])
+            ->distinct('user_id')
+            ->count('user_id');
 
             $totalAmount = ReservationAllowance::where('departement_id', $department->id)
                 ->whereBetween('date', [$startDate, $endDate])
@@ -480,7 +505,7 @@ public function printMainDepartmentDetails(Request $request, $sectorId)
                 'department_name' => $department->name,
                 'sub_departments_count' => $subDepartmentsCount,
                 'employee_count' => $employeeCount,
-                'reservation_amount' => number_format($totalAmount, 2) . ' د.ك',
+                'reservation_amount' => number_format($totalAmount, 2) ,
             ];
         });
 
@@ -515,9 +540,10 @@ public function showSubDepartments(Request $request, $departmentUuid)
     $subDepartments = departements::where('parent_id', $mainDepartment->id)
         ->get()
         ->map(function ($subDepartment) use ($startDate, $endDate) {
-            $employeeCount = ReservationAllowance::where('departement_id', $subDepartment->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->count();
+            $employeeCount = ReservationAllowance::where('departement_id', $department->id)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->distinct('user_id')
+            ->count('user_id');
 
             // $totalAmount = ReservationAllowance::where('departement_id', $subDepartment->id)
             //     ->whereBetween('date', [$startDate, $endDate])
@@ -574,9 +600,10 @@ public function printSubDepartmentsDetails(Request $request, $departmentUuid)
     $subDepartments = departements::where('parent_id', $mainDepartment->id)
         ->get()
         ->map(function ($subDepartment) use ($startDate, $endDate) {
-            $employeeCount = ReservationAllowance::where('departement_id', $subDepartment->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->count();
+            $employeeCount = ReservationAllowance::where('departement_id', $department->id)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->distinct('user_id')
+            ->count('user_id');
 
             $totalAmount = ReservationAllowance::where('departement_id', $subDepartment->id)
                 ->whereBetween('date', [$startDate, $endDate])
@@ -635,13 +662,21 @@ public function getMainDepartmentEmployeesData(Request $request, $departmentId)
                 ->where('departement_id', $department->id)
                 ->whereBetween('date', [$startDate, $endDate]);
         })
-        ->with(['grade', 'department'])
+        ->with(['department'])
         ->get();
 
     return DataTables::of($employees)
         ->addColumn('file_number', fn($user) => $user->file_number)
         ->addColumn('name', fn($user) => $user->name)
-        ->addColumn('grade', fn($user) => optional($user->grade)->name ?? 'N/A')
+        ->addColumn('grade', function ($user) use ($startDate, $endDate) {
+            $latestGrade = UserGrade::where('user_id', $user->id)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->orderBy('created_at', 'desc')
+                ->with('grade') 
+                ->first();
+
+            return $latestGrade?->grade?->name ?? 'N/A'; 
+        })
         ->addColumn('full_days', function ($user) use ($department, $startDate, $endDate) {
             return ReservationAllowance::where('user_id', $user->id)
                 ->where('departement_id', $department->id)
@@ -706,6 +741,7 @@ public function getMainDepartmentEmployeesData(Request $request, $departmentId)
 
 
 
+
 public function printMainDepartmentEmployees(Request $request, $departmentId)
 {
     $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
@@ -716,23 +752,43 @@ public function printMainDepartmentEmployees(Request $request, $departmentId)
         return abort(404, 'Department not found');
     }
 
+    // Fetch and prepare data for the PDF
     $employees = ReservationAllowance::where('departement_id', $department->id)
         ->whereBetween('date', [$startDate, $endDate])
-        ->with('user.grade')
+        ->with('user.department')
         ->get()
-        ->map(function ($entry) {
-            return [
-                'day' => \Carbon\Carbon::parse($entry->date)->translatedFormat('l'),
-                'date' => \Carbon\Carbon::parse($entry->date)->format('Y-m-d'),
-                'name' => $entry->user->name,
-                'file_number' => $entry->user->file_number,
-                'grade' => optional($entry->user->grade)->name,
-                'type' => $entry->type == 1 ? 'حجز كلي' : 'حجز جزئي',
-                'reservation_amount' => number_format($entry->amount, 2)
-            ];
-        });
+        ->groupBy('user_id')
+        ->map(function ($reservations, $userId) use ($department, $startDate, $endDate) {
+            $user = $reservations->first()->user;
 
-    // Set up the PDF
+            $latestGrade = UserGrade::where('user_id', $userId)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->orderBy('created_at', 'desc')
+                ->with('grade')
+                ->first();
+
+            $fullDays = $reservations->where('type', 1)->count();
+            $partialDays = $reservations->where('type', 2)->count();
+
+            $fullAllowance = $reservations->where('type', 1)->sum('amount');
+            $partialAllowance = $reservations->where('type', 2)->sum('amount');
+
+            return [
+                'day' => \Carbon\Carbon::parse($reservations->first()->date)->translatedFormat('l'),
+                'date' => \Carbon\Carbon::parse($reservations->first()->date)->format('Y-m-d'),
+                'name' => $user->name ?? 'N/A',
+                'file_number' => $user->file_number ?? 'N/A',
+                'grade' => $latestGrade?->grade?->name ?? 'N/A',
+                'full_days' => $fullDays,
+                'partial_days' => $partialDays,
+                'total_days' => $fullDays + $partialDays,
+                'full_allowance' => number_format($fullAllowance, 2),
+                'partial_allowance' => number_format($partialAllowance, 2),
+                'total_allowance' => number_format($fullAllowance + $partialAllowance, 2),
+            ];
+        })->values();
+
+    // Generate PDF
     $pdf = new TCPDF();
     $pdf->SetCreator('Your App');
     $pdf->SetTitle("تفاصيل الموظفين المحجوزين في الإدارة الرئيسية: {$department->name}");
@@ -740,7 +796,7 @@ public function printMainDepartmentEmployees(Request $request, $departmentId)
     $pdf->setRTL(true);
     $pdf->SetFont('dejavusans', '', 12);
 
-    // Render HTML content with Blade view
+    // Pass data to Blade for rendering
     $html = view('reserv_report.main_department_employees_pdf', compact(
         'department', 'employees', 'startDate', 'endDate'
     ))->render();
@@ -749,6 +805,7 @@ public function printMainDepartmentEmployees(Request $request, $departmentId)
 
     return $pdf->Output("main_department_employees_report_{$department->name}.pdf", 'I');
 }
+
 
 
 
@@ -765,15 +822,21 @@ public function showSubDepartmentEmployees(Request $request, $subDepartmentUuid)
 
     $employees = ReservationAllowance::where('departement_id', $subDepartment->id)
         ->whereBetween('date', [$startDate, $endDate])
-        ->with('user.grade') 
+        ->with('user') 
         ->get()
-        ->map(function ($reservation) {
+        ->map(function ($reservation) use ($startDate, $endDate) {
+            $latestGrade = UserGrade::where('user_id', $reservation->user_id)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->orderBy('created_at', 'desc')
+                ->with('grade')
+                ->first();
+
             return [
                 'day' => Carbon::parse($reservation->date)->translatedFormat('l'),
                 'date' => Carbon::parse($reservation->date)->format('Y-m-d'),
                 'employee_name' => optional($reservation->user)->name ?? 'Unknown',
                 'file_number' => optional($reservation->user)->file_number ?? 'N/A',
-                'grade' => optional($reservation->user->grade)->name ?? 'N/A',
+                'grade' => $latestGrade?->grade?->name ?? 'N/A', 
                 'type' => $reservation->type == 1 ? 'حجز كلي' : 'حجز جزئي',
                 'reservation_amount' => number_format($reservation->amount, 2) . ' د.ك',
             ];
@@ -781,6 +844,7 @@ public function showSubDepartmentEmployees(Request $request, $subDepartmentUuid)
 
     return view('reserv_report.sub_department_employees', compact('subDepartment', 'employees', 'startDate', 'endDate'));
 }
+
 
 
 
@@ -796,15 +860,21 @@ public function printSubDepartmentEmployees(Request $request, $subDepartmentUuid
 
     $employees = ReservationAllowance::where('departement_id', $subDepartment->id)
         ->whereBetween('date', [$startDate, $endDate])
-        ->with('user.grade') 
+        ->with('user') 
         ->get()
-        ->map(function ($reservation) {
+        ->map(function ($reservation) use ($startDate, $endDate) {
+            $latestGrade = UserGrade::where('user_id', $reservation->user_id)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->orderBy('created_at', 'desc')
+                ->with('grade')
+                ->first();
+
             return [
                 'day' => Carbon::parse($reservation->date)->translatedFormat('l'),
                 'date' => Carbon::parse($reservation->date)->format('Y-m-d'),
                 'name' => optional($reservation->user)->name ?? 'Unknown',
                 'file_number' => optional($reservation->user)->file_number ?? 'N/A',
-                'grade' => optional($reservation->user->grade)->name ?? 'N/A',
+                'grade' => $latestGrade?->grade?->name ?? 'N/A', 
                 'type' => $reservation->type == 1 ? 'حجز كلي' : 'حجز جزئي',
                 'amount' => number_format($reservation->amount, 2) . ' د.ك',
             ];

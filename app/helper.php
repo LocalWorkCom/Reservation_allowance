@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Crypt;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Support\Str;
 
 if (!function_exists('whats_send')) {
     function whats_send($mobile, $message, $country_code)
@@ -247,7 +248,22 @@ function UploadFilesIM($path, $image, $model, $request)
 
     $model->save();
 }
+function showUserSector()
+{
+    // Retrieve the authenticated user
+    $user = Auth::user();
 
+    // Access the department name
+    // dd($user->department);
+    $name = 'القطاع الرئيسي';
+    if ($user->sector == null) {
+        $name = 'القطاع الرئيسي';
+    } else {
+        $name = $user->sector != null ? ($user->sectors->name != null ? $user->sectors->name : 'القطاع الرئيسي') : '';
+    }
+
+    return $name;
+}
 function showUserDepartment()
 {
     // Retrieve the authenticated user
@@ -331,7 +347,7 @@ function convertToArabicNumerals($number)
 }
 function addUserHistory($user_id, $department_id, $sector_id)
 {
-    
+
     DB::table('user_departments')->insert([
         'user_id' => $user_id,
         'department_id' => $department_id,
@@ -517,14 +533,15 @@ function isValidEmail($email)
     return true;
 }
 
-function addUuidToTable($table){
+function addUuidToTable($table)
+{
     $get_all_data = DB::table($table)->get();
-    foreach($get_all_data as $get_data){
-        if($get_data->uuid == null){
+    foreach ($get_all_data as $get_data) {
+        if ($get_data->uuid == null) {
             $uuid = Str::uuid();  // Generate UUID
             DB::table($table)->where('id', $get_data->id)->update([
                 'uuid' => $uuid  // Update the UUID for this record
             ]);
-        } 
+        }
     }
 }
