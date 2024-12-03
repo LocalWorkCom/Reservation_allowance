@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'create User' => 'اضافة موظف',
-    'edit User' => 'تعديل موظف',
-    'view User' => 'عرض موظف',
-    'delete User' => 'حذف موظف',
+    'create User' => 'اضافة مستخدم',
+    'edit User' => 'تعديل مستخدم',
+    'view User' => 'عرض مستخدم',
+    'delete User' => 'حذف مستخدم',
 
     'create Rule' => 'اضافة مهام',
     'view Rule' => 'عرض المهام',
@@ -64,7 +64,7 @@ return [
     'create Country' => 'اضافه دولة',
     'edit Country' => 'تعديل دولة',
     'view Country' => 'عرض دولة',
-    'delete Country'=>'حذف دولة',
+    'delete Country' => 'حذف دولة',
 
     'view Qualification' => 'عرض المؤهلات',
 
@@ -81,6 +81,7 @@ return [
     'edit Setting' => 'تعديل اعدادات',
     'view Setting' => 'عرض اعدادات',
     'delete Setting' => 'حذف اعدادات',
+    'download User' => 'تحميل القالب',
 
     'create ReservationAllowance' => 'اضافه بدل حجز',
     'edit ReservationAllowance' => 'تعديل بدل حجز',
@@ -89,7 +90,7 @@ return [
     'statistic ReservationAllowance' => 'احصائيات بدل حجز',
     'search ReservationAllowance' => 'بحث بدل حجز',
     'report ReservationAllowance' => 'تقارير بدل حجز',
-    
+
     'User' => 'موظفين',
     'Sector' => 'قطاع',
     'Region' => 'مناطق',
@@ -105,7 +106,7 @@ return [
     'Rule' => 'مهام',
     'Setting' => 'اعدادات',
     'VacationType' => 'انواع اجازات',
-    'ReservationAllowance'=>'بدل حجز'
+    'ReservationAllowance' => 'بدل حجز'
 
 
 

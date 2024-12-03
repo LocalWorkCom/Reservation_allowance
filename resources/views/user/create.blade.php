@@ -76,7 +76,7 @@
                                 <!-- Violation type radio buttons -->
                                 @foreach ($violationTypeName as $key => $violation)
                                     {{-- {{ dd($violationTypeName) }} --}}
-                                    
+
                                     <div class="radio-btns" style="margin-left: 1.5rem; margin-right: 1.5rem;">
                                         <input type="radio" class="form-check-input" id="police_{{ $key }}"
                                             name="type_military" value="{{ $violation->id }}"
@@ -91,8 +91,7 @@
 
                                 <!-- Label for the radio group -->
                                 <label for="type_military" style="margin-left: 1.5rem; margin-right: 1.5rem;">
-                                    نوع العسكرى
-                                </label>
+                                    فئه العسكري </label>
                             </div>
 
                             {{-- <div class="form-group d-flex  justify-content-end col-md-5 mx-2">
@@ -378,10 +377,10 @@
 
                     // Toggle the visibility of additional fields
                     if (flagValue === 'user') {
-    additionalFields.classList.remove('d-none'); // Remove the class that hides the element
-} else {
-    additionalFields.classList.add('d-none'); // Add the class to hide the element
-}
+                        additionalFields.classList.remove('d-none'); // Remove the class that hides the element
+                    } else {
+                        additionalFields.classList.add('d-none'); // Add the class to hide the element
+                    }
 
 
                     // Reset attributes

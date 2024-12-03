@@ -115,8 +115,8 @@
                                     </div>
                                 @endforeach
                                 <label for="type_military"
-                                    style="margin-left: 1.5rem; margin-right: 1.5rem;">نوع
-                                    العسكرى</label>
+                                    style="margin-left: 1.5rem; margin-right: 1.5rem;">
+                                    فئه العسكري </label>
                             </div>
                             {{-- <div class="form-group d-flex  justify-content-center col-md-5 mx-2 pb-2">
 
