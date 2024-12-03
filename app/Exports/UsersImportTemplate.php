@@ -5,6 +5,7 @@ namespace App\Exports;
 use App\Models\Country;
 use App\Models\departements; // Make sure to import your Departements model
 use App\Models\Rule;
+use App\Models\Sector;
 use App\Models\ViolationTypes;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -17,19 +18,21 @@ use PhpOffice\PhpSpreadsheet\Cell\DataType; // Import DataType class
 class UsersImportTemplate implements FromCollection, WithHeadings, WithEvents
 {
     protected $allowedDepartments;
-    protected $allowedRules;
-    protected $allowedFlag;
-    protected $allowedTypeMilitary;
-    protected $countries;
+    protected $allowedSectors;
+    // protected $allowedRules;
+    // protected $allowedFlag;
+    // protected $allowedTypeMilitary;
+    // protected $countries;
 
     public function __construct()
     {
         // Get the allowed departments from the database
         $this->allowedDepartments = departements::pluck('name')->toArray(); // Assuming 'name' is the field you want
-        $this->allowedRules = Rule::whereNotIn('id', [1, 2])->pluck('name')->toArray(); // Assuming 'name' is the field you want
-        $this->allowedFlag = ['موظف', 'مستخدم'];
-        $this->allowedTypeMilitary = ViolationTypes::whereJsonContains('type_id', 0)->pluck('name')->toArray();
-        $this->countries = Country::pluck('country_name_ar')->toArray();
+        $this->allowedSectors = Sector::pluck('name')->toArray(); // Assuming 'name' is the field you want
+        // $this->allowedRules = Rule::whereNotIn('id', [1, 2])->pluck('name')->toArray(); // Assuming 'name' is the field you want
+        // $this->allowedFlag = ['موظف', 'مستخدم'];
+        // $this->allowedTypeMilitary = ViolationTypes::whereJsonContains('type_id', 0)->pluck('name')->toArray();
+        // $this->countries = Country::pluck('country_name_ar')->toArray();
     }
 
     /**
@@ -40,30 +43,22 @@ class UsersImportTemplate implements FromCollection, WithHeadings, WithEvents
         // Creating dummy data for the import template
         return collect([
             [
+                '1',
+                'وكيل اول',
                 'نايف', // name
-                'john@example.com', // email
-                '1234567890', // phone
-                '123456', // military_number
-                '123456', // military_number
-                'مستخدم', // flag
-                '', // type_military
-                '123', // password (hashed for safety)
-                '', // department_id (leave empty for the dropdown)
-                '', // rule_id (leave empty for the dropdown)
-                '' // rule_id (leave empty for the dropdown)
+                '123', // name
+
+                'وكيل الوزارة المساعد لشئون الامن العام', // rule_id (leave empty for the dropdown)
+                'اداره المبانى' // rule_id (leave empty for the dropdown)
             ],
             [
+                '2',
                 'ابراهيم', // name A
-                'jane@example.com', // email B
-                '0987654321', // phone C
-                '654321', // military_number D
-                '654321', // military_number E
-                'موظف', // flag F
-                '', // type_military G
-                '123', // password (hashed for safety) H
-                '', // department_id (leave empty for the dropdown) I
-                '', // rule_id (leave empty for the dropdown) J
-                '' // rule_id (leave empty for the dropdown) K
+                'عقيد', // name A
+                '2344', // name A
+
+                'قطاع المرور', // rule_id (leave empty for the dropdown) J
+                'اداره المبانى' // rule_id (leave empty for the dropdown) K
             ],
             // Add more dummy rows as needed
         ]);
@@ -75,17 +70,13 @@ class UsersImportTemplate implements FromCollection, WithHeadings, WithEvents
     public function headings(): array
     {
         return [
+            'الرقم التسلسلي',                // Name
+            'الرتبة',                // Name
             'الاسم',                // Name
-            'البريد الالكتروني',   // Email required
-            'رقم الهاتف',          // Phone e
-            'رقم المدني',         // Military Number required
-            'رقم الملف',          // file Number required
-            'النوع',               // Flag required user or employee
-            'نوع العسكري',         // Type Military
-            'كلمة المرور',         // Password required in case user بس 
+            'رقم الملف',         // Military Number required
+            'القطاع',               // Flag required user or employee
             'الادارة',              // Department ID (Foreign Key) 
-            'المهام',     // Role ID (Foreign Key)  required in case user بس 
-            'الدولة'               // Role ID (Foreign Key)  required in case user بس 
+
         ];
     }
 
@@ -161,45 +152,57 @@ class UsersImportTemplate implements FromCollection, WithHeadings, WithEvents
                     $event->sheet->getDelegate()->getCell('I' . $row)->setDataValidation($departmentValidation); // Apply validation to each cell in the department range
                 }
 
-                // Create a new DataValidation object for rules
-                $ruleValidation = new DataValidation();
-                $ruleValidation->setType(DataValidation::TYPE_LIST);
-                $ruleValidation->setErrorTitle('مهام غير صالحة'); // Error title
-                $ruleValidation->setError('الرجاء اختيار المهام من القائمة'); // Error message
-                $ruleValidation->setFormula1('"' . implode(',', $this->allowedRules) . '"'); // List of allowed rules
-                $ruleValidation->setShowDropDown(true);
-                $ruleValidation->setShowErrorMessage(true); // Enable error message display
+                $sectorValidation = new DataValidation();
+                $sectorValidation->setType(DataValidation::TYPE_LIST);
+                $sectorValidation->setErrorTitle('قطاع غير صالحة'); // Error title
+                $sectorValidation->setError('الرجاء اختيار قطاع من القائمة'); // Error message
+                $sectorValidation->setFormula1('"' . implode(',', $this->allowedSectors) . '"'); // List of allowed departments
+                $sectorValidation->setShowDropDown(true);
+                $sectorValidation->setShowErrorMessage(true); // Enable error message display
 
-                // Apply validation to the specified range for rules
+                // Apply validation to the specified range for departments
                 for ($row = 2; $row <= 100; $row++) {
-                    $event->sheet->getDelegate()->getCell('J' . $row)->setDataValidation($ruleValidation); // Apply validation to each cell in the rule range
+                    $event->sheet->getDelegate()->getCell('I' . $row)->setDataValidation($sectorValidation); // Apply validation to each cell in the department range
                 }
+                // // Create a new DataValidation object for rules
+                // $ruleValidation = new DataValidation();
+                // $ruleValidation->setType(DataValidation::TYPE_LIST);
+                // $ruleValidation->setErrorTitle('مهام غير صالحة'); // Error title
+                // $ruleValidation->setError('الرجاء اختيار المهام من القائمة'); // Error message
+                // $ruleValidation->setFormula1('"' . implode(',', $this->allowedRules) . '"'); // List of allowed rules
+                // $ruleValidation->setShowDropDown(true);
+                // $ruleValidation->setShowErrorMessage(true); // Enable error message display
+
+                // // Apply validation to the specified range for rules
+                // for ($row = 2; $row <= 100; $row++) {
+                //     $event->sheet->getDelegate()->getCell('J' . $row)->setDataValidation($ruleValidation); // Apply validation to each cell in the rule range
+                // }
 
 
-                // Data validation for flags
-                $flagValidation = new DataValidation();
-                $flagValidation->setType(DataValidation::TYPE_LIST);
-                $flagValidation->setErrorTitle('نوع غير صالح');
-                $flagValidation->setError('الرجاء اختيار النوع من القائمة');
-                $flagValidation->setFormula1('"' . implode(',', $this->allowedFlag) . '"');
-                $flagValidation->setShowDropDown(true);
-                $flagValidation->setShowErrorMessage(true);
-                for ($row = 2; $row <= 100; $row++) {
-                    $event->sheet->getDelegate()->getCell('F' . $row)->setDataValidation($flagValidation);
-                }
+                // // Data validation for flags
+                // $flagValidation = new DataValidation();
+                // $flagValidation->setType(DataValidation::TYPE_LIST);
+                // $flagValidation->setErrorTitle('نوع غير صالح');
+                // $flagValidation->setError('الرجاء اختيار النوع من القائمة');
+                // $flagValidation->setFormula1('"' . implode(',', $this->allowedFlag) . '"');
+                // $flagValidation->setShowDropDown(true);
+                // $flagValidation->setShowErrorMessage(true);
+                // for ($row = 2; $row <= 100; $row++) {
+                //     $event->sheet->getDelegate()->getCell('F' . $row)->setDataValidation($flagValidation);
+                // }
 
 
-                // Data validation for type military
-                $typeMilitaryValidation = new DataValidation();
-                $typeMilitaryValidation->setType(DataValidation::TYPE_LIST);
-                $typeMilitaryValidation->setErrorTitle('نوع عسكري غير صالح');
-                $typeMilitaryValidation->setError('الرجاء اختيار نوع عسكري من القائمة');
-                $typeMilitaryValidation->setFormula1('"' . implode(',', $this->allowedTypeMilitary) . '"');
-                $typeMilitaryValidation->setShowDropDown(true);
-                $typeMilitaryValidation->setShowErrorMessage(true);
-                for ($row = 2; $row <= 100; $row++) {
-                    $event->sheet->getDelegate()->getCell('G' . $row)->setDataValidation($typeMilitaryValidation);
-                }
+                // // Data validation for type military
+                // $typeMilitaryValidation = new DataValidation();
+                // $typeMilitaryValidation->setType(DataValidation::TYPE_LIST);
+                // $typeMilitaryValidation->setErrorTitle('نوع عسكري غير صالح');
+                // $typeMilitaryValidation->setError('الرجاء اختيار نوع عسكري من القائمة');
+                // $typeMilitaryValidation->setFormula1('"' . implode(',', $this->allowedTypeMilitary) . '"');
+                // $typeMilitaryValidation->setShowDropDown(true);
+                // $typeMilitaryValidation->setShowErrorMessage(true);
+                // for ($row = 2; $row <= 100; $row++) {
+                //     $event->sheet->getDelegate()->getCell('G' . $row)->setDataValidation($typeMilitaryValidation);
+                // }
 
                 // // Set the range for the country dropdown
                 // $countryRange = $countryColumn . $countryStartRow . ':' . $countryColumn . ($countryStartRow + count($this->countries) - 1);
