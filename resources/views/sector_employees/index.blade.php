@@ -33,10 +33,17 @@
 @section('content')
 <div class="row">
     <div class="container welcome col-11">
-        <div class="d-flex justify-content-between">
-            <p>   موظفين قطاع <span class="text-info"> {{ $sectorName }}</span></p>
-            <!-- <button id="print-report" class="btn-blue">طباعة</button> -->
-
+    <div class="d-flex justify-content-between">
+            <p>
+                موظفين قطاع 
+                <span class="text-info">{{ $sectorName }}</span> 
+                <br>
+                <small>
+                    للفترة: 
+                    <span class="text-info">{{ $month }}</span> /
+                    <span class="text-info">{{ $year }}</span>
+                </small>
+            </p>
         </div>
     </div>
 </div>
@@ -60,7 +67,7 @@
             <th rowspan="2">الرتبة</th>
             <th rowspan="2">الاسم</th>
             <th rowspan="2">رقم الملف</th>
-            <th rowspan="2">الادارة</th>
+          
 
           
             <th colspan="3"> ايام الحجز </th>
@@ -124,7 +131,7 @@
             return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
         }
     },
-    { data: 'department', name: 'department' },
+    // { data: 'department', name: 'department' },
     // {
     //     data: 'days',
     //     name: 'days',
