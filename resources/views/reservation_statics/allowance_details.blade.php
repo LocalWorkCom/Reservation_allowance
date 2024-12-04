@@ -26,6 +26,7 @@
                         <th>التاريخ</th>
                         <th>النوع</th>
                         <th>المبلغ</th>
+                        <th>بواسطة</th>
                     </tr>
                 </thead>
             </table>
@@ -38,62 +39,64 @@
 <script>
 $(document).ready(function() {
     $('#users-table').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: {
-            url: '{{ route('employee.allowance.details.data', $employeeUuid) }}', // Use UUID instead of numeric ID
-            data: function(d) {
-                d.month = '{{ $month }}';
-                d.year = '{{ $year }}';
+    processing: true,
+    serverSide: true,
+    ajax: {
+        url: '{{ route('employee.allowance.details.data', $employeeUuid) }}',
+        data: function(d) {
+            d.month = '{{ $month }}';
+            d.year = '{{ $year }}';
+        }
+    },
+    columns: [
+        { 
+            data: null, 
+            orderable: false, 
+            searchable: false,
+            render: function (data, type, row, meta) {
+                return meta.row + 1; // Auto-generate row numbers
             }
         },
-        columns: [
-            { 
-                data: null, 
-                orderable: false, 
-                searchable: false,
-                render: function (data, type, row, meta) {
-                    return meta.row + 1; // Auto-generate row numbers
-                }
-            },
-            { data: 'date', name: 'date' },
-            { data: 'type', name: 'type' },
-            { data: 'amount', name: 'amount' }
-        ],
-        order: [[1, 'asc']],
-        "oLanguage": {
-            "sSearch": "",
-            "sSearchPlaceholder": "بحث",
-            "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
-            "sInfoEmpty": 'لا توجد بيانات متاحه',
-            "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
-            "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
-            "sZeroRecords": 'نأسف لا توجد نتيجة',
-            "oPaginate": {
-                "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', 
-                "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', 
-                "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', 
-                "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' 
-            }
-        },
-        layout: {
-            bottomEnd: {
-                paging: {
-                    firstLast: false
-                }
-            }
-        },
-        "pagingType": "full_numbers",
-        "fnDrawCallback": function(oSettings) {
-            var api = this.api();
-            var pageInfo = api.page.info();
-            if (pageInfo.recordsTotal <= 10) {
-                $('.dataTables_paginate').css('visibility', 'hidden'); // Hide pagination
-            } else {
-                $('.dataTables_paginate').css('visibility', 'visible'); // Show pagination
+        { data: 'date', name: 'date' },
+        { data: 'type', name: 'type' },
+        { data: 'amount', name: 'amount' },
+        { data: 'created_by', name: 'created_by' } // Include creator's name
+    ],
+    order: [[1, 'asc']],
+    "oLanguage": {
+        "sSearch": "",
+        "sSearchPlaceholder": "بحث",
+        "sInfo": 'اظهار صفحة _PAGE_ من _PAGES_',
+        "sInfoEmpty": 'لا توجد بيانات متاحه',
+        "sInfoFiltered": '(تم تصفية  من _MAX_ اجمالى البيانات)',
+        "sLengthMenu": 'اظهار _MENU_ عنصر لكل صفحة',
+        "sZeroRecords": 'نأسف لا توجد نتيجة',
+        "oPaginate": {
+            "sFirst": '<i class="fa fa-fast-backward" aria-hidden="true"></i>', 
+            "sPrevious": '<i class="fa fa-chevron-left" aria-hidden="true"></i>', 
+            "sNext": '<i class="fa fa-chevron-right" aria-hidden="true"></i>', 
+            "sLast": '<i class="fa fa-step-forward" aria-hidden="true"></i>' 
+        }
+    },
+    layout: {
+        bottomEnd: {
+            paging: {
+                firstLast: false
             }
         }
-    });
+    },
+    "pagingType": "full_numbers",
+    "fnDrawCallback": function(oSettings) {
+        var api = this.api();
+        var pageInfo = api.page.info();
+        if (pageInfo.recordsTotal <= 10) {
+            $('.dataTables_paginate').css('visibility', 'hidden'); 
+        } else {
+            $('.dataTables_paginate').css('visibility', 'visible'); 
+        }
+    }
+});
+
 });
 </script>
 @endpush
