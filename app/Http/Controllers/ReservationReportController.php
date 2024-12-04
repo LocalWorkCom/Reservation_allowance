@@ -259,6 +259,12 @@ class ReservationReportController extends Controller
             ->addColumn('date', fn($row) => Carbon::parse($row->date)->format('Y-m-d'))
             ->addColumn('type', fn($row) => $row->type == 1 ? 'حجز كلي' : 'حجز جزئي')
             ->addColumn('amount', fn($row) => number_format($row->amount, 2) . ' د ك')
+            ->addColumn('created_by', function ($row) {
+                $creator = User::find($row->created_by);
+                return $creator ? $creator->name : 'غير معروف';
+            })
+            ->addColumn('created_at', fn($row) => Carbon::parse($row->created_at)->format('Y-m-d H:i:s'))
+            
             ->make(true);
     }
     
@@ -532,7 +538,7 @@ public function showSubDepartments(Request $request, $departmentUuid)
     $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
     $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
 
-    $mainDepartment = departements::where('uuid', $departmentUuid)->first(); 
+    $mainDepartment = departements::where('uuid', $departmentUuid)->first();
     if (!$mainDepartment) {
         return abort(404, 'Main department not found');
     }
@@ -540,39 +546,39 @@ public function showSubDepartments(Request $request, $departmentUuid)
     $subDepartments = departements::where('parent_id', $mainDepartment->id)
         ->get()
         ->map(function ($subDepartment) use ($startDate, $endDate) {
-            $employeeCount = ReservationAllowance::where('departement_id', $department->id)
-            ->whereBetween('date', [$startDate, $endDate])
-            ->distinct('user_id')
-            ->count('user_id');
+            $employeeCount = ReservationAllowance::where('departement_id', $subDepartment->id) // Use $subDepartment
+                ->whereBetween('date', [$startDate, $endDate])
+                ->distinct('user_id')
+                ->count('user_id');
 
             // $totalAmount = ReservationAllowance::where('departement_id', $subDepartment->id)
             //     ->whereBetween('date', [$startDate, $endDate])
             //     ->sum('amount');
             $fullDays = ReservationAllowance::where('departement_id', $subDepartment->id)
-            ->whereBetween('date', [$startDate, $endDate])
-            ->where('type', 1)
-            ->count();
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 1)
+                ->count();
 
-        $partialDays = ReservationAllowance::where('departement_id', $subDepartment->id)
-            ->whereBetween('date', [$startDate, $endDate])
-            ->where('type', 2)
-            ->count();
+            $partialDays = ReservationAllowance::where('departement_id', $subDepartment->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 2)
+                ->count();
 
-        $fullAllowance = ReservationAllowance::where('departement_id', $subDepartment->id)
-            ->whereBetween('date', [$startDate, $endDate])
-            ->where('type', 1)
-            ->sum('amount');
+            $fullAllowance = ReservationAllowance::where('departement_id', $subDepartment->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 1)
+                ->sum('amount');
 
-        $partialAllowance = ReservationAllowance::where('departement_id', $subDepartment->id)
-            ->whereBetween('date', [$startDate, $endDate])
-            ->where('type', 2)
-            ->sum('amount');
+            $partialAllowance = ReservationAllowance::where('departement_id', $subDepartment->id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('type', 2)
+                ->sum('amount');
 
-        $totalDays = $fullDays + $partialDays;
-        $totalAllowance = $fullAllowance + $partialAllowance;
+            $totalDays = $fullDays + $partialDays;
+            $totalAllowance = $fullAllowance + $partialAllowance;
 
             return [
-                'uuid' => $subDepartment->uuid, 
+                'uuid' => $subDepartment->uuid,
                 'sub_department_name' => $subDepartment->name,
                 'employee_count' => $employeeCount,
                 'full_days' => $fullDays,
@@ -586,6 +592,7 @@ public function showSubDepartments(Request $request, $departmentUuid)
 
     return view('reserv_report.sub_departments_details', compact('mainDepartment', 'subDepartments', 'startDate', 'endDate'));
 }
+
 
 public function printSubDepartmentsDetails(Request $request, $departmentUuid)
 {
@@ -831,19 +838,24 @@ public function showSubDepartmentEmployees(Request $request, $subDepartmentUuid)
                 ->with('grade')
                 ->first();
 
+            $creator = User::find($reservation->created_by); 
+
             return [
                 'day' => Carbon::parse($reservation->date)->translatedFormat('l'),
                 'date' => Carbon::parse($reservation->date)->format('Y-m-d'),
                 'employee_name' => optional($reservation->user)->name ?? 'Unknown',
                 'file_number' => optional($reservation->user)->file_number ?? 'N/A',
-                'grade' => $latestGrade?->grade?->name ?? 'N/A', 
+                'grade' => $latestGrade?->grade?->name ?? 'N/A',
                 'type' => $reservation->type == 1 ? 'حجز كلي' : 'حجز جزئي',
                 'reservation_amount' => number_format($reservation->amount, 2) . ' د.ك',
+                'created_by' => $creator ? $creator->name : 'غير معروف',
+                'created_at' => Carbon::parse($reservation->created_at)->format('Y-m-d H:i:s'), 
             ];
         });
 
     return view('reserv_report.sub_department_employees', compact('subDepartment', 'employees', 'startDate', 'endDate'));
 }
+
 
 
 

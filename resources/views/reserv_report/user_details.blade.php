@@ -29,17 +29,20 @@
 <button id="print-report" class="btn-blue ">طباعة</button>
 
 </div>
-        <table id="users-table" class="display table table-bordered table-hover dataTable">
-            <thead>
-                <tr>
-                    <th>الترتيب</th>
-                    <th>اليوم</th>
-                    <th>التاريخ</th>
-                    <th>النوع</th>
-                    <th>المبلغ</th>
-                </tr>
-            </thead>
-        </table>
+<table id="users-table" class="display table table-bordered table-hover dataTable">
+    <thead>
+        <tr>
+            <th>الترتيب</th>
+            <th>اليوم</th>
+            <th>التاريخ</th>
+            <th>النوع</th>
+            <th>المبلغ</th>
+            <th>بواسطة</th>
+            <th>توقيت الاضافة</th>
+        </tr>
+    </thead>
+</table>
+
     </div>
 </div>
 @endsection
@@ -71,7 +74,9 @@
                 { data: 'day', name: 'day' },
                 { data: 'date', name: 'date' },
                 { data: 'type', name: 'type' },
-                { data: 'amount', name: 'amount' }
+                { data: 'amount', name: 'amount' },
+                { data: 'created_by', name: 'created_by' }, 
+                { data: 'created_at', name: 'created_at' }
             ],
             order: [[2, 'desc']],
             "oLanguage": {
