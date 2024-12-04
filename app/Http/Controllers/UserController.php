@@ -85,9 +85,9 @@ class UserController extends Controller
         $subDep = departements::where('parent_id', auth()->user()->department_id)->pluck('id');
         $my_dep = Auth()->user()->department_id;
         $gradeall = Grade::pluck('id')->toArray();
-        $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
-        $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
-        $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
+        $gradeOfficer = Grade::where('type', 1)->pluck('id')->toArray();
+        $graseOfficer2 = Grade::where('type', 2)->pluck('id')->toArray();
+        $gradeperson = Grade::where('type', 3)->pluck('id')->toArray();
 
         if ($type == "department") {
             // For the 'all' query
@@ -489,14 +489,14 @@ class UserController extends Controller
             $all = Grade::pluck('id')->toArray();
             $data->whereIn('grade_id', $all);
         } elseif ($filter == 'person') {
-            $person = Grade::where('type', 1)->pluck('id')->toArray();
+            $person = Grade::where('type', 3)->pluck('id')->toArray();
             $data->whereIn('grade_id', $person);
         } elseif ($filter == 'Officer') {
-            $Officer = Grade::where('type', 2)->pluck('id')->toArray();
+            $Officer = Grade::where('type', 1)->pluck('id')->toArray();
             $data->whereIn('grade_id', $Officer);
             // dd($data->get());
         } elseif ($filter == 'Officer2') {
-            $Officer2 = Grade::where('type', 3)->pluck('id')->toArray();
+            $Officer2 = Grade::where('type', 2)->pluck('id')->toArray();
             $data->whereIn('grade_id', $Officer2);
         }
         // Finally, fetch the results
