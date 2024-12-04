@@ -64,7 +64,6 @@ class ReserveSectorController extends Controller
                 ->addColumn('reservation_allowance_budget', function ($row) use ($month, $year) {
                     $amount = DB::table('history_allawonces')
                     ->where('sector_id', $row->id)
-                    //where department null
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
                     ->orderBy('created_at', 'desc') 
@@ -76,7 +75,6 @@ class ReserveSectorController extends Controller
                 
                 return number_format($amount, 2) . ' د.ك';
                 })
-                // Total registered amount for the selected period
                 ->addColumn('registered_amount', function ($row) use ($month, $year) {
                     $sum = ReservationAllowance::where('sector_id', $row->id)
                     ->whereNull('departement_id') 
@@ -86,7 +84,6 @@ class ReserveSectorController extends Controller
     
                     return number_format($sum, 2) . " د.ك";
                 })
-                // Remaining balance: historical budget minus registered amount
                 ->addColumn('remaining_amount', function ($row) use ($month, $year) {
                    
                     $registeredAmount = ReservationAllowance::where('sector_id', $row->id)
