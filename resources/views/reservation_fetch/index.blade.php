@@ -182,6 +182,9 @@
                        
                         <th>نوع الحجز</th>
                         <th>القيمة</th>
+                        <th>بواسطة</th>
+                        <th>توقيت اضافة بدل الحجز</th>
+
                     </tr>
                 </thead>
             </table>
@@ -238,40 +241,17 @@
                                 return meta.row + 1;
                             }
                         },
-                        {
-                            data: 'day',
-                            name: 'day'
-                        },
-                        {
-                            data: 'date',
-                            name: 'date'
-                        },
-                        {
-                            data: 'grade',
-                            name: 'grade'
-                        },
-                        {
-                            data: 'name',
-                            name: 'name'
-                        },
-                        {
-                            data: 'sector',
-                            name: 'sector'
-                        },
-                        {
-                            data: 'department',
-                            name: 'department'
-                        },
-                        
+                        { data: 'day',  name: 'day'   },
+                        { data: 'date', name: 'date' },
+                        { data: 'grade',  name: 'grade'  },
+                        { data: 'name', name: 'name' },
+                        { data: 'sector', name: 'sector'  },
+                        { data: 'department', name: 'department' },
                         // { data: 'grade_type', name: 'grade_type' },
-                        {
-                            data: 'type',
-                            name: 'type'
-                        },
-                        {
-                            data: 'amount',
-                            name: 'amount'
-                        },
+                        {data: 'type',name: 'type' },
+                        {data: 'amount',name: 'amount'},
+                        { data: 'created_by', name: 'created_by' }, 
+                        { data: 'created_at', name: 'created_at' }, 
                     ],
                     order: [
                         [1, 'asc']
