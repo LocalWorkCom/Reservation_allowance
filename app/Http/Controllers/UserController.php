@@ -35,6 +35,7 @@ use App\Imports\ImportUser;
 use App\Exports\ExportUser;
 use App\Exports\UsersExport;
 use App\Exports\UsersImportTemplate;
+use App\Imports\UsersImport;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendEmail;
 
@@ -926,7 +927,7 @@ class UserController extends Controller
 
         $area = Region::all();
         $qualifications = Qualification::all();
-        $violationTypeName = ViolationTypes::whereJsonContains('type_id', 0)->orderby('id','desc')->get();
+        $violationTypeName = ViolationTypes::whereJsonContains('type_id', 0)->orderby('id', 'desc')->get();
 
         //         // Get the selected violation type from old input or set a default value
         //         $selectedViolationType = old('type_military', 'police'); // Default to 'police'
@@ -1487,22 +1488,20 @@ class UserController extends Controller
     }
     public function importView(Request $request)
     {
-        return view('importFile');
+        return view('user.importFile');
     }
-
     public function import(Request $request)
     {
-        // Validate the uploaded file
         $request->validate([
-            'file' => 'required|mimes:xlsx,csv',
+            'file' => 'required|file|mimes:xlsx,xls',  // Validate the file input (Excel)
         ]);
 
         try {
-            // If no errors, proceed to import the data
-            Excel::import(new UsersImportTemplate, $request->file('file'));
+            // dd( $request->file('file'));
+            Excel::import(new UsersImport, $request->file('file'));  // Import the file using UsersImport
 
-            return redirect()->back()->with('success', 'Users imported successfully!');
-        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            return back()->with('success', 'تم استيراد البيانات بنجاح');
+        } catch (\Exception $e) {
             $failures = $e->failures();
 
             $errorMessages = [];
@@ -1512,12 +1511,39 @@ class UserController extends Controller
             }
 
             return redirect()->back()->withErrors(['errors' => $errorMessages]);
+            // return back()->with('error', 'حدث خطأ أثناء استيراد البيانات');
         }
     }
+
+    // public function import(Request $request)
+    // {
+    //     // Validate the uploaded file
+    //     $request->validate([
+    //         'file' => 'required|mimes:xlsx,csv',
+    //     ]);
+
+    //     try {
+    //         // If no errors, proceed to import the data
+    //         Excel::import(new UsersImportTemplate, $request->file('file'));
+
+    //         return redirect()->back()->with('success', 'Users imported successfully!');
+    //     } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+    //         $failures = $e->failures();
+
+    //         $errorMessages = [];
+
+    //         foreach ($failures as $failure) {
+    //             $errorMessages[] = 'Error in row ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+    //         }
+
+    //         return redirect()->back()->withErrors(['errors' => $errorMessages]);
+    //     }
+    // }
 
 
     public function exportUsers(Request $request)
     {
+        
         return Excel::download(new UsersExport, 'users.xlsx');
     }
     public function downloadTemplate()
