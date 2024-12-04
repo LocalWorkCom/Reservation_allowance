@@ -685,8 +685,11 @@ class UserController extends Controller
 
         if ($user && $user->last_login == null && $user->flag == 'user') {
             return 1;
-        } else if ($user->flag != 'user') {
+        } else if ($user && $user->flag != 'user') {
             return -1;
+        } else if (!$user) {
+            return -1;
+
         }
 
         return 0;
@@ -1490,30 +1493,29 @@ class UserController extends Controller
     {
         return view('user.importFile');
     }
-  public function import(Request $request)
-{
-    $request->validate([
-        'file' => 'required|file|mimes:xlsx,xls',  // Validate the file input
-    ]);
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls',  // Validate the file input
+        ]);
 
-  try {
-    Excel::import(new UsersImport, $request->file('file'));
-    return back()->with('success', 'تم استيراد البيانات بنجاح');
-} catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
-    $failures = $e->failures();
-    $errorMessages = [];
+        try {
+            Excel::import(new UsersImport, $request->file('file'));
+            return back()->with('success', 'تم استيراد البيانات بنجاح');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $errorMessages = [];
 
-    foreach ($failures as $failure) {
-        $errors = is_array($failure->errors()) ? $failure->errors() : [$failure->errors()];
-        $errorMessages[] = 'خطأ في الصف ' . $failure->row() . ': ' . implode(', ', $errors);
+            foreach ($failures as $failure) {
+                $errors = is_array($failure->errors()) ? $failure->errors() : [$failure->errors()];
+                $errorMessages[] = 'خطأ في الصف ' . $failure->row() . ': ' . implode(', ', $errors);
+            }
+
+            return redirect()->back()->withErrors(['errors' => $errorMessages]);
+        } catch (\Exception $e) {
+            return back()->with('error', 'حدث خطأ أثناء استيراد البيانات: ' . $e->getMessage());
+        }
     }
-
-    return redirect()->back()->withErrors(['errors' => $errorMessages]);
-} catch (\Exception $e) {
-    return back()->with('error', 'حدث خطأ أثناء استيراد البيانات: ' . $e->getMessage());
-}
-
-}
 
 
     // public function import(Request $request)
@@ -1544,7 +1546,7 @@ class UserController extends Controller
 
     public function exportUsers(Request $request)
     {
-        
+
         return Excel::download(new UsersExport, 'users.xlsx');
     }
     public function downloadTemplate()
