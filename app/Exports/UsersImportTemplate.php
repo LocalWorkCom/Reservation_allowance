@@ -47,7 +47,6 @@ class UsersImportTemplate implements FromCollection, WithHeadings, WithEvents
                 'وكيل اول',
                 'نايف', // name
                 '123', // name
-
                 'وكيل الوزارة المساعد لشئون الامن العام', // rule_id (leave empty for the dropdown)
                 'اداره المبانى' // rule_id (leave empty for the dropdown)
             ],
@@ -56,7 +55,6 @@ class UsersImportTemplate implements FromCollection, WithHeadings, WithEvents
                 'ابراهيم', // name A
                 'عقيد', // name A
                 '2344', // name A
-
                 'قطاع المرور', // rule_id (leave empty for the dropdown) J
                 'اداره المبانى' // rule_id (leave empty for the dropdown) K
             ],
