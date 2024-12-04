@@ -94,7 +94,8 @@
                                 القالب</a>
                             <a href="{{ route('export-users') }}" class="btn-all text-info p-2"
                                 style="border-radius: 5px;">تصدير القالب</a>
-
+                            <a href="{{ route('import-view') }}" class="btn-all text-info p-2"
+                                style="border-radius: 5px;">استيراد القالب</a>
                             @if (Auth::user()->hasPermission('create User'))
                                 <button type="button" class="btn-all mx-2"
                                     onclick="window.location.href='{{ route('user.create') }}'">
@@ -207,7 +208,8 @@
                         </button>
                     </div>
                 </div>
-                <table id="users-table" class="display table table-responsive-sm  table-bordered table-hover dataTable">
+                <table id="users-table"
+                    class="display table table-responsive-sm  table-bordered table-hover dataTable">
                     <thead>
                         <tr>
                             <th>رقم المسلسل</th>
