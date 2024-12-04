@@ -1490,30 +1490,31 @@ class UserController extends Controller
     {
         return view('user.importFile');
     }
-    public function import(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|file|mimes:xlsx,xls',  // Validate the file input (Excel)
-        ]);
+  public function import(Request $request)
+{
+    $request->validate([
+        'file' => 'required|file|mimes:xlsx,xls',  // Validate the file input
+    ]);
 
-        try {
-            // dd( $request->file('file'));
-            Excel::import(new UsersImport, $request->file('file'));  // Import the file using UsersImport
+  try {
+    Excel::import(new UsersImport, $request->file('file'));
+    return back()->with('success', 'تم استيراد البيانات بنجاح');
+} catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+    $failures = $e->failures();
+    $errorMessages = [];
 
-            return back()->with('success', 'تم استيراد البيانات بنجاح');
-        } catch (\Exception $e) {
-            $failures = $e->failures();
-
-            $errorMessages = [];
-
-            foreach ($failures as $failure) {
-                $errorMessages[] = 'Error in row ' . $failure->row() . ': ' . implode(', ', $failure->errors());
-            }
-
-            return redirect()->back()->withErrors(['errors' => $errorMessages]);
-            // return back()->with('error', 'حدث خطأ أثناء استيراد البيانات');
-        }
+    foreach ($failures as $failure) {
+        $errors = is_array($failure->errors()) ? $failure->errors() : [$failure->errors()];
+        $errorMessages[] = 'خطأ في الصف ' . $failure->row() . ': ' . implode(', ', $errors);
     }
+
+    return redirect()->back()->withErrors(['errors' => $errorMessages]);
+} catch (\Exception $e) {
+    return back()->with('error', 'حدث خطأ أثناء استيراد البيانات: ' . $e->getMessage());
+}
+
+}
+
 
     // public function import(Request $request)
     // {
