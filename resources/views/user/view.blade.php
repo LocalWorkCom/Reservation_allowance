@@ -94,8 +94,14 @@
                                 القالب</a>
                             <a href="{{ route('export-users') }}" class="btn-all text-info p-2"
                                 style="border-radius: 5px;">تصدير القالب</a>
-                            <a href="{{ route('import-view') }}" class="btn-all text-info p-2"
-                                style="border-radius: 5px;">استيراد القالب</a>
+                            <!-- <a href="{{ route('import-view') }}" class="btn-all text-info p-2"
+                                style="border-radius: 5px;">استيراد القالب</a> -->
+                                <a class="btn-all text-info p-2" style="border-radius: 5px;" data-bs-toggle="modal" data-bs-target="#modal-add"> استيراد القالب</a>
+
+
+
+
+                                
                             @if (Auth::user()->hasPermission('create User'))
                                 <button type="button" class="btn-all mx-2"
                                     onclick="window.location.href='{{ route('user.create') }}'">
@@ -226,7 +232,41 @@
                 </table>
 
 
+                <div class="modal fade" id="modal-add" tabindex="-1" aria-labelledby="modalAddLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-center">
+                <div class="title d-flex flex-row align-items-center">
+                    <h5 class="modal-title" id="modalAddLabel"> استيراد القالب</h5>
+                    <img src="{{ asset('frontend/images/group-add-modal.svg') }}" alt="">
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body mt-3 mb-3">
+                <div class="container pt-5 pb-2" style="border: 0.2px solid rgb(166, 165, 165);">
+                    
+                    <form action="{{ route('import') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="form-group">
+                <label for="file">اختر الملف  </label>
+                <input type="file" class="form-control" name="file" id="file" accept=".xls,.xlsx" required>
+            </div>
+            <button type="submit" class="btn-blue mt-3">تحميل  </button>
+        </form>
 
+        @if (session('success'))
+            <div class="alert alert-success mt-3">{{ session('success') }}</div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger mt-3">{{ session('error') }}</div>
+        @endif
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
 
                 <script>
                     $(document).ready(function() {
