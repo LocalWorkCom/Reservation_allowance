@@ -244,12 +244,13 @@ class SectorEmployeesDetailsController extends Controller
         $year = $request->input('year');
     
         return view('sector_employees.sector_users', [
-            'sectorId' => $sectorUuid, // Pass UUID to the view
+            'sectorId' => $sectorUuid,
             'sectorName' => $sector->name,
             'month' => $month,
             'year' => $year,
         ]);
     }
+    
     
     
     public function getSectorUsers(Request $request, $sectorUuid)
@@ -270,9 +271,9 @@ class SectorEmployeesDetailsController extends Controller
         }
         $userIdsInSector = DB::table('user_departments')
         ->where('sector_id', $sector->id)
+        ->whereNull('department_id') 
         ->whereYear('created_at', $year)
         ->whereMonth('created_at', $month)
-        ->where('flag', '1') 
         ->select('user_id', DB::raw('MAX(created_at) as latest_created_at')) 
         ->groupBy('user_id') 
         ->pluck('user_id');
