@@ -24,7 +24,6 @@ class UsersImport implements ToModel, WithHeadingRow, WithValidation
 
    public function model(array $row)
 {
-    \Log::info('Processing Row: ', $row); // Log the row data for debugging
 
     return new User([
         'grade_id'      => $row['الرتبة'],
