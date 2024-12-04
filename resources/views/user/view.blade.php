@@ -206,7 +206,7 @@
                             الضباط ({{ $Officer }})
                         </button>
                         <button class="btn-all px-3 mx-2 btn-filter" data-filter="Officer2" style="color: #274373;">
-                            المهنيين ({{ $Officer2 }})
+                            المدنيين ({{ $Officer2 }})
                         </button>
 
                         <button class="btn-all px-3 mx-2 btn-filter" data-filter="person" style="color: #274373;">

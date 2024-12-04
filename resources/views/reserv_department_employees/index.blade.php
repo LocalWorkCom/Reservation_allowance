@@ -91,14 +91,18 @@
                 render: function (data, type, row) {
                         const month = '{{ $month }}';
                         const year = '{{ $year }}';
+
                         return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color: #2f6289 !important;text-decoration: underline !important;">${data}</a>`;
+
                     }
              },
             { data: 'file_number', name: 'file_number',
                 render: function (data, type, row) {
                         const month = '{{ $month }}';
                         const year = '{{ $year }}';
-                        return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="    color: #2f6289 !important;
+
+                        return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color: #2F6289 !important;
+
     text-decoration: underline !important;">${data}</a>`;
                     }
              },
@@ -144,7 +148,9 @@
                       render: function (data, type, row) {
                         const month = '{{ $month }}';
                         const year = '{{ $year }}';
-                        return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="    color: #2f6289 !important;
+
+                        return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color: #2F6289 !important;
+
     text-decoration: underline !important;">${data}</a>`;
                     } 
                 },
@@ -168,7 +174,9 @@
                       render: function (data, type, row) {
                         const month = '{{ $month }}';
                         const year = '{{ $year }}';
-                        return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="    color: #2f6289 !important;
+
+                        return `<a href="/employee-allowance-details/${row.uuid}??month=${month}&year=${year}" style="color: #2F6289 !important;
+
     text-decoration: underline !important;">${data}</a>`;
                     }},
             ],

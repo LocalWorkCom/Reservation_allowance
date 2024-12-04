@@ -33,17 +33,23 @@
 @section('content')
 <div class="row">
     <div class="container welcome col-11">
-        <div class="d-flex justify-content-between">
-            <p>   موظفين قطاع <span class="text-info"> {{ $sectorName }}</span></p>
-            <!-- <button id="print-report" class="btn-blue">طباعة</button> -->
-
+    <div class="d-flex justify-content-between">
+            <p>
+                موظفين قطاع 
+                <span class="text-info">{{ $sectorName }}</span> 
+               
+              
+            </p>
         </div>
     </div>
 </div>
 
 <div class="row">
     <div class="container col-11 mt-3 py-5 pb-4">
-       
+    <div class="d-flex justify-content-end px-3" >
+                <h4 class="px-2">الشهر: <span class="text-info">{{ $month }}</span></h4>
+                <h4 class="px-2">السنة: <span class="text-info">{{ $year }}</span></h4>
+            </div>
             <div class="bg-white">
                 @if (session()->has('message'))
                     <div class="alert alert-info">
@@ -60,7 +66,7 @@
             <th rowspan="2">الرتبة</th>
             <th rowspan="2">الاسم</th>
             <th rowspan="2">رقم الملف</th>
-            <th rowspan="2">الادارة</th>
+          
 
           
             <th colspan="3"> ايام الحجز </th>
@@ -124,7 +130,7 @@
             return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
         }
     },
-    { data: 'department', name: 'department' },
+    // { data: 'department', name: 'department' },
     // {
     //     data: 'days',
     //     name: 'days',
