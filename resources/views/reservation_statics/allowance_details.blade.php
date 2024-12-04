@@ -27,6 +27,7 @@
                         <th>النوع</th>
                         <th>المبلغ</th>
                         <th>بواسطة</th>
+                        <th>توقيت اضافة بدل الحجز</th>
                     </tr>
                 </thead>
             </table>
@@ -60,7 +61,8 @@ $(document).ready(function() {
         { data: 'date', name: 'date' },
         { data: 'type', name: 'type' },
         { data: 'amount', name: 'amount' },
-        { data: 'created_by', name: 'created_by' } // Include creator's name
+        { data: 'created_by', name: 'created_by' },
+        { data: 'created_at', name: 'created_at' } 
     ],
     order: [[1, 'asc']],
     "oLanguage": {
