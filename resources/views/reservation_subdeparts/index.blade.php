@@ -83,7 +83,8 @@
                     render: function(data, type, row) {
                         const month = '{{ $month }}';
                         const year = '{{ $year }}';
-                        return `<a href="/department-employees/${row.uuid}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                        return `<a href="/department-employees/${row.uuid}?month=${month}&year=${year}" style="color: #2F6289 !important;
+                                text-decoration: underline !important;">${data}</a>`;
                     }
                  },
                 { data: 'remaining_amount', name: 'remaining_amount' },
@@ -92,7 +93,8 @@
                     render: function(data, type, row) {
                         const month = '{{ $month }}';
                         const year = '{{ $year }}';
-                        return `<a href="/subdepartment-employees/${row.uuid}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                        return `<a href="/subdepartment-employees/${row.uuid}?month=${month}&year=${year}" style="color: #2F6289 !important;
+                                text-decoration: underline !important;">${data}</a>`;
                     }
                 },
                 { 
@@ -101,7 +103,8 @@
                     render: function(data, type, row) {
                         const month = '{{ $month }}';
                         const year = '{{ $year }}';
-                        return `<a href="/department-employees/${row.uuid}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                        return `<a href="/department-employees/${row.uuid}?month=${month}&year=${year}" style="color: #2F6289 !important;
+                                text-decoration: underline !important;">${data}</a>`;
                     }
                 },
                 {
@@ -109,7 +112,8 @@
                     render: function(data, type, row) {
                         const month = '{{ $month }}';
                         const year = '{{ $year }}';
-                        return `<a href="/subdepartment-not-received/${row.uuid}?month=${month}&year=${year}" style="color:blue !important;">${data}</a>`;
+                        return `<a href="/subdepartment-not-received/${row.uuid}?month=${month}&year=${year}" style="color: #2F6289 !important;
+                                text-decoration: underline !important;">${data}</a>`;
                     }
                 }
             ],

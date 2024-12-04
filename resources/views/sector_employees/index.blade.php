@@ -37,12 +37,8 @@
             <p>
                 موظفين قطاع 
                 <span class="text-info">{{ $sectorName }}</span> 
-                <br>
-                <small>
-                    للفترة: 
-                    <span class="text-info">{{ $month }}</span> /
-                    <span class="text-info">{{ $year }}</span>
-                </small>
+               
+              
             </p>
         </div>
     </div>
@@ -50,7 +46,10 @@
 
 <div class="row">
     <div class="container col-11 mt-3 py-5 pb-4">
-       
+    <div class="d-flex justify-content-end px-3" >
+                <h4 class="px-2">الشهر: <span class="text-info">{{ $month }}</span></h4>
+                <h4 class="px-2">السنة: <span class="text-info">{{ $year }}</span></h4>
+            </div>
             <div class="bg-white">
                 @if (session()->has('message'))
                     <div class="alert alert-info">
