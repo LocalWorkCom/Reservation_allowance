@@ -151,6 +151,7 @@
                                 <th>نوع بدل الحجز</th>
                                 <th>نوع بدل الحجز</th>
                                 <th>اليومية</th>
+                                <th>ملاحظات</th>
                                 <!-- <th style="width:150px;">العمليات</th>-->
                             </tr>
                         </thead>
@@ -245,6 +246,10 @@ $(document).ready(function() {
             {
                 data: 'employee_allowance_amount',
                 name: 'employee_allowance_amount'
+            },
+            {
+                data: 'notes',
+                name: 'notes'
             }
         ],
         order: [0, 'asc'],

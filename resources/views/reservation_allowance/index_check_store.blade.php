@@ -94,7 +94,19 @@
                     <div>
                         <p> بدل حجز بالهويات</p>
                     </div>
-
+                    <?php /*@if(Cache::get(auth()->user()->id."_employee_new_add") != null)*/?>
+                <!-- <div class="col-lg-12" style="text-align: right"> -->
+                    <form method="post" action="{{ route('reservation_allowances.store.all') }}">
+                        @csrf
+                        <input type="hidden" name="date" value="{{$to_day}}">
+                        <input type="hidden" name="type" value="{{$type}}">
+                        <input type="hidden" name="sector_id" value="{{$sectorId}}">
+                        <input type="hidden" name="departement_id" value="{{$departmentId}}">
+                        <button class="btn btn-blue py-2 px-3 mx-2" type="submit">اعتماد الكشف</button>
+                        <button class="btn btn-blue py-2 px-3" onclick="history.back()" type="button" style="background-color:red;">الغاء</button>
+                        </from>
+                <!-- </div> -->
+                <?php /*@endif*/?>
                   
             </div>
         </div>
@@ -126,19 +138,7 @@
                     <option selected disabled>وكيل الوزارة المساعد لشئون امن المنافذ</option>
                     <option>1</option>
                 </select> -->
-                @if(Cache::get(auth()->user()->id."_employee_new_add") != null)
-                <div class="col-lg-12" style="text-align: right">
-                    <form method="post" action="{{ route('reservation_allowances.store.all') }}">
-                        @csrf
-                        <input type="hidden" name="date" value="{{$to_day}}">
-                        <input type="hidden" name="type" value="{{$type}}">
-                        <input type="hidden" name="sector_id" value="{{$sectorId}}">
-                        <input type="hidden" name="departement_id" value="{{$departmentId}}">
-                        <button class="btn btn-success py-2 px-3 mx-2" type="submit">اعتماد الكشف</button>
-                        <button class="btn btn-danger py-2 px-3" onclick="history.back()" type="button">الغاء</button>
-                        </from>
-                </div>
-                @endif
+               
             </div>
  
 
@@ -146,28 +146,28 @@
             <li class="nav-item " role="presentation ">
                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
                     role="tab" aria-controls="home" aria-selected="true">
-                 <span class="tab-head">   الموظفين الذين سيتم اضافتهم </span><span class="text-info">( {{ $employee_new_add ? count($employee_new_add) : 0}} )</span>
+                    الموظفين الذين سيتم اضافتهم ( {{ $employee_new_add ? count($employee_new_add) : 0}} )
                 </button>
             </li>
 
             <li class="nav-item" role="presentation">
                 <button class="nav-link " id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
                     role="tab" aria-controls="profile" aria-selected="false">
-                <span class="tab-head">    الموظفين غير مسجلين فى الادارة او القطاع </span> <span class="text-info">( {{ $employee_not_dept ? count($employee_not_dept) : 0}} )</span> 
+                   الموظفين غير مسجلين فى الادارة او القطاع ( {{ $employee_not_dept ? count($employee_not_dept) : 0}} )
                 </button>
             </li>
 
             <li class="nav-item" role="presentation">
                 <button class="nav-link " id="existing-tab" data-bs-toggle="tab" data-bs-target="#existing" type="button"
                     role="tab" aria-controls="existing" aria-selected="false">
-                    <span class="tab-head">موظفين لديهم بدل حجز اليوم </span><span class="text-info">( 0 )</span>
+                   موظفين لديهم بدل حجز اليوم ( {{ $employee_existing ? count($employee_existing) : 0}} )
                 </button>
             </li>
 
             <li class="nav-item" role="presentation">
                 <button class="nav-link " id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
                     role="tab" aria-controls="contact" aria-selected="false">
-                    <span class="tab-head">موظفين ارقام الملفات خطأ </span><span class="text-info">( {{ $employee_not_found ? count($employee_not_found) : 0}} )</span>
+                   موظفين ارقام الملفات خطأ ( {{ $employee_not_found ? count($employee_not_found) : 0}} )
                 </button>
             </li>
             
@@ -227,7 +227,7 @@
                             <td class="text-dark fw-bolder">{{$employee_notdept->name}}</td>
                             <td class="text-dark fw-bolder">{{$employee_notdept->file_number}}</td>
                             <td class="text-dark fw-bolder">{{$employee_notdept->department_id != null ? $employee_notdept->department->name : ""}}</td>
-                            <td class="text-dark fw-bolder"><a href="#">اضف بدل حجز</a></td>
+                            <td class="text-dark fw-bolder"><a href="#" onclick="add_reservation_to_employee('{{$employee_notdept->uuid}}')">اضف بدل حجز</a></td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -238,8 +238,8 @@
             </div>
 
             <div class="tab-pane fade" id="existing" role="tabpanel" aria-labelledby="existing-tab">
-                @if($employee_not_dept)
-                <?php /*<table class="table table-bordered ">
+                @if($employee_existing)
+                <table class="table table-bordered ">
                     <thead>
                         <tr >
                             <th style="width:5%">م</th>
@@ -250,18 +250,18 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($employee_not_dept as $K_employee_notdept=>$employee_notdept)
+                        @foreach($employee_existing as $K_employee_existing=>$employee_existing)
                         <tr class="text-dark">
-                            <td class="text-dark fw-bolder">{{$K_employee_notdept+1}}</td>
-                            <td class="text-dark fw-bolder">{{$employee_notdept->grade != null ? $employee_notdept->grade->name : ""}}</td>
-                            <td class="text-dark fw-bolder">{{$employee_notdept->name}}</td>
-                            <td class="text-dark fw-bolder">{{$employee_notdept->file_number}}</td>
-                            <td class="text-dark fw-bolder">{{$employee_notdept->department_id != null ? $employee_notdept->department->name : ""}}
+                            <td class="text-dark fw-bolder">{{$K_employee_existing+1}}</td>
+                            <td class="text-dark fw-bolder">{{$employee_existing->grade != null ? $employee_existing->grade->name : ""}}</td>
+                            <td class="text-dark fw-bolder">{{$employee_existing->name}}</td>
+                            <td class="text-dark fw-bolder">{{$employee_existing->file_number}}</td>
+                            <td class="text-dark fw-bolder">{{$employee_existing->department_id != null ? $employee_existing->department->name : ""}}
                             </td>
                         </tr>
                         @endforeach
                     </tbody>
-                </table>*/?>
+                </table>
                 @else
                 <h3 class="text-center text-info"> لا يوجد بيانات</h3>
                 @endif
@@ -296,7 +296,7 @@
 
         </div>
 
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
 $(".select2").select2({
@@ -317,6 +317,28 @@ $('#sector_id').on('select2:select', function(e) {
 
     });
 });
+
+function add_reservation_to_employee($employee)
+{
+    Swal.fire({
+        title: 'تنبيه',
+        text: 'هل انت متاكد من انك تريد ان تضيف بدل حجز لهذا الموظف',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'نعم, اعتمد',
+        cancelButtonText: 'إلغاء',
+        confirmButtonColor: '#3085d6'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            //window.location.href = map_url;
+            var map_url = "{{ route('reservation_allowances.add_reservation_allowances_employes_id', ['uuid']) }}";
+            map_url = map_url.replace('uuid', $employee);
+            $.get(map_url, function(data) {});
+        } else {
+
+        }
+    });
+}
 
 function initDept() {
     $("#departement_id").select2({
@@ -439,29 +461,5 @@ $(document).ready(function() {
 
 });
 </script>
-<script>
-$('.c-radio').on('change', function() {
-    // Get the selected value
-    var selectedValue = $(this).val();
-    console.log("Selected option: " + selectedValue);
 
-    // Perform actions based on the selected value
-    if (selectedValue === '0') {
-        alert("You selected 0");
-    } else if (selectedValue === '1') {
-        alert("You selected Option 1");
-    } else if (selectedValue === '2') {
-        alert("You selected Option 2");
-    }
-});
-
-import {
-    Tab,
-    initMDB
-} from "mdb-ui-kit";
-
-initMDB({
-    Tab
-});
-</script>
 @endpush

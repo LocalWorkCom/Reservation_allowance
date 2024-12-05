@@ -95,7 +95,7 @@ class UserController extends Controller
                 ->when($flag !== 'all', function ($query) use ($flag) {
                     return $query->where('flag', $flag);
                 })
-                ->whereIn('grade_id', $gradeall)
+                ->whereIn('grade_id', $gradeall)->orwhereNull('grade_id')
                 ->count();
 
             // For 'person' query
@@ -132,7 +132,7 @@ class UserController extends Controller
                         return $query->where('flag', $flag);
                     })
                     ->whereNull('department_id')
-                    ->whereIn('grade_id', $gradeall)
+                    ->whereIn('grade_id', $gradeall)->orwhereNull('grade_id')
                     ->count();
 
                 // For 'person' query
@@ -171,7 +171,7 @@ class UserController extends Controller
                         return $query->where('flag', $flag);
                     })
                     ->whereNotNull('department_id')
-                    ->whereIn('grade_id', $gradeall)
+                    ->whereIn('grade_id', $gradeall)->orwhereNull('grade_id')
                     ->count();
 
                 // For 'person' query
@@ -208,7 +208,7 @@ class UserController extends Controller
             $subdepartment_ids = Departements::where('parent_id', $search_id)->pluck('id');
             $all = User::whereIn('department_id', $subdepartment_ids)->when($flag !== 'all', function ($query) use ($flag) {
                 return $query->where('flag', $flag);
-            })->whereIn('grade_id', $gradeall)->count();
+            })->whereIn('grade_id', $gradeall)->orwhereNull('grade_id')->count();
 
             $person = User::whereIn('department_id', $subdepartment_ids)->when($flag !== 'all', function ($query) use ($flag) {
                 return $query->where('flag', $flag);
@@ -229,7 +229,7 @@ class UserController extends Controller
 
                     $all = User::when($flag !== 'all', function ($query) use ($flag) {
                         return $query->where('flag', $flag);
-                    })->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeall)->count();
+                    })->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeall)->orwhereNull('grade_id')->count();
                     $person = User::when($flag !== 'all', function ($query) use ($flag) {
                         return $query->where('flag', $flag);
                     })->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeperson)->count();
@@ -248,7 +248,7 @@ class UserController extends Controller
                             $q->where('department_id', $my_dep)
                                 ->orWhereIn('department_id', $subDep);
                         })
-                        ->whereIn('grade_id', $gradeall)
+                        ->whereIn('grade_id', $gradeall)->orwhereNull('grade_id')
                         ->count();
                     $person = User::when($flag !== 'all', function ($query) use ($flag) {
                         return $query->where('flag', $flag);
@@ -277,7 +277,7 @@ class UserController extends Controller
                 if (auth()->user()->sector && !auth()->user()->department_id) {
                     $all = User::when($flag !== 'all', function ($query) use ($flag) {
                         return $query->where('flag', $flag);
-                    })->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeall)->count();
+                    })->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeall)->orwhereNull('grade_id')->count();
                     $person = User::when($flag !== 'all', function ($query) use ($flag) {
                         return $query->where('flag', $flag);
                     })->where('sector', auth()->user()->sector)->whereIn('grade_id', $gradeperson)->count();
@@ -296,7 +296,7 @@ class UserController extends Controller
                             $q->where('department_id', $my_dep)
                                 ->orWhereIn('department_id', $subDep);
                         })
-                        ->whereIn('grade_id', $gradeall)->count();
+                        ->whereIn('grade_id', $gradeall)->orwhereNull('grade_id')->count();
                     $person = User::when($flag !== 'all', function ($query) use ($flag) {
                         return $query->where('flag', $flag);
                     })->where(function ($q) use ($my_dep, $subDep) {
@@ -319,7 +319,7 @@ class UserController extends Controller
             } elseif (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) {
                 $all = User::when($flag !== 'all', function ($query) use ($flag) {
                     return $query->where('flag', $flag);
-                })->whereIn('grade_id', $gradeall)->count();
+                })->whereIn('grade_id', $gradeall)->orwhereNull('grade_id')->count();
                 $person = User::when($flag !== 'all', function ($query) use ($flag) {
                     return $query->where('flag', $flag);
                 })->whereIn('grade_id', $gradeperson)->count();
@@ -487,7 +487,7 @@ class UserController extends Controller
         if ($filter == 'all') {
 
             $all = Grade::pluck('id')->toArray();
-            $data->whereIn('grade_id', $all);
+            $data->whereIn('grade_id', $all)->orwhereNull('grade_id');
         } elseif ($filter == 'person') {
             $person = Grade::where('type', 3)->pluck('id')->toArray();
             $data->whereIn('grade_id', $person);
@@ -501,7 +501,6 @@ class UserController extends Controller
         }
         // Finally, fetch the results
         $data = $data->orderby('grade_id', 'asc')->get();
-
         return DataTables::of($data)->addColumn('action', function ($row) {
             return $row;
         })
@@ -685,11 +684,12 @@ class UserController extends Controller
 
         if ($user && $user->last_login == null && $user->flag == 'user') {
             return 1;
+        } else if ($user && $user->last_login != null && $user->flag == 'user') {
+            return 2;
         } else if ($user && $user->flag != 'user') {
             return -1;
         } else if (!$user) {
             return -1;
-
         }
 
         return 0;
@@ -839,6 +839,7 @@ class UserController extends Controller
     {
         $messages = [
             'number.required' => 'رقم العسكري مطلوب.',
+            'temp_password.required' => 'كلمة المرور المؤقتة مطلوبة.',
             'password.required' => 'كلمة المرور مطلوبة.',
             'password_confirm.same' => 'تأكيد كلمة المرور يجب أن يتطابق مع كلمة المرور.',
         ];
@@ -847,21 +848,39 @@ class UserController extends Controller
             'number' => 'required|string',
             'password' => 'required|string',
             'password_confirm' => 'same:password',
+            'temp_password' => 'required|string',
         ], $messages);
 
+        $credentials = [
+            'password' => $request->temp_password
+        ];
+
         if ($validatedData->fails()) {
-            return view('resetpassword')
+            return redirect()->back()
                 ->withErrors($validatedData)
                 ->with('number', $request->number);
         }
 
-        $user = User::where('email', $request->number)->orwhere('file_number', $request->number)->first();
-
+        $user = User::where('military_number', $request->number)->orwhere('Civil_number', $request->number)->orwhere('file_number', $request->number)->first();
+        // dd([$temp_pass,$user->password]);
+        if ($user->military_number === $request->number) {
+            $credentials['military_number'] = $request->number;
+        } elseif ($user->file_number === $request->number) {
+            $credentials['file_number'] = $request->number;
+        } else {
+            $credentials['civil_number'] = $request->number;
+        }
         if (!$user) {
             return back()->with('error', 'الرقم العسكري المقدم لا يتطابق مع سجلاتنا');
         }
+
+        // dd(Auth::attempt($credentials));
+        if (!Auth::attempt($credentials)) {
+            return back()->with('error', 'كلمة المرور المؤقتة غير صحيحة');
+        }
+
         if (Hash::check($request->password, $user->password) == true) {
-            return view('resetpassword')
+            return redirect()->back()
                 ->withErrors('لا يمكن أن تكون كلمة المرور الجديدة هي نفس كلمة المرور الحالية')
                 ->with('number', $request->number); // Define $firstlogin here if needed
         }
