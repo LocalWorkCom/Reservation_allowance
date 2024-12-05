@@ -1314,41 +1314,8 @@ class ReservationAllowanceController extends Controller
             $get_employees = Cache::get(auth()->user()->id);
             $employee_amount = 0;
             $reservation_amout = 0;
-            // $sector_id = 0;
-            // $departement_id = 0;
-            
-            // foreach($get_employees as $get_employee){
-            //     $employee = User::where('uuid', $get_employee['uuid'])->first();
-
-            //     if($employee){// check if employee
-            //         if($employee->grade_id != null){ // check if employee has grade
-            //             if($get_employee['type'] == 1){
-            //                 $grade_value = $employee->grade->value_all;
-            //             }else{
-            //                 $grade_value = $employee->grade->value_part;
-            //             }
-
-            //             $employee_amount += $grade_value;
-
-            //             /*$type_departement = 1;
-            //             $reservation_amout = departements::where('id', $employee->department_id)->first()->reservation_allowance_amount;
-            //             if($employee->department_id == null){
-            //                 $type_departement = 2;
-            //                 $reservation_amout = departements::where('id', $employee->sector)->first()->reservation_allowance_amount;
-            //             }*/
-
-            //             // $type_departement = 1;
-            //             //     $reservation_amout = sector::where('id', $employee->sector)->first()->reservation_allowance_amount;
-            //             // if($employee->department_id != 0){
-            //             //     $type_departement = 2;
-            //             //     $reservation_amout = departements::where('id', $employee->department_id)->first()->reservation_allowance_amount;
-            //             // }
-                        
-
-            //         }
-            //     }
-            // }
-
+            $sector_mandate = null;
+            $department_mandate = null;
 
             $type_departement = 1;
             $reservation_amout = sector::where('id', $sector_id)->first()->reservation_allowance_amount;
@@ -1360,23 +1327,7 @@ class ReservationAllowanceController extends Controller
 
             $first_day = date('Y-m-01');
             $last_day = date('Y-m-t');
-            
-            // $get_all_employee_amount = ReservationAllowance::Query();
-            // if($departement_id != 0){
-            //     $get_all_employee_amount = $get_all_employee_amount->where('departement_id', $departement_id);
-            // }
-            // if($sector_id != 0){
-            //     $get_all_employee_amount = $get_all_employee_amount->where('sector_id', $sector_id);
-            // }
-            // $get_all_employee_amount = $get_all_employee_amount->whereBetween('date',[$first_day, $last_day])->sum('amount');
 
-            // if($reservation_amout > 0){
-            //     $reservation_amout = $reservation_amout - $get_all_employee_amount;           
-            //     if($reservation_amout <= $employee_amount){
-            //         return redirect()->back()->with('error','عفوا لقد تجاوزت ملبغ بدل الحجز');
-            //     }
-            // }
-            
             //add ReservationAllowance
             foreach($get_employees as $get_employee){
 
@@ -1393,29 +1344,6 @@ class ReservationAllowanceController extends Controller
                         if($employee->department_id == null){
                             $type_departement = 2;
                         }
-
-
-                        // if($get_employee['type'] != 0){
-                        //     $sector_id = $employee->sector;
-                        //     $departement_id = $employee->department_id;
-                        //     $check_reservation_allowance = ReservationAllowance::updateOrCreate(
-                        //         [
-                        //             'user_id' => $employee->id,
-                        //             'date' => $to_day
-                        //         ],
-                        //         [
-                        //             'type' => $get_employee['type'],
-                        //             'amount' => $grade_value,
-                        //             'day' => $to_day_name,
-                        //             'sector_id' => $employee->sector,
-                        //             'departement_id' => $employee->department_id,
-                        //             'grade_id' => $employee->grade_id,
-                        //             'type_departement' => $type_departement,
-                        //             'created_by' => $user->id
-                        //         ]
-                        //     );
-                        // }
-
 
                         $check_reservation_allowance = ReservationAllowance::where(['user_id' => $employee->id, 'date' => $to_day])->first();
                         if(!$check_reservation_allowance){
@@ -1453,23 +1381,15 @@ class ReservationAllowanceController extends Controller
                                 }
                             }
 
-                            if($sector_mandate != 0 || $department_mandate != 0){
+                            if($sector_mandate != null || $department_mandate != null){
                                 $add_reservation_allowance->mandate = 1;
                             }
     
                             $add_reservation_allowance->save();
 
-                            $sector_mandate = 0;
-                            $department_mandate = 0;
+                            $sector_mandate = null;
+                            $department_mandate = null;
                         }
-
-
-                        // if($get_employee['type'] == 0){
-                        //     $check_reservation_allowance = ReservationAllowance::where(['user_id' => $employee->id, 'date' => $to_day])->first();
-                        //     if($check_reservation_allowance){
-                        //         $check_reservation_allowance->delete();
-                        //     }
-                        // }
 
                     }
                 }
