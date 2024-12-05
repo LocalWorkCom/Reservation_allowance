@@ -22,6 +22,7 @@
                 </li> --}}
                 {{-- <li class="breadcrumb-item active" aria-current="page"> <a href="">
                         الادارات الرئيسية</a></li> --}}
+                
                 <li class="breadcrumb-item active" aria-current="page"><a href="">
                         قطاع {{ $sectors->name }}
                     </a></li>

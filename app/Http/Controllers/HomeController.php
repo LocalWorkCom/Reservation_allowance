@@ -19,7 +19,7 @@ class HomeController extends Controller
 
         if (Auth::user()->rule->id != 1 && Auth::user()->rule->id != 2) {
             $check = departements::where('manger', auth()->user()->id)->first();
-            
+
             if ($check && !$check->parent_id) {
                 $main = 1;
             } else {
@@ -47,6 +47,16 @@ class HomeController extends Controller
             $sec_id = ($dep) ? $dep->sector_id : 0;
             $sectorCount = Sector::where('id', $sec_id)->count();
         } elseif (Auth::user()->rule->id == 3) {
+            $empCount = User::where('flag', 'employee')->where('department_id', auth()->user()->department_id)->count();
+            $depMainCount = departements::where('parent_id', null)->where('id', auth()->user()->department_id)->count();
+            $depChiledCount = departements::where('parent_id',  auth()->user()->department_id)->orwhere('manger',  auth()->user()->id)->count();
+            // dd($depChiledCount);
+            // $depSector = departements::find(auth()->user()->department_id);
+            $dep = departements::whereNull('parent_id')->where('id', auth()->user()->department_id)->first();
+            $sec_id = ($dep) ? $dep->sector_id : 0;
+
+            $sectorCount = Sector::where('id', $sec_id)->count();
+        } else {
             $empCount = User::where('flag', 'employee')->where('department_id', auth()->user()->department_id)->count();
             $depMainCount = departements::where('parent_id', null)->where('id', auth()->user()->department_id)->count();
             $depChiledCount = departements::where('parent_id',  auth()->user()->department_id)->orwhere('manger',  auth()->user()->id)->count();
