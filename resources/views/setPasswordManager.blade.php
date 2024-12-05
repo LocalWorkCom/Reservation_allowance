@@ -70,6 +70,9 @@
                     @endif
 
                     <input type="hidden" name="number" value="{{ request()->segment(2) }}">
+                    
+                    <label for="temp_password" class="login-label-2">كلمة المرور المؤقتة</label> <br>
+                    <input type="password" name="temp_password" id="temp_password" class="login-input"><br>                    
 
                     <label for="username" class="login-label-2">ادخل كلمه المرور</label> <br>
                     <input type="password" name="password" id="username" class="login-input"><br>
@@ -80,7 +83,6 @@
 
                     <div class="btns  ">
                         <button class="btn1" type="submit"> ارسال </button> &nbsp; &nbsp; &nbsp;
-
                     </div>
                 </form>
             </div>

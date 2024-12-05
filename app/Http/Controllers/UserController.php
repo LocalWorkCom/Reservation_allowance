@@ -685,11 +685,15 @@ class UserController extends Controller
 
         if ($user && $user->last_login == null && $user->flag == 'user') {
             return 1;
-        } else if ($user && $user->flag != 'user') {
+        } 
+        else if($user && $user->last_login != null && $user->flag == 'user'){
+            return 2;
+        }
+        else if ($user && $user->flag != 'user') {
             return -1;
-        } else if (!$user) {
+        }
+        else if (!$user) {
             return -1;
-
         }
 
         return 0;
@@ -839,6 +843,7 @@ class UserController extends Controller
     {
         $messages = [
             'number.required' => 'رقم العسكري مطلوب.',
+            'temp_password.required' => 'كلمة المرور المؤقتة مطلوبة.',
             'password.required' => 'كلمة المرور مطلوبة.',
             'password_confirm.same' => 'تأكيد كلمة المرور يجب أن يتطابق مع كلمة المرور.',
         ];
@@ -847,21 +852,39 @@ class UserController extends Controller
             'number' => 'required|string',
             'password' => 'required|string',
             'password_confirm' => 'same:password',
+            'temp_password' => 'required|string',
         ], $messages);
 
+        $credentials = [
+            'password' => $request->temp_password
+        ];
+
         if ($validatedData->fails()) {
-            return view('resetpassword')
+            return redirect()->back()
                 ->withErrors($validatedData)
                 ->with('number', $request->number);
         }
 
-        $user = User::where('email', $request->number)->orwhere('file_number', $request->number)->first();
-
+        $user = User::where('military_number', $request->number)->orwhere('Civil_number', $request->number)->orwhere('file_number', $request->number)->first();
+        // dd([$temp_pass,$user->password]);
+        if ($user->military_number === $request->number) {
+            $credentials['military_number'] = $request->number;
+        } elseif ($user->file_number === $request->number) {
+            $credentials['file_number'] = $request->number;
+        } else {
+            $credentials['civil_number'] = $request->number;
+        }
         if (!$user) {
             return back()->with('error', 'الرقم العسكري المقدم لا يتطابق مع سجلاتنا');
         }
+
+        // dd(Auth::attempt($credentials));
+        if (!Auth::attempt($credentials)) {
+            return back()->with('error', 'كلمة المرور المؤقتة غير صحيحة');
+        }
+
         if (Hash::check($request->password, $user->password) == true) {
-            return view('resetpassword')
+            return redirect()->back()
                 ->withErrors('لا يمكن أن تكون كلمة المرور الجديدة هي نفس كلمة المرور الحالية')
                 ->with('number', $request->number); // Define $firstlogin here if needed
         }
