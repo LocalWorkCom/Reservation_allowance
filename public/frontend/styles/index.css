@@ -46,13 +46,13 @@ border-radius: 10px;
     background-color: rgb(245 248 253);
     border-radius: 50%;
     margin-inline: 10px;
-    color: #274373;
+    color: #072a67 !important;
     cursor: pointer;
     direction: rtl;
     font-weight: 700;
 }
 .btn-pagination:hover{
-    color:rgb(241, 13, 13);
+    color:rgb(180, 65, 15);
 }
 .btn-pagination:active{
     text-decoration: underline;
