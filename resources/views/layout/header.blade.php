@@ -147,13 +147,23 @@
                         </a>
                     </li>
                 @else
-                    <li
-                        class="nav-item {{ request()->routeIs('departments.index') ? 'active' : '' }} @isset($search) @if ($search == 'dept') active @endif @endisset">
-                        <a href="{{ route('departments.index', Auth::user()->department->uuid) }}">
-                            <!-- <img src="{{ asset('frontend/images/managements.svg') }}" alt="logo"> -->
-                            <h5>الأدارات</h5>
-                        </a>
-                    </li>
+                    @if (Auth::user()->rule->id == 3)
+                        <li
+                            class="nav-item {{ request()->routeIs('departments.index') ? 'active' : '' }} @isset($search) @if ($search == 'dept') active @endif @endisset">
+                            <a href="{{ route('departments.index', Auth::user()->department->uuid) }}">
+                                <!-- <img src="{{ asset('frontend/images/managements.svg') }}" alt="logo"> -->
+                                <h5>الأدارات</h5>
+                            </a>
+                        </li>
+                    @else
+                        <li
+                            class="nav-item {{ request()->routeIs('sub_departments.index') ? 'active' : '' }} @isset($search) @if ($search == 'dept') active @endif @endisset">
+                            <a href="{{ route('sub_departments.index', Auth::user()->department->uuid) }}">
+                                <!-- <img src="{{ asset('frontend/images/managements.svg') }}" alt="logo"> -->
+                                <h5>الأدارات</h5>
+                            </a>
+                        </li>
+                    @endif
                 @endif
 
                 @if (Auth::user()->hasPermission('view job') ||
@@ -231,21 +241,21 @@
 </div>
 </div>
 <script>
-document.addEventListener('click', function (event) {
-    const clickedDropdown = event.target.closest('.dropdown-menu, .dropdown-menu4, .dropdown-menu5');
+    document.addEventListener('click', function(event) {
+        const clickedDropdown = event.target.closest('.dropdown-menu, .dropdown-menu4, .dropdown-menu5');
 
-    // Close all dropdowns if a click occurs anywhere outside or on another dropdown
-    document.querySelectorAll('.dropdown-menu, .dropdown-menu4, .dropdown-menu5').forEach(menu => {
-        if (menu !== clickedDropdown) {
-            menu.classList.remove('show'); // Hide the dropdowns
+        // Close all dropdowns if a click occurs anywhere outside or on another dropdown
+        document.querySelectorAll('.dropdown-menu, .dropdown-menu4, .dropdown-menu5').forEach(menu => {
+            if (menu !== clickedDropdown) {
+                menu.classList.remove('show'); // Hide the dropdowns
+            }
+        });
+
+        // If clicked inside a dropdown, toggle its open/close state
+        if (clickedDropdown) {
+            clickedDropdown.classList.toggle('show');
         }
     });
-
-    // If clicked inside a dropdown, toggle its open/close state
-    if (clickedDropdown) {
-        clickedDropdown.classList.toggle('show');
-    }
-});
 </script>
 
 <script>
