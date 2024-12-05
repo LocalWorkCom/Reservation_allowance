@@ -95,13 +95,12 @@
                         <p> بدل حجز بالهويات</p>
                     </div>
                     @if(Cache::get(auth()->user()->id) != null)
-               
-               <input type="hidden" name="date" id="date" value="{{$date}}">
-               <input type="hidden" name="sector_id" id="sector_id" value="{{$sectorId}}">
-               <input type="hidden" name="departement_id" id="departement_id" value="{{$departementId}}">
-           <button class="btn-all p-2  mx-2" onclick="confirm_reservation()">اعتماد الكشف</button>
-    
-       @endif
+                        <input type="hidden" name="date" id="date" value="{{$date}}">
+                        <input type="hidden" name="sector_id" id="sector_id" value="{{$sectorId}}">
+                        <input type="hidden" name="departement_id" id="departement_id" value="{{$departementId}}">
+                        <button class="btn-blue p-2  mx-2" onclick="print_reservation()">طباعة</button>
+                        <button class="btn-blue p-2  mx-2" onclick="confirm_reservation()">اعتماد الكشف</button>
+                    @endif
                     <?php /*<form class="" id="search_employee_allowances">
                         @csrf
                         <div class="row d-flex flex-wrap">
@@ -243,12 +242,12 @@
                     <tbody>
                         @foreach($get_employee_for_all_reservations as $K_get_employee_for_all_reservation=>$get_employee_for_all_reservation)
                         <tr>
-                            <td>{{$K_get_employee_for_all_reservation+1}}</td>
-                            <td>{{$get_employee_for_all_reservation->grade != null ? $get_employee_for_all_reservation->grade->name : ""}}</td>
-                            <td>{{$get_employee_for_all_reservation->name}}</td>
-                            <td>{{$get_employee_for_all_reservation->file_number}}</td>
-                            <td>{{$get_employee_for_all_reservation->grade_value}}</td>
-                            <td>{{$get_employee_for_all_reservation->department_id != null ? $get_employee_for_all_reservation->department->name : ""}}
+                            <td class="text-dark">{{$K_get_employee_for_all_reservation+1}}</td>
+                            <td class="text-dark">{{$get_employee_for_all_reservation->grade != null ? $get_employee_for_all_reservation->grade->name : ""}}</td>
+                            <td class="text-dark">{{$get_employee_for_all_reservation->name}}</td>
+                            <td class="text-dark">{{$get_employee_for_all_reservation->file_number}}</td>
+                            <td class="text-dark">{{$get_employee_for_all_reservation->grade_value}}</td>
+                            <td class="text-dark">{{$get_employee_for_all_reservation->department_id != null ? $get_employee_for_all_reservation->department->name : ""}}
                             </td>
                         </tr>
                         @endforeach
@@ -319,6 +318,31 @@ function confirm_reservation() {
             var reservation_sector_id = document.getElementById('sector_id').value;
             var reservation_departement_id = document.getElementById('departement_id').value;
             var map_url = "{{ route('reservation_allowances.confirm_reservation_allowances', ['date', 'sector', 'departement']) }}";
+            map_url = map_url.replace('date', reservation_date);
+            map_url = map_url.replace('sector',reservation_sector_id);
+            map_url = map_url.replace('departement',reservation_departement_id);
+            window.location.href = map_url;
+        } else {
+
+        }
+    });
+}
+
+function print_reservation() {
+    Swal.fire({
+        title: 'تنبيه',
+        text: 'هل انت متاكد من انك تريد ان تطبع بدل حجز لهؤلاء الموظفين',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'نعم, اطبع',
+        cancelButtonText: 'إلغاء',
+        confirmButtonColor: '#3085d6'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            var reservation_date = document.getElementById('date').value;
+            var reservation_sector_id = document.getElementById('sector_id').value;
+            var reservation_departement_id = document.getElementById('departement_id').value;
+            var map_url = "{{ route('reservation_allowances.printReport', ['date', 'sector', 'departement']) }}";
             map_url = map_url.replace('date', reservation_date);
             map_url = map_url.replace('sector',reservation_sector_id);
             map_url = map_url.replace('departement',reservation_departement_id);

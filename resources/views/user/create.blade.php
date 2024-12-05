@@ -233,8 +233,8 @@
                                         <i class="fa-solid fa-asterisk" style="color:red; font-size:10px;"></i> الباسورد
                                     </label>
                                     <div class="password-container">
-                                        <input type="password" id="input3" name="password" class="form-control"
-                                            value="{{ old('password') }}" placeholder="الباسورد">
+                                        <input type="password" id="input3" name="password" class="form-control" 
+                                               value="{{ old('password') }}" placeholder="الباسورد" readonly>
                                         <label class="toggle-password" onclick="togglePasswordVisibility()">
                                             <i id="toggleIcon" class="fa fa-eye eye-icon"></i>
                                         </label>
@@ -707,5 +707,13 @@
                     toggleIcon.classList.add('fa-eye');
                 }
             }
+
+            function generateRandomPassword() {
+                let randomPassword = Math.floor(100000 + Math.random() * 900000);
+                document.getElementById('input3').value = randomPassword;
+            }
+            window.onload = function() {
+                generateRandomPassword();
+            };
         </script>
     @endsection
