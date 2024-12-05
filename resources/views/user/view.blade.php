@@ -93,10 +93,10 @@
                             <a href="{{ route('download-template') }}" class="btn-all text-info p-2">تحميل
                                 القالب</a>
                             <a href="{{ route('export-users') }}" class="btn-all text-info p-2"
-                                style="border-radius: 5px;">تصدير القالب</a>
+                               >تصدير القالب</a>
                             <!-- <a href="{{ route('import-view') }}" class="btn-all text-info p-2"
-                                style="border-radius: 5px;">استيراد القالب</a> -->
-                                <a class="btn-all text-info p-2" style="border-radius: 5px;" data-bs-toggle="modal" data-bs-target="#modal-add"> استيراد القالب</a>
+                               >استيراد القالب</a> -->
+                                <a class="btn-all text-info p-2"  data-bs-toggle="modal" data-bs-target="#modal-add"> استيراد القالب</a>
 
 
 

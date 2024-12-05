@@ -602,6 +602,10 @@ color: #999595;
     border: 0.5px solid #D7D8D9;
     color: #274373;
 }
+.btn-all:hover{
+    color: #032F70;
+    cursor: pointer;
+}
 .btn-all-new {
     width: auto;
     height: 65px;
@@ -724,9 +728,9 @@ color: #878686;
     width: 120px;
     text-align: right;
 }
-.table td{
-    text-align: right;
-    color: #999999;
+.table td, .table th {
+    font-size: 20px;
+    font-weight: 600;
 }
 .form-group input, .form-group textarea, .form-group select {
     font-size: 14px;
