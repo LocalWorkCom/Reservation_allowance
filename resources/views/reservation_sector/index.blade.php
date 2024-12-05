@@ -41,7 +41,7 @@
                     <!-- Month and Year Selection Form -->
 
                     <form id="filter-form" class="pb-3">
-                        <div class="d-flex justify-content-between">
+                        <div class="d-flex ">
                       <button type="submit" class="btn-all text-info">عرض
                                 الإحصائيات</button> 
                                       <div class="d-flex">
