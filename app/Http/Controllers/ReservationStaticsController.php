@@ -18,27 +18,33 @@ use Illuminate\Support\Facades\Log;
 
 class ReservationStaticsController extends Controller
 {
-    public function static($sectorUuid)
+    public function static(Request $request, $sectorUuid)
 {
-    if (auth()->check() && in_array(auth()->user()->rule_id, [2, 4])) { 
-        $sector = Sector::where('uuid', $sectorUuid)->first();
+    if (auth()->check() && in_array(auth()->user()->rule_id, [2, 4])) {
+        $month = $request->input('month');
+        $year = $request->input('year');
 
-
-        if (!$sector) {
-            return abort(404, 'Sector not found');
+        // Validate inputs
+        if (!$month || !$year || !is_numeric($month) || !is_numeric($year)) {
+            return abort(400, 'Invalid month or year.');
         }
-    
+
+        $sector = Sector::where('uuid', $sectorUuid)->first();
+        if (!$sector) {
+            return abort(404, 'Sector not found.');
+        }
+
         return view('reservation_statics.index', [
             'sector_id' => $sector->uuid,
             'sector_name' => $sector->name,
-        
+            'month' => $month,
+            'year' => $year,
         ]);
     } else {
         return abort(403, 'Unauthorized action.');
     }
 }
 
-    
 public function getAll(Request $request, $sectorUuid)
 {
     try {
@@ -51,14 +57,16 @@ public function getAll(Request $request, $sectorUuid)
 
         $sector = Sector::where('uuid', $sectorUuid)->first();
         if (!$sector) {
+            Log::error("Sector not found for UUID: $sectorUuid");
             return response()->json(['error' => 'Sector not found'], 404);
         }
-        Log::error(" " . $sector->id);
+
+        Log::info("Fetching departments for Sector ID: {$sector->id}, Month: $month, Year: $year");
 
         $query = departements::withCount('children')
-            ->where('sector_id', $sector->id) 
+            ->where('sector_id', $sector->id)
             ->whereNull('parent_id');
-
+          
         $data = $query->orderBy('updated_at', 'desc')->get();
 
         return DataTables::of($data)
@@ -70,8 +78,8 @@ public function getAll(Request $request, $sectorUuid)
                     ->where('department_id', $row->id)
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
-                    ->orderBy('date', 'desc') 
-                    ->value('amount'); 
+                    ->orderBy('created_at', 'desc') 
+                    ->value('amount');
             
                 
                 if (is_null($amount) || $amount == 0) {
@@ -80,8 +88,6 @@ public function getAll(Request $request, $sectorUuid)
             
                 return number_format($amount, 2) . ' د.ك'; 
             })
-            
-            
             ->addColumn('registered_by', function ($row) use ($month, $year) {
                 $sum = ReservationAllowance::where('departement_id', $row->id)
                     ->whereYear('date', $year)
@@ -94,11 +100,11 @@ public function getAll(Request $request, $sectorUuid)
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
                     ->sum('amount');
-                    $historicalAmount = DB::table('history_allawonces')
+                $historicalAmount = DB::table('history_allawonces')
                     ->where('department_id', $row->id)
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
-                    ->orderBy('date', 'desc') 
+                    ->orderBy('created_at', 'desc') 
                     ->value('amount');
                 
              
@@ -115,34 +121,29 @@ public function getAll(Request $request, $sectorUuid)
                     ->whereYear('created_at', $year)
                     ->whereMonth('created_at', $month)
                     ->distinct('user_id')
-                    ->count('user_id'); 
+                    ->count('user_id');
             })
-            
             ->addColumn('received_allowance_count', function ($row) use ($month, $year) {
                 return ReservationAllowance::where('departement_id', $row->id)
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
                     ->distinct('user_id')
-                    ->count('user_id'); 
+                    ->count('user_id');
             })
-            
             ->addColumn('did_not_receive_allowance_count', function ($row) use ($month, $year) {
                 $employeesCount = DB::table('user_departments')
                     ->where('department_id', $row->id)
                     ->whereYear('created_at', $year)
                     ->whereMonth('created_at', $month)
                     ->distinct('user_id')
-                    ->count('user_id'); 
-            
+                    ->count('user_id');
                 $receivedAllowanceCount = ReservationAllowance::where('departement_id', $row->id)
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
                     ->distinct('user_id')
-                    ->count('user_id'); 
-            
+                    ->count('user_id');
                 return $employeesCount - $receivedAllowanceCount;
             })
-            
             ->make(true);
     } catch (\Exception $e) {
         Log::error("Error fetching departments: " . $e->getMessage());
@@ -155,6 +156,7 @@ public function getAll(Request $request, $sectorUuid)
         ]);
     }
 }
+
 
 
 
@@ -217,7 +219,18 @@ public function getDepartmentEmployees(Request $request, $departmentUuid)
 
     return DataTables::of($users)
         ->addColumn('file_number', fn($user) => $user->file_number)
-        ->addColumn('name', fn($user) => $user->name)
+        ->addColumn('name', function ($user) use ( $department, $month, $year) {
+            $latestRecord = DB::table('user_departments')
+                ->where('user_id', $user->id)
+                ->where('department_id',  $department->id)
+                ->whereYear('created_at', $year)
+                ->whereMonth('created_at', $month)
+                ->orderBy('created_at', 'desc')
+                ->first();
+        
+            $transferred = $latestRecord && $latestRecord->flag == '0' ? ' (تم النقل)' : ''; 
+            return $user->name . $transferred;
+        })
         ->addColumn('grade', fn($user) => $user->grade_name) 
         ->addIndexColumn()
         ->make(true);

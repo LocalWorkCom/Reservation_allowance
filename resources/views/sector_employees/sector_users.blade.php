@@ -30,8 +30,7 @@
                         <th>الرتبة</th>
                         <th>اسم الموظف</th>
                         <th>رقم الملف</th>
-                        <th>الادارة</th>
-                       
+                     
                     </tr>
                 </thead>
             </table>
@@ -65,7 +64,6 @@ $(document).ready(function () {
             { data: 'grade', name: 'grade' },
             { data: 'name', name: 'name' },
             { data: 'file_number', name: 'file_number' },
-            { data: 'department', name: 'department' },
             
         ],
         order: [[1, 'asc']],
