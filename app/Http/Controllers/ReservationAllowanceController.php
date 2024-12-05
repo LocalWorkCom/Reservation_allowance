@@ -187,7 +187,6 @@ class ReservationAllowanceController extends Controller
         return view('reservation_allowance.create_employee_new', compact('department_type', 'sector_id', 'departement_id', 'sectors', 'get_departements', 'employees', 'reservation_allowance_type'));
     }
 
-
     /**
      * Store a newly created resource in storage.
      */
@@ -741,37 +740,33 @@ class ReservationAllowanceController extends Controller
             $departement_id = 0;
         }
 
-        if($sector_id != 0){
-            $sectorId = $sector_id;
-        }else{
+        if($sector_id == 0){
             if($user_gest->rule_id != 2){
-                $sectorId = $user_gest->sector;
+                $sector_id = $user_gest->sector;
             }
         }
 
-        if($departement_id != 0){
-            $departementId = $departement_id;
-        }else{
+        if($departement_id == 0){
             if($user_gest->rule_id == 3){
-                $departementId = $user_gest->department_id;
+                $departement_id = $user_gest->department_id;
             }
         }
 
-        $data = User::whereIn('id', function ($query) use ($user_gest, $sectorId, $departementId, $month, $year) {
+        $data = User::whereIn('id', function ($query) use ($user_gest, $sector_id, $departement_id, $month, $year) {
             $query->select('user_id')
                   ->from('reservation_allowances');
-                  if($sectorId != 0){
-                    $query->where('sector_id', $sectorId);
+                  if($sector_id != 0){
+                    $query->where('sector_id', $sector_id);
                   }else{
                         if($user_gest->rule_id != 2){
-                            $query->where('sector_id', $sectorId);
+                            $query->where('sector_id', $sector_id);
                         }
                   }
-                  if($departementId != 0){
-                    $query->where('departement_id', $departementId);
+                  if($departement_id != 0){
+                    $query->where('departement_id', $departement_id);
                   }else{
                         if($user_gest->rule_id == 3){
-                            $query->where('departement_id', $departementId);
+                            $query->where('departement_id', $departement_id);
                         }
                   }
             $query->whereYear('date', $year)
@@ -787,18 +782,18 @@ class ReservationAllowanceController extends Controller
 
         $total_amount_reservation = ReservationAllowance::whereYear('date', $year)
                         ->whereMonth('date', $month);
-                    if($sectorId != 0){
-                        $total_amount_reservation->where('sector_id', $sectorId);
+                    if($sector_id != 0){
+                        $total_amount_reservation->where('sector_id', $sector_id);
                     }else{
                         if($user_gest->rule_id != 2){
-                            $total_amount_reservation->where('sector_id', $sectorId);
+                            $total_amount_reservation->where('sector_id', $sector_id);
                         }
                     }
-                    if($departementId != 0){
-                        $total_amount_reservation->where('departement_id', $departementId);
+                    if($departement_id != 0){
+                        $total_amount_reservation->where('departement_id', $departement_id);
                     }else{
                         if($user_gest->rule_id == 3){
-                            $total_amount_reservation->where('departement_id', $departementId);
+                            $total_amount_reservation->where('departement_id', $departement_id);
                         }
                     }
         $total_amount = $total_amount_reservation->sum("amount");
@@ -818,72 +813,73 @@ class ReservationAllowanceController extends Controller
             ->addColumn('employee_file_num', function ($row) {
                 if($row->file_number == null){return "لا يوجد رقم ملف";}else{return $row->file_number;}
             })
-            ->addColumn('allowance_all_count_but', function ($user) use ($user_gest ,$sectorId, $departementId, $month, $year) {
+            ->addColumn('allowance_all_count_but', function ($user) use ($user_gest ,$sector_id, $departement_id, $sectorId, $departementId, $month, $year) {
                 $allowance_all_count = ReservationAllowance::where('user_id', $user->id)
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
                     ->where('type', '1');
-                if($sectorId != 0){
-                    $allowance_all_count->where('sector_id', $sectorId);
+                if($sector_id != 0){
+                    $allowance_all_count->where('sector_id', $sector_id);
                 }else{
                     if($user_gest->rule_id != 2){
-                        $allowance_all_count->where('sector_id', $sectorId);
+                        $allowance_all_count->where('sector_id', $sector_id);
                     }
                 }
-                if($departementId != 0){
-                    $allowance_all_count->where('departement_id', $departementId);
+                if($departement_id != 0){
+                    $allowance_all_count->where('departement_id', $departement_id);
                 }else{
                     if($user_gest->rule_id == 3){
-                        $allowance_all_count->where('departement_id', $departementId);
+                        $allowance_all_count->where('departement_id', $departement_id);
                     }
                 }
                 $allowance_all_count->get();
 
                 //return "بدل حجز كلى "."( ".$allowance_all_count." )";
-                return $allowance_all_count->count();
+                return "<a href=".route('reservation_allowances.details',[$user->uuid, $sectorId, $departementId, $month, $year,1]).">".$allowance_all_count->count()."</a>";
             })
 
-            ->addColumn('allowance_part_count_but', function ($user) use ($user_gest ,$sectorId, $departementId, $month, $year) {
+            ->addColumn('allowance_part_count_but', function ($user) use ($user_gest ,$sector_id, $departement_id, $sectorId, $departementId, $month, $year) {
                 $allowance_part_count = ReservationAllowance::where('user_id', $user->id)
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
                     ->where('type', '2');
-                if($sectorId != 0){
-                    $allowance_part_count->where('sector_id', $sectorId);
+                if($sector_id != 0){
+                    $allowance_part_count->where('sector_id', $sector_id);
                 }else{
                     if($user_gest->rule_id != 2){
-                        $allowance_part_count->where('sector_id', $sectorId);
+                        $allowance_part_count->where('sector_id', $sector_id);
                     }
                 }
-                if($departementId != 0){
-                    $allowance_part_count->where('departement_id', $departementId);
+                if($departement_id != 0){
+                    $allowance_part_count->where('departement_id', $departement_id);
                 }else{
                     if($user_gest->rule_id == 3){
-                        $allowance_part_count->where('departement_id', $departementId);
+                        $allowance_part_count->where('departement_id', $departement_id);
                     }
                 }
                 $allowance_part_count->get();
 
                 //return "بدل حجز جزئى "."( ".$allowance_part_count." )";
-                return $allowance_part_count->count();
+                //return $allowance_part_count->count();
+                return "<a href=".route('reservation_allowances.details',[$user->uuid, $sectorId, $departementId, $month, $year,2]).">".$allowance_part_count->count()."</a>";
             })
 
-            ->addColumn('allowance_sum_but', function ($user) use ($user_gest ,$sectorId, $departementId, $month, $year) {
+            ->addColumn('allowance_sum_but', function ($user) use ($user_gest ,$sector_id, $departement_id, $month, $year) {
                 $allowance_sum = ReservationAllowance::where('user_id', $user->id)
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month);
-                if($sectorId != 0){
-                    $allowance_sum->where('sector_id', $sectorId);
+                if($sector_id != 0){
+                    $allowance_sum->where('sector_id', $sector_id);
                 }else{
                     if($user_gest->rule_id != 2){
-                        $allowance_sum->where('sector_id', $sectorId);
+                        $allowance_sum->where('sector_id', $sector_id);
                     }
                 }
-                if($departementId != 0){
-                    $allowance_sum->where('departement_id', $departementId);
+                if($departement_id != 0){
+                    $allowance_sum->where('departement_id', $departement_id);
                 }else{
                     if($user_gest->rule_id == 3){
-                        $allowance_sum->where('departement_id', $departementId);
+                        $allowance_sum->where('departement_id', $departement_id);
                     }
                 }
                 $allowance_sum->get();
@@ -970,8 +966,6 @@ class ReservationAllowanceController extends Controller
 
         return view('reservation_allowance.check_sector_department', compact('check_sector', 'check_department'));
     }
-
-    
 
     public function search_employee(Request $request)
     {
@@ -1606,6 +1600,81 @@ class ReservationAllowanceController extends Controller
         // Generate PDF
         $pdf = $this->generatePDF($data);
         return $pdf->Output('reservation_report.pdf', 'I');
+    }
+
+    public function details($uuid, $sector_ids, $departement_ids, $month, $year, $type)
+    {
+        //try{
+            $user_gest = auth()->user();
+            $sectorDetails = "";
+            $departementDetails = "";
+            
+            //check sector
+            if($sector_ids){
+                $sectorId = $sector_ids;
+                $sectorDetails = Sector::where('uuid', $sectorId)->first();
+                if($sectorDetails){
+                    $sector_id = $sectorDetails->id;
+                }else{
+                    $sector_id = 0;
+                }
+            }else{
+                $sector_id = 0;
+            }
+
+            //check department
+            if($departement_ids){
+                $departementId = $departement_ids;
+                $departementDetails = departements::where('uuid', $departementId)->first();
+                if($departementDetails){
+                    $departement_id = $departementDetails->id;
+                }else{
+                    $departement_id = 0;
+                }
+            }else{
+                $departement_id = 0;
+            }
+
+            if($sector_id == 0){
+                if($user_gest->rule_id != 2){
+                    $sector_id = $user_gest->sector;
+                }
+            }
+
+            if($departement_id == 0){
+                if($user_gest->rule_id == 3){
+                    $departement_id = $user_gest->department_id;
+                }
+            }
+
+            $employee = User::where('uuid', $uuid)->first();
+            $allowance_results = ReservationAllowance::where('user_id', $employee->id)
+                    ->whereYear('date', $year)
+                    ->whereMonth('date', $month)
+                    ->where('type', $type);
+                if($sector_id != 0){
+                    $allowance_results->where('sector_id', $sector_id);
+                }else{
+                    if($user_gest->rule_id != 2){
+                        $allowance_results->where('sector_id', $sector_id);
+                    }
+                }
+                if($departement_id != 0){
+                    $allowance_results->where('departement_id', $departement_id);
+                }else{
+                    if($user_gest->rule_id == 3){
+                        $allowance_results->where('departement_id', $departement_id);
+                    }
+                }
+            $get_allowance_results = $allowance_results->get();
+            $total = $get_allowance_results->sum('amount');
+
+            return view('reservation_allowance.reservation_details', compact('employee','get_allowance_results' ,'sectorDetails', 'departementDetails', 'year', 'month', 'type', 'total'));
+
+        // }catch(\Exception $e){
+        //     return redirect()->back()->with('error', 'An error occurred while creating the group. Please try agai');
+        // }
+
     }
     
     private function generatePDF($data)
