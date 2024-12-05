@@ -64,7 +64,9 @@
                 <input type="text" name="number" id="username"
                     class="login-input"> <br>
 
-                <div style="display: none;" id="password_div">
+                <div
+                 {{-- style="display: none;" --}}
+                  id="password_div">
 
                     <label for="password" class="login-label">كلمة
                         المرور</label> <br>
@@ -113,62 +115,127 @@
                 toggleIcon.classList.add('fa-eye');
             }
         }
+        // $(document).ready(function() {
+        //     $('#button_submit').click(function(e) {
+        //         e
+        //             .preventDefault(); // Prevents the form from submitting normally
+
+        //         // Get the username and password values from the input fields
+        //         var username = $('#username').val();
+        //         var password = $('#password').val();
+
+        //         var isPasswordVisible = $('#password_div').is(
+        //             ':visible'); // Check if password div is visible
+
+
+        //         // Make the AJAX call only if the username is provided
+        //         if (username && isPasswordVisible) {
+        //             // If password is empty, validate before sending the login request
+        //             // If password is provided, send login request
+        //             $.ajax({
+        //                 url: "{{ route('login.submit') }}", // The route or endpoint to which the request will be sent
+
+        //                 data: {
+        //                     number: username, // Username value from the input field
+        //                     password: password // Password value from the input field
+        //                 },
+        //                 success: function(response) {
+
+        //                     if (response.success) {
+        //                         window.location.href =
+        //                             "{{ route('home') }}"; // Redirect on success (example)
+        //                     } else {
+
+
+        //                         console.log(response);
+
+        //                         Swal.fire({
+        //                             title: 'خطأ',
+        //                             text: 'كلمة السر او المستخدم خطأ',
+        //                             icon: 'error',
+        //                             confirmButtonText: 'إلغاء',
+        //                             confirmButtonColor: '#3085d6',
+
+        //                         });
+        //                     }
+
+        //                 },
+        //                 error: function(xhr, status,
+        //                     error) {
+        //                     // Handle any errors here
+        //                     console.error('AJAX Error:',
+        //                         status, error);
+        //                 }
+        //             });
+
+        //         } else {
+
+        //             // If password is not provided, check if the username exists
+        //             $.ajax({
+        //                 url: "{{ route('check.login') }}", // The route or endpoint to check username
+        //                 type: 'GET', // HTTP method
+        //                 data: {
+        //                     number: username // Username value from the input field
+        //                 },
+        //                 success: function(response) {
+
+        //                     // Check if the response is true (username exists)
+        //                     if (response == 1) {
+        //                         window.location.href =
+        //                             '/set-password/' +
+        //                             username;
+
+
+        //                     } else {
+        //                         if (response == -1) {
+        //                             Swal.fire({
+        //                                 title: 'خطأ',
+        //                                 text: 'لا يسمح لك بدخول الهيئة',
+        //                                 icon: 'error',
+        //                                 confirmButtonText: 'إلغاء',
+        //                                 confirmButtonColor: '#3085d6',
+
+        //                             });
+        //                             $('#password_div')
+        //                                 .hide(); // Hide password field if username is invalid
+        //                         } else {
+        //                             console.log(
+        //                                 response);
+
+        //                             $('#password_div')
+        //                                 .show(); // Show password field if username is valid
+
+        //                         }
+
+
+
+
+        //                     }
+        //                 },
+        //                 error: function(xhr, status,
+        //                     error) {
+        //                     // Handle any errors here
+        //                     console.error('AJAX Error:',
+        //                         status, error);
+        //                 }
+        //             });
+        //         }
+
+
+
+        //     });
+        // });
+
         $(document).ready(function() {
             $('#button_submit').click(function(e) {
-                e
-                    .preventDefault(); // Prevents the form from submitting normally
+                e.preventDefault(); // Prevents the form from submitting normally
 
                 // Get the username and password values from the input fields
                 var username = $('#username').val();
                 var password = $('#password').val();
 
-                var isPasswordVisible = $('#password_div').is(
-                    ':visible'); // Check if password div is visible
-
-
                 // Make the AJAX call only if the username is provided
-                if (username && isPasswordVisible) {
-                    // If password is empty, validate before sending the login request
-                    // If password is provided, send login request
-                    $.ajax({
-                        url: "{{ route('login.submit') }}", // The route or endpoint to which the request will be sent
-
-                        data: {
-                            number: username, // Username value from the input field
-                            password: password // Password value from the input field
-                        },
-                        success: function(response) {
-
-                            if (response.success) {
-                                window.location.href =
-                                    "{{ route('home') }}"; // Redirect on success (example)
-                            } else {
-
-
-                                console.log(response);
-
-                                Swal.fire({
-                                    title: 'خطأ',
-                                    text: 'كلمة السر او المستخدم خطأ',
-                                    icon: 'error',
-                                    confirmButtonText: 'إلغاء',
-                                    confirmButtonColor: '#3085d6',
-
-                                });
-                            }
-
-                        },
-                        error: function(xhr, status,
-                            error) {
-                            // Handle any errors here
-                            console.error('AJAX Error:',
-                                status, error);
-                        }
-                    });
-
-                } else {
-
-                    // If password is not provided, check if the username exists
+                if(username && password){
                     $.ajax({
                         url: "{{ route('check.login') }}", // The route or endpoint to check username
                         type: 'GET', // HTTP method
@@ -182,9 +249,46 @@
                                 window.location.href =
                                     '/set-password/' +
                                     username;
+                            } 
+                            else if (response == 2){
+                                $.ajax({
+                                        url: "{{ route('login.submit') }}", // The route or endpoint to which the request will be sent
+
+                                        data: {
+                                            number: username, // Username value from the input field
+                                            password: password // Password value from the input field
+                                        },
+                                        success: function(response) {
+
+                                            if (response.success) {
+                                                window.location.href =
+                                                    "{{ route('home') }}"; // Redirect on success (example)
+                                            } else {
 
 
-                            } else {
+                                                console.log(response);
+
+                                                Swal.fire({
+                                                    title: 'خطأ',
+                                                    text: 'كلمة السر او المستخدم خطأ',
+                                                    icon: 'error',
+                                                    confirmButtonText: 'إلغاء',
+                                                    confirmButtonColor: '#3085d6',
+
+                                                });
+                                            }
+
+                                        },
+                                        error: function(xhr, status,
+                                            error) {
+                                            // Handle any errors here
+                                            console.error('AJAX Error:',
+                                                status, error);
+                                        }
+                                    });
+                            }
+                    
+                            else {
                                 if (response == -1) {
                                     Swal.fire({
                                         title: 'خطأ',
@@ -204,10 +308,6 @@
                                         .show(); // Show password field if username is valid
 
                                 }
-
-
-
-
                             }
                         },
                         error: function(xhr, status,
@@ -218,9 +318,6 @@
                         }
                     });
                 }
-
-
-
             });
         });
     </script>

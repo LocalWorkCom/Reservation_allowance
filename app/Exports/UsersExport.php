@@ -46,9 +46,18 @@ class UsersExport implements FromCollection, WithHeadings, WithEvents
             ->select('grade_id', 'name', 'file_number', 'sector', 'department_id') // Include foreign keys id
             ->get()
             ->map(function ($user, $index) {
+                $check_parent = departements::find($user->department_id);
+
+                if ($check_parent && $check_parent->parent_id) {
+                    $main = 0;
+                    $parent_dep = departements::find($check_parent->parent_id)->name;
+                } else {
+                    $main = 1;
+                }
                 // Add department name, sector name, and grade name
                 $user->num = $index + 1;  // Ensure count starts at 1
-                $user->department_name = $user->department ? $user->department->name : null;
+                $user->department_name = (!$main) ? $parent_dep : ($user->department ? $user->department->name : null);
+                $user->subDepartment_name = (!$main) ? $user->department->name : null;
                 $user->sector_name = $user->sector ? $user->sectors->name : null; // Assuming sector is related
                 $user->grade_name = $user->grade_id ? $user->grade->name : null; // Assuming grade is related
 
@@ -64,6 +73,7 @@ class UsersExport implements FromCollection, WithHeadings, WithEvents
                     $user->file_number, // User's file number
                     $user->sector_name, // Sector name
                     $user->department_name, // Department name
+                    $user->subDepartment_name, // Department name
                 ];
             });
     }
@@ -81,6 +91,7 @@ class UsersExport implements FromCollection, WithHeadings, WithEvents
             'رقم الملف',
             'القطاع',
             'الادارة',
+            'الادارة الفرعية'
         ];
     }
     public function registerEvents(): array
@@ -89,21 +100,21 @@ class UsersExport implements FromCollection, WithHeadings, WithEvents
             AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
                 $workbook = $sheet->getParent();
-    
+
                 // **Hidden Sheet for Lists**
                 $hiddenSheet = $workbook->createSheet();
                 $hiddenSheet->setTitle('HiddenSheet');
-    
+
                 // **Populate Department List in Hidden Sheet**
                 foreach ($this->allowedDepartments as $index => $department) {
                     $hiddenSheet->setCellValue('A' . ($index + 1), $department);
                 }
-    
+
                 // **Populate Sector List in Hidden Sheet**
                 foreach ($this->allowedSectors as $index => $sector) {
                     $hiddenSheet->setCellValue('B' . ($index + 1), $sector);
                 }
-    
+
                 // **Define Named Ranges**
                 $workbook->addNamedRange(
                     new \PhpOffice\PhpSpreadsheet\NamedRange(
@@ -119,39 +130,39 @@ class UsersExport implements FromCollection, WithHeadings, WithEvents
                         '$B$1:$B$' . count($this->allowedSectors)
                     )
                 );
-    
+
                 // **Department Dropdown Validation**
-                $departmentValidation = new DataValidation();
-                $departmentValidation->setType(DataValidation::TYPE_LIST);
-                $departmentValidation->setErrorTitle('ادارة غير صالحة');
-                $departmentValidation->setError('الرجاء اختيار ادارة من القائمة');
-                $departmentValidation->setFormula1('=DepartmentsList');
-                $departmentValidation->setShowDropDown(true);
-                $departmentValidation->setShowErrorMessage(true);
-    
-                for ($row = 2; $row <= 100; $row++) {
-                    $sheet->getCell('F' . $row)->setDataValidation($departmentValidation);
-                }
-    
-                // **Sector Dropdown Validation**
-                $sectorValidation = new DataValidation();
-                $sectorValidation->setType(DataValidation::TYPE_LIST);
-                $sectorValidation->setErrorTitle('قطاع غير صالح');
-                $sectorValidation->setError('الرجاء اختيار القطاع من القائمة');
-                $sectorValidation->setFormula1('=SectorsList');
-                $sectorValidation->setShowDropDown(true);
-                $sectorValidation->setShowErrorMessage(true);
-    
-                for ($row = 2; $row <= 100; $row++) {
-                    $sheet->getCell('E' . $row)->setDataValidation($sectorValidation);
-                }
-    
+                // $departmentValidation = new DataValidation();
+                // $departmentValidation->setType(DataValidation::TYPE_LIST);
+                // $departmentValidation->setErrorTitle('ادارة غير صالحة');
+                // $departmentValidation->setError('الرجاء اختيار ادارة من القائمة');
+                // $departmentValidation->setFormula1('=DepartmentsList');
+                // $departmentValidation->setShowDropDown(true);
+                // $departmentValidation->setShowErrorMessage(true);
+
+                // for ($row = 2; $row <= 100; $row++) {
+                //     $sheet->getCell('F' . $row)->setDataValidation($departmentValidation);
+                // }
+
+                // // **Sector Dropdown Validation**
+                // $sectorValidation = new DataValidation();
+                // $sectorValidation->setType(DataValidation::TYPE_LIST);
+                // $sectorValidation->setErrorTitle('قطاع غير صالح');
+                // $sectorValidation->setError('الرجاء اختيار القطاع من القائمة');
+                // $sectorValidation->setFormula1('=SectorsList');
+                // $sectorValidation->setShowDropDown(true);
+                // $sectorValidation->setShowErrorMessage(true);
+
+                // for ($row = 2; $row <= 100; $row++) {
+                //     $sheet->getCell('E' . $row)->setDataValidation($sectorValidation);
+                // }
+
                 // **Set Data Types for Specific Columns**
                 $columns = ['A', 'B', 'C', 'D']; // Specify columns for which the type should be set
                 for ($row = 2; $row <= 100; $row++) {
                     foreach ($columns as $column) {
                         $cell = $sheet->getCell($column . $row);
-    
+
                         // Set specific data types for each column
                         if ($column === 'D' || $column === 'A') { // Numeric columns
                             $cell->setDataType(DataType::TYPE_NUMERIC);
@@ -160,11 +171,10 @@ class UsersExport implements FromCollection, WithHeadings, WithEvents
                         }
                     }
                 }
-    
+
                 // Hide the Hidden Sheet
                 $hiddenSheet->setSheetState(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::SHEETSTATE_HIDDEN);
             },
         ];
     }
-    
 }

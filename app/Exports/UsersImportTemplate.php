@@ -48,15 +48,17 @@ class UsersImportTemplate implements FromCollection, WithHeadings, WithEvents
                 'نايف', // name
                 '123', // name
                 'وكيل الوزارة المساعد لشئون الامن العام', // rule_id (leave empty for the dropdown)
-                'اداره المبانى' // rule_id (leave empty for the dropdown)
+                'اداره المبانى' ,// rule_id (leave empty for the dropdown)
+                ''
             ],
             [
                 '2',
-                'ابراهيم', // name A
                 'عقيد', // name A
+                'ابراهيم', // name A
                 '2344', // name A
                 'قطاع المرور', // rule_id (leave empty for the dropdown) J
-                'اداره المبانى' // rule_id (leave empty for the dropdown) K
+                'اداره المبانى', // rule_id (leave empty for the dropdown) K
+                'اداره فرعية مطافي' // rule_id (leave empty for the dropdown) K
             ],
             // Add more dummy rows as needed
         ]);
@@ -74,6 +76,7 @@ class UsersImportTemplate implements FromCollection, WithHeadings, WithEvents
             'رقم الملف',         // Military Number required
             'القطاع',               // Flag required user or employee
             'الادارة',              // Department ID (Foreign Key) 
+            'الادارة الفرعية',              // Department ID (Foreign Key) 
 
         ];
     }
@@ -126,98 +129,37 @@ class UsersImportTemplate implements FromCollection, WithHeadings, WithEvents
                     $cell = $event->sheet->getDelegate()->getCell('F' . $row);
                     $cell->setDataType(DataType::TYPE_STRING); // Set the cell type to string
                 }
-
                 for ($row = 2; $row <= 100; $row++) {
                     $cell = $event->sheet->getDelegate()->getCell('G' . $row);
                     $cell->setDataType(DataType::TYPE_STRING); // Set the cell type to string
                 }
 
-                for ($row = 2; $row <= 100; $row++) {
-                    $cell = $event->sheet->getDelegate()->getCell('H' . $row);
-                    $cell->setDataType(DataType::TYPE_STRING); // Set the cell type to string
-                }
+                // $departmentValidation = new DataValidation();
+                // $departmentValidation->setType(DataValidation::TYPE_LIST);
+                // $departmentValidation->setErrorTitle('ادارة غير صالحة'); // Error title
+                // $departmentValidation->setError('الرجاء اختيار ادارة من القائمة'); // Error message
+                // $departmentValidation->setFormula1('"' . implode(',', $this->allowedDepartments) . '"'); // List of allowed departments
+                // $departmentValidation->setShowDropDown(true);
+                // $departmentValidation->setShowErrorMessage(true); // Enable error message display
 
-                $departmentValidation = new DataValidation();
-                $departmentValidation->setType(DataValidation::TYPE_LIST);
-                $departmentValidation->setErrorTitle('ادارة غير صالحة'); // Error title
-                $departmentValidation->setError('الرجاء اختيار ادارة من القائمة'); // Error message
-                $departmentValidation->setFormula1('"' . implode(',', $this->allowedDepartments) . '"'); // List of allowed departments
-                $departmentValidation->setShowDropDown(true);
-                $departmentValidation->setShowErrorMessage(true); // Enable error message display
-
-                // Apply validation to the specified range for departments
-                for ($row = 2; $row <= 100; $row++) {
-                    $event->sheet->getDelegate()->getCell('I' . $row)->setDataValidation($departmentValidation); // Apply validation to each cell in the department range
-                }
-
-                $sectorValidation = new DataValidation();
-                $sectorValidation->setType(DataValidation::TYPE_LIST);
-                $sectorValidation->setErrorTitle('قطاع غير صالحة'); // Error title
-                $sectorValidation->setError('الرجاء اختيار قطاع من القائمة'); // Error message
-                $sectorValidation->setFormula1('"' . implode(',', $this->allowedSectors) . '"'); // List of allowed departments
-                $sectorValidation->setShowDropDown(true);
-                $sectorValidation->setShowErrorMessage(true); // Enable error message display
-
-                // Apply validation to the specified range for departments
-                for ($row = 2; $row <= 100; $row++) {
-                    $event->sheet->getDelegate()->getCell('I' . $row)->setDataValidation($sectorValidation); // Apply validation to each cell in the department range
-                }
-                // // Create a new DataValidation object for rules
-                // $ruleValidation = new DataValidation();
-                // $ruleValidation->setType(DataValidation::TYPE_LIST);
-                // $ruleValidation->setErrorTitle('مهام غير صالحة'); // Error title
-                // $ruleValidation->setError('الرجاء اختيار المهام من القائمة'); // Error message
-                // $ruleValidation->setFormula1('"' . implode(',', $this->allowedRules) . '"'); // List of allowed rules
-                // $ruleValidation->setShowDropDown(true);
-                // $ruleValidation->setShowErrorMessage(true); // Enable error message display
-
-                // // Apply validation to the specified range for rules
+                // // Apply validation to the specified range for departments
                 // for ($row = 2; $row <= 100; $row++) {
-                //     $event->sheet->getDelegate()->getCell('J' . $row)->setDataValidation($ruleValidation); // Apply validation to each cell in the rule range
+                //     $event->sheet->getDelegate()->getCell('I' . $row)->setDataValidation($departmentValidation); // Apply validation to each cell in the department range
                 // }
 
+                // $sectorValidation = new DataValidation();
+                // $sectorValidation->setType(DataValidation::TYPE_LIST);
+                // $sectorValidation->setErrorTitle('قطاع غير صالحة'); // Error title
+                // $sectorValidation->setError('الرجاء اختيار قطاع من القائمة'); // Error message
+                // $sectorValidation->setFormula1('"' . implode(',', $this->allowedSectors) . '"'); // List of allowed departments
+                // $sectorValidation->setShowDropDown(true);
+                // $sectorValidation->setShowErrorMessage(true); // Enable error message display
 
-                // // Data validation for flags
-                // $flagValidation = new DataValidation();
-                // $flagValidation->setType(DataValidation::TYPE_LIST);
-                // $flagValidation->setErrorTitle('نوع غير صالح');
-                // $flagValidation->setError('الرجاء اختيار النوع من القائمة');
-                // $flagValidation->setFormula1('"' . implode(',', $this->allowedFlag) . '"');
-                // $flagValidation->setShowDropDown(true);
-                // $flagValidation->setShowErrorMessage(true);
+                // // Apply validation to the specified range for departments
                 // for ($row = 2; $row <= 100; $row++) {
-                //     $event->sheet->getDelegate()->getCell('F' . $row)->setDataValidation($flagValidation);
+                //     $event->sheet->getDelegate()->getCell('I' . $row)->setDataValidation($sectorValidation); // Apply validation to each cell in the department range
                 // }
 
-
-                // // Data validation for type military
-                // $typeMilitaryValidation = new DataValidation();
-                // $typeMilitaryValidation->setType(DataValidation::TYPE_LIST);
-                // $typeMilitaryValidation->setErrorTitle('نوع عسكري غير صالح');
-                // $typeMilitaryValidation->setError('الرجاء اختيار نوع عسكري من القائمة');
-                // $typeMilitaryValidation->setFormula1('"' . implode(',', $this->allowedTypeMilitary) . '"');
-                // $typeMilitaryValidation->setShowDropDown(true);
-                // $typeMilitaryValidation->setShowErrorMessage(true);
-                // for ($row = 2; $row <= 100; $row++) {
-                //     $event->sheet->getDelegate()->getCell('G' . $row)->setDataValidation($typeMilitaryValidation);
-                // }
-
-                // // Set the range for the country dropdown
-                // $countryRange = $countryColumn . $countryStartRow . ':' . $countryColumn . ($countryStartRow + count($this->countries) - 1);
-
-                // // Data validation for countries using the defined range
-                // $countryValidation = new DataValidation();
-                // $countryValidation->setType(DataValidation::TYPE_LIST);
-                // $countryValidation->setErrorTitle('دولة غير صالحة');
-                // $countryValidation->setError('الرجاء اختيار دولة من القائمة');
-                // $countryValidation->setFormula1($countryRange); // Use the defined range for validation
-                // $countryValidation->setShowDropDown(true);
-                // $countryValidation->setShowErrorMessage(true);
-
-                // // Apply data validation for each cell in column K (country column)
-                // for ($row = 2; $row <= 100; $row++) { // Adjust the range as needed
-                //     $event->sheet->getDelegate()->getCell('K' . $row)->setDataValidation($countryValidation);
-                // }
             },
         ];
     }
