@@ -35,6 +35,7 @@ use App\Imports\ImportUser;
 use App\Exports\ExportUser;
 use App\Exports\UsersExport;
 use App\Exports\UsersImportTemplate;
+use App\Imports\UsersImport;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendEmail;
 
@@ -84,9 +85,9 @@ class UserController extends Controller
         $subDep = departements::where('parent_id', auth()->user()->department_id)->pluck('id');
         $my_dep = Auth()->user()->department_id;
         $gradeall = Grade::pluck('id')->toArray();
-        $gradeperson = Grade::where('type', 1)->pluck('id')->toArray();
-        $gradeOfficer = Grade::where('type', 2)->pluck('id')->toArray();
-        $graseOfficer2 = Grade::where('type', 3)->pluck('id')->toArray();
+        $gradeOfficer = Grade::where('type', 1)->pluck('id')->toArray();
+        $graseOfficer2 = Grade::where('type', 2)->pluck('id')->toArray();
+        $gradeperson = Grade::where('type', 3)->pluck('id')->toArray();
 
         if ($type == "department") {
             // For the 'all' query
@@ -488,14 +489,14 @@ class UserController extends Controller
             $all = Grade::pluck('id')->toArray();
             $data->whereIn('grade_id', $all);
         } elseif ($filter == 'person') {
-            $person = Grade::where('type', 1)->pluck('id')->toArray();
+            $person = Grade::where('type', 3)->pluck('id')->toArray();
             $data->whereIn('grade_id', $person);
         } elseif ($filter == 'Officer') {
-            $Officer = Grade::where('type', 2)->pluck('id')->toArray();
+            $Officer = Grade::where('type', 1)->pluck('id')->toArray();
             $data->whereIn('grade_id', $Officer);
             // dd($data->get());
         } elseif ($filter == 'Officer2') {
-            $Officer2 = Grade::where('type', 3)->pluck('id')->toArray();
+            $Officer2 = Grade::where('type', 2)->pluck('id')->toArray();
             $data->whereIn('grade_id', $Officer2);
         }
         // Finally, fetch the results
@@ -684,8 +685,11 @@ class UserController extends Controller
 
         if ($user && $user->last_login == null && $user->flag == 'user') {
             return 1;
-        } else if ($user->flag != 'user') {
+        } else if ($user && $user->flag != 'user') {
             return -1;
+        } else if (!$user) {
+            return -1;
+
         }
 
         return 0;
@@ -926,7 +930,7 @@ class UserController extends Controller
 
         $area = Region::all();
         $qualifications = Qualification::all();
-        $violationTypeName = ViolationTypes::whereJsonContains('type_id', 0)->orderby('id','desc')->get();
+        $violationTypeName = ViolationTypes::whereJsonContains('type_id', 0)->orderby('id', 'desc')->get();
 
         //         // Get the selected violation type from old input or set a default value
         //         $selectedViolationType = old('type_military', 'police'); // Default to 'police'
@@ -1487,37 +1491,62 @@ class UserController extends Controller
     }
     public function importView(Request $request)
     {
-        return view('importFile');
+        return view('user.importFile');
     }
-
     public function import(Request $request)
     {
-        // Validate the uploaded file
         $request->validate([
-            'file' => 'required|mimes:xlsx,csv',
+            'file' => 'required|file|mimes:xlsx,xls',  // Validate the file input
         ]);
 
         try {
-            // If no errors, proceed to import the data
-            Excel::import(new UsersImportTemplate, $request->file('file'));
-
-            return redirect()->back()->with('success', 'Users imported successfully!');
+            Excel::import(new UsersImport, $request->file('file'));
+            return back()->with('success', 'تم استيراد البيانات بنجاح');
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
-
             $errorMessages = [];
 
             foreach ($failures as $failure) {
-                $errorMessages[] = 'Error in row ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+                $errors = is_array($failure->errors()) ? $failure->errors() : [$failure->errors()];
+                $errorMessages[] = 'خطأ في الصف ' . $failure->row() . ': ' . implode(', ', $errors);
             }
 
             return redirect()->back()->withErrors(['errors' => $errorMessages]);
+        } catch (\Exception $e) {
+            return back()->with('error', 'حدث خطأ أثناء استيراد البيانات: ' . $e->getMessage());
         }
     }
 
 
+    // public function import(Request $request)
+    // {
+    //     // Validate the uploaded file
+    //     $request->validate([
+    //         'file' => 'required|mimes:xlsx,csv',
+    //     ]);
+
+    //     try {
+    //         // If no errors, proceed to import the data
+    //         Excel::import(new UsersImportTemplate, $request->file('file'));
+
+    //         return redirect()->back()->with('success', 'Users imported successfully!');
+    //     } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+    //         $failures = $e->failures();
+
+    //         $errorMessages = [];
+
+    //         foreach ($failures as $failure) {
+    //             $errorMessages[] = 'Error in row ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+    //         }
+
+    //         return redirect()->back()->withErrors(['errors' => $errorMessages]);
+    //     }
+    // }
+
+
     public function exportUsers(Request $request)
     {
+
         return Excel::download(new UsersExport, 'users.xlsx');
     }
     public function downloadTemplate()

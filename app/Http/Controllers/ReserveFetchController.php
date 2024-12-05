@@ -13,6 +13,7 @@ use TCPDF;
 use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ReserveFetchController extends Controller
 {
@@ -102,6 +103,12 @@ class ReserveFetchController extends Controller
             
             ->addColumn('type', fn($row) => $row->type == 1 ? 'حجز كلي' : 'حجز جزئي')
             ->addColumn('amount', fn($row) => number_format($row->amount, 2) . ' د ك')
+            ->addColumn('created_by', function ($row) {
+                $creator = User::find($row->created_by);
+                return $creator ? $creator->name : 'غير معروف';
+            })
+            ->addColumn('created_at', fn($row) => Carbon::parse($row->created_at)->format('Y-m-d H:i:s'))
+     
             ->addIndexColumn();
     }
     

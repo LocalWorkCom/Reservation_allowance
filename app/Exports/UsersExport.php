@@ -25,12 +25,14 @@ class UsersExport implements FromCollection, WithHeadings, WithEvents
 
     public function __construct()
     {
+
         // Get the allowed departments and rules from the database
         $this->allowedDepartments = departements::pluck('name')->toArray(); // Assuming 'name' is the field you want
         $this->allowedSectors = Sector::pluck('name')->toArray(); // Assuming 'name' is the field you want
-        // $this->allowedRules = Rule::whereNotIn('id', [1, 2])->pluck('name')->toArray(); // Assuming 'name' is the field you want
+        // // $this->allowedRules = Rule::whereNotIn('id', [1, 2])->pluck('name')->toArray(); // Assuming 'name' is the field you want
         // $this->allowedFlag = ['موظف', 'مستخدم'];
         // $this->allowedTypeMilitary = ViolationTypes::whereJsonContains('type_id', 0)->pluck('name')->toArray();
+        $this->allowedDepartments = array_slice($this->allowedDepartments, 0, 50);
     }
     /**
      * @return \Illuminate\Support\Collection
@@ -49,7 +51,7 @@ class UsersExport implements FromCollection, WithHeadings, WithEvents
                 $user->department_name = $user->department ? $user->department->name : null;
                 $user->sector_name = $user->sector ? $user->sectors->name : null; // Assuming sector is related
                 $user->grade_name = $user->grade_id ? $user->grade->name : null; // Assuming grade is related
-    
+
                 // Return the modified user object with all the needed data
                 return $user;
             })
@@ -65,7 +67,7 @@ class UsersExport implements FromCollection, WithHeadings, WithEvents
                 ];
             });
     }
-    
+
 
     /**
      * Set the headings for the Excel sheet.
@@ -85,85 +87,84 @@ class UsersExport implements FromCollection, WithHeadings, WithEvents
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-                $departmentRange = 'I2:I100'; // Specify the range for the department dropdown (from row 2 to 100)
-                $ruleRange = 'J2:J100'; // Specify the range for the rule dropdown (from row 2 to 100)
-
-                // Data validation for departments
+                $sheet = $event->sheet->getDelegate();
+                $workbook = $sheet->getParent();
+    
+                // **Hidden Sheet for Lists**
+                $hiddenSheet = $workbook->createSheet();
+                $hiddenSheet->setTitle('HiddenSheet');
+    
+                // **Populate Department List in Hidden Sheet**
+                foreach ($this->allowedDepartments as $index => $department) {
+                    $hiddenSheet->setCellValue('A' . ($index + 1), $department);
+                }
+    
+                // **Populate Sector List in Hidden Sheet**
+                foreach ($this->allowedSectors as $index => $sector) {
+                    $hiddenSheet->setCellValue('B' . ($index + 1), $sector);
+                }
+    
+                // **Define Named Ranges**
+                $workbook->addNamedRange(
+                    new \PhpOffice\PhpSpreadsheet\NamedRange(
+                        'DepartmentsList',
+                        $hiddenSheet,
+                        '$A$1:$A$' . count($this->allowedDepartments)
+                    )
+                );
+                $workbook->addNamedRange(
+                    new \PhpOffice\PhpSpreadsheet\NamedRange(
+                        'SectorsList',
+                        $hiddenSheet,
+                        '$B$1:$B$' . count($this->allowedSectors)
+                    )
+                );
+    
+                // **Department Dropdown Validation**
                 $departmentValidation = new DataValidation();
                 $departmentValidation->setType(DataValidation::TYPE_LIST);
-                $departmentValidation->setErrorTitle('ادارة غير صالحة'); // Error title
-                $departmentValidation->setError('الرجاء اختيار ادارة من القائمة'); // Error message
-                $departmentValidation->setFormula1('"' . implode(',', $this->allowedDepartments) . '"'); // List of allowed departments
+                $departmentValidation->setErrorTitle('ادارة غير صالحة');
+                $departmentValidation->setError('الرجاء اختيار ادارة من القائمة');
+                $departmentValidation->setFormula1('=DepartmentsList');
                 $departmentValidation->setShowDropDown(true);
-                $departmentValidation->setShowErrorMessage(true); // Enable error message display
-
-                // Apply validation to the specified range for departments
+                $departmentValidation->setShowErrorMessage(true);
+    
                 for ($row = 2; $row <= 100; $row++) {
-                    $event->sheet->getDelegate()->getCell('I' . $row)->setDataValidation($departmentValidation); // Apply validation to each cell in the department range
+                    $sheet->getCell('F' . $row)->setDataValidation($departmentValidation);
                 }
-
+    
+                // **Sector Dropdown Validation**
                 $sectorValidation = new DataValidation();
                 $sectorValidation->setType(DataValidation::TYPE_LIST);
-                $sectorValidation->setErrorTitle('قطاع غير صالح'); // Error title
-                $sectorValidation->setError('الرجاء اختيار القطاع من القائمة'); // Error message
-                $sectorValidation->setFormula1('"' . implode(',', $this->allowedSectors) . '"'); // List of allowed departments
+                $sectorValidation->setErrorTitle('قطاع غير صالح');
+                $sectorValidation->setError('الرجاء اختيار القطاع من القائمة');
+                $sectorValidation->setFormula1('=SectorsList');
                 $sectorValidation->setShowDropDown(true);
-                $sectorValidation->setShowErrorMessage(true); // Enable error message display
-
-                // Apply validation to the specified range for departments
+                $sectorValidation->setShowErrorMessage(true);
+    
                 for ($row = 2; $row <= 100; $row++) {
-                    $event->sheet->getDelegate()->getCell('I' . $row)->setDataValidation($sectorValidation); // Apply validation to each cell in the department range
+                    $sheet->getCell('E' . $row)->setDataValidation($sectorValidation);
                 }
-
-                // // Data validation for rules
-                // $ruleValidation = new DataValidation();
-                // $ruleValidation->setType(DataValidation::TYPE_LIST);
-                // $ruleValidation->setErrorTitle('مهام غير صالحة'); // Error title
-                // $ruleValidation->setError('الرجاء اختيار المهام من القائمة'); // Error message
-                // $ruleValidation->setFormula1('"' . implode(',', $this->allowedRules) . '"'); // List of allowed rules
-                // $ruleValidation->setShowDropDown(true);
-                // $ruleValidation->setShowErrorMessage(true); // Enable error message display
-
-                // // Apply validation to the specified range for rules
-                // for ($row = 2; $row <= 100; $row++) {
-                //     $event->sheet->getDelegate()->getCell('J' . $row)->setDataValidation($ruleValidation); // Apply validation to each cell in the rule range
-                // }
-
-                // // Data validation for flags
-                // $flagValidation = new DataValidation();
-                // $flagValidation->setType(DataValidation::TYPE_LIST);
-                // $flagValidation->setErrorTitle('نوع غير صالح');
-                // $flagValidation->setError('الرجاء اختيار النوع من القائمة');
-                // $flagValidation->setFormula1('"' . implode(',', $this->allowedFlag) . '"');
-                // $flagValidation->setShowDropDown(true);
-                // $flagValidation->setShowErrorMessage(true);
-                // for ($row = 2; $row <= 100; $row++) {
-                //     $event->sheet->getDelegate()->getCell('F' . $row)->setDataValidation($flagValidation);
-                // }
-
-                // // Data validation for type military
-                // $typeMilitaryValidation = new DataValidation();
-                // $typeMilitaryValidation->setType(DataValidation::TYPE_LIST);
-                // $typeMilitaryValidation->setErrorTitle('نوع عسكري غير صالح');
-                // $typeMilitaryValidation->setError('الرجاء اختيار نوع عسكري من القائمة');
-                // $typeMilitaryValidation->setFormula1('"' . implode(',', $this->allowedTypeMilitary) . '"');
-                // $typeMilitaryValidation->setShowDropDown(true);
-                // $typeMilitaryValidation->setShowErrorMessage(true);
-                // for ($row = 2; $row <= 100; $row++) {
-                //     $event->sheet->getDelegate()->getCell('G' . $row)->setDataValidation($typeMilitaryValidation);
-                // }
-
-                // Set data type for the first few columns
-                // Define the range of columns
-                $columns = range('A', 'H'); // Create an array of columns from A to H
-
+    
+                // **Set Data Types for Specific Columns**
+                $columns = ['A', 'B', 'C', 'D']; // Specify columns for which the type should be set
                 for ($row = 2; $row <= 100; $row++) {
-                    foreach ($columns as $column) { // Use foreach to iterate over the columns
-                        $cell = $event->sheet->getDelegate()->getCell($column . $row);
-                        $cell->setDataType(DataType::TYPE_STRING); // Set the cell type to string
+                    foreach ($columns as $column) {
+                        $cell = $sheet->getCell($column . $row);
+    
+                        // Set specific data types for each column
+                        if ($column === 'D' || $column === 'A') { // Numeric columns
+                            $cell->setDataType(DataType::TYPE_NUMERIC);
+                        } else { // String columns
+                            $cell->setDataType(DataType::TYPE_STRING);
+                        }
                     }
                 }
+    
+                // Hide the Hidden Sheet
+                $hiddenSheet->setSheetState(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::SHEETSTATE_HIDDEN);
             },
         ];
     }
+    
 }

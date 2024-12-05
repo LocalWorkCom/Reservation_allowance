@@ -50,6 +50,7 @@ class SectorEmployeesDetailsController extends Controller
                 $query->select('user_id')
                       ->from('reservation_allowances')
                       ->where('sector_id', $sector->id)
+                      ->whereNull('departement_id') 
                       ->whereYear('date', $year)
                       ->whereMonth('date', $month);
             })
@@ -58,7 +59,21 @@ class SectorEmployeesDetailsController extends Controller
     
         return DataTables::of($employees)
             ->addColumn('file_number', fn($user) => $user->file_number)
-            ->addColumn('name', fn($user) => $user->name)
+            // ->addColumn('name', fn($user) => $user->name)
+
+            ->addColumn('name', function ($user) use ($sector, $month, $year) {
+                $latestRecord = DB::table('user_departments')
+                    ->where('user_id', $user->id)
+                    ->where('sector_id', $sector->id)
+                    ->whereYear('created_at', $year)
+                    ->whereMonth('created_at', $month)
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+            
+                $transferred = $latestRecord && $latestRecord->flag == '0' ? ' (تم النقل)' : ''; 
+                return $user->name . $transferred;
+            })
+            
             ->addColumn('grade', function ($user) use ($month, $year) {
                 $lastGrade = UserGrade::where('user_id', $user->id)
                     ->whereYear('created_at', $year)
@@ -69,10 +84,10 @@ class SectorEmployeesDetailsController extends Controller
     
                 return $lastGrade && $lastGrade->grade ? $lastGrade->grade->name : 'N/A';
             })
-            ->addColumn('department', fn($user) => $user->department->name ?? 'N/A')
             ->addColumn('full_days', function ($user) use ($sector, $month, $year) {
                 return ReservationAllowance::where('user_id', $user->id)
                     ->where('sector_id', $sector->id)
+                    ->whereNull('departement_id') 
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
                     ->where('type', 1)
@@ -81,6 +96,7 @@ class SectorEmployeesDetailsController extends Controller
             ->addColumn('partial_days', function ($user) use ($sector, $month, $year) {
                 return ReservationAllowance::where('user_id', $user->id)
                     ->where('sector_id', $sector->id)
+                    ->whereNull('departement_id') 
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
                     ->where('type', 2)
@@ -89,6 +105,7 @@ class SectorEmployeesDetailsController extends Controller
             ->addColumn('total_days', function ($user) use ($sector, $month, $year) {
                 $fullDays = ReservationAllowance::where('user_id', $user->id)
                     ->where('sector_id', $sector->id)
+                    ->whereNull('departement_id') 
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
                     ->where('type', 1)
@@ -96,6 +113,7 @@ class SectorEmployeesDetailsController extends Controller
     
                 $partialDays = ReservationAllowance::where('user_id', $user->id)
                     ->where('sector_id', $sector->id)
+                    ->whereNull('departement_id') 
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
                     ->where('type', 2)
@@ -106,6 +124,7 @@ class SectorEmployeesDetailsController extends Controller
             ->addColumn('full_allowance', function ($user) use ($sector, $month, $year) {
                 return ReservationAllowance::where('user_id', $user->id)
                     ->where('sector_id', $sector->id)
+                    ->whereNull('departement_id') 
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
                     ->where('type', 1)
@@ -114,6 +133,7 @@ class SectorEmployeesDetailsController extends Controller
             ->addColumn('partial_allowance', function ($user) use ($sector, $month, $year) {
                 return ReservationAllowance::where('user_id', $user->id)
                     ->where('sector_id', $sector->id)
+                    ->whereNull('departement_id') 
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
                     ->where('type', 2)
@@ -122,6 +142,7 @@ class SectorEmployeesDetailsController extends Controller
             ->addColumn('total_allowance', function ($user) use ($sector, $month, $year) {
                 $fullAllowance = ReservationAllowance::where('user_id', $user->id)
                     ->where('sector_id', $sector->id)
+                    ->whereNull('departement_id') 
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
                     ->where('type', 1)
@@ -129,6 +150,7 @@ class SectorEmployeesDetailsController extends Controller
     
                 $partialAllowance = ReservationAllowance::where('user_id', $user->id)
                     ->where('sector_id', $sector->id)
+                    ->whereNull('departement_id') 
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
                     ->where('type', 2)
@@ -222,12 +244,13 @@ class SectorEmployeesDetailsController extends Controller
         $year = $request->input('year');
     
         return view('sector_employees.sector_users', [
-            'sectorId' => $sectorUuid, // Pass UUID to the view
+            'sectorId' => $sectorUuid,
             'sectorName' => $sector->name,
             'month' => $month,
             'year' => $year,
         ]);
     }
+    
     
     
     public function getSectorUsers(Request $request, $sectorUuid)
@@ -248,9 +271,9 @@ class SectorEmployeesDetailsController extends Controller
         }
         $userIdsInSector = DB::table('user_departments')
         ->where('sector_id', $sector->id)
+        ->whereNull('department_id') 
         ->whereYear('created_at', $year)
         ->whereMonth('created_at', $month)
-        ->where('flag', '1') 
         ->select('user_id', DB::raw('MAX(created_at) as latest_created_at')) 
         ->groupBy('user_id') 
         ->pluck('user_id');

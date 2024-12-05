@@ -241,30 +241,42 @@ class DepartmentEmployeesDetailsController extends Controller
     
 
     public function getAllowanceDetails(Request $request, $employeeUuid)
-{
-    $month = $request->input('month');
-    $year = $request->input('year');
-
-    $employee = User::where('uuid', $employeeUuid)->first();
-    if (!$employee) {
-        return response()->json(['error' => 'Employee not found'], 404);
+    {
+        $month = $request->input('month');
+        $year = $request->input('year');
+    
+        $employee = User::where('uuid', $employeeUuid)->first();
+        if (!$employee) {
+            return response()->json(['error' => 'Employee not found'], 404);
+        }
+    
+        $allowances = ReservationAllowance::where('user_id', $employee->id)
+            ->whereYear('date', $year)
+            ->whereMonth('date', $month)
+            ->get();
+    
+        return DataTables::of($allowances)
+            ->addColumn('date', fn($allowance) => Carbon::parse($allowance->date)->format('Y-m-d'))
+            ->addColumn('type', fn($allowance) => $allowance->type == 1 ? 'كلي' : 'جزئي')
+            ->addColumn('amount', fn($allowance) => number_format($allowance->amount, 2) . ' د.ك')
+            ->addColumn('created_by', function ($allowance) {
+                $creator = User::find($allowance->created_by);
+                return $creator ? $creator->name : 'غير معروف';
+            })
+            ->addColumn('created_at', function ($allowance) {
+                return Carbon::parse($allowance->created_at)->format('Y-m-d H:i:s');
+                Log::info('Allowance Details:', [
+                    'created_by' => $allowance->created_by,
+                    'created_at' => $allowance->created_at,
+                ]);
+            })
+            ->addIndexColumn()
+            ->make(true);
+            Log::info('Allowance Details:', [
+                'created_by' => $allowance->created_by,
+                'created_at' => $allowance->created_at,
+            ]);
     }
-
-    $allowances = ReservationAllowance::where('user_id', $employee->id)
-        ->whereYear('date', $year)
-        ->whereMonth('date', $month)
-        ->get();
-
-    return DataTables::of($allowances)
-        ->addColumn('date', fn($allowance) => Carbon::parse($allowance->date)->format('Y-m-d'))
-        ->addColumn('type', fn($allowance) => $allowance->type == 1 ? 'كلي' : 'جزئي')
-        ->addColumn('amount', fn($allowance) => number_format($allowance->amount, 2) . ' د.ك')
-        ->addColumn('created_by', function ($allowance) {
-            $creator = User::find($allowance->created_by);
-            return $creator ? $creator->name : 'غير معروف';
-        })
-        ->addIndexColumn()
-        ->make(true);
-}
+    
 
 }

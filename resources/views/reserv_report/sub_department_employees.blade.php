@@ -39,32 +39,37 @@
         </div>
         <div class="mt-4 bg-white">
             <table id="users-table" class="display table table-bordered table-hover dataTable">
-                <thead>
-                    <tr>
-                        <th>الترتيب</th>
-                        <th>اليوم</th>
-                        <th>التاريخ</th>
-                        <th>الرتبة</th>
-                        <th>اسم الموظف</th>
-                        <th>رقم الملف</th>
-                        <th>نوع الحجز</th>
-                        <th>المبلغ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($employees as $index => $employee)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>{{ $employee['day'] }}</td>
-                            <td>{{ $employee['date'] }}</td>
-                            <td>{{ $employee['grade'] }}</td>
-                            <td>{{ $employee['employee_name'] }}</td>
-                            <td>{{ $employee['file_number'] }}</td>
-                            <td>{{ $employee['type'] }}</td>
-                            <td>{{ $employee['reservation_amount'] }} د.ك</td>
-                        </tr>
-                    @endforeach
-                </tbody>
+            <thead>
+    <tr>
+        <th>الترتيب</th>
+        <th>اليوم</th>
+        <th>التاريخ</th>
+        <th>الرتبة</th>
+        <th>اسم الموظف</th>
+        <th>رقم الملف</th>
+        <th>نوع الحجز</th>
+        <th>المبلغ</th>
+        <th>اضيف بواسطة</th>
+        <th>توقيت الإضافة</th>
+    </tr>
+</thead>
+<tbody>
+    @foreach ($employees as $index => $employee)
+        <tr>
+            <td>{{ $index + 1 }}</td>
+            <td>{{ $employee['day'] }}</td>
+            <td>{{ $employee['date'] }}</td>
+            <td>{{ $employee['grade'] }}</td>
+            <td>{{ $employee['employee_name'] }}</td>
+            <td>{{ $employee['file_number'] }}</td>
+            <td>{{ $employee['type'] }}</td>
+            <td>{{ $employee['reservation_amount'] }} د.ك</td>
+            <td>{{ $employee['created_by'] }}</td>
+            <td>{{ $employee['created_at'] }}</td>
+        </tr>
+    @endforeach
+</tbody>
+
             </table>
         </div>
     </div>

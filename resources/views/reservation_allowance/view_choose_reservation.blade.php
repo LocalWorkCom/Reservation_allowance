@@ -94,7 +94,14 @@
                     <div>
                         <p> بدل حجز بالهويات</p>
                     </div>
-
+                    @if(Cache::get(auth()->user()->id) != null)
+               
+               <input type="hidden" name="date" id="date" value="{{$date}}">
+               <input type="hidden" name="sector_id" id="sector_id" value="{{$sectorId}}">
+               <input type="hidden" name="departement_id" id="departement_id" value="{{$departementId}}">
+           <button class="btn-all p-2  mx-2" onclick="confirm_reservation()">اعتماد الكشف</button>
+    
+       @endif
                     <?php /*<form class="" id="search_employee_allowances">
                         @csrf
                         <div class="row d-flex flex-wrap">
@@ -187,9 +194,6 @@
                 <h5 class="text-dark mx-3">الادارة : <span class="text-info">{{$current_departement->name}}</span></h5>
                 @endif
 
-                <!-- <h5 class="text-dark">ملاحظات الملف : <span class="text-info">211</span></h5> -->
-            </div>
-            <div class=" col-5 d-flex mb-4  ">
                  <h5 class="text-dark mx-3">التاريخ : <span class="text-info">{{$date}}</span></h5>
                 <h5 class="text-dark mx-3">القوة : <span class="text-info">{{count($get_employee_for_all_reservations) + count($get_employee_for_part_reservations)}}</span></h5>
                 <!-- <h5 class="text-dark mx-3">التكلفة : <span class="text-info">{{$reservation_amount_all + $reservation_amount_part}}</span></h5> -->
@@ -202,14 +206,7 @@
                     <option>1</option>
                 </select> -->
                 <?php /*@if(Cache::get(auth()->user()->id."_employee_new_add") != null)*/?>
-                @if(Cache::get(auth()->user()->id) != null)
-                <div class="col-lg-12" style="text-align: right">
-                        <input type="hidden" name="date" id="date" value="{{$date}}">
-                        <input type="hidden" name="sector_id" id="sector_id" value="{{$sectorId}}">
-                        <input type="hidden" name="departement_id" id="departement_id" value="{{$departementId}}">
-                    <button class="btn btn-success py-2 px-3 mx-2" onclick="confirm_reservation()">اعتماد الكشف</button>
-                </div>
-                @endif
+               
             </div>
         </div>
 
@@ -232,7 +229,7 @@
         <div class="tab-content mt-3" id="myTabContent">
             <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                 @if($get_employee_for_all_reservations)
-                <table class="table table-bordered table-hover">
+                <table class="table table-bordered ">
                     <thead>
                         <tr>
                             <th style="width:5%">م</th>
@@ -264,7 +261,7 @@
 
             <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                 @if($get_employee_for_part_reservations)
-                <table class="table table-bordered table-hover">
+                <table class="table table-bordered ">
                 <thead>
                         <tr>
                             <th style="width:5%">م</th>

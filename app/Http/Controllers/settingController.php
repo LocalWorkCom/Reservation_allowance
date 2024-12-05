@@ -268,8 +268,8 @@ class settingController extends Controller
         $all = grade::count();
         $violationTypeName = ViolationTypes::whereJsonContains('type_id', 0)->get();
 
-        $Officer = grade::where('type', 2)->count();
-        $Officer2 = grade::where('type', 1)->count();
+        $Officer = grade::where('type', 1)->count();
+        $Officer2 = grade::where('type', 2)->count();
         $person = grade::where('type', 3)->count(); 
         return view("grads.index", compact('all', 'Officer', 'Officer2', 'person','violationTypeName'));
     }
@@ -286,9 +286,9 @@ class settingController extends Controller
 
     // Apply the filter based on the type
     if ($filter == 'assigned') {
-        $data->where('type', 2);
+        $data->where('type', 1);
     } elseif ($filter == 'unassigned') {
-        $data->whereIn('type', [1, 3]);
+        $data->whereIn('type', [2, 3]);
     }
 
     // Get the filtered data
