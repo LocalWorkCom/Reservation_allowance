@@ -360,6 +360,9 @@ class ReservationAllowanceController extends Controller
         $employee_not_found = array();
         $employee_not_dept = array();
         $employee_new_add = array();
+        $employee_existing = array();
+        $employee_new_add_id = array();
+
         foreach($Civil_numbers as $Civil_number){//file_number
 
             // $employee = User::where('Civil_number', $Civil_number)->first();
@@ -389,6 +392,13 @@ class ReservationAllowanceController extends Controller
                         }
                     }
 
+                    $get_reservations = ReservationAllowance::where(['date'=>$to_day, 'user_id'=>$employee->id])->first();
+                    if($get_reservations)
+                    {
+                        $check_sector = 2;
+                        $employee_existing[] = $employee;
+                    }
+
                     if($check_sector == 0){
                         $employee_not_dept[] = $employee;
                         //array_push($employee_not_dept, $employee_not_depts);
@@ -400,6 +410,7 @@ class ReservationAllowanceController extends Controller
                         $employee['grade_value'] = $grade_value;
                         $total_grade_value += $grade_value;
                         $employee_new_add[] = $employee;
+                        $employee_new_add_id[] = $employee->uuid;                        
                         //array_push($employee_new_add, $employee_new_adds);
                     } 
                 }
@@ -417,11 +428,12 @@ class ReservationAllowanceController extends Controller
         }
 
         $cache_name = auth()->user()->id."_employee_new_add";
-        Cache::put($cache_name, $employee_new_add);
+        //Cache::put($cache_name, $employee_new_add);
+        Cache::put($cache_name, $employee_new_add_id);
         //return Cache::get($cache_name);
 
 
-        return view('reservation_allowance.index_check_store', compact('type', 'current_sector','current_departement', 'total_grade_value', 'sectors', 'get_departements', 'to_day', 'employee_not_found', 'employee_not_dept', 'employee_new_add', 'departmentId', 'sectorId'));
+        return view('reservation_allowance.index_check_store', compact('type', 'current_sector','current_departement', 'total_grade_value', 'sectors', 'get_departements', 'to_day', 'employee_not_found', 'employee_not_dept', 'employee_new_add', 'employee_existing', 'departmentId', 'sectorId'));
     }
 
     /**
@@ -459,24 +471,27 @@ class ReservationAllowanceController extends Controller
             $user = auth()->user();
             $to_day = $request->date;
             $to_day_name = Carbon::parse($to_day)->translatedFormat('l');
-            $current_departement = departements::where('uuid', $request->departement_id)->first();
-            if($current_departement){
-                $department_id = $current_departement->id;
+            $department_id = null;
+
+            if($request->departement_id != 0){
+                $current_departement = departements::where('uuid', $request->departement_id)->first();
+                if($current_departement){
+                    $department_id = $current_departement->id;
+                }
             }
+            
             $current_sector = Sector::where('uuid', $request->sector_id)->first();
             if($current_sector){
                 $sector_id = $current_sector->id;
             }
-    
+            $employee_amount = 0;
+            $reservation_amout = 0;    
+
             /*$Civil_numbers = str_replace(array("\r","\r\n","\n"),',',$request->Civil_number);
             $Civil_numbers = explode(',,',$Civil_numbers);*/
 
-            $cache_name = auth()->user()->id."_add_store_all";
+            /*$cache_name = auth()->user()->id."_add_store_all";
             $Civil_numbers = Cache::get($cache_name);
-
-
-            $employee_amount = 0;
-            $reservation_amout = 0;
 
             foreach($Civil_numbers as $Civil_number){//file_number
                 $employee = User::where('file_number', $Civil_number)->first(); 
@@ -517,14 +532,15 @@ class ReservationAllowanceController extends Controller
                 if($reservation_amout != 0 && $reservation_amout <= $employee_amount){
                     return redirect()->route('reservation_allowances.create.all')->with('error','عفوا لقد تجاوزت ملبغ بدل الحجز');
                 }
-            }
-
+            }*/
     
             $employee_not_add = array();
-            foreach($Civil_numbers as $Civil_number){//file_number
+            $sector_mandate = 0;
+            $department_mandate = 0;
+            foreach($employee_new_add as $employee_add){//file_number
 
                // $employee = User::where('Civil_number', $Civil_number)->first();
-               $employee = User::where('file_number', $Civil_number)->first();
+               $employee = User::where('uuid', $employee_add)->first();
                 if($employee){// check if employee
                     if($employee->grade_id != null){ // check if employee has grade
                         if($request->type == 1){
@@ -532,34 +548,50 @@ class ReservationAllowanceController extends Controller
                         }else{
                             $grade_value = $employee->grade->value_part;
                         }
-
-                        $check_sector = 1;
-                        if($employee->sector != $sector_id){
-                            $check_sector = 0;
-                        }
-
-                        if($employee->department_id != 0){
-                            if($employee->department_id != $department_id){
-                                $check_sector = 0;
-                            }
-                        }
-
+                        
                         $check_reservation_allowance = ReservationAllowance::where(['user_id' => $employee->id, 'date' => $to_day])->first();
                         if(!$check_reservation_allowance){
-                            if($check_sector == 1){
-                                //return redirect()->back()->with('error','عفوا تم اضافة بدل لحجز '.$employee->name.' فى هذا اليوم من قبل');
-                                $add_reservation_allowance = new ReservationAllowance();
-                                $add_reservation_allowance->user_id = $employee->id;
-                                $add_reservation_allowance->type = $request->type;
-                                $add_reservation_allowance->amount = $grade_value;
-                                $add_reservation_allowance->date = $to_day;
-                                $add_reservation_allowance->day = $to_day_name;
-                                $add_reservation_allowance->sector_id = $employee->sector;
-                                $add_reservation_allowance->departement_id = $employee->department_id;
-                                $add_reservation_allowance->grade_id = $employee->grade_id;
-                                $add_reservation_allowance->created_by = $user->id;
-                                $add_reservation_allowance->save();
+                            //return redirect()->back()->with('error','عفوا تم اضافة بدل لحجز '.$employee->name.' فى هذا اليوم من قبل');
+                            $add_reservation_allowance = new ReservationAllowance();
+                            $add_reservation_allowance->user_id = $employee->id;
+                            $add_reservation_allowance->type = $request->type;
+                            $add_reservation_allowance->amount = $grade_value;
+                            $add_reservation_allowance->date = $to_day;
+                            $add_reservation_allowance->day = $to_day_name;
+
+                            $add_reservation_allowance->sector_id  = $sector_id;
+                            $add_reservation_allowance->departement_id = $department_id;
+
+                            //$add_reservation_allowance->department_mandate = ($department_id != null ? $employee->department_id : $department_id);
+                            $add_reservation_allowance->grade_id = $employee->grade_id;
+                            $add_reservation_allowance->created_by = $user->id;
+
+                            if($employee->sector != $sector_id){
+                                $sector_mandate = $sector_id;
+                                $add_reservation_allowance->sector_mandate = $employee->sector;
                             }
+    
+                            if($department_id != 0){
+                                if($employee->department_id != $department_id){
+                                    $department_mandate = $department_id;
+                                    $add_reservation_allowance->department_mandate = $employee->department_id;
+                                }
+                            }else{
+                                if($employee->department_id != null){
+                                    $sector_mandate = $sector_id;
+                                    $add_reservation_allowance->sector_mandate = $employee->sector;
+                                    $add_reservation_allowance->department_mandate = $employee->department_id;
+                                }
+                            }
+
+                            if($sector_mandate != 0 || $department_mandate != 0){
+                                $add_reservation_allowance->mandate = 1;
+                            }
+    
+                            $add_reservation_allowance->save();
+
+                            $sector_mandate = 0;
+                            $department_mandate = 0;
                         }
                     }
                 }
@@ -655,6 +687,11 @@ class ReservationAllowanceController extends Controller
             ->addColumn('employee_allowance_amount', function ($row) {
                 return $row->amount.' د.ك ';  // Display the count of iotelegrams
             })
+            ->addColumn('notes', function ($row) {
+                if($row->mandate == 1){
+                    return "منتدب";
+                }
+            })
 
             ->rawColumns(['employee_allowance_all_btn', 'employee_allowance_part_btn'])
             //->rawColumns(['action'])
@@ -747,6 +784,25 @@ class ReservationAllowanceController extends Controller
         }])
         ->get();
 
+
+        $total_amount_reservation = ReservationAllowance::whereYear('date', $year)
+                        ->whereMonth('date', $month);
+                    if($sectorId != 0){
+                        $total_amount_reservation->where('sector_id', $sectorId);
+                    }else{
+                        if($user_gest->rule_id != 2){
+                            $total_amount_reservation->where('sector_id', $sectorId);
+                        }
+                    }
+                    if($departementId != 0){
+                        $total_amount_reservation->where('departement_id', $departementId);
+                    }else{
+                        if($user_gest->rule_id == 3){
+                            $total_amount_reservation->where('departement_id', $departementId);
+                        }
+                    }
+        $total_amount = $total_amount_reservation->sum("amount");
+
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
                 return '<button class="btn  btn-sm" style="background-color: #259240;"><i class="fa fa-edit"></i></button>';
@@ -836,15 +892,32 @@ class ReservationAllowanceController extends Controller
                 return $allowance_sum->sum("amount");
             })
 
-
             ->rawColumns(['allowance_all_count_but', 'allowance_part_count_but', 'allowance_sum_but'])
             //->rawColumns(['action'])
+            
+            ->with('total_amount', function() use ($total_amount) {
+                return number_format($total_amount).' د.ك ';
+            })
+
             ->make(true);
+    }
+
+    public function get_departement_with_all($sector_id, $type)
+    {
+        if($type == 1){
+            $sector_details = Sector::where('uuid', $sector_id)->first();
+            $get_departements = departements::where('id', '!=', 1)->where('sector_id', $sector_details->id)->where('parent_id', null)->get();
+        }else{
+            $user = auth()->user();
+            $get_departements = departements::where('id', '!=', 1)->where('id', $user->department_id)->get();
+        }
+        $departement_id = 0;
+
+        return view('reservation_allowance.get_departements_with_all', compact('get_departements', 'departement_id'));
     }
     
     public function get_departement($sector_id, $type)
     {
-       // dd($type);
         if($type == 1){
             $sector_details = Sector::where('uuid', $sector_id)->first();
             $get_departements = departements::where('id', '!=', 1)->where('sector_id', $sector_details->id)->where('parent_id', null)->get();
@@ -992,6 +1065,24 @@ class ReservationAllowanceController extends Controller
             ->make(true);
     }
 
+    public function add_reservation_allowances_employes_id($uuid)
+    {
+        $get_employees = Cache(auth()->user()->id."_employee_new_add");
+        if($get_employees != null){
+            foreach($get_employees as $k_get_employee=>$get_employee){
+                if($uuid === $get_employee){
+                    unset($get_employees[$k_get_employee]);
+                    $get_employees = array_values($get_employees);
+                    Cache::put(auth()->user()->id."_employee_new_add",$get_employees);
+                }
+            }
+        }
+        $get_employees[] = $uuid; 
+        Cache::put(auth()->user()->id."_employee_new_add", $get_employees);
+        return Cache(auth()->user()->id."_employee_new_add");
+        // Cache::forget(auth()->user()->id."_employee_new_add");
+    }
+
     public function add_reservation_allowances_employess($type, $id)
     {
         $get_employees = Cache::get(auth()->user()->id);
@@ -1005,7 +1096,7 @@ class ReservationAllowanceController extends Controller
             }
         }
         if($type != 0){
-            $get_employees[] = ['id'=>$id, 'type'=>$type]; 
+            $get_employees[] = ['uuid'=>$id, 'type'=>$type]; 
             Cache::put(auth()->user()->id, $get_employees);
         }
         return Cache::get(auth()->user()->id);
@@ -1013,13 +1104,13 @@ class ReservationAllowanceController extends Controller
 
     public function view_reservation_allowances_employess()
     {
+        //return Cache(auth()->user()->id."_employee_new_add");
         //Cache::forget(auth()->user()->id);
         return Cache::get(auth()->user()->id);
     }
 
     public function search_employee_new(Request $request)
     {
-
         /*$messages = [
             'sector_id.required' => 'اختيار القطاع مطلوب ولا يمكن تركه فارغاً.'
         ];
@@ -1063,7 +1154,7 @@ class ReservationAllowanceController extends Controller
             $sector_id = Sector::where('uuid', $sectorId)->first()->id;
         }
 
-        if($request->departement_id){
+        if($request->departement_id && $request->departement_id != "all"){
             $departementId = $request->departement_id;
             $departement_id = departements::where('uuid', $departementId)->first()->id;
             if($user->department_id == null){
@@ -1073,14 +1164,13 @@ class ReservationAllowanceController extends Controller
                 $get_departements = departements::where('id', '!=', 1)->where('id', $user->department_id)->get();
             }
         }else{
+            $departement_id = $request->departement_id;
             $get_departements = departements::where('id', '!=', 1)->where('sector_id', $sector_id)->get();  
         }
 
-
-
         $reservation_allowance_type = 0;
         if($sector_id != 0){
-            if($departement_id != 0){
+            if($departement_id != 0 && $departement_id != "all"){
                 $reservation_allowance_type = departements::where('id', $departement_id)->first()->reservation_allowance_type;
             }else{
                 $reservation_allowance_type = Sector::where('id', $sector_id)->first()->reservation_allowance_type;
@@ -1093,13 +1183,17 @@ class ReservationAllowanceController extends Controller
             //$data = User::query()->where('sector', $sector_id)->where('flag', 'employee');
             $data = User::query()->where('sector', $sector_id);
             $get_employee_reservation = ReservationAllowance::Query()->where('date', $today)->where('sector_id', $sector_id);
-            if($departement_id != 0){
-                $data = $data->where('department_id', $departement_id);
-                $get_employee_reservation = $get_employee_reservation->where('departement_id', $departement_id);
-            }else{
-                $data = $data->where('department_id', null);
-                $get_employee_reservation = $get_employee_reservation->where('departement_id', null);
+
+            if($departement_id != "all"){
+                if($departement_id != 0){
+                    $data = $data->where('department_id', $departement_id);
+                    $get_employee_reservation = $get_employee_reservation->where('departement_id', $departement_id);
+                }else{
+                    $data = $data->where('department_id', null);
+                    $get_employee_reservation = $get_employee_reservation->where('departement_id', null);
+                }
             }
+            
             $get_employee_reservation = $get_employee_reservation->pluck('user_id');
             $data = $data->whereNotIn('id', $get_employee_reservation);
             $data = $data->get();
@@ -1143,7 +1237,7 @@ class ReservationAllowanceController extends Controller
             // $departement_id = 0;
             
             foreach($get_employees as $get_employee){
-                $employee = User::where('id', $get_employee['id'])->first();
+                $employee = User::where('uuid', $get_employee['uuid'])->first();
 
                 if($employee){// check if employee
                     if($employee->grade_id != null){ // check if employee has grade
@@ -1202,11 +1296,11 @@ class ReservationAllowanceController extends Controller
     public function confirm_reservation_allowances($date,$sectorId=0,$departementId=0)
     {
         $current_departement = null;  
-        if($departementId != 0){
+        if($departementId != 0 && $departementId != "all"){
             $current_departement = departements::where('uuid', $departementId)->first();
-            $departement_id = $current_departement->id;
+            $department_id = $current_departement->id;
         }else{
-            $departement_id = 0;
+            $department_id = null;
         }
         
         $current_sector = Sector::where('uuid', $sectorId)->first();
@@ -1214,7 +1308,7 @@ class ReservationAllowanceController extends Controller
 
 
         $sector = $sector_id;
-        $departement = $departement_id;
+        $departement = $department_id;
         $datey = $date;
 
         if(Cache::has(auth()->user()->id)){
@@ -1229,70 +1323,70 @@ class ReservationAllowanceController extends Controller
             // $sector_id = 0;
             // $departement_id = 0;
             
-            foreach($get_employees as $get_employee){
-                $employee = User::where('id', $get_employee['id'])->first();
+            // foreach($get_employees as $get_employee){
+            //     $employee = User::where('uuid', $get_employee['uuid'])->first();
 
-                if($employee){// check if employee
-                    if($employee->grade_id != null){ // check if employee has grade
-                        if($get_employee['type'] == 1){
-                            $grade_value = $employee->grade->value_all;
-                        }else{
-                            $grade_value = $employee->grade->value_part;
-                        }
+            //     if($employee){// check if employee
+            //         if($employee->grade_id != null){ // check if employee has grade
+            //             if($get_employee['type'] == 1){
+            //                 $grade_value = $employee->grade->value_all;
+            //             }else{
+            //                 $grade_value = $employee->grade->value_part;
+            //             }
 
-                        $employee_amount += $grade_value;
+            //             $employee_amount += $grade_value;
 
-                        /*$type_departement = 1;
-                        $reservation_amout = departements::where('id', $employee->department_id)->first()->reservation_allowance_amount;
-                        if($employee->department_id == null){
-                            $type_departement = 2;
-                            $reservation_amout = departements::where('id', $employee->sector)->first()->reservation_allowance_amount;
-                        }*/
+            //             /*$type_departement = 1;
+            //             $reservation_amout = departements::where('id', $employee->department_id)->first()->reservation_allowance_amount;
+            //             if($employee->department_id == null){
+            //                 $type_departement = 2;
+            //                 $reservation_amout = departements::where('id', $employee->sector)->first()->reservation_allowance_amount;
+            //             }*/
 
-                        // $type_departement = 1;
-                        //     $reservation_amout = sector::where('id', $employee->sector)->first()->reservation_allowance_amount;
-                        // if($employee->department_id != 0){
-                        //     $type_departement = 2;
-                        //     $reservation_amout = departements::where('id', $employee->department_id)->first()->reservation_allowance_amount;
-                        // }
+            //             // $type_departement = 1;
+            //             //     $reservation_amout = sector::where('id', $employee->sector)->first()->reservation_allowance_amount;
+            //             // if($employee->department_id != 0){
+            //             //     $type_departement = 2;
+            //             //     $reservation_amout = departements::where('id', $employee->department_id)->first()->reservation_allowance_amount;
+            //             // }
                         
 
-                    }
-                }
-            }
+            //         }
+            //     }
+            // }
 
 
             $type_departement = 1;
             $reservation_amout = sector::where('id', $sector_id)->first()->reservation_allowance_amount;
-            if($departement_id != 0){
+            if($department_id != null && $department_id != "all"){
                 $type_departement = 2;
-                $reservation_amout = departements::where('id', $departement_id)->first()->reservation_allowance_amount;
+                $reservation_amout = departements::where('id', $department_id)->first()->reservation_allowance_amount;
             }
 
 
             $first_day = date('Y-m-01');
             $last_day = date('Y-m-t');
             
-            $get_all_employee_amount = ReservationAllowance::Query();
-            if($departement_id != 0){
-                $get_all_employee_amount = $get_all_employee_amount->where('departement_id', $departement_id);
-            }
-            if($sector_id != 0){
-                $get_all_employee_amount = $get_all_employee_amount->where('sector_id', $sector_id);
-            }
-            $get_all_employee_amount = $get_all_employee_amount->whereBetween('date',[$first_day, $last_day])->sum('amount');
+            // $get_all_employee_amount = ReservationAllowance::Query();
+            // if($departement_id != 0){
+            //     $get_all_employee_amount = $get_all_employee_amount->where('departement_id', $departement_id);
+            // }
+            // if($sector_id != 0){
+            //     $get_all_employee_amount = $get_all_employee_amount->where('sector_id', $sector_id);
+            // }
+            // $get_all_employee_amount = $get_all_employee_amount->whereBetween('date',[$first_day, $last_day])->sum('amount');
 
-            if($reservation_amout > 0){
-                $reservation_amout = $reservation_amout - $get_all_employee_amount;           
-                if($reservation_amout <= $employee_amount){
-                    return redirect()->back()->with('error','عفوا لقد تجاوزت ملبغ بدل الحجز');
-                }
-            }
+            // if($reservation_amout > 0){
+            //     $reservation_amout = $reservation_amout - $get_all_employee_amount;           
+            //     if($reservation_amout <= $employee_amount){
+            //         return redirect()->back()->with('error','عفوا لقد تجاوزت ملبغ بدل الحجز');
+            //     }
+            // }
             
             //add ReservationAllowance
             foreach($get_employees as $get_employee){
 
-                $employee = User::where('id', $get_employee['id'])->first();
+                $employee = User::where('uuid', $get_employee['uuid'])->first();
                 if($employee){// check if employee
                     if($employee->grade_id != null){ // check if employee has grade
                         if($get_employee['type'] == 1){
@@ -1301,39 +1395,87 @@ class ReservationAllowanceController extends Controller
                             $grade_value = $employee->grade->value_part;
                         }
 
-                        // $type_departement = 1;
-                        // if($employee->department_id == null){
-                        //     $type_departement = 2;
+                        $type_departement = 1;
+                        if($employee->department_id == null){
+                            $type_departement = 2;
+                        }
+
+
+                        // if($get_employee['type'] != 0){
+                        //     $sector_id = $employee->sector;
+                        //     $departement_id = $employee->department_id;
+                        //     $check_reservation_allowance = ReservationAllowance::updateOrCreate(
+                        //         [
+                        //             'user_id' => $employee->id,
+                        //             'date' => $to_day
+                        //         ],
+                        //         [
+                        //             'type' => $get_employee['type'],
+                        //             'amount' => $grade_value,
+                        //             'day' => $to_day_name,
+                        //             'sector_id' => $employee->sector,
+                        //             'departement_id' => $employee->department_id,
+                        //             'grade_id' => $employee->grade_id,
+                        //             'type_departement' => $type_departement,
+                        //             'created_by' => $user->id
+                        //         ]
+                        //     );
                         // }
 
 
-                        if($get_employee['type'] != 0){
-                            $sector_id = $employee->sector;
-                            $departement_id = $employee->department_id;
-                            $check_reservation_allowance = ReservationAllowance::updateOrCreate(
-                                [
-                                    'user_id' => $employee->id,
-                                    'date' => $to_day
-                                ],
-                                [
-                                    'type' => $get_employee['type'],
-                                    'amount' => $grade_value,
-                                    'day' => $to_day_name,
-                                    'sector_id' => $employee->sector,
-                                    'departement_id' => $employee->department_id,
-                                    'grade_id' => $employee->grade_id,
-                                    'type_departement' => $type_departement,
-                                    'created_by' => $user->id
-                                ]
-                            );
+                        $check_reservation_allowance = ReservationAllowance::where(['user_id' => $employee->id, 'date' => $to_day])->first();
+                        if(!$check_reservation_allowance){
+                            //return redirect()->back()->with('error','عفوا تم اضافة بدل لحجز '.$employee->name.' فى هذا اليوم من قبل');
+                            $add_reservation_allowance = new ReservationAllowance();
+                            $add_reservation_allowance->user_id = $employee->id;
+                            $add_reservation_allowance->type = $get_employee['type'];
+                            $add_reservation_allowance->amount = $grade_value;
+                            $add_reservation_allowance->date = $to_day;
+                            $add_reservation_allowance->day = $to_day_name;
+                            $add_reservation_allowance->type_departement = $type_departement;
+
+                            $add_reservation_allowance->sector_id  = $sector_id;
+                            $add_reservation_allowance->departement_id = $department_id;
+
+                            //$add_reservation_allowance->department_mandate = ($department_id != null ? $employee->department_id : $department_id);
+                            $add_reservation_allowance->grade_id = $employee->grade_id;
+                            $add_reservation_allowance->created_by = auth()->user()->id;
+
+                            if($employee->sector != $sector_id){
+                                $sector_mandate = $sector_id;
+                                $add_reservation_allowance->sector_mandate = $employee->sector;
+                            }
+    
+                            if($department_id != null){
+                                if($employee->department_id != $department_id){
+                                    $department_mandate = $department_id;
+                                    $add_reservation_allowance->department_mandate = $employee->department_id;
+                                }
+                            }else{
+                                if($employee->department_id != null){
+                                    $sector_mandate = $sector_id;
+                                    $add_reservation_allowance->sector_mandate = $employee->sector;
+                                    $add_reservation_allowance->department_mandate = $employee->department_id;
+                                }
+                            }
+
+                            if($sector_mandate != 0 || $department_mandate != 0){
+                                $add_reservation_allowance->mandate = 1;
+                            }
+    
+                            $add_reservation_allowance->save();
+
+                            $sector_mandate = 0;
+                            $department_mandate = 0;
                         }
 
-                        if($get_employee['type'] == 0){
-                            $check_reservation_allowance = ReservationAllowance::where(['user_id' => $employee->id, 'date' => $to_day])->first();
-                            if($check_reservation_allowance){
-                                $check_reservation_allowance->delete();
-                            }
-                        }
+
+                        // if($get_employee['type'] == 0){
+                        //     $check_reservation_allowance = ReservationAllowance::where(['user_id' => $employee->id, 'date' => $to_day])->first();
+                        //     if($check_reservation_allowance){
+                        //         $check_reservation_allowance->delete();
+                        //     }
+                        // }
 
                     }
                 }

@@ -343,9 +343,8 @@
                             d.month = month;
                         },
                         dataSrc: function(json) {
-                            if (json.totalAmount) {
-                                $('#total-amount').text(json
-                                    .totalAmount);
+                            if (json.total_amount) {
+                                $('#total-amount').text(json.total_amount);
                             }
                             return json.data || [];
                         }

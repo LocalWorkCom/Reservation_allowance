@@ -95,7 +95,11 @@
                         <select class="btn-all" name="departement_id"
                             id="departement_id">
                             <option value="0" selected>اختار الادارة</option>
+                            
                             @if ($get_departements)
+                                @if(Auth::user()->rule_id != 3)
+                                <option value="all" {{ $departementId == 'all' ? 'selected' : ''}}>اختار الكل</option>
+                                @endif
                                 @foreach ($get_departements as $departement)
                                     <option value="{{ $departement->uuid }}"
                                         {{ $departementId == $departement->uuid ? 'selected' : '' }}>
@@ -104,8 +108,7 @@
                                         @include(
                                             'reservation_allowance.manageChildren',
                                             [
-                                                'children' =>
-                                                    $departement->children,
+                                                'children' => $departement->children,
                                                 'parent_id' => '',
                                             ]
                                         )
@@ -273,10 +276,10 @@
                                                         <label for=""> حجز
                                                             كلى</label>
                                                         <input type="radio"
-                                                            name="allowance[][{{ $employee->id }}]"
+                                                            name="allowance[][{{ $employee->uuid }}]"
                                                             id="allowance_all_{{ $x }}"
-                                                            onclick="add_to_cache(1, {{ $employee->id }})"
-                                                            value="{{ $employee->id }}"
+                                                            onclick="add_to_cache(1, '{{ $employee->uuid }}')"
+                                                            value="{{ $employee->uuid }}"
                                                             class="form-control emlpoyee_allowance_radio">
                                                     </div>
                                             </div>
@@ -292,10 +295,10 @@
                                                         <label for=""> حجز
                                                             جزئى</label>
                                                         <input type="radio"
-                                                            name="allowance[][{{ $employee->id }}]"
+                                                            name="allowance[][{{ $employee->uuid }}]"
                                                             id="allowance_part_{{ $x }}"
-                                                            onclick="add_to_cache(2, {{ $employee->id }})"
-                                                            value="{{ $employee->id }}"
+                                                            onclick="add_to_cache(2, '{{ $employee->uuid }}')"
+                                                            value="{{ $employee->uuid }}"
                                                             class="form-control emlpoyee_allowance_radio">
                                                     </div>                                                
                                             </div>
@@ -310,10 +313,10 @@
                                                     <label for=""> لا
                                                         يوجد</label>
                                                     <input type="radio"
-                                                        name="allowance[][{{ $employee->id }}]"
+                                                        name="allowance[][{{ $employee->uuid }}]"
                                                         id="allowance_no_{{ $x }}"
-                                                        onclick="add_to_cache(0, {{ $employee->id }})"
-                                                        value="{{ $employee->id }}"
+                                                        onclick="add_to_cache(0, '{{ $employee->uuid }}')"
+                                                        value="{{ $employee->uuid }}"
                                                         checked
                                                         class="form-control emlpoyee_allowance_radio">
                                                 </div>
@@ -415,7 +418,7 @@
                 var department_type = document.getElementById(
                     'department_type').value;
                 var map_url =
-                    "{{ route('reservation_allowances.get_departement', ['id', 'type']) }}";
+                    "{{ route('reservation_allowances.get_departement_with_all', ['id', 'type']) }}";
                 map_url = map_url.replace('id', sectorid);
                 map_url = map_url.replace('type', department_type);
                 $.get(map_url, function(data) {
@@ -437,11 +440,11 @@
 
         });
 
-        function add_to_cache($type, $id) {
+        function add_to_cache($type, $uuid) {
             var department_type = document.getElementById('department_type').value;
             var map_url =
-                "{{ route('reservation_allowances.add_reservation_allowances_employess', ['type', 'id']) }}";
-            map_url = map_url.replace('id', $id);
+                "{{ route('reservation_allowances.add_reservation_allowances_employess', ['type', 'uuid']) }}";
+            map_url = map_url.replace('uuid', $uuid);
             map_url = map_url.replace('type', $type);
             $.get(map_url, function(data) {});
         }
@@ -458,10 +461,8 @@
             }
 
             for ($i = 1; $i <= employee_count; $i++) {
-                department_type = document.getElementById('allowance_' + type_name +
-                    '_' + $i).checked = true;
-                var employee_id = document.getElementById('allowance_' + type_name +
-                    '_' + $i).value;
+                department_type = document.getElementById('allowance_' + type_name + '_' + $i).checked = true;
+                var employee_id = document.getElementById('allowance_' + type_name + '_' + $i).value;
                 add_to_cache($type, employee_id);
             }
 
@@ -479,19 +480,13 @@
                 confirmButtonColor: '#3085d6'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    var reservation_date = document.getElementById('date')
-                        .value;
-                    var reservation_sector_id = document.getElementById(
-                        'sector_id').value;
-                    var reservation_departement_id = document
-                        .getElementById('departement_id').value;
-                    var map_url =
-                        "{{ route('reservation_allowances.confirm_reservation_allowances', ['date', 'sector', 'departement']) }}";
+                    var reservation_date = document.getElementById('date').value;
+                    var reservation_sector_id = document.getElementById('sector_id').value;
+                    var reservation_departement_id = document.getElementById('departement_id').value;
+                    var map_url = "{{ route('reservation_allowances.confirm_reservation_allowances', ['date', 'sector', 'departement']) }}";
                     map_url = map_url.replace('date', reservation_date);
-                    map_url = map_url.replace('sector',
-                        reservation_sector_id);
-                    map_url = map_url.replace('departement',
-                        reservation_departement_id);
+                    map_url = map_url.replace('sector', reservation_sector_id);
+                    map_url = map_url.replace('departement', reservation_departement_id);
                     window.location.href = map_url;
                 } else {
 

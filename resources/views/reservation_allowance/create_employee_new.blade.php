@@ -461,7 +461,7 @@
         $('.c-radio').on('change', function() {
             // Get the selected value
             var selectedValue = $(this).val();
-            console.log("Selected option: " + selectedValue);
+            //console.log("Selected option: " + selectedValue);
 
             // Perform actions based on the selected value
             if (selectedValue === '0') {
