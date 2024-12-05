@@ -35,29 +35,32 @@ class UsersImport implements ToModel, WithHeadingRow
             'aladar' => 'الادارة',
             'adara_fraaa' => 'الادارة فرعية'
         ];
+
         // Transform row keys using the mapping
         $transformedRow = [];
         foreach ($headerMapping as $arabicHeader => $customKey) {
             if (isset($row[$arabicHeader])) {
-
                 $transformedRow[$customKey] = $row[$arabicHeader];
             }
         }
-        if (
-            empty($transformedRow['الاسم']) &&
-            empty($transformedRow['رقم الملف'])
 
+        // Skip rows where 'الاسم' or 'رقم الملف' is missing or empty
+        if (
+            empty($transformedRow['الاسم'] ?? null) ||
+            empty($transformedRow['رقم الملف'] ?? null)
         ) {
-            return null; // Skip empty row
+            return null; // Skip empty or unset row
         }
 
-
-        // Debug transformed row
-        // dd($transformedRow);
         if (empty($transformedRow['الادارة الفرعية'])) {
             $main = 1;
         } else {
             $main = 0;
+        }
+
+        $check = User::where('file_number', $transformedRow['رقم الملف'])->first();
+        if ($check) {
+            return null;
         }
         // Create a new User model instance
         return new User([
@@ -96,7 +99,7 @@ class UsersImport implements ToModel, WithHeadingRow
     {
         return [
             'alasm'          => 'required|string',
-            'rkm_almlf'      => 'required|string',
+            'rkm_almlf' => 'required|string|unique:users,file_number',
         ];
     }
 
