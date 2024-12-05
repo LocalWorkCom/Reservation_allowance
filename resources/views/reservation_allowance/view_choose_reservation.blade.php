@@ -99,7 +99,7 @@
                <input type="hidden" name="date" id="date" value="{{$date}}">
                <input type="hidden" name="sector_id" id="sector_id" value="{{$sectorId}}">
                <input type="hidden" name="departement_id" id="departement_id" value="{{$departementId}}">
-           <button class="btn-all p-2  mx-2" onclick="confirm_reservation()">اعتماد الكشف</button>
+           <button class="btn-blue p-2  mx-2" onclick="confirm_reservation()">اعتماد الكشف</button>
     
        @endif
                     <?php /*<form class="" id="search_employee_allowances">
@@ -243,12 +243,12 @@
                     <tbody>
                         @foreach($get_employee_for_all_reservations as $K_get_employee_for_all_reservation=>$get_employee_for_all_reservation)
                         <tr>
-                            <td>{{$K_get_employee_for_all_reservation+1}}</td>
-                            <td>{{$get_employee_for_all_reservation->grade != null ? $get_employee_for_all_reservation->grade->name : ""}}</td>
-                            <td>{{$get_employee_for_all_reservation->name}}</td>
-                            <td>{{$get_employee_for_all_reservation->file_number}}</td>
-                            <td>{{$get_employee_for_all_reservation->grade_value}}</td>
-                            <td>{{$get_employee_for_all_reservation->department_id != null ? $get_employee_for_all_reservation->department->name : ""}}
+                            <td class="text-dark">{{$K_get_employee_for_all_reservation+1}}</td>
+                            <td class="text-dark">{{$get_employee_for_all_reservation->grade != null ? $get_employee_for_all_reservation->grade->name : ""}}</td>
+                            <td class="text-dark">{{$get_employee_for_all_reservation->name}}</td>
+                            <td class="text-dark">{{$get_employee_for_all_reservation->file_number}}</td>
+                            <td class="text-dark">{{$get_employee_for_all_reservation->grade_value}}</td>
+                            <td class="text-dark">{{$get_employee_for_all_reservation->department_id != null ? $get_employee_for_all_reservation->department->name : ""}}
                             </td>
                         </tr>
                         @endforeach

@@ -94,7 +94,19 @@
                     <div>
                         <p> بدل حجز بالهويات</p>
                     </div>
-
+                    <?php /*@if(Cache::get(auth()->user()->id."_employee_new_add") != null)*/?>
+                <!-- <div class="col-lg-12" style="text-align: right"> -->
+                    <form method="post" action="{{ route('reservation_allowances.store.all') }}">
+                        @csrf
+                        <input type="hidden" name="date" value="{{$to_day}}">
+                        <input type="hidden" name="type" value="{{$type}}">
+                        <input type="hidden" name="sector_id" value="{{$sectorId}}">
+                        <input type="hidden" name="departement_id" value="{{$departmentId}}">
+                        <button class="btn btn-blue py-2 px-3 mx-2" type="submit">اعتماد الكشف</button>
+                        <button class="btn btn-blue py-2 px-3" onclick="history.back()" type="button" style="background-color:red;">الغاء</button>
+                        </from>
+                <!-- </div> -->
+                <?php /*@endif*/?>
                   
             </div>
         </div>
@@ -126,19 +138,7 @@
                     <option selected disabled>وكيل الوزارة المساعد لشئون امن المنافذ</option>
                     <option>1</option>
                 </select> -->
-                <?php /*@if(Cache::get(auth()->user()->id."_employee_new_add") != null)*/?>
-                <div class="col-lg-12" style="text-align: right">
-                    <form method="post" action="{{ route('reservation_allowances.store.all') }}">
-                        @csrf
-                        <input type="hidden" name="date" value="{{$to_day}}">
-                        <input type="hidden" name="type" value="{{$type}}">
-                        <input type="hidden" name="sector_id" value="{{$sectorId}}">
-                        <input type="hidden" name="departement_id" value="{{$departmentId}}">
-                        <button class="btn btn-success py-2 px-3 mx-2" type="submit">اعتماد الكشف</button>
-                        <button class="btn btn-danger py-2 px-3" onclick="history.back()" type="button">الغاء</button>
-                        </from>
-                </div>
-                <?php /*@endif*/?>
+               
             </div>
  
 
@@ -146,28 +146,28 @@
             <li class="nav-item " role="presentation ">
                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
                     role="tab" aria-controls="home" aria-selected="true">
-                 <span class="tab-head">   الموظفين الذين سيتم اضافتهم </span><span class="text-info">( {{ $employee_new_add ? count($employee_new_add) : 0}} )</span>
+                    الموظفين الذين سيتم اضافتهم ( {{ $employee_new_add ? count($employee_new_add) : 0}} )
                 </button>
             </li>
 
             <li class="nav-item" role="presentation">
                 <button class="nav-link " id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
                     role="tab" aria-controls="profile" aria-selected="false">
-                <span class="tab-head">    الموظفين غير مسجلين فى الادارة او القطاع </span> <span class="text-info">( {{ $employee_not_dept ? count($employee_not_dept) : 0}} )</span> 
+                   الموظفين غير مسجلين فى الادارة او القطاع ( {{ $employee_not_dept ? count($employee_not_dept) : 0}} )
                 </button>
             </li>
 
             <li class="nav-item" role="presentation">
                 <button class="nav-link " id="existing-tab" data-bs-toggle="tab" data-bs-target="#existing" type="button"
                     role="tab" aria-controls="existing" aria-selected="false">
-                    <span class="tab-head">موظفين لديهم بدل حجز اليوم </span><span class="text-info">( {{ $employee_existing ? count($employee_existing) : 0}} )</span>
+                   موظفين لديهم بدل حجز اليوم ( {{ $employee_existing ? count($employee_existing) : 0}} )
                 </button>
             </li>
 
             <li class="nav-item" role="presentation">
                 <button class="nav-link " id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
                     role="tab" aria-controls="contact" aria-selected="false">
-                    <span class="tab-head">موظفين ارقام الملفات خطأ </span><span class="text-info">( {{ $employee_not_found ? count($employee_not_found) : 0}} )</span>
+                   موظفين ارقام الملفات خطأ ( {{ $employee_not_found ? count($employee_not_found) : 0}} )
                 </button>
             </li>
             
