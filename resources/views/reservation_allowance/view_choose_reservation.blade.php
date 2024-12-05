@@ -92,7 +92,7 @@
             <div class="col-12">
                 <div class=" d-flex flex-wrap justify-content-between " style="height: 40px;direction: rtl">
                     <div>
-                        <p> بدل حجز بالهويات</p>
+                        <p> بدل حجز اختيارى</p>
                     </div>
                     @if(Cache::get(auth()->user()->id) != null)
                         <input type="hidden" name="date" id="date" value="{{$date}}">
