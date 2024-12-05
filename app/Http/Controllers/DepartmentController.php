@@ -33,7 +33,6 @@ class DepartmentController extends Controller
             $sectors = Sector::where('id', $departments->sector_id)->first();
         }
 
-
         return view('departments.index', compact('departments', 'sectors'));
     }
 
