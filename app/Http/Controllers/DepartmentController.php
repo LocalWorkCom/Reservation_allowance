@@ -564,6 +564,14 @@ class DepartmentController extends Controller
                 }
             }
         }
+
+        $currentEmployees = User::where('department_id', $departements->id)->whereNot('file_number', $request->mangered)
+            ->pluck('file_number')->toArray();
+
+        $employeesToRemove = array_diff($currentEmployees, $file_numbers);
+        $employeesToAdd = array_diff($file_numbers, $currentEmployees);
+
+
         $nonExistingFileNumbers = [];
         foreach ($file_numbers as $file_number) {
             $employee = User::where('file_number', $file_number)->first();
@@ -578,7 +586,22 @@ class DepartmentController extends Controller
             ])->withInput();
         }
 
-        // Prepare success message
+        if (!empty($employeesToRemove)) { //file_number
+            User::whereIn('file_number', $employeesToRemove)
+                ->update(['sector' => null, 'department_id' => null]);
+        }
+
+        foreach ($employeesToAdd as $file_number) {
+            $employee = User::where('file_number', $file_number)->first();
+            if ($employee && $employee->grade_id != null) {
+                $employee->sector = $request->sector;
+                $employee->department_id = $departements->id;
+                $employee->save();
+                UpdateUserHistory($employee->id);
+                addUserHistory($employee->id, $departements->id,  $request->sector);
+            }
+        }
+
         $message = 'تم أضافه ادارة جديدة';
         if (count($failed_file_numbers) > 0) {
             $message .= ' لكن بعض الموظفين لم يتم إضافتهم بسبب عدم تأكيد النقل أو عدم العثور على ارقام الملفات: ' . implode(', ', $failed_file_numbers);
@@ -754,7 +777,41 @@ class DepartmentController extends Controller
             }
         }
 
-        // Prepare success message
+        $currentEmployees = User::where('department_id', $departements->id)->whereNot('file_number', $request->mangered)
+            ->pluck('file_number')->toArray();
+
+        $employeesToRemove = array_diff($currentEmployees, $file_numbers);
+        $employeesToAdd = array_diff($file_numbers, $currentEmployees);
+
+        $nonExistingFileNumbers = [];
+        foreach ($file_numbers as $file_number) {
+            $employee = User::where('file_number', $file_number)->first();
+            if (!$employee) {
+                $nonExistingFileNumbers[] = $file_number;
+            }
+        }
+        if (!empty($nonExistingFileNumbers)) {
+            // Return with error if any file number doesn't exist
+            return redirect()->back()->withErrors([
+                'file_number' => 'ارقام ملفات الموظفين التالية غير موجودة في النظام: ' . implode(', ', $nonExistingFileNumbers)
+            ])->withInput();
+        }
+
+        if (!empty($employeesToRemove)) {
+            User::whereIn('file_number', $employeesToRemove)
+                ->update(['sector' => null, 'department_id' => null]);
+        }
+
+        foreach ($employeesToAdd as $file_number) {
+            $employee = User::where('file_number', $file_number)->first();
+            if ($employee && $employee->grade_id != null) {
+                $employee->sector = $request->sector;
+                $employee->department_id = $departements->id;
+                $employee->save();
+                UpdateUserHistory($employee->id);
+                addUserHistory($employee->id, $departements->id,  $request->sector);
+            }
+        }
         $message = 'تم أضافه ادارة فرعية جديدة';
         if (count($failed_file_numbers) > 0) {
             $message .= ' لكن بعض الموظفين لم يتم إضافتهم بسبب عدم تأكيد النقل أو عدم العثور على ارقام الملفات: ' . implode(', ', $failed_file_numbers);
@@ -788,19 +845,9 @@ class DepartmentController extends Controller
     public function edit_1(departements $department)
     {
         $sect = departements::with(['sectors'])->findOrFail($department->parent_id);
-        if (Auth::user()->rule->name == "localworkadmin" || Auth::user()->rule->name == "superadmin") {
+        $employees =  User::Where('department_id', $department->id)->whereNot('id', $department->manger)->get();
 
-            $employees = User::where('department_id', $department->id)
-                ->where('flag', 'employee')
-                ->whereNot('id', $department->manager)
-                ->whereNot('id', auth()->user()->id)
-                ->get();
-            $manager = User::find($department->manger);
-        } else {
-            $employees = User::where('flag', 'employee')->where('department_id', $department->id)->whereNot('id', $department->manager)->get();
-            $manager = User::find($department->manger);
-        }
-
+        $manager = User::find($department->manger);
         $fileNumber = $manager->file_number ?? null;
         $email = $manager->email ?? null;
 
@@ -1031,6 +1078,10 @@ class DepartmentController extends Controller
         $file_numbers = str_replace(array("\r", "\r\n", "\n"), ',', $request->file_number);
         $file_numbers = array_filter(explode(',', $file_numbers)); // Convert to array of file Numbers
 
+        if ($request->mangered) {
+            $file_numbers = array_diff($file_numbers, [$request->mangered]);
+        }
+
         $employeesToRemove = array_diff($currentEmployees, $file_numbers);
         $employeesToAdd = array_diff($file_numbers, $currentEmployees);
 
@@ -1088,6 +1139,7 @@ class DepartmentController extends Controller
             'email.required' => 'الايميل مطلوب',
             'budget_type.required' => 'يجب اختيار نوع الميزانيه',
             'email.unique' => 'عفوا هذا الايميل مأخوذ مسبقا',
+            'email.invalid_format' => 'البريد الإلكتروني للمدير غير صالح.',
             'manager_exists' => 'رقم الملف الخاص بالمدير غير موجود.',
             'manager_is_sector_manager' => 'لا يمكن تعيين مدير قطاع كمدير لهذه الإدارة.',
         ];
