@@ -76,10 +76,26 @@
                             <td style="background-color: #f5f6fa;">{{ $user->name }} </td>
                         </tr>
 
-                        <tr>
+                        {{-- <tr>
                             <th scope="row"> البريد الالكترونى</th>
                             <td>{{ $user->email }} </td>
+                        </tr> --}}
+                        
+                        <tr>
+                            <th scope="row"> الرتبه </th>
+                            @foreach ($grade as $item)
+                                <!--<option value="{{ $item->id }}"> -->
+                                <!--    <td > {{ $item->name }}</td>-->
+                                <!--</option>-->
+
+                                @if ($user->grade_id == $item->id)
+                                    <td>
+                                        {{ $item->name }}
+                                    </td>
+                                @endif
+                            @endforeach
                         </tr>
+                        
                         <tr>
                             <th scope="row"> رقم الهاتف </th>
                             <td>
@@ -90,10 +106,10 @@
                             <th scope="row"> الملاحظات </th>
                             <td> {{ $user->description }} </td>
                         </tr>
-                        <tr>
+                        {{-- <tr>
                             <th scope="row"> رقم العسكري</th>
                             <td> {{ $user->military_number }} </td>
-                        </tr>
+                        </tr> --}}
 
                         {{-- <tr>
                             <th scope="row">الوظيفة</th>
@@ -111,7 +127,7 @@
                             <td> {{ $user->job_title }} </td>
                         </tr>
 
-                        <tr>
+                        {{-- <tr>
                             <th scope="row"> الجنسيه </th>
                             <td>
                                 @foreach ($countries as $item)
@@ -120,13 +136,13 @@
                                     @endif
                                 @endforeach
                             </td>
-                        </tr>
+                        </tr> --}}
 
 
-                        <tr>
+                        {{-- <tr>
                             <th scope="row"> الرقم المدني </th>
                             <td> {{ $user->Civil_number }} </td>
-                        </tr>
+                        </tr> --}}
                         {{-- <tr>
                             <th scope="row"> المؤهل </th>
 
@@ -138,32 +154,18 @@
                                 @endforeach
                             </td>
                         </tr> --}}
-                        <tr>
+                        {{-- <tr>
                             <th scope="row"> تاريخ الميلاد </th>
                             <td> {{ $user->date_of_birth }} </td>
                         </tr>
                         <tr>
                             <th scope="row"> تاريخ الالتحاق </th>
                             <td> {{ $user->joining_date }} </td>
-                        </tr>
+                        </tr> --}}
                         {{-- <tr>
                             <th scope="row"> مدة الخدمه </th>
                             <td> {{ $user->length_of_service }} </td>
                         </tr> --}}
-                        <tr>
-                            <th scope="row"> الرتبه </th>
-                            @foreach ($grade as $item)
-                                <!--<option value="{{ $item->id }}"> -->
-                                <!--    <td > {{ $item->name }}</td>-->
-                                <!--</option>-->
-
-                                @if ($user->grade_id == $item->id)
-                                    <td>
-                                        {{ $item->name }}
-                                    </td>
-                                @endif
-                            @endforeach
-                        </tr>
 
                         <tr>
                             <th scope="row"> رقم الملف </th>
@@ -204,7 +206,7 @@
                         </tr>
 
 
-                        <tr>
+                        {{-- <tr>
                             <th scope="row"> يصنف المستخدم ك </th>
 
                             @if ($user->flag == 'user')
@@ -212,7 +214,7 @@
                             @else
                                 <td> موظف </td>
                             @endif
-                        </tr>
+                        </tr> --}}
                         {{-- <tr>
                             <th scope="row"> الاقدامية </th>
                             <td> {{ $user->seniority }} </td>
@@ -263,7 +265,7 @@
                             <td> {{ $user->work_location }} </td>
                         </tr> --}}
 
-                        @if ($user->image)
+                        {{-- @if ($user->image)
                             <tr>
                                 <th scope="row">الصوره</th>
 
@@ -280,7 +282,7 @@
                                     </div>
                                 </td>
                             </tr>
-                        @endif
+                        @endif --}}
 
 
                         {{-- <tr>
@@ -297,7 +299,7 @@
 
                             </td>
                         </tr> --}}
-                        <tr>
+                        {{-- <tr> --}}
                             {{-- <th> قطاع</th> --}}
                             {{-- <td>
 
@@ -310,9 +312,9 @@
                                 @endforeach
 
                             </td> --}}
-                        </tr>
+                        {{-- </tr> --}}
                        
-                        <tr>
+                        {{-- <tr>
                             <th> المنطقة</th>
                             <td>
 
@@ -325,7 +327,7 @@
                                 @endforeach
 
                             </td>
-                        </tr>
+                        </tr> --}}
 
 
                         {{-- <tr>
