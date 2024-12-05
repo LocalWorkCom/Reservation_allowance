@@ -346,7 +346,8 @@ function print_reservation() {
             map_url = map_url.replace('date', reservation_date);
             map_url = map_url.replace('sector',reservation_sector_id);
             map_url = map_url.replace('departement',reservation_departement_id);
-            window.location.href = map_url;
+            //window.location.href = map_url;
+            window.open(map_url, '_blank');
         } else {
 
         }
