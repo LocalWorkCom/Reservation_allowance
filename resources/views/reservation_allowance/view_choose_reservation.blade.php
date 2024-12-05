@@ -342,7 +342,7 @@ function print_reservation() {
             var reservation_date = document.getElementById('date').value;
             var reservation_sector_id = document.getElementById('sector_id').value;
             var reservation_departement_id = document.getElementById('departement_id').value;
-            var map_url = "{{ route('reservation_allowances.print_reservation_allowances', ['date', 'sector', 'departement']) }}";
+            var map_url = "{{ route('reservation_allowances.printReport', ['date', 'sector', 'departement']) }}";
             map_url = map_url.replace('date', reservation_date);
             map_url = map_url.replace('sector',reservation_sector_id);
             map_url = map_url.replace('departement',reservation_departement_id);
