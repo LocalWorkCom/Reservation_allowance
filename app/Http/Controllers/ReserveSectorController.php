@@ -49,7 +49,7 @@ class ReserveSectorController extends Controller
             }
     
             return DataTables::of($sectors)
-                ->addIndexColumn()
+                ->addIndexColumn() 
                 ->addColumn('sector', fn($row) => $row->name)
                 ->addColumn('main_departments_count', function ($row) {
                     return departements::where('sector_id', $row->id)
@@ -64,6 +64,7 @@ class ReserveSectorController extends Controller
                 ->addColumn('reservation_allowance_budget', function ($row) use ($month, $year) {
                     $amount = DB::table('history_allawonces')
                     ->where('sector_id', $row->id)
+                    ->whereNull('department_id')
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
                     ->orderBy('created_at', 'desc') 
@@ -93,6 +94,7 @@ class ReserveSectorController extends Controller
                     ->sum('amount');
                         $historicalAmount = DB::table('history_allawonces')
                         ->where('sector_id', $row->id)
+                        ->whereNull('department_id')
                         ->whereYear('date', $year)
                         ->whereMonth('date', $month)
                         ->orderBy('created_at', 'desc') 
@@ -110,19 +112,19 @@ class ReserveSectorController extends Controller
                 ->addColumn('employees_count', function ($row) use ($month, $year) {
                     return DB::table('user_departments')
                         ->where('sector_id', $row->id)
+                        ->whereNull('department_id') 
                         ->whereYear('created_at', $year)
                         ->whereMonth('created_at', $month)
-                        ->where('flag', '1') 
                         ->groupBy('user_id') 
                         ->select('user_id', DB::raw('MAX(created_at) as latest_created_at')) 
-                        ->pluck('user_id')
+                        ->pluck('user_id') 
                         ->count('user_id');
                 })
                 ->addColumn('received_allowance_count', function ($row) use ($month, $year) {
                     return ReservationAllowance::where('sector_id', $row->id)
+                    ->whereNull('departement_id') 
                         ->whereYear('date', $year)
                         ->whereMonth('date', $month)
-                        ->whereNotNull('departement_id') 
                         ->distinct('user_id')
                         ->count('user_id');
                 })
@@ -130,18 +132,18 @@ class ReserveSectorController extends Controller
                 ->addColumn('did_not_receive_allowance_count', function ($row) use ($month, $year) {
                     $userIdsInSector = DB::table('user_departments')
                     ->where('sector_id', $row->id)
+                    ->whereNull('department_id') 
                     ->whereYear('created_at', $year)
                     ->whereMonth('created_at', $month)
-                    ->where('flag', '1') 
                     ->groupBy('user_id') 
                     ->select('user_id', DB::raw('MAX(created_at) as latest_created_at')) 
                     ->pluck('user_id');
             
                 
                     $receivedAllowanceCount = ReservationAllowance::where('sector_id', $row->id)
+                    ->whereNull('departement_id') 
                         ->whereYear('date', $year)
                         ->whereMonth('date', $month)
-                        ->whereNotNull('departement_id') 
                         ->distinct('user_id')
                         ->count('user_id');
                 

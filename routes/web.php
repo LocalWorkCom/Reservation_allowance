@@ -316,8 +316,8 @@ Route::middleware(['auth'])->group(function () {
         //reservation statics per persons in selected department
         Route::get('/department-employees/{department_id}', [DepartmentEmployeesDetailsController::class, 'index'])->name('department.employees');
         Route::get('/department-employees/data/{department_id}', [DepartmentEmployeesDetailsController::class, 'getData'])->name('department.employees.getData');
-        Route::get('/employee-allowance-details/{employeeId}', [DepartmentEmployeesDetailsController::class, 'allowanceDetailsPage'])->name('employee.allowance.details.page');
-        Route::get('/employee-allowance-details-data/{employeeId}', [DepartmentEmployeesDetailsController::class, 'getAllowanceDetails'])->name('employee.allowance.details.data');
+        Route::get('/employee-department-allowance-details/{employeeId}', [DepartmentEmployeesDetailsController::class, 'allowanceDetailsPage'])->name('employee.department.allowance.details.page');
+        Route::get('/employee-department-allowance-details-data/{employeeId}', [DepartmentEmployeesDetailsController::class, 'getAllowanceDetails'])->name('employee.department.allowance.details.data');
         //reservation statics for sectors
         Route::get('/statistics_sector', [ReserveSectorController::class, 'static'])->name('Reserv_statistic_sector.index');
         Route::get('/statistics_sector/search', [ReserveSectorController::class, 'getFilteredData'])->name('Reserv_statistic_sector.search');

@@ -11,12 +11,18 @@
 @section('content')
 <div class="row">
     <div class="container welcome col-11">
-        <p>الموظفون الغير حاصلين على بدل الحجز - {{ $sectorName }}</p>
+        <p>الموظفون الغير حاصلين على بدل الحجز - 
+        <span class="text-info">{{ $sectorName }}</span>
+        </p>
     </div>
 </div>
 
 <div class="row">
     <div class="container col-11 mt-3 p-0 pt-5 pb-4">
+    <div class="d-flex justify-content-end px-3" >
+                <h4 class="px-2">الشهر: <span class="text-info">{{ $month }}</span></h4>
+                <h4 class="px-2">السنة: <span class="text-info">{{ $year }}</span></h4>
+            </div>
         <div class="bg-white p-4">
         <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
         <thead>
@@ -25,7 +31,7 @@
                         <th>الرتبة</th>
                         <th>اسم الموظف</th>
                         <th>رقم الملف</th>
-                        <th>الإدارة</th>
+                       
                         
                     </tr>
                 </thead>
@@ -60,7 +66,7 @@ $(document).ready(function () {
             { data: 'grade', name: 'grade' },
             { data: 'name', name: 'name' },
             { data: 'file_number', name: 'file_number' },
-            { data: 'department', name: 'department' },
+           
             
         ],
         order: [[1, 'asc']],

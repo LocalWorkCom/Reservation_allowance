@@ -49,7 +49,7 @@ class SubDepartmentStatsController extends Controller
                     ->where('department_id', $row->id)
                     ->whereYear('date', $year)
                     ->whereMonth('date', $month)
-                    ->orderBy('date', 'desc') 
+                    ->orderBy('created_at', 'desc') 
                     ->sum('amount');
 
                 // Check if the amount is null or zero
@@ -78,7 +78,7 @@ class SubDepartmentStatsController extends Controller
                         ->where('department_id', $row->id)
                         ->whereYear('date', $year)
                         ->whereMonth('date', $month)
-                        ->orderBy('date', 'desc') 
+                        ->orderBy('created_at', 'desc') 
                         ->value('amount');
 
                     return $historicalAmount
@@ -180,7 +180,18 @@ class SubDepartmentStatsController extends Controller
 
     return DataTables::of($users)
         ->addColumn('file_number', fn($user) => $user->file_number)
-        ->addColumn('name', fn($user) => $user->name)
+        ->addColumn('name', function ($user) use (  $subDepartment, $month, $year) {
+            $latestRecord = DB::table('user_departments')
+                ->where('user_id', $user->id)
+                ->where('department_id',  $subDepartment->id)
+                ->whereYear('created_at', $year)
+                ->whereMonth('created_at', $month)
+                ->orderBy('created_at', 'desc')
+                ->first();
+        
+            $transferred = $latestRecord && $latestRecord->flag == '0' ? ' (تم النقل)' : ''; 
+            return $user->name . $transferred;
+        })
         ->addColumn('grade', fn($user) => $user->grade_name) 
         ->addIndexColumn()
         ->make(true);
@@ -244,7 +255,18 @@ class SubDepartmentStatsController extends Controller
     
         return DataTables::of($users)
             ->addColumn('file_number', fn($user) => $user->file_number)
-            ->addColumn('name', fn($user) => $user->name)
+            ->addColumn('name', function ($user) use (  $subDepartment, $month, $year) {
+                $latestRecord = DB::table('user_departments')
+                    ->where('user_id', $user->id)
+                    ->where('department_id',  $subDepartment->id)
+                    ->whereYear('created_at', $year)
+                    ->whereMonth('created_at', $month)
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+            
+                $transferred = $latestRecord && $latestRecord->flag == '0' ? ' (تم النقل)' : ''; 
+                return $user->name . $transferred;
+            })
             ->addColumn('grade', fn($user) => $user->grade_name) 
             ->addIndexColumn()
             ->make(true);

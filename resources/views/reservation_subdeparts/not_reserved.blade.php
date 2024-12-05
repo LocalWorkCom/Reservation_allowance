@@ -17,6 +17,10 @@
 
 <div class="row">
     <div class="container col-11 mt-3 p-0 pt-5 pb-4">
+    <div class="d-flex justify-content-end px-3" >
+                <h4 class="px-2">الشهر: <span class="text-info">{{ $month }}</span></h4>
+                <h4 class="px-2">السنة: <span class="text-info">{{ $year }}</span></h4>
+            </div>
         <div class="bg-white p-4">
             <table id="users-table" class="display table table-bordered table-hover dataTable">
                 <thead>

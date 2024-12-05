@@ -58,21 +58,16 @@
                 @endif
            
                 <table id="users-table" class="display table table-responsive-sm table-bordered table-hover dataTable">
-    <thead>
-        <tr>
-           
-           
-            <th rowspan="2">الترتيب</th>
-            <th rowspan="2">الرتبة</th>
-            <th rowspan="2">الاسم</th>
-            <th rowspan="2">رقم الملف</th>
-          
-
-          
-            <th colspan="3"> ايام الحجز </th>
-            <th colspan="3"> المبلغ </th>
-</tr>
-</tr>
+                <thead>
+                    <tr>
+                        <th rowspan="2">الترتيب</th>
+                        <th rowspan="2">الرتبة</th>
+                        <th rowspan="2">الاسم</th>
+                        <th rowspan="2">رقم الملف</th>
+                        <th colspan="3"> ايام الحجز </th>
+                        <th colspan="3"> المبلغ </th>
+                    </tr>
+                    </tr>
 <th>كلي </th>
             <th>جزئي </th>
             <th>إجمالي </th>
@@ -96,12 +91,12 @@
     processing: true,
     serverSide: true,
     ajax: {
-        url: '{{ route('sectorEmployees.getData', ['sectorId' => $sectorId]) }}',
-        data: function(d) {
-            d.month = '{{ $month }}';
-            d.year = '{{ $year }}';
-        }
-    },
+                url: '{{ route('sectorEmployees.getData', ['sectorId' => $sectorId]) }}',
+                data: function(d) {
+                    d.month = '{{ $month }}';
+                    d.year = '{{ $year }}';
+                }
+            },
     columns: [
     {
         data: null,
@@ -116,80 +111,50 @@
         data: 'name',
         name: 'name',
         render: function (data, type, row) {
-            const month = '{{ $month }}';
-            const year = '{{ $year }}';
-            return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
-        }
+        const month = '{{ $month }}';
+        const year = '{{ $year }}';
+        const sectorId = '{{ $sectorId }}'; 
+        return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}&sectorId=${sectorId}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
+    }
     },
     {
         data: 'file_number',
         name: 'file_number',
-        render: function (data, type, row) {
-            const month = '{{ $month }}';
-            const year = '{{ $year }}';
-            return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
-        }
+        render: function(data, type, row) {
+                        const month = '{{ $month }}';
+                        const year = '{{ $year }}';
+                        const sectorId = '{{ $sectorId }}';
+                        return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}&sectorId=${sectorId}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
+                    }
     },
-    // { data: 'department', name: 'department' },
-    // {
-    //     data: 'days',
-    //     name: 'days',
-        // render: function (data, type, row) {
-        //     const month = '{{ $month }}';
-        //     const year = '{{ $year }}';
-        //     return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
-        // }
-    // },
-    // {
-    //     data: 'allowance',
-    //     name: 'allowance',
-    //     render: function (data, type, row) {
-    //         const month = '{{ $month }}';
-    //         const year = '{{ $year }}';
-    //         return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
-    //     }
-    // },
+   
     { data: 'full_days', name: 'full_days' ,  
-        //   render: function (data, type, row) {
-        //     const month = '{{ $month }}';
-        //     const year = '{{ $year }}';
-        //     return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
-        // }
+       
     },
         { data: 'partial_days', name: 'partial_days',
-        //     render: function (data, type, row) {
-        //     const month = '{{ $month }}';
-        //     const year = '{{ $year }}';
-        //     return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
-        // }
+      
          },
         { data: 'total_days', name: 'total_days' ,
-            render: function (data, type, row) {
-            const month = '{{ $month }}';
-            const year = '{{ $year }}';
-            return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
-        }
+            render: function(data, type, row) {
+                        const month = '{{ $month }}';
+                        const year = '{{ $year }}';
+                        const sectorId = '{{ $sectorId }}';
+                        return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}&sectorId=${sectorId}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
+                    }
         },
         { data: 'full_allowance', name: 'full_allowance',
-        //     render: function (data, type, row) {
-        //     const month = '{{ $month }}';
-        //     const year = '{{ $year }}';
-        //     return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
-        // }
+        
          },
         { data: 'partial_allowance', name: 'partial_allowance',
-        //     render: function (data, type, row) {
-        //     const month = '{{ $month }}';
-        //     const year = '{{ $year }}';
-        //     return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
-        // }
+       
          },
         { data: 'total_allowance', name: 'total_allowance',
-            render: function (data, type, row) {
-            const month = '{{ $month }}';
-            const year = '{{ $year }}';
-            return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
-        }
+            render: function(data, type, row) {
+                        const month = '{{ $month }}';
+                        const year = '{{ $year }}';
+                        const sectorId = '{{ $sectorId }}';
+                        return `<a href="/employee-allowance-details/${row.uuid}?month=${month}&year=${year}&sectorId=${sectorId}" style="color:#2f6289 !important; text-decoration:underline !important;">${data}</a>`;
+                    }
          }
 ],
 
@@ -229,17 +194,6 @@
                 }
         });
     });
-
-    $('#print-report').click(function() {
-    const month = '{{ $month }}';
-    const year = '{{ $year }}';
-    const url = `{{ route('sectorEmployees.printReport', ['sectorId' => $sectorId]) }}?month=${month}&year=${year}`;
-    window.open(url, '_blank');
-});
-
-
-
-
 
 </script>
 @endpush
