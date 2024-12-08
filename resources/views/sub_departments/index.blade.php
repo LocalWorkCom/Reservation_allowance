@@ -119,7 +119,7 @@
         $('#users-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: '/api/sub_department/' + departmentId,
+            ajax: '{{ url('api/sub_department') }}/' + departmentId,
 
             columns: [{
                     sWidth: '50px',
