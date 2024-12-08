@@ -22,7 +22,7 @@
                 </li> --}}
                 {{-- <li class="breadcrumb-item active" aria-current="page"> <a href="">
                         الادارات الرئيسية</a></li> --}}
-                
+
                 <li class="breadcrumb-item active" aria-current="page"><a href="">
                         قطاع {{ $sectors->name }}
                     </a></li>
@@ -41,8 +41,7 @@
                     @endphp
                     @if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2 || Auth::user()->rule->id == 4)
                         <button type="button" class="btn-all "
-                            onclick="window.location.href='{{ route('department.create', $uuid) }}'"
-                           >
+                            onclick="window.location.href='{{ route('department.create', $uuid) }}'">
                             اضافة جديد
                         </button>
                     @endif
@@ -263,15 +262,15 @@
     // }
 
     function showSubDepartments(departmentId) {
-        window.location.href = '/sub_departments/' + departmentId;
+        window.location.href = '{{ url('sub_departments') }}/' + departmentId;
     }
 
     function showUsers(departmentId) {
-        window.location.href = '/employees/all/department/' + departmentId;
+        window.location.href = '{{ url('employees/all/department/') }}/' + departmentId;
     }
 
     function showSubUsers(parentDepartmentId) {
-        window.location.href = '/employees/all/parent/' + parentDepartmentId;
+        window.location.href = '{{ url('employees/all/parent/') }}/' + parentDepartmentId;
     }
 
     function handleAction(action, uuid) {

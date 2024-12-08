@@ -1162,21 +1162,21 @@ class UserController extends Controller
 
         $newUser->save();
 
-        if ($request->rule_id == 3) {
-            $department = Departements::where('id', $id_department)->first();
-            $department->manger = $newUser->id;
-            $department->save();
-            if ($newUser->email && isValidEmail($newUser->email)) {
-                Sendmail('مدير أداره', ' تم أضافتك كمدير أداره' . $request->name, $newUser->Civil_number, $request->password, $newUser->email);
-            }
-        } elseif ($request->rule_id == 4) {
-            $sector = Sector::where('id', $request->sector)->first();
-            $sector->manager = $newUser->id;
-            $sector->save();
-            if ($newUser->email && isValidEmail($newUser->email)) {
-                Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $newUser->Civil_number, $request->password, $newUser->email);
-            }
-        }
+        // if ($request->rule_id == 3) {
+        //     $department = Departements::where('id', $id_department)->first();
+        //     $department->manger = $newUser->id;
+        //     $department->save();
+        //     if ($newUser->email && isValidEmail($newUser->email)) {
+        //         Sendmail('مدير أداره', ' تم أضافتك كمدير أداره' . $request->name, $newUser->Civil_number, $request->password, $newUser->email);
+        //     }
+        // } elseif ($request->rule_id == 4) {
+        //     $sector = Sector::where('id', $request->sector)->first();
+        //     $sector->manager = $newUser->id;
+        //     $sector->save();
+        //     if ($newUser->email && isValidEmail($newUser->email)) {
+        //         Sendmail('مدير قطاع', ' تم أضافتك كمدير قطاع' . $request->name, $newUser->Civil_number, $request->password, $newUser->email);
+        //     }
+        // }
         if ($request->hasFile('image')) {
             $file = $request->image;
             $path = 'users/user_profile';
