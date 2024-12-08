@@ -17,7 +17,8 @@
     <div class="container welcome col-11">
         <div class="d-flex justify-content-between">
            
-                <h4>تفاصيل بدل حجز للموظف <span class="text-info">{{ $user->name }}</span>  </h4>
+        <h4>تفاصيل بدل حجز للموظف: <span class="text-info">{{ $latestGradeName }} / {{ $user->name }}</span>
+</h4>
                 </div>
    </div>
   </div>
@@ -25,7 +26,13 @@
     <div class="container col-11 mt-3 py-4  " >
   
     <div class="d-flex flex-wrap justify-content-between mb-3"dir="rtl">
-<h4>من : <span class="text-info">{{ $startDate->format('Y-m-d') }}</span> إلى : <span class="text-info">{{ $endDate->format('Y-m-d') }}</span></h4>
+    <div class="d-flex justify-content-end px-3">
+            <h4>القطاع: <span class="text-info">{{ $sectorName }}</span></h4>
+        </div>
+        <div class="d-flex justify-content-end px-3">
+        <h4>من : <span class="text-info">{{ $startDate->format('Y-m-d') }}</span> إلى : <span class="text-info">{{ $endDate->format('Y-m-d') }}</span></h4>           
+        </div>
+
 <button id="print-report" class="btn-blue ">طباعة</button>
 
 </div>
@@ -33,6 +40,7 @@
     <thead>
         <tr>
             <th>الترتيب</th>
+            <th>الرتبة</th>
             <th>اليوم</th>
             <th>التاريخ</th>
             <th>النوع</th>
@@ -71,8 +79,10 @@
                         return meta.row + 1;
                     }
                 },
+                { data: 'grade', name: 'grade' },
                 { data: 'day', name: 'day' },
                 { data: 'date', name: 'date' },
+                
                 { data: 'type', name: 'type' },
                 { data: 'amount', name: 'amount' },
                 { data: 'created_by', name: 'created_by' }, 
