@@ -994,19 +994,7 @@ class DepartmentController extends Controller
         $department->save();
         saveHistory($department->reservation_allowance_amount, $department->sector_id, $department->id);
         addUserHistory($manager, $department->id,  $request->sector);
-        // Handle old and new manager updates
-
-        // if ($department->getOriginal('manger') != $manager) {
-        //     // If the manager was changed or removed
-        //     if ($department->getOriginal('manger')) {
-        //         // Remove the old manager's association with this department
-        //         $oldManager = User::find($department->getOriginal('manger'));
-        //         if ($oldManager) {
-        //             $oldManager->department_id = null;
-        //             $oldManager->sector = null;
-        //             $oldManager->save();
-        //         }
-        //     }
+        
         if ($request->mangered) {
             $new_user = User::where('file_number', $request->mangered)->first();
             if ($oldManager != $new_user->id) {
@@ -1045,7 +1033,7 @@ class DepartmentController extends Controller
                         $oldManagerUser->sector = null;
                         $oldManagerUser->department_id = null;
                         $oldManagerUser->flag = 'employee';
-                        $oldManagerUser->password = null;
+                        // $oldManagerUser->password = null;
                         $oldManagerUser->save();
                     }
                 }
@@ -1215,14 +1203,12 @@ class DepartmentController extends Controller
         $allowance = $this->getAllowancedepart($request->budget, $department->id);
         $allowanceData = json_decode($allowance->getContent(), true);  // Decode JSON response
 
-        // Now you can check the 'is_allow' value as expected
         if ($allowanceData['is_allow'] === false) {
             $validator->errors()->add('budget',  '  قيمه الميزانيه لا تتوافق، يرجى ادخال قيمه اكبر من ' . $allowanceData['total'] . ' لوجود بدلات حجز اكبر من القيمه المدخله');
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        // Retrieve old manager before updating
-        $oldManager = $department->manger; //file_number
+        $oldManager = $department->manger;
         $manager = $request->mangered ? User::where('file_number', $request->mangered)->value('id') : null;
 
         if (!$manager) {
@@ -1231,7 +1217,6 @@ class DepartmentController extends Controller
         } else {
             UpdateUserHistory($manager);
         }
-        // Handle reservation allowance type
         $part = $request->input('part');
         $reservation_allowance_type = null;
         if (in_array('1', $part) && in_array('2', $part)) {
@@ -1257,18 +1242,7 @@ class DepartmentController extends Controller
         UpdateUserHistory($manager);
         addUserHistory($manager, $department->id,  $request->sector);
 
-        // Handle old and new manager updates for sub-department  
-        // if ($department->getOriginal('manger') != $manager) {
-        //     // If the manager was changed or removed
-        //     if ($department->getOriginal('manger')) {
-        //         // Remove the old manager's association with this department
-        //         $oldManager = User::find($department->getOriginal('manger'));
-        //         if ($oldManager) {
-        //             $oldManager->department_id = null;
-        //             $oldManager->sector = null;
-        //             $oldManager->save();
-        //         }
-        //     }
+        
         if ($request->mangered) {
             $new_user = User::where('file_number', $request->mangered)->first();
             if ($oldManager != $new_user->id) {
@@ -1277,14 +1251,13 @@ class DepartmentController extends Controller
                 $new_user->flag = 'user';
                 $new_user->email = $request->email;
                 $new_user->rule_id = 3;
-                $new_user->password = Hash::make('123456');
+                // $new_user->password = Hash::make('123456');
                 $new_user->save();
 
                 if ($new_user->email && isValidEmail($new_user->email)) {
-                    // Send email to the new manager
                     Sendmail(
-                        'مدير ادارة', // Subject
-                        'تم أضافتك كمدير ادارة', // Email body
+                        'مدير ادارة',
+                        'تم أضافتك كمدير ادارة',
                         $new_user->file_number,
                         123456,
                         $new_user->email
@@ -1307,7 +1280,7 @@ class DepartmentController extends Controller
                         $oldManagerUser->sector = null;
                         $oldManagerUser->department_id = null;
                         $oldManagerUser->flag = 'employee';
-                        $oldManagerUser->password = null;
+                        // $oldManagerUser->password = null;
                         $oldManagerUser->save();
                     }
                 }
@@ -1324,16 +1297,11 @@ class DepartmentController extends Controller
                 $Manager->save();
 
                 if ($Manager->email && isValidEmail($Manager->email)) {
-                    // Send email to the new manager
                     Sendmail('مدير ادارة', ' تم أضافتك كمدير ادارة' . $request->name, $Manager->file_number, 123456, $Manager->email);
                 }
-                //}
             }
         }
-        // }
 
-
-        // Handle employee updates in the sub-department
         $currentEmployees = User::where('department_id', $department->id)->whereNot('file_number', $request->mangered)
             ->pluck('file_number')->toArray();
 
@@ -1356,7 +1324,6 @@ class DepartmentController extends Controller
             }
         }
         if (!empty($nonExistingFileNumbers)) {
-            // Return with error if any file number doesn't exist
             return redirect()->back()->withErrors([
                 'file_number' => 'ارقام ملفات الموظفين التالية غير موجودة في النظام: ' . implode(', ', $nonExistingFileNumbers)
             ])->withInput();
@@ -1370,8 +1337,6 @@ class DepartmentController extends Controller
 
         // Add new employees to the department
         foreach ($employeesToAdd as $file_number) {
-            //  $employee = User::where('Civil_number', $Civil_number)->first();
-
             $employee = User::where('file_number', $file_number)->first();
             if ($employee && $employee->grade_id != null) {
                 $employee->sector = $request->sector;
