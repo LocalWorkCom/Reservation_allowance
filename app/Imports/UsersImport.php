@@ -64,11 +64,13 @@ class UsersImport implements ToModel, WithHeadingRow
         }
         // Create a new User model instance
         return new User([
-            'grade_id'      => $this->getGradeIdByRank($transformedRow['الرتبة']),
+            'grade_id'      => (isset($transformedRow['الرتبة'])) ? $this->getGradeIdByRank($transformedRow['الرتبة']) : null,
             'name'          => $transformedRow['الاسم'],
             'file_number'   => $transformedRow['رقم الملف'],
-            'sector'        => $this->getSectorIdByName($transformedRow['القطاع']),
-            'department_id' => ($main) ? $this->getDepartmentIdByName($transformedRow['الادارة']) : $this->getDepartmentIdByName($transformedRow['الادارة الفرعية']),
+            'sector'        => (isset($transformedRow['القطاع'])) ? $this->getSectorIdByName($transformedRow['القطاع']) : null,
+            'department_id' => $main
+                ? (isset($transformedRow['الادارة']) ? $this->getDepartmentIdByName($transformedRow['الادارة']) : null)
+                : (isset($transformedRow['الادارة الفرعية']) ? $this->getDepartmentIdByName($transformedRow['الادارة الفرعية']) : null),
         ]);
     }
 

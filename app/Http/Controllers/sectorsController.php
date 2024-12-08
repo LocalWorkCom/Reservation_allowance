@@ -305,7 +305,7 @@ class sectorsController extends Controller
             $user->flag = 'user';
             $user->rule_id = 4;
             $user->email = $request->email;
-            $user->password = null;
+            // $user->password = null;
             $user->last_login = null;
             $user->save();
 
@@ -507,7 +507,7 @@ class sectorsController extends Controller
                     $newManager->flag = 'user';
                     $newManager->rule_id = 4;
                     $newManager->email = $request->email;
-                    $newManager->password = null;
+                    // $newManager->password = null;
                     $newManager->last_login = null;
                     $newManager->save();
                     if ($newManager->email && isValidEmail($newManager->email)) {
@@ -528,7 +528,7 @@ class sectorsController extends Controller
                 $Manager->sector = $sector->id;
                 $Manager->flag = 'user';
                 $Manager->rule_id = 4;
-                $Manager->password = null;
+                // $Manager->password = null;
                 $Manager->last_login = null;
                 $Manager->eamil = $request->email;
                 $Manager->save();

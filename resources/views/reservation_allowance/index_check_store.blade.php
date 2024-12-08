@@ -227,7 +227,10 @@
                             <td class="text-dark fw-bolder">{{$employee_notdept->name}}</td>
                             <td class="text-dark fw-bolder">{{$employee_notdept->file_number}}</td>
                             <td class="text-dark fw-bolder">{{$employee_notdept->department_id != null ? $employee_notdept->department->name : ""}}</td>
-                            <td class="text-dark fw-bolder"><a href="#" onclick="add_reservation_to_employee('{{$employee_notdept->uuid}}')">اضف بدل حجز</a></td>
+                            <td class="text-dark fw-bolder">
+                            <a href="#" id="add_reservation_but" onclick="add_reservation_to_employee('{{$employee_notdept->uuid}}')">اضف بدل حجز</a>
+                            <a href="#" id="done_reservation_but" style="display:none">تم اضافة بدل حجز</a>
+                            </td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -334,6 +337,8 @@ function add_reservation_to_employee($employee)
             var map_url = "{{ route('reservation_allowances.add_reservation_allowances_employes_id', ['uuid']) }}";
             map_url = map_url.replace('uuid', $employee);
             $.get(map_url, function(data) {});
+            document.getElementById("add_reservation_but").style.display = 'none';
+            document.getElementById("done_reservation_but").style.display = 'block';
         } else {
 
         }
