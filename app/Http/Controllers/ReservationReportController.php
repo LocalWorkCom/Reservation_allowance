@@ -62,9 +62,10 @@ class ReservationReportController extends Controller
             // Query reservation allowances for the filtered sectors
             $query = ReservationAllowance::whereBetween('date', [$start, $end])
                 ->whereIn('sector_id', $sectors)
+                ->whereNull('departement_id') 
                 ->selectRaw('sector_id, COUNT(DISTINCT user_id) as user_count, SUM(amount) as total_amount')
-                ->groupBy('sector_id')
-                ->having('total_amount', '>', 0);
+                ->groupBy('sector_id');
+                // ->having('total_amount', '>', 0);
     
             $data = DataTables::of($query)
                 ->addIndexColumn()
@@ -146,6 +147,7 @@ class ReservationReportController extends Controller
     
             $data = ReservationAllowance::whereBetween('date', [$startDate, $endDate])
                 ->whereIn('sector_id', $sectors)
+                ->whereNull('department_id')  
                 ->selectRaw('sector_id, COUNT(DISTINCT user_id) as user_count, SUM(amount) as total_amount')
                 ->groupBy('sector_id')
                 ->having('total_amount', '>', 0)

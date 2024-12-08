@@ -282,19 +282,33 @@ class SectorEmployeesDetailsController extends Controller
         if (!$sector) {
             return response()->json(['error' => 'Sector not found'], 404);
         }
+    
         $userIdsInSector = DB::table('user_departments')
-        ->where('sector_id', $sector->id)
-        ->whereNull('department_id') 
-        ->whereYear('created_at', $year)
-        ->whereMonth('created_at', $month)
-        ->select('user_id', DB::raw('MAX(created_at) as latest_created_at')) 
-        ->groupBy('user_id') 
-        ->pluck('user_id');
-
+            ->where('sector_id', $sector->id)
+            ->whereNull('department_id') 
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->select('user_id', DB::raw('MAX(created_at) as latest_created_at')) 
+            ->groupBy('user_id') 
+            ->pluck('user_id');
+    
+            $latestGrades = DB::table('user_grades')
+            ->select('user_id', DB::raw('MAX(created_at) as latest_created_at'), DB::raw('SUBSTRING_INDEX(GROUP_CONCAT(grade_id ORDER BY created_at DESC), ",", 1) as grade_id'))
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->groupBy('user_id');
         
-        $users = User::whereIn('id', $userIdsInSector)
-        ->with(['department'])
-        ->get();
+        $users = User::whereIn('users.id', $userIdsInSector)
+            ->leftJoinSub($latestGrades, 'latest_user_grades', function ($join) {
+                $join->on('users.id', '=', 'latest_user_grades.user_id');
+            })
+            ->leftJoin('grades', 'latest_user_grades.grade_id', '=', 'grades.id')
+            ->select('users.*', 'grades.name as grade_name', 'grades.type as grade_type', 'grades.order as grade_order')
+            ->orderBy('grade_type', 'asc')  
+            ->orderBy('grade_order', 'asc') 
+            ->get();
+        
+    
     
         // Return data to DataTables
         return DataTables::of($users)
@@ -312,21 +326,10 @@ class SectorEmployeesDetailsController extends Controller
                 $transferred = $latestRecord && $latestRecord->flag == '0' ? ' (تم النقل)' : ''; 
                 return $user->name . $transferred;
             })
-            ->addColumn('grade', function ($user) use ($month, $year) {
-                $latestUserGrade = UserGrade::where('user_id', $user->id)
-                    ->whereYear('created_at', $year)
-                    ->whereMonth('created_at', $month)
-                    ->orderBy('created_at', 'desc')
-                    ->first();
-    
-                return $latestUserGrade && $latestUserGrade->grade
-                    ? $latestUserGrade->grade->name
-                    : 'N/A';
-            })
+            ->addColumn('grade', fn($user) => $user->grade_name ?? 'N/A') // Display grade name directly
             ->addIndexColumn()
             ->make(true);
     }
-    
     
 
     
