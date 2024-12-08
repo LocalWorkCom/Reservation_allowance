@@ -90,9 +90,9 @@
 
                     @if (Auth::user()->hasPermission('add_employee User'))
                         @if ($flag == 'employee')
-                            <a href="{{ route('download-template') }}" class="btn-all text-info p-2">تحميل
+                            <a href="{{ route('download-template') }}" class="btn-all text-success p-2">تحميل
                                 القالب</a>
-                            <a href="{{ route('export-users') }}" class="btn-all text-info p-2"
+                            <a href="{{ route('export-users') }}" class="btn-all text-warning p-2"
                                >تصدير القالب</a>
                             <!-- <a href="{{ route('import-view') }}" class="btn-all text-info p-2"
                                >استيراد القالب</a> -->
