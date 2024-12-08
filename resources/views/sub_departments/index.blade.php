@@ -289,16 +289,16 @@
 
     function showSubDepartments(departmentId) {
         // Redirect to the sub-department listing for the selected department
-        window.location.href = '/sub_departments/' + departmentId;
+        window.location.href = '{{ url('sub_departments') }}/' + departmentId;
     }
 
     function showUsers(departmentId) {
-        window.location.href = '/employees/all/department/' + departmentId;
+        window.location.href = '{{ url('employees/all/department/') }}/' + departmentId;
 
     }
 
     function showSubUsers(parentDepartmentId) {
-        window.location.href = '/employees/all/parent/' + parentDepartmentId;
+        window.location.href = '{{ url('employees/all/parent/') }}/' + parentDepartmentId;
 
     }
 
