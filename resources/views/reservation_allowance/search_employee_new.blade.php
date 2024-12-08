@@ -144,15 +144,7 @@
         </div>
         </form>
         <div class="d-flex justify-content-between mt-2">
-            <!-- <div class=" mx-2">
-                                            {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                                            <a class="btn-all py-2 px-2 " href="{{ route('reservation_allowances.create') }}"
-                                                style="color: #0D992C;">
-                                                <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                                اضافة بدل حجز جديد
-                                            </a>
-                                            {{-- @endif --}}
-                                        </div>-->
+
         </div>
         <!-- show_reservation_allowances_info -->
         <div id="show_reservation_allowances_info" class="col-12"></div>
@@ -331,11 +323,6 @@
                     @if ($reservation_allowance_type != 4)
                         @if ($employees)
                         <div>
-                            <!-- <a class="btn-blue p-2"
-                                href="{{ route('reservation_allowances.view_choose_reservation', [$today, $sectorId, $departementId]) }}">
-
-                                اضف بدل حجز</a> -->
-
                                 <button onclick="confirm_reservation()" class="btn-blue p-2">اضف بدل حجز</button>
                         </div>
                         @endif
@@ -466,22 +453,7 @@
                 department_type = document.getElementById('allowance_' + type_name + '_' + $i).checked = true;
                 var employee_id = document.getElementById('allowance_' + type_name + '_' + $i).value;
                 add_to_cache($type, employee_id);
-                
-                <?php /*var employee = { type: $type, uuid: employee_id };
-                aa.push(employee);
-                console.log(aa);
-                add_to_cache_array(aa);*/?>
             }
-        }
-
-        function add_to_cache_array(aa)
-        {
-            <?php /*localStorage.setItem("exam", JSON.stringify(aa));
-            var map_url =
-            "{{ route('reservation_allowances.add_reservation_allowances_employesss', ['aa']) }}";
-            map_url = map_url.replace('aa', $aa);
-            $.get(map_url, function(data) {});
-            console.log($aa);*/?>
         }
 
 
@@ -509,20 +481,6 @@
                 }
             });
         }
-
-        //add to chche
-        /*$('.emlpoyee_allowance_radio:checked').each(function(i) {
-            var type = document.getElementById('allowance_all').value;
-            var map_url ="{{ route('reservation_allowances.add_reservation_allowances_employess', ['type', 'id']) }}";
-            map_url = map_url.replace('id', $(this).val());
-            map_url = map_url.replace('type', type);
-            $.get(map_url, function(data) {});
-        });*/
-
-
-
-
-
 
         /*$(function() {
             $(".select2").select2({

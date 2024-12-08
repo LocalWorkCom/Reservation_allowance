@@ -227,23 +227,6 @@
                     });
                 }
             });
-
-            /*$(document).on("click", "#get_check_sector_department", function() {
-                var sector_id = document.getElementById('sector_id').value;
-                var departement_id = document.getElementById('departement_id').value;
-                var Civil_number = document.getElementById('Civil_number').value;
-
-                Civil_number = Civil_number.replace(/(\r\n|\n|\r)/gm, ",,");
-
-                var map_url = "{{ route('reservation_allowances.get_check_sector_department', ['sectorid', 'departmentid', 'civilNumber']) }}";
-                map_url = map_url.replace('sectorid', sector_id);
-                map_url = map_url.replace('departmentid', departement_id);
-                map_url = map_url.replace('civilNumber', Civil_number);
-                $.get(map_url, function(data) {
-                    $("#view_alert_crate_all").html(data);
-                });
-            });*/
-
         });
 
 
@@ -266,24 +249,6 @@
                 // cancelButtonText: 'إلغاء',
                 confirmButtonColor: '#3085d6'
             }).then((result) => {
-                // if (result.isConfirmed) {
-                //     var reservation_date = document.getElementById('date')
-                //         .value;
-                //     var reservation_sector_id = document.getElementById(
-                //         'sector_id').value;
-                //     var reservation_departement_id = document
-                //         .getElementById('departement_id').value;
-                //     var map_url =
-                //         "{{ route('reservation_allowances.confirm_reservation_allowances', ['date', 'sector', 'departement']) }}";
-                //     map_url = map_url.replace('date', reservation_date);
-                //     map_url = map_url.replace('sector',
-                //         reservation_sector_id);
-                //     map_url = map_url.replace('departement',
-                //         reservation_departement_id);
-                //     window.location.href = map_url;
-                // } else {
-
-                // }
             });
         }
         
@@ -405,58 +370,7 @@
                         data: 'employee_allowance_amount',
                         name: 'employee_allowance_amount'
                     }
-                    <?php /*{
-=========
-        }
-
-        $(document).ready(function() {
-
-
-
-            //call datatable
-            $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
-            var filter = 'all'; // Default filter
-            const table = $('#users-table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: '{{ route('reservation_allowances.getAll') }}',
-                    data: function(d) {
-                        d.filter = filter; // Use the global filter variable
-                    }
-                },
-                columns: [{
-                        data: 'id',
-                        name: 'id'
-                    },
-                    {
-                        data: 'employee_grade',
-                        name: 'employee_grade'
-                    },
-                    {
-                        data: 'employee_name',
-                        name: 'employee_name'
-                    },
-                    {
-                        data: 'employee_file_num',
-                        name: 'employee_file_num'
-                    },
-                    {
-                        data: 'employee_allowance_type_btn',
-                        name: 'employee_allowance_type_btn'
-                    },
-                    {
-                        data: 'employee_allowance_amount',
-                        name: 'employee_allowance_amount'
-                    }
-                    <?php /*{
-                            data: 'action',
-                            name: 'action',
-                            sWidth: '100px',
-                            orderable: false,
-                            searchable: false
-                        }*/
-                    ?>
+                   
                 ],
                 "order": [0, 'asc'],
 

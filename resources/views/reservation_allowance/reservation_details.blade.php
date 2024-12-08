@@ -85,18 +85,6 @@
                 <p> عرض بدل حجز - {{$type == 1 ? 'كلى' : 'جزئى'}} @if($employee->grade) - {{$employee->grade->name}} @endif - {{$employee->name}} @if($sectorDetails) - {{$sectorDetails->name}}@endif @if($departementDetails) - {{$departementDetails->name}} @endif</p>
             </div>
 
-
-            <!--  <div class="d-flex justify-content-between mt-2">
-                                    <div class=" mx-2">
-                                        {{-- @if (Auth::user()->hasPermission('create reservation_allowances')) --}}
-                                        <a class="btn-all py-2 px-2 " href="{{ route('reservation_allowances.create') }}"
-                                            style="color: #0D992C;">
-                                            <img src="{{ asset('frontend/images/add-btn.svg') }}" alt="img">
-                                            اضافة بدل حجز جديد
-                                        </a>
-                                        {{-- @endif --}}
-                                    </div> -->
-
         </div>
         <!-- show_reservation_allowances_info -->
         <div id="show_reservation_allowances_info" class="col-12"></div>
@@ -131,6 +119,7 @@
                                 <!-- First Row: Group Headers -->
                                 <tr>
                                     <th style="width:5%">م</th>
+                                    <th>التاريخ</th>
                                     <th>توقيت اضافة بدل الحجز</th>
                                     <th>المبلغ</th>
                                     <th>القائم بالحجز</th>
@@ -141,6 +130,7 @@
                                     @foreach($get_allowance_results as $k_get_allowance_results=>$get_allowance_results)
                                         <tr>
                                             <td>{{$k_get_allowance_results+1}}</td>
+                                            <td>{{$get_allowance_results->date}}</td>
                                             <td>{{$get_allowance_results->created_at}}</td>
                                             <td>{{$get_allowance_results->amount}} د.ك</td>
                                             <td>{{$get_allowance_results->creator->name}}</td>

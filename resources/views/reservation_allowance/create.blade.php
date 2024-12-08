@@ -302,58 +302,7 @@
                         data: 'employee_allowance_amount',
                         name: 'employee_allowance_amount'
                     }
-                    <?php /*{
-=========
-        }
-
-        $(document).ready(function() {
-
-
-
-            //call datatable
-            $.fn.dataTable.ext.classes.sPageButton = 'btn-pagination btn-sm'; // Change Pagination Button Class
-            var filter = 'all'; // Default filter
-            const table = $('#users-table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: '{{ route('reservation_allowances.getAll') }}',
-                    data: function(d) {
-                        d.filter = filter; // Use the global filter variable
-                    }
-                },
-                columns: [{
-                        data: 'id',
-                        name: 'id'
-                    },
-                    {
-                        data: 'employee_grade',
-                        name: 'employee_grade'
-                    },
-                    {
-                        data: 'employee_name',
-                        name: 'employee_name'
-                    },
-                    {
-                        data: 'employee_file_num',
-                        name: 'employee_file_num'
-                    },
-                    {
-                        data: 'employee_allowance_type_btn',
-                        name: 'employee_allowance_type_btn'
-                    },
-                    {
-                        data: 'employee_allowance_amount',
-                        name: 'employee_allowance_amount'
-                    }
-                    <?php /*{
-                            data: 'action',
-                            name: 'action',
-                            sWidth: '100px',
-                            orderable: false,
-                            searchable: false
-                        }*/
-                    ?>
+                   
                 ],
                 "order": [0, 'asc'],
 

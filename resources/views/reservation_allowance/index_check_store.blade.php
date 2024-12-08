@@ -131,13 +131,7 @@
                 @endif
                 <h5 class="text-dark mx-md-3">التاريخ : <span class="text-info">{{$to_day}}</span></h5>
                 <h5 class="text-dark mx-md-3">القوة : <span class="text-info">{{count($employee_new_add)}}</span></h5>
-                <!-- <h5 class="text-dark mx-md-3">التكلفة : <span class="text-info">{{$total_grade_value}}</span></h5> -->
-                <!-- <h5 class="text-dark">ملاحظات الملف : <span class="text-info">211</span></h5> -->
-       
-                <!-- <select class="form-select form-select-lg select2 w-50 mx-3" name="sector_id" id="sector_id" required>
-                    <option selected disabled>وكيل الوزارة المساعد لشئون امن المنافذ</option>
-                    <option>1</option>
-                </select> -->
+                
                
             </div>
  

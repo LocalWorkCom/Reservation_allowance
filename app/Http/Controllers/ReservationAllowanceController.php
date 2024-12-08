@@ -752,7 +752,7 @@ class ReservationAllowanceController extends Controller
             }
         }
 
-        $data = User::whereIn('id', function ($query) use ($user_gest, $sector_id, $departement_id, $month, $year) {
+        $data = User::query()->whereIn('id', function ($query) use ($user_gest, $sector_id, $departement_id, $month, $year) {
             $query->select('user_id')
                   ->from('reservation_allowances');
                   if($sector_id != 0){
@@ -774,8 +774,7 @@ class ReservationAllowanceController extends Controller
         })
         ->with(['department'])
         ->with(['grade' => function ($q) {
-            $q->orderBy('type', 'desc');
-            //$q->orderBy('type', 'asc');
+            $q->orderBy('type', 'asc')->orderBy('order', 'asc');
         }])
         ->get();
 
@@ -1077,42 +1076,6 @@ class ReservationAllowanceController extends Controller
         // Cache::forget(auth()->user()->id."_employee_new_add");
     }
 
-    // public function add_reservation_allowances_employess($type, $id)
-    // {
-    //     $cache_key = auth()->user()->id;
-    //     $cache_lock = Cache::lock('cache_lock_'.$cache_key, 10); // Lock for 10 seconds
-
-    //     if ($cache_lock->get()) {
-    //         $get_employees = Cache::get($cache_key);
-    //         if ($get_employees != null) {
-    //             foreach ($get_employees as $k_get_employee => $get_employee) {
-    //                 if (in_array($id, $get_employees)) {
-    //                     unset($get_employees[$k_get_employee]);
-    //                     $get_employees = array_values($get_employees);
-    //                     Cache::put($cache_key, $get_employees);
-    //                 }
-
-    //                 if ($type == 0) {
-    //                     unset($get_employees[$k_get_employee]);
-    //                     $get_employees = array_values($get_employees);
-    //                     Cache::put($cache_key, $get_employees);
-    //                 }
-    //             }
-    //         }
-
-    //         if ($type != 0) {
-    //             $get_employees[] = ['uuid' => $id, 'type' => $type];
-    //             Cache::put($cache_key, $get_employees);
-    //         }
-    //         $cache_lock->release(); // Release the lock after update
-    //     } else {
-    //         // Handle the case where the lock couldn't be acquired
-    //         return response()->json(['error' => 'Could not acquire cache lock'], 500);
-    //     }
-
-    //     return Cache::get($cache_key);
-    // }
-
     public function add_reservation_allowances_employess($type, $id)
     {
         $get_employees = Cache::get(auth()->user()->id);
@@ -1137,33 +1100,6 @@ class ReservationAllowanceController extends Controller
         }
         return Cache::get(auth()->user()->id);
     }
-
-    // public function add_reservation_allowances_employess($ids=array())
-    // {
-    //     Cache::put(auth()->user()->id, $ids);
-
-        // $get_employees = Cache::get(auth()->user()->id);
-        // if($get_employees != null){
-        //     foreach($get_employees as $k_get_employee=>$get_employee){
-        //         if(in_array($id, $get_employees)){
-        //             unset($get_employees[$k_get_employee]);
-        //             $get_employees = array_values($get_employees);
-        //             Cache::put(auth()->user()->id,$get_employees);
-        //         }
-
-        //         if($type == 0){
-        //             unset($get_employees[$k_get_employee]);
-        //             $get_employees = array_values($get_employees);
-        //             Cache::put(auth()->user()->id,$get_employees);
-        //         }
-        //     }
-        // }
-        // if($type != 0){
-        //     $get_employees[] = ['uuid'=>$id, 'type'=>$type]; 
-        //     Cache::put(auth()->user()->id, $get_employees);
-        // }
-        // return Cache::get(auth()->user()->id);
-    //}
 
     public function view_reservation_allowances_employess()
     {
@@ -1244,7 +1180,12 @@ class ReservationAllowanceController extends Controller
 
         if($sector_id != 0){
             //$data = User::query()->where('sector', $sector_id)->where('flag', 'employee');
-            $data = User::query()->where('sector', $sector_id);
+            $data = User::query()
+                    ->join('grades', 'users.grade_id', '=', 'grades.id')  // Join the grade table
+                    ->where('users.sector', $sector_id)  // Filter users by sector
+                    ->orderBy('grades.type', 'asc')  // Order by grade id
+                    ->orderBy('grades.order', 'asc')  // Order by grade id
+                    ->with('grade');  // Eager load grade data
             $get_employee_reservation = ReservationAllowance::Query()->where('date', $today)->where('sector_id', $sector_id);
 
             if($departement_id != "all"){
@@ -1259,6 +1200,7 @@ class ReservationAllowanceController extends Controller
             
             $get_employee_reservation = $get_employee_reservation->pluck('user_id');
             $data = $data->whereNotIn('id', $get_employee_reservation);
+
             $data = $data->get();
         }
 
