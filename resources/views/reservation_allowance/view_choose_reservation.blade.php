@@ -98,9 +98,12 @@
                         <input type="hidden" name="date" id="date" value="{{$date}}">
                         <input type="hidden" name="sector_id" id="sector_id" value="{{$sectorId}}">
                         <input type="hidden" name="departement_id" id="departement_id" value="{{$departementId}}">
-                        <button class="btn-blue p-2  mx-2" onclick="print_reservation()">طباعة</button>
-                        <button class="btn-blue p-2  mx-2" onclick="confirm_reservation()">اعتماد الكشف</button>
-                    @endif
+<div>
+<button class="btn-blue   mx-1" onclick="print_reservation()">طباعة</button>
+<button class="btn-all   mx-1" onclick="confirm_reservation()">اعتماد الكشف</button>
+
+
+</div>                    @endif
                     <?php /*<form class="" id="search_employee_allowances">
                         @csrf
                         <div class="row d-flex flex-wrap">

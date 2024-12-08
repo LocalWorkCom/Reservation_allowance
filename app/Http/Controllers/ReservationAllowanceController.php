@@ -1077,12 +1077,54 @@ class ReservationAllowanceController extends Controller
         // Cache::forget(auth()->user()->id."_employee_new_add");
     }
 
+    // public function add_reservation_allowances_employess($type, $id)
+    // {
+    //     $cache_key = auth()->user()->id;
+    //     $cache_lock = Cache::lock('cache_lock_'.$cache_key, 10); // Lock for 10 seconds
+
+    //     if ($cache_lock->get()) {
+    //         $get_employees = Cache::get($cache_key);
+    //         if ($get_employees != null) {
+    //             foreach ($get_employees as $k_get_employee => $get_employee) {
+    //                 if (in_array($id, $get_employees)) {
+    //                     unset($get_employees[$k_get_employee]);
+    //                     $get_employees = array_values($get_employees);
+    //                     Cache::put($cache_key, $get_employees);
+    //                 }
+
+    //                 if ($type == 0) {
+    //                     unset($get_employees[$k_get_employee]);
+    //                     $get_employees = array_values($get_employees);
+    //                     Cache::put($cache_key, $get_employees);
+    //                 }
+    //             }
+    //         }
+
+    //         if ($type != 0) {
+    //             $get_employees[] = ['uuid' => $id, 'type' => $type];
+    //             Cache::put($cache_key, $get_employees);
+    //         }
+    //         $cache_lock->release(); // Release the lock after update
+    //     } else {
+    //         // Handle the case where the lock couldn't be acquired
+    //         return response()->json(['error' => 'Could not acquire cache lock'], 500);
+    //     }
+
+    //     return Cache::get($cache_key);
+    // }
+
     public function add_reservation_allowances_employess($type, $id)
     {
         $get_employees = Cache::get(auth()->user()->id);
         if($get_employees != null){
             foreach($get_employees as $k_get_employee=>$get_employee){
-                if(in_array($id, $get_employee)){
+                if(in_array($id, $get_employees)){
+                    unset($get_employees[$k_get_employee]);
+                    $get_employees = array_values($get_employees);
+                    Cache::put(auth()->user()->id,$get_employees);
+                }
+
+                if($type == 0){
                     unset($get_employees[$k_get_employee]);
                     $get_employees = array_values($get_employees);
                     Cache::put(auth()->user()->id,$get_employees);
@@ -1095,6 +1137,33 @@ class ReservationAllowanceController extends Controller
         }
         return Cache::get(auth()->user()->id);
     }
+
+    // public function add_reservation_allowances_employess($ids=array())
+    // {
+    //     Cache::put(auth()->user()->id, $ids);
+
+        // $get_employees = Cache::get(auth()->user()->id);
+        // if($get_employees != null){
+        //     foreach($get_employees as $k_get_employee=>$get_employee){
+        //         if(in_array($id, $get_employees)){
+        //             unset($get_employees[$k_get_employee]);
+        //             $get_employees = array_values($get_employees);
+        //             Cache::put(auth()->user()->id,$get_employees);
+        //         }
+
+        //         if($type == 0){
+        //             unset($get_employees[$k_get_employee]);
+        //             $get_employees = array_values($get_employees);
+        //             Cache::put(auth()->user()->id,$get_employees);
+        //         }
+        //     }
+        // }
+        // if($type != 0){
+        //     $get_employees[] = ['uuid'=>$id, 'type'=>$type]; 
+        //     Cache::put(auth()->user()->id, $get_employees);
+        // }
+        // return Cache::get(auth()->user()->id);
+    //}
 
     public function view_reservation_allowances_employess()
     {

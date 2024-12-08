@@ -242,8 +242,7 @@
                                             style="justify-content: space-around !important">
                                             <div
                                                 style="display: inline-flex; direction: ltr;">
-                                                <label for=""> لا يوجد
-                                                    للكل</label>
+                                                <label for=""> لا يوجد للكل</label>
                                                 <input type="radio"
                                                     name="allowance_all"
                                                     id="allowance_all"
@@ -332,10 +331,12 @@
                     @if ($reservation_allowance_type != 4)
                         @if ($employees)
                         <div>
-                            <a class="btn-blue p-2"
+                            <!-- <a class="btn-blue p-2"
                                 href="{{ route('reservation_allowances.view_choose_reservation', [$today, $sectorId, $departementId]) }}">
 
-                                اضف بدل حجز</a>
+                                اضف بدل حجز</a> -->
+
+                                <button onclick="confirm_reservation()" class="btn-blue p-2">اضف بدل حجز</button>
                         </div>
                         @endif
                     @endif
@@ -441,7 +442,7 @@
         });
 
         function add_to_cache($type, $uuid) {
-            var department_type = document.getElementById('department_type').value;
+            //var department_type = document.getElementById('department_type').value;
             var map_url =
                 "{{ route('reservation_allowances.add_reservation_allowances_employess', ['type', 'uuid']) }}";
             map_url = map_url.replace('uuid', $uuid);
@@ -460,12 +461,27 @@
                 var type_name = "no";
             }
 
+            var aa = [];
             for ($i = 1; $i <= employee_count; $i++) {
                 department_type = document.getElementById('allowance_' + type_name + '_' + $i).checked = true;
                 var employee_id = document.getElementById('allowance_' + type_name + '_' + $i).value;
                 add_to_cache($type, employee_id);
+                
+                <?php /*var employee = { type: $type, uuid: employee_id };
+                aa.push(employee);
+                console.log(aa);
+                add_to_cache_array(aa);*/?>
             }
+        }
 
+        function add_to_cache_array(aa)
+        {
+            <?php /*localStorage.setItem("exam", JSON.stringify(aa));
+            var map_url =
+            "{{ route('reservation_allowances.add_reservation_allowances_employesss', ['aa']) }}";
+            map_url = map_url.replace('aa', $aa);
+            $.get(map_url, function(data) {});
+            console.log($aa);*/?>
         }
 
 
@@ -483,11 +499,11 @@
                     var reservation_date = document.getElementById('date').value;
                     var reservation_sector_id = document.getElementById('sector_id').value;
                     var reservation_departement_id = document.getElementById('departement_id').value;
-                    var map_url = "{{ route('reservation_allowances.confirm_reservation_allowances', ['date', 'sector', 'departement']) }}";
+                    var map_url = "{{ route('reservation_allowances.view_choose_reservation', ['date', 'sector', 'departement']) }}";
                     map_url = map_url.replace('date', reservation_date);
                     map_url = map_url.replace('sector', reservation_sector_id);
                     map_url = map_url.replace('departement', reservation_departement_id);
-                    window.location.href = map_url;
+                    setTimeout(function(){location.href=map_url} , 5000);   
                 } else {
 
                 }

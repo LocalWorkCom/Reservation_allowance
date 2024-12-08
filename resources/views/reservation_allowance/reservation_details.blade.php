@@ -82,7 +82,7 @@
                 @endif
 
 
-                <p> عرض بدل حجز - {{$type == 1 ? 'كلى' : 'جزئى'}} - {{$employee->name}} @if($sectorDetails) - {{$sectorDetails->name}}@endif @if($departementDetails) - {{$departementDetails->name}} @endif</p>
+                <p> عرض بدل حجز - {{$type == 1 ? 'كلى' : 'جزئى'}} @if($employee->grade) - {{$employee->grade->name}} @endif - {{$employee->name}} @if($sectorDetails) - {{$sectorDetails->name}}@endif @if($departementDetails) - {{$departementDetails->name}} @endif</p>
             </div>
 
 
