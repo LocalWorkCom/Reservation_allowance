@@ -45,7 +45,6 @@ class ReservationReportController extends Controller
             }
             $start = Carbon::parse($startDate)->startOfDay();
             $end = Carbon::parse($endDate)->endOfDay();
-            // Filter sectors based on user rule_id
             if (auth()->user()->rule_id == 2) { // Super Admin
                 $sectors = Sector::pluck('id');
             } elseif (auth()->user()->rule_id == 4) { // Sector Manager
@@ -176,116 +175,159 @@ class ReservationReportController extends Controller
     }
     
     public function showUserDetails(Request $request, $userUuid)
-    {
-        $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
-        $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
-    
-        $user = User::where('uuid', $userUuid)->firstOrFail();
-    
-        // Fetch the latest grade
-        $latestGrade = UserGrade::where('user_id', $user->id)
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->orderBy('created_at', 'desc')
-            ->with('grade')
-            ->first();
-    
-        $latestGradeName = $latestGrade?->grade?->name ?? 'غير معروف';
-    
-        $reservations = ReservationAllowance::where('user_id', $user->id)
-            ->whereBetween('date', [$startDate, $endDate])
-            ->get();
-    
-        $sectorName = $reservations->first()?->sector->name ?? 'N/A';
-    
-        return view('reserv_report.user_details', compact('user', 'reservations', 'startDate', 'endDate', 'sectorName', 'latestGradeName'));
-    }
-    
-    
-    
-    public function printUserDetails(Request $request, $userUuid)
-    {
-        $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
-        $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
-    
-        $user = User::where('uuid', $userUuid)->firstOrFail();
-    
-        // Fetch the sector name
-        $sectorName = DB::table('user_departments')
-            ->join('sectors', 'user_departments.sector_id', '=', 'sectors.id')
-            ->where('user_departments.user_id', $user->id)
-            ->whereNull('user_departments.department_id')
-            ->orderBy('user_departments.created_at', 'desc')
-            ->value('sectors.name') ?? 'غير معروف';
-    
-        // Fetch the latest grade
-        $latestGrade = DB::table('user_grades')
-            ->join('grades', 'user_grades.grade_id', '=', 'grades.id')
-            ->where('user_grades.user_id', $user->id)
-            ->orderBy('user_grades.created_at', 'desc')
-            ->value('grades.name') ?? 'غير معروف';
-    
-        // Map reservations
-        $reservations = ReservationAllowance::where('user_id', $user->id)
-            ->whereBetween('date', [$startDate, $endDate])
-            ->get()
-            ->map(function ($reservation) {
-                $grade = Grade::find($reservation->grade_id);
-                return [
-                    'day' => Carbon::parse($reservation->date)->translatedFormat('l'),
-                    'date' => Carbon::parse($reservation->date)->format('Y-m-d'),
-                    'mandate' => $reservation->mandate,
-                    'grade' => $grade ? $grade->name : 'غير معروف',
-                    'type' => $reservation->type == 1 ? 'حجز كلي' : 'حجز جزئي',
-                    'amount' => number_format($reservation->amount, 2),
-                ];
-            });
-    
-        // Initialize the PDF
-        $pdf = new TCPDF();
-        $pdf->SetCreator('Your App');
-        $pdf->SetTitle("تفاصيل الحجز للموظف: {$user->name}");
-        $pdf->AddPage();
-        $pdf->setRTL(true);
-        $pdf->SetFont('dejavusans', '', 12);
-    
-        // Render the HTML content
-        $html = view('reserv_report.user_details_pdf', compact('user', 'reservations', 'startDate', 'endDate', 'sectorName', 'latestGrade'))->render();
-        $pdf->writeHTML($html, true, false, true, false, '');
-    
-        return $pdf->Output("user_details_{$user->name}.pdf", 'I');
-    }
-    
-
-
-public function getUserDetailsData(Request $request, $userId)
 {
     $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
     $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
 
-    $reservations = ReservationAllowance::where('user_id', $userId)
+    $user = User::where('uuid', $userUuid)->firstOrFail();
+
+    $latestGrade = UserGrade::where('user_id', $user->id)
+        ->whereBetween('created_at', [$startDate, $endDate])
+        ->orderBy('created_at', 'desc')
+        ->with('grade')
+        ->first();
+
+    $latestGradeName = $latestGrade?->grade?->name ?? ' ';
+
+    $reservation = ReservationAllowance::where('user_id', $user->id)
+        ->whereBetween('date', [$startDate, $endDate])
+        ->whereNull('departement_id') 
+        ->first();
+
+    $sectorName = $reservation?->sector->name ?? 'N/A';
+    $sectorId = $reservation?->sector_id ?? null; 
+
+    Log::info('User details sector fetched', [
+        'sectorId' => $sectorId,
+        'sectorName' => $sectorName,
+    ]);
+
+    return view('reserv_report.user_details', compact(
+        'user',
+        'startDate',
+        'endDate',
+        'sectorName',
+        'latestGradeName',
+        'sectorId'
+    ));
+}
+
+    
+    
+    
+public function printUserDetails(Request $request, $userUuid)
+{
+    $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
+    $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
+    $sectorId = $request->input('sector_id'); 
+
+    Log::info('PrintUserDetails Request', [
+        'userUuid' => $userUuid,
+        'startDate' => $startDate,
+        'endDate' => $endDate,
+        'sectorId' => $sectorId
+    ]);
+
+    $user = User::where('uuid', $userUuid)->firstOrFail();
+
+    // Log user details
+    Log::info('User Details', [
+        'userId' => $user->id,
+        'userName' => $user->name
+    ]);
+
+    // Fetch the sector name directly from the Sector model
+    $sectorName = Sector::where('id', $sectorId)->value('name') ?? 'غير معروف';
+    Log::info('Sector Name', ['sectorName' => $sectorName]);
+
+    // Fetch the latest grade
+    $latestGrade = DB::table('user_grades')
+        ->join('grades', 'user_grades.grade_id', '=', 'grades.id')
+        ->where('user_grades.user_id', $user->id)
+        ->orderBy('user_grades.created_at', 'desc')
+        ->value('grades.name') ?? 'غير معروف';
+
+    Log::info('Latest Grade', ['latestGrade' => $latestGrade]);
+
+    // Fetch and map reservations
+    $reservations = ReservationAllowance::where('user_id', $user->id)
+        ->where('sector_id', $sectorId) 
+        ->whereNull('departement_id') 
         ->whereBetween('date', [$startDate, $endDate])
         ->get();
 
-    return DataTables::of($reservations)
-        ->addIndexColumn()
-        ->addColumn('day', fn($row) => Carbon::parse($row->date)->translatedFormat('l'))
-        ->addColumn('date', function ($row) {
-            $date = Carbon::parse($row->date)->format('Y-m-d');
-            $mandate = $row->mandate == 1 ? ' (انتداب)' : '';
-            return $date . $mandate;
-        })        ->addColumn('grade', function ($row) {
-            $grade = grade::find($row->grade_id);
-            return $grade ? $grade->name : 'غير معروف';
-        }) // Include grade column
-        ->addColumn('type', fn($row) => $row->type == 1 ? 'حجز كلي' : 'حجز جزئي')
-        ->addColumn('amount', fn($row) => number_format($row->amount, 2) . ' د ك')
-        ->addColumn('created_by', function ($row) {
-            $creator = User::find($row->created_by);
-            return $creator ? $creator->name : 'غير معروف';
-        })
-        ->addColumn('created_at', fn($row) => Carbon::parse($row->created_at)->format('Y-m-d H:i:s'))
-        ->make(true);
+    Log::info('Fetched Reservations Count', ['count' => $reservations->count()]);
+    Log::info('Fetched Reservations', ['reservations' => $reservations->toArray()]);
+
+    $mappedReservations = $reservations->map(function ($reservation) {
+        $grade = grade::find($reservation->grade_id);
+        $mandate = $reservation->mandate == 1 ? ' (انتداب)' : '';
+        return [
+            'day' => Carbon::parse($reservation->date)->translatedFormat('l'),
+            'date' => Carbon::parse($reservation->date)->format('Y-m-d') . $mandate,
+            'grade' => $grade ? $grade->name : 'غير معروف',
+            'type' => $reservation->type == 1 ? 'حجز كلي' : 'حجز جزئي',
+            'amount' => number_format($reservation->amount, 2),
+        ];
+    });
+
+    Log::info('Mapped Reservations', ['mappedReservations' => $mappedReservations->toArray()]);
+
+    // Initialize the PDF
+    $pdf = new TCPDF();
+    $pdf->SetCreator('Your App');
+    $pdf->SetTitle("تفاصيل الحجز للموظف: {$user->name}");
+    $pdf->AddPage();
+    $pdf->setRTL(true);
+    $pdf->SetFont('dejavusans', '', 12);
+
+    // Render the HTML content
+    $html = view('reserv_report.user_details_pdf', compact('user', 'mappedReservations', 'startDate', 'endDate', 'sectorName', 'latestGrade'))->render();
+    Log::info('Generated HTML Content', ['html' => $html]);
+
+    $pdf->writeHTML($html, true, false, true, false, '');
+
+    return $pdf->Output("user_details_{$user->name}.pdf", 'I');
 }
+
+    
+
+
+    public function getUserDetailsData(Request $request, $userId)
+    {
+        $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
+        $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
+        $sectorId = $request->input('sector_id');
+    
+        $reservations = ReservationAllowance::where('user_id', $userId)
+            ->where('sector_id', $sectorId) 
+            ->whereNull('departement_id') 
+            ->whereBetween('date', [$startDate, $endDate])
+            ->get();
+    
+    
+        return DataTables::of($reservations)
+            ->addIndexColumn()
+            ->addColumn('day', fn($row) => Carbon::parse($row->date)->translatedFormat('l'))
+            ->addColumn('date', function ($row) {
+                $date = Carbon::parse($row->date)->format('Y-m-d');
+                $mandate = $row->mandate == 1 ? ' (انتداب)' : '';
+                return $date . $mandate;
+            })
+            ->addColumn('grade', function ($row) {
+                $grade = Grade::find($row->grade_id);
+                return $grade ? $grade->name : 'غير معروف';
+            })
+            ->addColumn('type', fn($row) => $row->type == 1 ? 'حجز كلي' : 'حجز جزئي')
+            ->addColumn('amount', fn($row) => number_format($row->amount, 2) . ' د ك')
+            ->addColumn('created_by', function ($row) {
+                $creator = User::find($row->created_by);
+                return $creator ? $creator->name : 'غير معروف';
+            })
+            ->addColumn('created_at', fn($row) => Carbon::parse($row->created_at)->format('Y-m-d H:i:s'))
+            ->make(true);
+    }
+    
 
     
     public function showSectorDetails(Request $request, $sectorId)

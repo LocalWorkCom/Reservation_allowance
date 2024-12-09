@@ -67,7 +67,8 @@
                 url: '{{ route('reservation_report.user_details_data', ['userId' => $user->id]) }}',
                 data: {
                     start_date: '{{ $startDate->format('Y-m-d') }}',
-                    end_date: '{{ $endDate->format('Y-m-d') }}'
+                    end_date: '{{ $endDate->format('Y-m-d') }}',
+                    sector_id: '{{ $sectorId }}' 
                 }
             },
             columns: [
@@ -123,12 +124,15 @@
             }
         });
 
-        $('#print-report').click(function() {
-        const startDate = '{{ $startDate->format('Y-m-d') }}';
-        const endDate = '{{ $endDate->format('Y-m-d') }}';
-        const url = `{{ route('reservation_report.user_details_print', ['userUuid' => $user->uuid]) }}?start_date=${startDate}&end_date=${endDate}`;
-        window.open(url, '_blank');
+       
     });
-    });
+    $('#print-report').click(function() {
+    const startDate = '{{ $startDate->format('Y-m-d') }}';
+    const endDate = '{{ $endDate->format('Y-m-d') }}';
+    const sectorId = '{{ $sectorId }}'; 
+    const url = `{{ route('reservation_report.user_details_print', ['userUuid' => $user->uuid]) }}?start_date=${startDate}&end_date=${endDate}&sector_id=${sectorId}`;
+    window.open(url, '_blank');
+});
+
 </script>
 @endpush

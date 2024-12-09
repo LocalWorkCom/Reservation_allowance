@@ -23,13 +23,18 @@
         h3, p {
             text-align: center;
         }
+        .text-info {
+            color: #017BFF; /* Adjust to match your branding */
+        }
     </style>
 </head>
 <body>
     <img src="{{ asset('img/logo.png') }}" alt="Logo" width="50px">
     <h3>
-        تفاصيل الحجز للموظف: {{ $latestGrade }}/  {{ $user->name }}
-        <br> <span class="text-info">قطاع {{ $sectorName }}</span>
+        تفاصيل الحجز للموظف: 
+        <span class="text-info">{{ $latestGrade }} / {{ $user->name }}</span>
+        <br>
+        <span>قطاع: <span class="text-info">{{ $sectorName }}</span></span>
     </h3>
     <p><strong>الفترة من:</strong> {{ $startDate->format('Y-m-d') }} <strong>إلى:</strong> {{ $endDate->format('Y-m-d') }}</p>
 
@@ -45,21 +50,20 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($reservations as $index => $reservation)
-                <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $reservation['day'] }}</td>
-                    <td>
-                        {{ $reservation['date'] }}
-                        @if ($reservation['mandate'] == 1)
-                            (انتداب)
-                        @endif
-                    </td>
-                    <td>{{ $reservation['grade'] }}</td>
-                    <td>{{ $reservation['type'] }}</td>
-                    <td>{{ $reservation['amount'] }} <span>  د.ك</span></td>
-                </tr>
-            @endforeach
+        @forelse ($mappedReservations as $index => $reservation)
+            <tr>
+                <td>{{ $index + 1 }}</td>
+                <td>{{ $reservation['day'] }}</td>
+                <td>{{ $reservation['date'] }}</td>
+                <td>{{ $reservation['grade'] }}</td>
+                <td>{{ $reservation['type'] }}</td>
+                <td>{{ $reservation['amount'] }} د.ك</td>
+            </tr>
+        @empty
+            <tr>
+                <td colspan="6">لا توجد بيانات متاحة للفترة المحددة.</td>
+            </tr>
+        @endforelse
         </tbody>
     </table>
 </body>
