@@ -49,25 +49,28 @@
 <button id="print-report" class="btn btn-blue mx-md-1 ">طباعة</button>
 </div>
 <div class="d-flex  flex-wrap">
-                <div class="btn-all mx-1">
-                    <p class="p-1">عدد القطاعات المحجوزة : <span class="text-info" id="total-sectors">0</span> </p>
-                  
-                </div>
+                
            
-                <div class="btn-all mx-1">
-                    <p class="p-1">عدد الإدارات : <span class="text-info" id="total-departments">0</span></p>
-          
-                </div>
+               
          
-                <div class="btn-all mx-1">
-                    <p class="p-1">عدد الموظفين : <span class="text-info" id="total-users">0</span> </p>
-                    
-                </div>
+               
            
                 <div class="btn-all mx-1">
                     <p class="p-1">الإجمالي : <span class="text-info" id="total-amount">0 د.ك</span></p>
                 
                 </div>  
+                <div class="btn-all mx-1">
+                    <p class="p-1">عدد الموظفين : <span class="text-info" id="total-users">0</span> </p>
+                    
+                </div>
+                <div class="btn-all mx-1">
+                    <p class="p-1">عدد الإدارات : <span class="text-info" id="total-departments">0</span></p>
+          
+                </div>
+                <div class="btn-all mx-1">
+                    <p class="p-1">عدد القطاعات المحجوزة : <span class="text-info" id="total-sectors">0</span> </p>
+                  
+                </div>
                 </div> 
 
 
