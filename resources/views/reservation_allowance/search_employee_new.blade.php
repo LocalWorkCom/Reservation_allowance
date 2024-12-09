@@ -506,7 +506,7 @@
                     map_url = map_url.replace('date', reservation_date);
                     map_url = map_url.replace('sector', reservation_sector_id);
                     map_url = map_url.replace('departement', reservation_departement_id);
-                    <?php /*setTimeout(function(){location.href=map_url} , 5000);   */?>
+                    setTimeout(function(){location.href=map_url} , 5000);   
                     setTimeout(function() {
                         document.getElementById('preloader').style.display = 'block';
                         document.querySelector('.content').style.display = 'block';                    
