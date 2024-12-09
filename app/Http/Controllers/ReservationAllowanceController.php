@@ -1200,7 +1200,7 @@ class ReservationAllowanceController extends Controller
             }
             
             $get_employee_reservation = $get_employee_reservation->pluck('user_id');
-            $data = $data->whereNotIn('id', $get_employee_reservation);
+            $data = $data->whereNotIn('users.id', $get_employee_reservation);
 
             $data = $data->get();
         }
