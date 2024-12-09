@@ -701,6 +701,7 @@ class ReservationAllowanceController extends Controller
     {
         $user_gest = auth()->user();
         $to_day = Carbon::now()->format('Y-m-d');
+
         $data = [];
 
         if($request->has('year')){
@@ -767,6 +768,8 @@ class ReservationAllowanceController extends Controller
                   }else{
                         if($user_gest->rule_id == 3){
                             $query->where('departement_id', $departement_id);
+                        }else{
+                            $query->where('departement_id', null);
                         }
                   }
             $query->whereYear('date', $year)
@@ -892,6 +895,9 @@ class ReservationAllowanceController extends Controller
             
             ->with('total_amount', function() use ($total_amount) {
                 return number_format($total_amount).' د.ك ';
+            })
+            ->with('current_month', function() use ($month) {
+                return $month;
             })
 
             ->make(true);
@@ -1557,7 +1563,54 @@ class ReservationAllowanceController extends Controller
             
         // Generate PDF
         $pdf = $this->generatePDF($data);
-        return $pdf->Output('reservation_report.pdf', 'I');
+        return $pdf->Output('reservation_allowance.pdf', 'I');
+    }
+
+    public function printReportMonth($month, $year,$sectorId=0,$departementId=0)
+    {   
+        $current_departement = null;  
+        if($departementId != 0){
+            $current_departement = departements::where('uuid', $departementId)->first();
+            $departement_id = $current_departement->id;
+        }else{
+            $departement_id = null;
+        }
+        
+        $current_sector = Sector::where('uuid', $sectorId)->first();
+        $sector_id = $current_sector->id;
+
+        $reservation_amount = 0;
+
+        $get_employee_reservations = ReservationAllowance::Query();
+        if($departement_id != 0){
+            $get_employee_reservations = $get_employee_reservations->where('departement_id', $departement_id);
+        }else{
+            $get_employee_reservations = $get_employee_reservations->where('departement_id', null);
+        }
+        if($sector_id != 0){
+            $get_employee_reservations = $get_employee_reservations->where('sector_id', $sector_id);
+        }
+
+        $get_employee_reservations = $get_employee_reservations->whereMonth('date',$month)->whereYear('date',$year)->get();
+        
+        if($get_employee_reservations){
+            $reservation_amount = $get_employee_reservations->sum('amount');
+        }
+        
+        $data = [
+            'month' => $month,
+            'year' => $year,
+            'sector' => $current_sector->name,
+            'department' => $current_departement != null ? $current_departement->name : "",
+            'get_employee_reservations' => $get_employee_reservations,
+            'reservation_amount' => $reservation_amount,
+        ];
+
+        //return $data;
+            
+        // Generate PDF
+        $pdf = $this->generatePDFMonth($data);
+        return $pdf->Output('reservation_allowance.pdf_month', 'I');
     }
     
     private function generatePDF($data)
@@ -1575,6 +1628,26 @@ class ReservationAllowanceController extends Controller
         $pdf->AddPage();
         $pdf->setRTL(true);
         $html = view('reservation_allowance.print', $data)->render();
+        $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
+
+        return $pdf;
+    }
+
+    private function generatePDFMonth($data)
+    {
+        $pdf = new TCPDF();
+        $pdf->SetCreator('Your App');
+        $pdf->SetAuthor('Your App');
+        $pdf->SetTitle('Reservation Report');
+        $pdf->SetSubject('Report');
+        $pdf->SetMargins(10, 10, 10);
+        $pdf->SetHeaderMargin(10);
+        $pdf->SetFooterMargin(10);
+        $pdf->SetAutoPageBreak(TRUE, 10);
+        $pdf->SetFont('dejavusans', '', 12);
+        $pdf->AddPage();
+        $pdf->setRTL(true);
+        $html = view('reservation_allowance.print_month', $data)->render();
         $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
 
         return $pdf;

@@ -289,6 +289,7 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/reservation_allowances/create_employee_all', [ReservationAllowanceController::class, 'create_employee_all'])->name('reservation_allowances.create_employee_all')->middleware('check.permission:create ReservationAllowance');
     Route::any('/reservation_allowances/details/{uuid}/{sector_id}/{departement_id}/{month}/{year}/{type}', [ReservationAllowanceController::class, 'details'])->name('reservation_allowances.details')->middleware('check.permission:view ReservationAllowance');
     Route::any('/reservation_allowances/printReport/{date}/{sector_id}/{departement_id}', [ReservationAllowanceController::class, 'printReport'])->name('reservation_allowances.printReport')->middleware('check.permission:view ReservationAllowance');
+    Route::any('/reservation_allowances/printReportMonth/{month}/{year}/{sector_id}/{departement_id}', [ReservationAllowanceController::class, 'printReportMonth'])->name('reservation_allowances.printReportMonth')->middleware('check.permission:view ReservationAllowance');
     Route::any('/reservation_allowances/add_reservation_allowances_employesss/{ids}', [ReservationAllowanceController::class, 'add_reservation_allowances_employesss'])->name('reservation_allowances.add_reservation_allowances_employesss')->middleware('check.permission:view ReservationAllowance');
 
     //reserv statics

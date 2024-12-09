@@ -487,18 +487,19 @@
             }
         }
 
-
         function confirm_reservation() {
             Swal.fire({
                 title: 'تنبيه',
-                text: 'هل انت متاكد من انك تريد ان تضيف بدل حجز لهؤلاء الموظفين',
+                text: 'هل انت متاكد من انك تريد ان تضيف بدل حجز لهؤلاء الموظفين؟',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'نعم, اضف',
                 cancelButtonText: 'إلغاء',
-                confirmButtonColor: '#3085d6'
+                confirmButtonColor: '#3085D6'
             }).then((result) => {
                 if (result.isConfirmed) {
+                    // Show the preloader
+                    document.getElementById('preloader').style.display = 'flex';
                     var reservation_date = document.getElementById('date').value;
                     var reservation_sector_id = document.getElementById('sector_id').value;
                     var reservation_departement_id = document.getElementById('departement_id').value;
@@ -506,13 +507,10 @@
                     map_url = map_url.replace('date', reservation_date);
                     map_url = map_url.replace('sector', reservation_sector_id);
                     map_url = map_url.replace('departement', reservation_departement_id);
-                    setTimeout(function(){location.href=map_url} , 5000);   
+                    // Redirect after 5 seconds
                     setTimeout(function() {
-                        document.getElementById('preloader').style.display = 'block';
-                        document.querySelector('.content').style.display = 'block';                    
+                        location.href = map_url;
                     }, 5000);
-                } else {
-
                 }
             });
         }

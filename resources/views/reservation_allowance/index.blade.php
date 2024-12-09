@@ -127,6 +127,8 @@
                         </select>
                     </div>
 
+                    <input type="hidden" name="current_month" id="current_month">
+
                 </div>
             </form>
         </div>
@@ -195,6 +197,11 @@
                 <button class="btn-all px-3 mx-2 mb-3 btn-filter"
                     onclick="search_employee_allowances_with_month(12)">ديسمبر
                 </button>
+
+                <div>
+                    <button class="btn-blue mx-1" onclick="print_reservation()">طباعة</button>
+                </div>
+
             </div>
 
             <div class="col-lg-12">
@@ -239,6 +246,8 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         $(".select2").select2({
             dir: "rtl"
@@ -272,6 +281,35 @@
                 dir: "rtl"
             });
         }
+
+        //print
+        function print_reservation() {
+            Swal.fire({
+                title: 'تنبيه',
+                text: 'هل انت متاكد من انك تريد ان تطبع بدل حجز لهؤلاء الموظفين',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'نعم, اطبع',
+                cancelButtonText: 'إلغاء',
+                confirmButtonColor: '#3085d6'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var current_month = document.getElementById('current_month').value;
+                    var current_year = document.getElementById('year').value;
+                    var reservation_sector_id = document.getElementById('sector_id').value;
+                    var reservation_departement_id = document.getElementById('departement_id').value;
+                    var map_url = "{{ route('reservation_allowances.printReportMonth', ['month', 'year','sector', 'departement']) }}";
+                    map_url = map_url.replace('month', current_month);
+                    map_url = map_url.replace('year', current_year);
+                    map_url = map_url.replace('sector',reservation_sector_id);
+                    map_url = map_url.replace('departement',reservation_departement_id);
+                    //window.location.href = map_url;
+                    window.open(map_url, '_blank');
+                } else {
+
+                }
+            });
+        }
     </script>
 
 
@@ -287,8 +325,7 @@
         $(document).ready(function() {
             var table = "";
             var sector_id = document.getElementById('sector_id').value;
-            var departement_id = document.getElementById('departement_id')
-                .value;
+            var departement_id = document.getElementById('departement_id').value;
             var year = document.getElementById('year').value;
             var filter = 'all'; // Default filter
 
@@ -332,8 +369,12 @@
                             d.month = month;
                         },
                         dataSrc: function(json) {
+
                             if (json.total_amount) {
                                 $('#total-amount').text(json.total_amount);
+                            }
+                            if (json.current_month) {
+                                $('#current_month').val(json.current_month);
                             }
                             return json.data || [];
                         }
@@ -425,7 +466,6 @@
                 });
                 //end of call datatable
             }
-
 
         });
     </script>
