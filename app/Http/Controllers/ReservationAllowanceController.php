@@ -1181,6 +1181,7 @@ class ReservationAllowanceController extends Controller
         if($sector_id != 0){
             //$data = User::query()->where('sector', $sector_id)->where('flag', 'employee');
             $data = User::query()
+                    ->select('users.*', 'grades.type', 'grades.order', 'grades.name as grade_name')  // Select necessary columns
                     ->join('grades', 'users.grade_id', '=', 'grades.id')  // Join the grade table
                     ->where('users.sector', $sector_id)  // Filter users by sector
                     ->orderBy('grades.type', 'asc')  // Order by grade id
@@ -1199,7 +1200,7 @@ class ReservationAllowanceController extends Controller
             }
             
             $get_employee_reservation = $get_employee_reservation->pluck('user_id');
-            $data = $data->whereNotIn('id', $get_employee_reservation);
+            $data = $data->whereNotIn('user.id', $get_employee_reservation);
 
             $data = $data->get();
         }

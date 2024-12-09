@@ -31,6 +31,34 @@
         height: 43px !important;
         background-color: #fafbfd !important;
     }
+
+    #preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #F3F3F3;
+    border-top: 5px solid #041A7C;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .content {
+    display: none;
+  }
 </style>
 
 
@@ -43,6 +71,9 @@
     src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer>
 </script>
 
+<div id="preloader" style="display:none">
+    <div class="spinner"></div>
+  </div>
 
 @section('title')
     اضافة بدل حجز
@@ -475,7 +506,11 @@
                     map_url = map_url.replace('date', reservation_date);
                     map_url = map_url.replace('sector', reservation_sector_id);
                     map_url = map_url.replace('departement', reservation_departement_id);
-                    setTimeout(function(){location.href=map_url} , 5000);   
+                    <?php /*setTimeout(function(){location.href=map_url} , 5000);   */?>
+                    setTimeout(function() {
+                        document.getElementById('preloader').style.display = 'block';
+                        document.querySelector('.content').style.display = 'block';                    
+                    }, 5000);
                 } else {
 
                 }
