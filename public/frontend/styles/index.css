@@ -1602,9 +1602,9 @@ color: #2A2726;
     font-weight: 700;
     color: #274373; */
 /* } */
- a:hover{
+ /* a:hover{
     color:white ;
- }
+ } */
 
 .dropdown-menu, .dropdown-menu4, .dropdown-menu5 {
     display: none; /* Hide by default */
@@ -1612,3 +1612,45 @@ color: #2A2726;
 .dropdown-menu.show, .dropdown-menu4.show, .dropdown-menu5.show {
     display: block; /* Show when .show is added */
 }
+
+
+
+
+
+
+
+
+
+
+/* Preloader Styling */
+/* #preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fff; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; 
+  }
+  
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #041a7c; 
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .content {
+    display: none;
+  }
+   */

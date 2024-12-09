@@ -84,7 +84,11 @@
 
     </div>
 </div>
-    
+<!-- <div id="preloader">
+    <div class="spinner"></div>
+  </div> -->
+
+
 <div class="row">
     <div class="container welcome col-11" style="height: auto !important">
 
@@ -277,7 +281,15 @@ function print_reservation() {
     });
 }
 </script>
+<!-- <script>
+  
+setTimeout(function() {
+  document.getElementById('preloader').style.display = 'none';
+  
+  document.querySelector('.content').style.display = 'block';
+}, 5000); 
 
+</script> -->
 <script>
 //     import {
 //     Tab,
