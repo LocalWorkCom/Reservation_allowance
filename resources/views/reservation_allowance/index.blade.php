@@ -284,31 +284,48 @@
 
         //print
         function print_reservation() {
-            Swal.fire({
-                title: 'تنبيه',
-                text: 'هل انت متاكد من انك تريد ان تطبع بدل حجز لهؤلاء الموظفين',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'نعم, اطبع',
-                cancelButtonText: 'إلغاء',
-                confirmButtonColor: '#3085d6'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    var current_month = document.getElementById('current_month').value;
-                    var current_year = document.getElementById('year').value;
-                    var reservation_sector_id = document.getElementById('sector_id').value;
-                    var reservation_departement_id = document.getElementById('departement_id').value;
-                    var map_url = "{{ route('reservation_allowances.printReportMonth', ['month', 'year','sector', 'departement']) }}";
-                    map_url = map_url.replace('month', current_month);
-                    map_url = map_url.replace('year', current_year);
-                    map_url = map_url.replace('sector',reservation_sector_id);
-                    map_url = map_url.replace('departement',reservation_departement_id);
-                    //window.location.href = map_url;
-                    window.open(map_url, '_blank');
-                } else {
 
-                }
-            });
+            var reservation_sector_id = document.getElementById('sector_id').value;
+            var reservation_departement_id = document.getElementById('departement_id').value;
+            if(reservation_sector_id != 0){
+                Swal.fire({
+                    title: 'تنبيه',
+                    text: 'هل انت متاكد من انك تريد ان تطبع بدل حجز لهؤلاء الموظفين',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'نعم, اطبع',
+                    cancelButtonText: 'إلغاء',
+                    confirmButtonColor: '#3085d6'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        var current_month = document.getElementById('current_month').value;
+                        var current_year = document.getElementById('year').value;
+                        var reservation_sector_id = document.getElementById('sector_id').value;
+                        var reservation_departement_id = document.getElementById('departement_id').value;
+                        var map_url = "{{ route('reservation_allowances.printReportMonth', ['month', 'year','sector', 'departement']) }}";
+                        map_url = map_url.replace('month', current_month);
+                        map_url = map_url.replace('year', current_year);
+                        map_url = map_url.replace('sector',reservation_sector_id);
+                        map_url = map_url.replace('departement',reservation_departement_id);
+                        //window.location.href = map_url;
+                        window.open(map_url, '_blank');
+                    } else {
+
+                    }
+                });
+            }else{
+                Swal.fire({
+                    title: 'تنبيه',
+                    text: 'يجب ان تختار قطاع اولا',
+                    icon: 'warning',
+                    showCancelButton: false,
+                    confirmButtonText: 'حسنا',
+                    cancelButtonText: 'إلغاء',
+                    confirmButtonColor: '#3085d6'
+                }).then((result) => {
+                    
+                });
+            }
         }
     </script>
 
@@ -318,8 +335,10 @@
 @push('scripts')
     <script>
         function search_employee_allowances_with_month($month) {
-            get_table_data("{{ route('reservation_allowances.getAllWithMonth') }}",
-                $month);
+            var sector_id = document.getElementById('sector_id').value;
+            if(sector_id != 0){
+                get_table_data("{{ route('reservation_allowances.getAllWithMonth') }}",$month);
+            }
         }
 
         $(document).ready(function() {
