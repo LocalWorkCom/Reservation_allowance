@@ -31,7 +31,6 @@ class HomeController extends Controller
             $main = 1;
         }
 
-        // dd(0);
         if (Auth::user()->rule->id == 1 || Auth::user()->rule->id == 2) { //superadmin
             $empCount = User::where('flag', 'employee')->count();
             $depMainCount = departements::where('parent_id', null)->count();
@@ -40,12 +39,9 @@ class HomeController extends Controller
         } elseif (Auth::user()->rule->id == 4) {
             $empCount = User::where('flag', 'employee')->where('sector', auth()->user()->sector)->count();
             $depMainCount = departements::where('parent_id', null)->where('sector_id', auth()->user()->sector)->count();
-            // $depChiledCount = departements::whereNotNull('parent_id')->where('sector_id', auth()->user()->sector)->count();
-            $depChiledCount = departements::where('parent_id',   auth()->user()->department_id)->count();
-            $dep = departements::whereNull('parent_id')->where('id', auth()->user()->department_id)->first();
+            $depChiledCount = departements::whereNotNull('parent_id')->where('sector_id', auth()->user()->sector)->count();
 
-            $sec_id = ($dep) ? $dep->sector_id : 0;
-            $sectorCount = Sector::where('id', $sec_id)->count();
+            $sectorCount = Sector::where('id',  auth()->user()->sector)->count();
         } elseif (Auth::user()->rule->id == 3) {
             $my_id = auth()->user()->id;
             $my_department_id = auth()->user()->department_id;
@@ -63,21 +59,16 @@ class HomeController extends Controller
                 })
                 ->count();
 
-            // $depSector = departements::find(auth()->user()->department_id);
             $dep = departements::whereNull('parent_id')->where('id', auth()->user()->department_id)->first();
-            $sec_id = ($dep) ? $dep->sector_id : 0;
 
-            $sectorCount = Sector::where('id', $sec_id)->count();
+            $sectorCount = Sector::where('id',  auth()->user()->sector)->count();
         } else {
             $empCount = User::where('flag', 'employee')->where('department_id', auth()->user()->department_id)->count();
             $depMainCount = departements::where('parent_id', null)->where('id', auth()->user()->department_id)->count();
             $depChiledCount = departements::where('parent_id',  auth()->user()->department_id)->orwhere('manger',  auth()->user()->id)->count();
-            // dd($depChiledCount);
-            // $depSector = departements::find(auth()->user()->department_id);
             $dep = departements::whereNull('parent_id')->where('id', auth()->user()->department_id)->first();
-            $sec_id = ($dep) ? $dep->sector_id : 0;
 
-            $sectorCount = Sector::where('id', $sec_id)->count();
+            $sectorCount = Sector::where('id',  auth()->user()->sector)->count();
         }
 
         $user = auth()->user();
