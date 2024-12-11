@@ -832,6 +832,8 @@ class ReservationAllowanceController extends Controller
                 }else{
                     if($user_gest->rule_id == 3){
                         $allowance_all_count->where('departement_id', $departement_id);
+                    }else{
+                        $allowance_all_count->where('departement_id', null);  
                     }
                 }
                 $allowance_all_count->get();
@@ -857,6 +859,8 @@ class ReservationAllowanceController extends Controller
                 }else{
                     if($user_gest->rule_id == 3){
                         $allowance_part_count->where('departement_id', $departement_id);
+                    }else{
+                        $allowance_part_count->where('departement_id', null);  
                     }
                 }
                 $allowance_part_count->get();
