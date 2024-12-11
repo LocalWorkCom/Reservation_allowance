@@ -1484,6 +1484,8 @@ class ReservationAllowanceController extends Controller
                 }else{
                     if($user_gest->rule_id == 3){
                         $allowance_results->where('departement_id', $departement_id);
+                    }else{
+                        $allowance_results->where('departement_id', null);
                     }
                 }
             $get_allowance_results = $allowance_results->get();
