@@ -796,6 +796,8 @@ class ReservationAllowanceController extends Controller
                     }else{
                         if($user_gest->rule_id == 3){
                             $total_amount_reservation->where('departement_id', $departement_id);
+                        }else{
+                            $total_amount_reservation->where('departement_id', null);  
                         }
                     }
         $total_amount = $total_amount_reservation->sum("amount");
@@ -886,6 +888,8 @@ class ReservationAllowanceController extends Controller
                 }else{
                     if($user_gest->rule_id == 3){
                         $allowance_sum->where('departement_id', $departement_id);
+                    }else{
+                        $allowance_sum->where('departement_id', null);  
                     }
                 }
                 $allowance_sum->get();
